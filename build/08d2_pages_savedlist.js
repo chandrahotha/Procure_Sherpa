@@ -1,0 +1,57 @@
+PS.renderSavedList = function () {
+  var v = PS.savedView;
+  var items = PS.saved.list();
+  if (v.type) items = items.filter(function (r) { return r.type === v.type; });
+  if (PS.clean(v.q)) {
+    var q = v.q.toLowerCase();
+    items = items.filter(function (r) {
+      return (r.title + ' ' + (r.notes || '') + ' ' + (r.tags || []).join(' ')).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  items.sort(function (a, b) {
+    if (v.sort === 'title') return String(a.title).localeCompare(String(b.title));
+    if (v.sort === 'type') return String(a.type).localeCompare(String(b.type)) || String(a.title).localeCompare(String(b.title));
+    if (v.sort === 'created') return String(b.created).localeCompare(String(a.created));
+    return String(b.modified).localeCompare(String(a.modified));
+  });
+  if (!items.length) {
+    return PS.empty(PS.saved.count()
+      ? 'No saved items match this filter.'
+      : 'Nothing saved yet. Save a calculation, checklist, template or decision and it appears here with search, rename, duplicate, export and delete.');
+  }
+  return '<div class="card">' + items.map(function (r) {
+    var d = r.data || {}, summary = '', isHtml = false;
+    if (Array.isArray(d.results) && d.results.length) {
+      summary = d.results.slice(0, 4).map(function (x) { return PS.esc(x.label) + ': ' + PS.esc(x.value); }).join(' &middot; ');
+      isHtml = true;
+    } else if (d.calcTitle) {
+      summary = 'From ' + PS.esc(d.calcTitle);
+      isHtml = true;
+    } else if (d.total) {
+      summary = PS.esc(String(d.done)) + ' of ' + PS.esc(String(d.total)) + ' checklist items complete (' + PS.esc(String(d.pct)) + '%)';
+      isHtml = true;
+    } else if (d.average) {
+      summary = 'Average maturity level ' + PS.esc(PS.round(d.average, 2)) + ' of 5';
+      isHtml = true;
+    }
+    return '<div class="card card-tight" style="background:var(--panel-2)">' +
+      '<div class="card-head"><div><strong>' + PS.esc(r.title) + '</strong> ' + PS.badge(r.type) +
+      '<div class="res-desc">Created ' + PS.esc(PS.dateStr(r.created)) + ' &middot; modified ' + PS.esc(PS.dateStr(r.modified)) +
+      ((r.tags || []).length ? ' &middot; tags: ' + PS.esc(r.tags.join(', ')) : '') + '</div></div>' +
+      '<div class="spacer"></div>' +
+      '<div class="btn-row tight no-print">' +
+      '<button type="button" class="btn btn-sm btn-primary" data-act="saved-open" data-id="' + PS.esc(r.id) + '">Open</button>' +
+      '<button type="button" class="btn btn-sm" data-act="saved-rename" data-id="' + PS.esc(r.id) + '">Rename</button>' +
+      '<button type="button" class="btn btn-sm" data-act="saved-duplicate" data-id="' + PS.esc(r.id) + '">Duplicate</button>' +
+      '<button type="button" class="btn btn-sm" data-act="saved-export" data-id="' + PS.esc(r.id) + '">Export JSON</button>' +
+      '<button type="button" class="btn btn-sm" data-act="saved-copy" data-id="' + PS.esc(r.id) + '">Copy summary</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-delete" data-id="' + PS.esc(r.id) + '">Delete</button>' +
+      '</div></div>' +
+      (summary ? '<div class="res-sub">' + summary + '</div>' : '') +
+      '<div class="field no-print"><label for="notes_' + PS.esc(r.id) + '">Notes</label>' +
+      '<textarea id="notes_' + PS.esc(r.id) + '" rows="2" maxlength="4000">' + PS.esc(r.notes || '') + '</textarea>' +
+      '<div class="btn-row tight"><button type="button" class="btn btn-sm" data-act="save-notes" data-id="' + PS.esc(r.id) + '">Save notes</button></div></div>' +
+      '<div class="print-only"><p>' + (isHtml ? summary.replace(/&middot;/g, ' | ') : PS.esc(summary)) + '</p><p>' + PS.esc(r.notes || '') + '</p></div>' +
+      '</div>';
+  }).join('') + '</div>';
+};

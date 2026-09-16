@@ -1,0 +1,69 @@
+PS.importBackup = function (obj, filename) {
+  var v = PS.validateBackup(obj);
+  if (!v.ok) { PS.toast(v.error, 'danger'); return; }
+  var s = v.summary;
+  PS.modal({
+    title: 'Restore backup', wide: true,
+    body: '<p>File: <strong>' + PS.esc(filename || 'backup.json') + '</strong> &middot; exported ' + PS.esc(String(s.exported)) + ' &middot; schema v' + PS.esc(String(s.schema)) + '</p>' +
+      '<div class="table-wrap"><table><thead><tr><th>Content</th><th class="num">In backup</th><th class="num">Currently stored</th></tr></thead><tbody>' +
+      '<tr><td>Saved work</td><td class="num">' + s.saved + '</td><td class="num">' + PS.saved.count() + '</td></tr>' +
+      '<tr><td>Checklists with progress</td><td class="num">' + s.checklists + '</td><td class="num">' + Object.keys(PS.clState.all()).length + '</td></tr>' +
+      '<tr><td>Templates with entries</td><td class="num">' + s.templates + '</td><td class="num">' + Object.keys(PS.tplState.all()).length + '</td></tr>' +
+      '<tr><td>Favorites</td><td class="num">' + s.favorites + '</td><td class="num">' + PS.fav.list().length + '</td></tr>' +
+      '<tr><td>Recently used</td><td class="num">' + s.recent + '</td><td class="num">' + PS.recent.list().length + '</td></tr>' +
+      '<tr><td>Audit events</td><td class="num">' + s.audit + '</td><td class="num">' + PS.auditList().length + '</td></tr>' +
+      '<tr><td>Settings included</td><td class="num">' + (s.hasPrefs ? 'yes' : 'no') + '</td><td class="num">current</td></tr>' +
+      '</tbody></table></div>' +
+      '<div class="field"><label for="restoreMode">Restore mode</label><select id="restoreMode">' +
+      '<option value="merge">Merge - keep current data and add items that are not already present</option>' +
+      '<option value="replace">Replace - delete current data and use the backup instead</option>' +
+      '</select></div>' +
+      '<p class="note">The file is validated before anything is written. Your current data is not changed until you confirm.</p>',
+    okLabel: 'Restore now',
+    onOk: function (root) {
+      var mode = PS.$('#restoreMode', root).value;
+      PS.applyRestore(v.clean, mode, filename);
+    }
+  });
+};
+PS.applyRestore = function (c, mode, filename) {
+  try {
+    if (mode === 'replace') {
+      PS.store.set(PS.K.saved, c.saved);
+      PS.store.set(PS.K.cl, c.checklists);
+      PS.store.set(PS.K.tpl, c.templates);
+      PS.store.set(PS.K.fav, c.favorites);
+      PS.store.set(PS.K.recent, c.recent);
+      PS.store.set(PS.K.audit, c.audit);
+      if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
+    } else {
+      var ids = {};
+      PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
+      PS.store.set(PS.K.saved, PS.saved.list().concat(c.saved.filter(function (x) { return !ids[x.id]; })).slice(0, PS.MAX_SAVED));
+      var cl = PS.clState.all();
+      Object.keys(c.checklists).forEach(function (k) { if (!cl[k]) cl[k] = c.checklists[k]; });
+      PS.store.set(PS.K.cl, cl);
+      var tp = PS.tplState.all();
+      Object.keys(c.templates).forEach(function (k) { if (!tp[k]) tp[k] = c.templates[k]; });
+      PS.store.set(PS.K.tpl, tp);
+      var fav = PS.fav.list(), fk = {};
+      fav.forEach(function (x) { fk[x.type + '|' + x.id] = 1; });
+      PS.store.set(PS.K.fav, fav.concat(c.favorites.filter(function (x) { return !fk[x.type + '|' + x.id]; })).slice(0, 120));
+      if (!PS.recent.list().length) PS.store.set(PS.K.recent, c.recent);
+      if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
+    }
+    PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
+    PS.applyTheme();
+    PS.prefs();
+    PS.buildNav();
+    PS.updateNavCounts();
+    PS.renderRoute();
+    PS.toast('Backup restored (' + mode + ' mode).', 'ok');
+  } catch (e) {
+    if (window.console && console.error) console.error(e);
+    PS.toast('The restore could not be completed. Your existing data was not fully replaced.', 'danger');
+  }
+};
+PS.acts['backup-import'] = function () {
+  PS.readJsonFile(function (obj, filename) { PS.importBackup(obj, filename); });
+};

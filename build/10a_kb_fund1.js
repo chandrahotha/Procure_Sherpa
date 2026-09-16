@@ -1,0 +1,28 @@
+/* ---------- knowledge: Fundamentals part 1 (Section 10, 61) ---------- */
+PS.SKB({ i: "spend-analysis", t: "Spend analysis", c: "Fundamentals",
+  d: "The systematic review of purchase data to see what is bought, from whom, at what price and how often.",
+  w: "Reveals consolidation and savings opportunities;Creates the evidence base for sourcing strategy",
+  n: "Before planning any sourcing initiative;When building a category strategy or savings plan",
+  h: "Extract purchase data from finance and procurement systems;Classify by category, supplier and business unit;Clean and normalise descriptions and duplicate suppliers;Identify top suppliers, price outliers and off-contract spend",
+  e: "A spend review shows three suppliers provide the same bearing at prices from $4.10 to $5.60 - consolidating to one supplier saves 12 percent.",
+  r: "Dirty data hides real patterns and prices;Classification errors distort category strategies",
+  m: "Acting on uncleaned data;Ignoring maverick spend that never enters procurement systems",
+  rel: { sops: ["sop-savings-calculation"], calcs: ["calc-compare-quotes"] } });
+PS.SKB({ i: "direct-indirect-spend", t: "Direct and indirect spend", c: "Fundamentals",
+  d: "Direct spend is goods and services that go into the product you sell; indirect spend is everything that supports the business.",
+  w: "Direct spend drives product cost and supply continuity;Indirect spend is fragmented and often under-managed",
+  n: "Deciding who owns a category;Setting sourcing priorities and governance levels",
+  h: "Trace each purchase to the finished product or service;Direct items demand supplier quality and continuity focus;Indirect items demand process efficiency and compliance focus",
+  e: "Steel and components are direct spend; cleaning services and laptops are indirect spend.",
+  r: "Treating direct spend like indirect can jeopardise production;Poorly governed indirect spend leaks value",
+  m: "Assuming the same process fits both;Letting indirect spend fragment across budget holders",
+  rel: { concepts: ["category-management"] } });
+PS.SKB({ i: "category-management", t: "Category management", c: "Fundamentals",
+  d: "Organising procurement around groups of similar spend so each category gets a deliberate, long-term strategy instead of one-off purchases.",
+  w: "Aligns sourcing decisions with total business need;Builds supplier leverage and deep market knowledge",
+  n: "Planning multi-year sourcing for a spend area;Deciding how to organise the procurement team",
+  h: "Define category boundaries from spend and supply data;Profile demand, supply market and current contracts;Choose a strategy per segment; execute and review",
+  e: "The facilities category bundles cleaning, security and maintenance into one strategy with shared suppliers where sensible.",
+  r: "Categories too broad hide internal differences;Strategies go stale without review cycles",
+  m: "Defining categories around org charts instead of supply markets;No owner accountable for each category",
+  rel: { concepts: ["sourcing-strategy", "spend-analysis"] } });

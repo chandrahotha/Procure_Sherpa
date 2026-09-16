@@ -1,0 +1,36 @@
+/* ============ Calc: TCO (Total Cost of Ownership) ============ */
+PS_CALC.push({
+  id: 'calc-tco', title: 'TCO - Total Cost of Ownership', cat: 'Cost Tools', tags: ['tco', 'cost', 'capex'],
+  purpose: 'Compare offers on the whole cost of owning and operating an asset or service over its life, discounted to today, so a lower purchase price does not hide a higher running cost.',
+  desc: 'Discounted total cost of ownership over the asset life, with annualised and per-unit figures.',
+  disclaimerKind: 'finance',
+  assumptions: ['The discount rate is your organization&rsquo;s cost of capital or hurdle rate, not a market rate - set it in Settings or override it here.',
+    'Operating costs are assumed to be incurred at the end of each year and inflated only if you enter a rate.',
+    'Residual value reduces TCO at the end of the life; disposal costs are added at the end.'],
+  formula: ['Acquisition = (unit price x quantity) + installation and commissioning',
+    'Annual operating cost = energy + maintenance + consumables + downtime + other',
+    'NPV of operating cost = annual operating cost x annuity factor, where annuity factor = (1 - (1 + r)^-n) / r',
+    'TCO = acquisition + NPV operating cost + PV disposal - PV residual value',
+    'Annualised TCO = TCO / life years; TCO per output unit = TCO / (annual output x life years)'],
+  groups: [PS.G('Acquisition', 'unitPrice qty installCost'), PS.G('Annual operating cost', 'energy maintenance consumables downtime otherAnnual'),
+    PS.G('Life, residual and finance', 'lifeYears discountRate disposalCost residualValue annualOutput')],
+  fields: [
+    PS.F('unitPrice', 'Unit purchase price', 'curr', 'req,nn', '42000'),
+    PS.F('qty', 'Number of units', 'qty', 'req,pos|1'),
+    PS.F('installCost', 'Installation and commissioning', 'curr', 'nn', '3500'),
+    PS.F('energy', 'Energy per year', 'curr', 'nn', '2800'),
+    PS.F('maintenance', 'Maintenance and service per year', 'curr', 'nn', '1900'),
+    PS.F('consumables', 'Consumables per year', 'curr', 'nn', '1200'),
+    PS.F('downtime', 'Downtime cost per year', 'curr', 'nn', '900'),
+    PS.F('otherAnnual', 'Other annual cost', 'curr', 'nn|0'),
+    PS.F('lifeYears', 'Expected life', 'years', 'req,pos,max=50|7'),
+    PS.F('discountRate', 'Discount rate', 'pct', 'nn,max=50,tip=Cost_of_capital_or_hurdle_rate|8'),
+    PS.F('disposalCost', 'Disposal / decommissioning', 'curr', 'nn', '800'),
+    PS.F('residualValue', 'Residual value at end of life', 'curr', 'nn', '3000'),
+    PS.F('annualOutput', 'Annual output (units serviced)', 'qty', 'nn|0')
+  ],
+  example: { unitPrice: 42000, qty: 1, installCost: 3500, energy: 2800, maintenance: 1900, consumables: 1200, downtime: 900, otherAnnual: 0, lifeYears: 7, discountRate: 8, disposalCost: 800, residualValue: 3000, annualOutput: 25000 },
+  handoffTo: ['calc-make-vs-buy', 'calc-multiyear-contract', 'calc-compare-quotes'],
+  rel: { sops: ['sop-commercial-evaluation', 'sop-award-recommendation'], cl: ['cl-commercial-evaluation'], tpl: ['tpl-business-case', 'tpl-award-recommendation'], calc: ['calc-landed-cost', 'calc-make-vs-buy'], decisions: ['dec-unit-price-vs-tco'], kpis: ['kpi-ppv'] },
+  run: function (v) { return PS.calcImpl.tco(v); }
+});

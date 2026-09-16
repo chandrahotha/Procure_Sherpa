@@ -1,0 +1,28 @@
+/* ---------- knowledge: Commercial and cost part 2 (Section 10, 61) ---------- */
+PS.SKB({ i: "payment-terms", t: "Payment terms", c: "Commercial",
+  d: "The agreed timing of payment - net days, early-payment discounts, milestones - and their effect on both parties' cash.",
+  w: "Terms are a negotiation currency almost as strong as price;Longer terms tie up supplier cash and can raise prices",
+  n: "Negotiating a new contract or renewal;When a supplier asks for earlier payment",
+  h: "Know your own cash position and policy;Price the cost of early payment against the discount offered;Align terms across the category where possible",
+  e: "Paying in 10 days for a 2 percent discount is worth about 36 percent annualised - but only if cash is genuinely available.",
+  r: "Discounts that cost more than they save;Inconsistent terms across suppliers create admin load",
+  m: "Taking 2/10 net 30 and paying late anyway;Not annualising discount offers",
+  rel: { calcs: ["calc-payment-terms"], kpis: ["kpi-payment-terms"] } });
+PS.SKB({ i: "currency-fx", t: "Currency and FX exposure", c: "Commercial",
+  d: "The effect exchange-rate movement has on prices agreed in foreign currencies, and the options to manage that exposure.",
+  w: "FX moves can erase negotiated savings;Contract currency choice allocates the risk",
+  n: "Buying across borders;Long contracts priced in a foreign currency",
+  h: "Decide contract currency deliberately;Agree an index, band or adjustment mechanism for long terms;Consider hedging with finance for large exposures",
+  e: "A EUR contract drops 5 percent against the dollar; a clause sharing moves beyond 3 percent keeps both sides whole.",
+  r: "Unhedged long-term exposure;Double conversion through an intermediate currency",
+  m: "Ignoring FX because this year moved little;Letting the supplier set the currency by default",
+  rel: { calcs: ["calc-fx-currency"], sops: ["sop-contract-review"] } });
+PS.SKB({ i: "working-capital", t: "Working capital in procurement", c: "Commercial",
+  d: "The cash tied up in inventory and payables that procurement decisions directly move through payment terms and order sizes.",
+  w: "Terms and order quantities move cash as much as price;Working-capital gains are often easier than price cuts",
+  n: "Negotiating terms;Deciding order quantities and stock policy",
+  h: "Model cash impact of terms and order size;Balance stock risk against quantity discounts;Report working-capital gains alongside savings",
+  e: "Moving from net 30 to net 45 on $2M of monthly spend releases about $1M of cash.",
+  r: "Pushing terms so far suppliers price it back in;Larger orders to chase discounts raise stock risk",
+  m: "Treating terms and price as unrelated;Counting released cash as savings twice",
+  rel: { calcs: ["calc-payment-terms", "calc-moq"], kpis: ["kpi-working-capital"] } });

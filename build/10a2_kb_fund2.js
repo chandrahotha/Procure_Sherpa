@@ -1,0 +1,28 @@
+/* ---------- knowledge: Fundamentals part 2 (Section 10, 61) ---------- */
+PS.SKB({ i: "specification", t: "Specification", c: "Fundamentals",
+  d: "A clear description of what is required - performance, quality, compliance and delivery - that suppliers can price accurately.",
+  w: "Ambiguous specifications cause most quote disputes;Over-specification pays for capability you do not need",
+  n: "Before issuing any RFQ or RFP;When quotes from different suppliers vary in scope",
+  h: "Describe the outcome or performance required;Separate must-haves from nice-to-haves;Invite suppliers to flag constraints or alternatives",
+  e: "Instead of a brand name, specify flow rate, material grade, certification and warranty so alternatives can bid.",
+  r: "Copying old specifications forwards errors;Specifying one brand locks out competition",
+  m: "Vague words like suitable or best quality;No owner confirms the specification before issue",
+  rel: { sops: ["sop-requirement-definition"], checklists: ["cl-requirement-definition"] } });
+PS.SKB({ i: "make-or-buy", t: "Make or buy", c: "Fundamentals",
+  d: "The decision between producing a good or service internally and buying it from an external supplier.",
+  w: "Affects cost structure, capacity and risk exposure;Wrong choices are expensive and slow to reverse",
+  n: "When demand grows beyond internal capacity;When a supplier offers a long-term contract",
+  h: "Compare full internal cost (including overhead and capital) with total supplier cost;Weigh quality control, IP, flexibility and capacity risk;Decide, document the rationale and review periodically",
+  e: "In-house machining costs $8.40 per unit including machine time; quotes land at $7.10 - but shipping and quality risk narrow the gap.",
+  r: "Hidden internal costs distort the comparison;Supplier dependency created without a fallback",
+  m: "Comparing supplier price against internal direct cost only;Ignoring switching cost either way",
+  rel: { calcs: ["calc-make-vs-buy"], decisions: ["dec-make-or-buy"] } });
+PS.SKB({ i: "procurement-value", t: "Procurement value beyond price", c: "Fundamentals",
+  d: "The full contribution of procurement: cost, risk, quality, innovation, working capital and compliance - not only the lowest quoted price.",
+  w: "Cheap purchases can cost more over their life;Value framing earns procurement a seat at the table",
+  n: "Reporting procurement performance;Prioritising sourcing projects",
+  h: "Quantify savings, cost avoidance and working-capital gains;Track quality, delivery and compliance outcomes;Report the mix, not a single number",
+  e: "A supplier costs 2 percent more but removes 9 days of lead time, cutting inventory by $40,000.",
+  r: "Value claims without baselines lose credibility;Over-focusing on price damages supplier relationships",
+  m: "Claiming savings from purchases that would happen anyway;No agreed definition of savings with finance",
+  rel: { kpis: ["kpi-savings", "kpi-cost-avoidance"], calcs: ["calc-savings-analysis"] } });
