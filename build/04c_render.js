@@ -1,18 +1,38 @@
 /* ==========================================================
    Section G: shared render helpers (Section 36, 53, 67, 68)
    ========================================================== */
-PS.badge = function (type, extra) {
-  return '<span class="badge badge-type">' + PS.esc(PS.typeLabel(type)) + (extra ? ' ' + PS.esc(extra) : '') + '</span>';
+PS.TYPE_META = {
+  kb:   { icon: '\uD83D\uDCD6', acc: 'acc-kb' },
+  sop:  { icon: '\uD83D\uDCCB', acc: 'acc-sop' },
+  cl:   { icon: '\u2705',       acc: 'acc-cl' },
+  tpl:  { icon: '\uD83D\uDCC4', acc: 'acc-tpl' },
+  calc: { icon: '\uD83E\uDDEE', acc: 'acc-calc' },
+  dec:  { icon: '\u2696\uFE0F', acc: 'acc-dec' },
+  kpi:  { icon: '\uD83D\uDCC8', acc: 'acc-kpi' },
+  scen: { icon: '\uD83E\uDDED', acc: 'acc-scen' },
+  gloss:{ icon: '\uD83D\uDD24', acc: 'acc-gloss' },
+  help: { icon: '\u2753',       acc: 'acc-help' }
 };
-PS.tile = function (href, kicker, title, desc) {
-  return '<a class="tile" href="' + PS.esc(href) + '">' +
+PS.badge = function (type, extra) {
+  var m = PS.TYPE_META[type] || {};
+  return '<span class="badge badge-type ' + (m.acc || '') + '">' + (m.icon ? m.icon + ' ' : '') +
+    PS.esc(PS.typeLabel(type)) + (extra ? ' ' + PS.esc(extra) : '') + '</span>';
+};
+PS.tile = function (href, kicker, title, desc, opts) {
+  opts = opts || {};
+  var acc = opts.acc || '';
+  return '<a class="tile ' + acc + '" href="' + PS.esc(href) + '">' +
+    (opts.meta ? '<span class="t-meta">' + PS.esc(opts.meta) + '</span>' : '') +
+    (opts.icon ? '<div class="t-icon">' + opts.icon + '</div>' : '') +
     (kicker ? '<div class="t-kicker">' + PS.esc(kicker) + '</div>' : '') +
     '<div class="t-title">' + PS.esc(title) + '</div>' +
-    (desc ? '<p class="t-desc">' + PS.esc(desc) + '</p>' : '') + '</a>';
+    (desc ? '<p class="t-desc">' + PS.esc(desc) + '</p>' : '') +
+    (opts.cta ? '<div class="t-cta">' + PS.esc(opts.cta) + ' &rarr;</div>' : '') + '</a>';
 };
 PS.tileFor = function (type, item) {
+  var m = PS.TYPE_META[type] || {};
   return PS.tile(PS.routeFor(type, item.id), PS.typeLabel(type) + (item.cat ? ' \u00B7 ' + item.cat : ''),
-    item.title || item.term, item.desc || item.summary || '');
+    item.title || item.term, item.desc || item.summary || '', { icon: m.icon, acc: m.acc });
 };
 PS.empty = function (msg, action) {
   return '<div class="empty">' + PS.esc(msg) + (action ? ' ' + action : '') + '</div>';

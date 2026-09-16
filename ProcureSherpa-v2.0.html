@@ -311,6 +311,50 @@ html[data-theme="dark"] .hero{background:linear-gradient(135deg,#1b2c50,#101b31 
 .kv dt{color:var(--mute);font-weight:600}
 .kv dd{margin:0}
 .empty{border:1px dashed var(--border-2);border-radius:var(--r);padding:22px;text-align:center;color:var(--mute);font-size:.86rem}
+/* ---- tile accents, icons and meta (flow & variation pass) ---- */
+.tile{position:relative}
+.t-icon{font-size:1.25rem;line-height:1;margin-bottom:8px}
+.t-meta{position:absolute;top:12px;right:14px;font-size:.68rem;font-weight:700;letter-spacing:.04em;color:var(--mute);text-transform:uppercase}
+.t-cta{margin-top:10px;font-size:.78rem;font-weight:700;color:var(--accent)}
+.tile:hover .t-cta{text-decoration:underline}
+.tile.acc-kb{--tacc:#7c5cff}.tile.acc-sop{--tacc:#2f6fed}.tile.acc-cl{--tacc:#1f9d55}
+.tile.acc-tpl{--tacc:#b7791f}.tile.acc-calc{--tacc:#0d9488}.tile.acc-dec{--tacc:#b83d8b}
+.tile.acc-kpi{--tacc:#d97706}.tile.acc-scen{--tacc:#ea580c}.tile.acc-gloss{--tacc:#64748b}
+.tile[class*=" acc-"],.tile[class^="acc-"]{border-left:3px solid var(--tacc,var(--border-2))}
+.badge.acc-kb{background:#efeaff;color:#5536d4}.badge.acc-sop{background:#e7efff;color:#1d4fb8}
+.badge.acc-cl{background:#e2f6ea;color:#166f3d}.badge.acc-tpl{background:#faf0dd;color:#8a5a12}
+.badge.acc-calc{background:#dcf4f1;color:#0b6f66}.badge.acc-dec{background:#fbe9f4;color:#8f2a6c}
+.badge.acc-kpi{background:#fdf0dc;color:#9a5510}.badge.acc-scen{background:#fdeae0;color:#b44515}
+html[data-theme="dark"] .badge.acc-kb{background:#2a2350;color:#b9a8ff}
+html[data-theme="dark"] .badge.acc-sop{background:#1c2c4f;color:#9ec1ff}
+html[data-theme="dark"] .badge.acc-cl{background:#153426;color:#7fd8a5}
+html[data-theme="dark"] .badge.acc-tpl{background:#3a2f14;color:#e8c476}
+html[data-theme="dark"] .badge.acc-calc{background:#123733;color:#6fd3c7}
+html[data-theme="dark"] .badge.acc-dec{background:#3c1c31;color:#f0a4d2}
+html[data-theme="dark"] .badge.acc-kpi{background:#3a2a10;color:#f2b866}
+html[data-theme="dark"] .badge.acc-scen{background:#3c2214;color:#f5a76f}
+/* ---- start-here path (beginner flow) ---- */
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:14px}
+.path-step{display:flex;gap:12px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;color:inherit;text-decoration:none}
+.path-step:hover{border-color:var(--accent);box-shadow:var(--sh-1)}
+.path-num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem}
+.path-step .p-t{font-weight:700;font-size:.9rem;margin-bottom:3px}
+.path-step .p-d{font-size:.78rem;color:var(--mute);line-height:1.45}
+/* ---- scenario / journey stepper ---- */
+.pbar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;margin:10px 0 4px}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--ok),#4cc38a);border-radius:4px;transition:width .25s ease}
+.pbar-label{font-size:.76rem;color:var(--mute);font-weight:600}
+ol.stepper{list-style:none;margin:0;padding:0;counter-reset:step}
+ol.stepper>li{counter-increment:step;position:relative;padding:14px 16px 14px 58px;border-bottom:1px solid var(--border)}
+ol.stepper>li:last-child{border-bottom:0}
+ol.stepper>li::before{content:counter(step);position:absolute;left:14px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--panel);border:2px solid var(--border-2);color:var(--mute);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
+ol.stepper>li.is-done::before{content:"\2713";background:var(--ok);border-color:var(--ok);color:#fff}
+ol.stepper>li.is-done .tl-title{color:var(--mute);text-decoration:line-through;text-decoration-thickness:1px}
+ol.stepper>li.is-current{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
+.step-check{position:absolute;right:12px;top:14px}
+.tl-title{font-weight:700;font-size:.92rem}
+.tl-body{font-size:.83rem;color:var(--dim);margin-top:2px}
 /* Section 7: responsive + print + report */
 .report-head{display:none}
 .print-only{display:none}
@@ -1508,18 +1552,38 @@ PS.toggleTheme = function () {
 /* ==========================================================
    Section G: shared render helpers (Section 36, 53, 67, 68)
    ========================================================== */
-PS.badge = function (type, extra) {
-  return '<span class="badge badge-type">' + PS.esc(PS.typeLabel(type)) + (extra ? ' ' + PS.esc(extra) : '') + '</span>';
+PS.TYPE_META = {
+  kb:   { icon: '\uD83D\uDCD6', acc: 'acc-kb' },
+  sop:  { icon: '\uD83D\uDCCB', acc: 'acc-sop' },
+  cl:   { icon: '\u2705',       acc: 'acc-cl' },
+  tpl:  { icon: '\uD83D\uDCC4', acc: 'acc-tpl' },
+  calc: { icon: '\uD83E\uDDEE', acc: 'acc-calc' },
+  dec:  { icon: '\u2696\uFE0F', acc: 'acc-dec' },
+  kpi:  { icon: '\uD83D\uDCC8', acc: 'acc-kpi' },
+  scen: { icon: '\uD83E\uDDED', acc: 'acc-scen' },
+  gloss:{ icon: '\uD83D\uDD24', acc: 'acc-gloss' },
+  help: { icon: '\u2753',       acc: 'acc-help' }
 };
-PS.tile = function (href, kicker, title, desc) {
-  return '<a class="tile" href="' + PS.esc(href) + '">' +
+PS.badge = function (type, extra) {
+  var m = PS.TYPE_META[type] || {};
+  return '<span class="badge badge-type ' + (m.acc || '') + '">' + (m.icon ? m.icon + ' ' : '') +
+    PS.esc(PS.typeLabel(type)) + (extra ? ' ' + PS.esc(extra) : '') + '</span>';
+};
+PS.tile = function (href, kicker, title, desc, opts) {
+  opts = opts || {};
+  var acc = opts.acc || '';
+  return '<a class="tile ' + acc + '" href="' + PS.esc(href) + '">' +
+    (opts.meta ? '<span class="t-meta">' + PS.esc(opts.meta) + '</span>' : '') +
+    (opts.icon ? '<div class="t-icon">' + opts.icon + '</div>' : '') +
     (kicker ? '<div class="t-kicker">' + PS.esc(kicker) + '</div>' : '') +
     '<div class="t-title">' + PS.esc(title) + '</div>' +
-    (desc ? '<p class="t-desc">' + PS.esc(desc) + '</p>' : '') + '</a>';
+    (desc ? '<p class="t-desc">' + PS.esc(desc) + '</p>' : '') +
+    (opts.cta ? '<div class="t-cta">' + PS.esc(opts.cta) + ' &rarr;</div>' : '') + '</a>';
 };
 PS.tileFor = function (type, item) {
+  var m = PS.TYPE_META[type] || {};
   return PS.tile(PS.routeFor(type, item.id), PS.typeLabel(type) + (item.cat ? ' \u00B7 ' + item.cat : ''),
-    item.title || item.term, item.desc || item.summary || '');
+    item.title || item.term, item.desc || item.summary || '', { icon: m.icon, acc: m.acc });
 };
 PS.empty = function (msg, action) {
   return '<div class="empty">' + PS.esc(msg) + (action ? ' ' + action : '') + '</div>';
@@ -3081,14 +3145,14 @@ else setTimeout(PS.boot, 0);
    Home, Quick Start, Favorites, Recently Used (Section 8, 48, 49)
    ========================================================== */
 PS.SECTION_TILES = [
-  { href: '#/list/kb', k: 'Knowledge', t: 'Procurement Knowledge Hub', d: 'Fundamentals, lifecycle, sourcing, commercial, supplier, negotiation, contracts, governance and risk concepts.' },
-  { href: '#/list/sop', k: 'SOP Center', t: 'Standard operating procedures', d: 'Step-by-step procedures with controls, records, KPIs and an embedded operational checklist.' },
-  { href: '#/what', k: 'Decision Center', t: 'What should I do?', d: 'Start with your business problem and get routed to the right process, SOP, checklist, calculator and template.' },
-  { href: '#/list/calc', k: 'Toolkit', t: 'Calculators and analysis', d: 'Quotes, landed cost, TCO, negotiation, escalation, payment terms, suppliers, budget, tax and FX.' },
-  { href: '#/list/cl', k: 'Checklists', t: 'Operational checklists', d: 'Intake, RFQ, evaluation, negotiation, award, contract, renewal, performance, risk and audit.' },
-  { href: '#/list/tpl', k: 'Templates', t: 'Ready-to-use templates', d: 'RFQ, RFP, evaluation, negotiation plan, award recommendation, business case, justification letters.' },
-  { href: '#/list/kpi', k: 'KPI Center', t: 'Procurement KPI library', d: 'Twenty KPIs with definition, formula, inputs, example, interpretation, limitations and mistakes.' },
-  { href: '#/saved', k: 'Workspace', t: 'Your saved work', d: 'Saved analyses, checklists, templates and decisions - stored only in this browser, with backup and restore.' }
+  { href: '#/list/kb', ty: 'kb', k: 'Knowledge', t: 'Procurement Knowledge Hub', d: 'Fundamentals, lifecycle, sourcing, commercial, supplier, negotiation, contracts, governance and risk concepts.' },
+  { href: '#/list/sop', ty: 'sop', k: 'SOP Center', t: 'Standard operating procedures', d: 'Step-by-step procedures with controls, records, KPIs and an embedded operational checklist.' },
+  { href: '#/what', ty: 'dec', k: 'Decision Center', t: 'What should I do?', d: 'Start with your business problem and get routed to the right process, SOP, checklist, calculator and template.' },
+  { href: '#/list/calc', ty: 'calc', k: 'Toolkit', t: 'Calculators and analysis', d: 'Quotes, landed cost, TCO, negotiation, escalation, payment terms, suppliers, budget, tax and FX.' },
+  { href: '#/list/cl', ty: 'cl', k: 'Checklists', t: 'Operational checklists', d: 'Intake, RFQ, evaluation, negotiation, award, contract, renewal, performance, risk and audit.' },
+  { href: '#/list/tpl', ty: 'tpl', k: 'Templates', t: 'Ready-to-use templates', d: 'RFQ, RFP, evaluation, negotiation plan, award recommendation, business case, justification letters.' },
+  { href: '#/list/kpi', ty: 'kpi', k: 'KPI Center', t: 'Procurement KPI library', d: 'Twenty KPIs with definition, formula, inputs, example, interpretation, limitations and mistakes.' },
+  { href: '#/saved', ty: 'tpl', k: 'Workspace', t: 'Your saved work', d: 'Saved analyses, checklists, templates and decisions - stored only in this browser, with backup and restore.' }
 ];
 PS.route('home', function () {
   PS.pageTitle = 'Home';
@@ -3108,6 +3172,19 @@ PS.acts['home-search'] = function () {
 PS.acts['prefill-what'] = function (el) {
   if (PS.$('#whatQ')) PS.$('#whatQ').value = el.dataset.q || '';
   PS.acts['what-run']();
+};
+PS.acts['scen-step-done'] = function (el) {
+  var sid = el.dataset.sid, idx = parseInt(el.dataset.idx, 10) || 0;
+  var key = 'scenprog:' + sid;
+  var done = PS.store.get(key, []);
+  var i = done.indexOf(idx);
+  if (i >= 0) done.splice(i, 1); else done.push(idx);
+  PS.store.set(key, done);
+  PS.renderRoute();
+};
+PS.acts['scen-progress-reset'] = function (el) {
+  PS.store.set('scenprog:' + el.dataset.sid, []);
+  PS.renderRoute();
 };
 PS.route('quickstart', function () {
   PS.pageTitle = 'Quick Start';
@@ -3185,8 +3262,20 @@ PS.homeHero = function () {
     '<a class="btn" href="#/list/sop">SOPs</a>' +
     '</div></section>';
 };
+PS.homeStart = function () {
+  var steps = [
+    { href: '#/what', t: '1. Say what you need', d: 'Type your problem in plain words. Procure Sherpa maps it to the right SOP, checklist and calculator.' },
+    { href: '#/scenarios', t: '2. Follow the route', d: 'Worked scenarios show every step in order - open the tools as you go and tick steps off.' },
+    { href: '#/saved', t: '3. Save and print', d: 'Save the analysis with your notes, print the report, back up your work.' }
+  ];
+  return '<h2 class="mb8">New here? Three steps</h2><div class="path no-print">' + steps.map(function (s) {
+    return '<a class="path-step" href="' + s.href + '"><span class="path-num">' + PS.esc(s.t.charAt(0)) + '</span>' +
+      '<span><div class="p-t">' + PS.esc(s.t.slice(3)) + '</div><div class="p-d">' + PS.esc(s.d) + '</div></span></a>';
+  }).join('') + '</div>';
+};
 PS.homeTools = function () {
-  return '<div class="grid grid-2">' +
+  return PS.homeStart() +
+    '<div class="grid grid-2">' +
     '<div class="card"><div class="card-head"><h2>What do you need to do?</h2></div>' +
     '<p class="card-sub">Describe your situation in your own words - for example &ldquo;my supplier increased prices by 12 percent&rdquo; or &ldquo;I received three quotes&rdquo;. Procure Sherpa maps it to the process, SOP, checklist, calculator, template and report that fit.</p>' +
     '<div class="searchbox no-print">' +
@@ -3207,8 +3296,10 @@ PS.homeTools = function () {
     }).join('') + '</div>' +
     '<p class="note">Tip: press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump into search.</p></div></div>' +
     '<h2>Quick-start scenarios</h2>' +
+    '<p class="note mb8">A scenario is a guided journey: each step links the exact SOP, checklist or calculator for that stage, with a progress tracker.</p>' +
     '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 6).map(function (s) {
-      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc);
+      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
+        { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
     }).join('') || '<p class="note">Loading scenario library.</p>') + '</div>' +
     '<div class="grid grid-3">' + PS.SECTION_TILES.map(function (t) { return PS.tile(t.href, t.k, t.t, t.d); }).join('') + '</div>';
 };
@@ -3689,7 +3780,8 @@ PS.route('scenarios', function () {
     '<div class="card"><h1>Scenario library</h1>' +
     '<p class="lead">Realistic procurement situations with the full chain of work attached: process, SOP, checklist, calculator, template and report. Use these as worked examples of how Procure Sherpa connects together.</p></div>' +
     (list.length ? '<div class="grid grid-2">' + list.map(function (s) {
-      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc);
+      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
+        { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
     }).join('') + '</div>' : PS.empty('Scenario library is loading.')) +
     PS.disclaimer('data');
 });
@@ -3706,16 +3798,45 @@ PS.route('scen', function (id) {
     '<div class="btn-row no-print"><button type="button" class="btn" data-act="scenario-jump" data-q="' + PS.esc(it.problem) + '">Run this through &ldquo;What should I do?&rdquo;</button></div>' +
     '</div>' +
     '<div class="card"><h2>The route through Procure Sherpa</h2>' +
-    '<ol class="timeline">' + (it.steps || []).map(function (s, i) {
-      var link = '';
-      if (s.type && s.id) {
-        var o = s.type === 'gloss' ? PS.glossaryById(s.id) : PS.byId(s.type, s.id);
-        if (o) link = '<a class="chip" href="' + PS.routeFor(s.type, s.id) + '">' + PS.esc(PS.typeLabel(s.type)) + ': ' + PS.esc(o.title || o.term) + '</a>';
+    (function () {
+      var steps = it.steps || [];
+      var done = PS.store.get('scenprog:' + id, []);
+      var doneSet = {}; done.forEach(function (i) { doneSet[i] = 1; });
+      var doneN = steps.filter(function (s, i) { return doneSet[i]; }).length;
+      var current = -1;
+      steps.forEach(function (s, i) { if (current < 0 && !doneSet[i]) current = i; });
+      var pct = steps.length ? Math.round((doneN / steps.length) * 100) : 0;
+      var next = current >= 0 ? steps[current] : null;
+      var nextHtml = '';
+      if (next) {
+        var target = next.type && next.id ? PS.routeFor(next.type, next.id) : '';
+        nextHtml = '<div class="alert alert-info no-print" style="margin-bottom:12px"><strong>Continue:</strong> next step is &ldquo;' +
+          PS.esc(next.label) + '&rdquo;.' + (target ? ' <a class="btn btn-sm" href="' + PS.esc(target) + '">Open it</a>' : '') + '</div>';
+      } else if (steps.length) {
+        nextHtml = '<div class="alert alert-ok no-print" style="margin-bottom:12px"><strong>Route complete.</strong> All ' + steps.length +
+          ' steps are ticked off. Save any outputs to your workspace, then <a href="#/backup">back up</a>.</div>';
       }
-      return '<li><div class="tl-title">' + PS.esc(s.label) + '</div>' +
-        (s.note ? '<div class="tl-body">' + PS.esc(s.note) + '</div>' : '') +
-        (link ? '<div class="chips" style="margin-top:6px">' + link + '</div>' : '') + '</li>';
-    }).join('') + '</ol></div>' +
+      var bar = '<div class="pbar no-print"><div class="pbar-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="pbar-label no-print">' + doneN + ' of ' + steps.length + ' steps done' +
+        (doneN ? ' &middot; <button type="button" class="btn btn-sm" data-act="scen-progress-reset" data-sid="' + PS.esc(id) + '">Reset progress</button>' : '') +
+        '</div>';
+      var list = '<ol class="stepper">' + steps.map(function (s, i) {
+        var isDone = !!doneSet[i];
+        var link = '';
+        if (s.type && s.id) {
+          var o = s.type === 'gloss' ? PS.glossaryById(s.id) : PS.byId(s.type, s.id);
+          if (o) link = '<a class="chip" href="' + PS.routeFor(s.type, s.id) + '">' + PS.esc(PS.typeLabel(s.type)) + ': ' + PS.esc(o.title || o.term) + '</a>';
+        }
+        return '<li class="' + (isDone ? 'is-done' : (i === current ? 'is-current' : '')) + '">' +
+          '<div class="tl-title">' + PS.esc(s.label) + '</div>' +
+          (s.note ? '<div class="tl-body">' + PS.esc(s.note) + '</div>' : '') +
+          '<div class="chips" style="margin-top:6px">' +
+          (link || '') +
+          '<button type="button" class="btn btn-sm no-print" data-act="scen-step-done" data-sid="' + PS.esc(id) + '" data-idx="' + i + '">' +
+          (isDone ? 'Undo' : 'Mark done') + '</button></div></li>';
+      }).join('') + '</ol>';
+      return (steps.length ? nextHtml + bar : '') + list;
+    })() + '</div>' +
     (it.checks ? '<div class="card"><h2>Questions this scenario should answer before you commit</h2>' + PS.ul(it.checks) + '</div>' : '') +
     (it.watchOut ? '<div class="card"><h2>What can go wrong</h2>' + PS.ul(it.watchOut) + '</div>' : '') +
     PS.relatedCard('scen', it) +

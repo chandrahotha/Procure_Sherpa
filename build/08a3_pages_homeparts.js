@@ -10,8 +10,20 @@ PS.homeHero = function () {
     '<a class="btn" href="#/list/sop">SOPs</a>' +
     '</div></section>';
 };
+PS.homeStart = function () {
+  var steps = [
+    { href: '#/what', t: '1. Say what you need', d: 'Type your problem in plain words. Procure Sherpa maps it to the right SOP, checklist and calculator.' },
+    { href: '#/scenarios', t: '2. Follow the route', d: 'Worked scenarios show every step in order - open the tools as you go and tick steps off.' },
+    { href: '#/saved', t: '3. Save and print', d: 'Save the analysis with your notes, print the report, back up your work.' }
+  ];
+  return '<h2 class="mb8">New here? Three steps</h2><div class="path no-print">' + steps.map(function (s) {
+    return '<a class="path-step" href="' + s.href + '"><span class="path-num">' + PS.esc(s.t.charAt(0)) + '</span>' +
+      '<span><div class="p-t">' + PS.esc(s.t.slice(3)) + '</div><div class="p-d">' + PS.esc(s.d) + '</div></span></a>';
+  }).join('') + '</div>';
+};
 PS.homeTools = function () {
-  return '<div class="grid grid-2">' +
+  return PS.homeStart() +
+    '<div class="grid grid-2">' +
     '<div class="card"><div class="card-head"><h2>What do you need to do?</h2></div>' +
     '<p class="card-sub">Describe your situation in your own words - for example &ldquo;my supplier increased prices by 12 percent&rdquo; or &ldquo;I received three quotes&rdquo;. Procure Sherpa maps it to the process, SOP, checklist, calculator, template and report that fit.</p>' +
     '<div class="searchbox no-print">' +
@@ -32,8 +44,10 @@ PS.homeTools = function () {
     }).join('') + '</div>' +
     '<p class="note">Tip: press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump into search.</p></div></div>' +
     '<h2>Quick-start scenarios</h2>' +
+    '<p class="note mb8">A scenario is a guided journey: each step links the exact SOP, checklist or calculator for that stage, with a progress tracker.</p>' +
     '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 6).map(function (s) {
-      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc);
+      return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
+        { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
     }).join('') || '<p class="note">Loading scenario library.</p>') + '</div>' +
     '<div class="grid grid-3">' + PS.SECTION_TILES.map(function (t) { return PS.tile(t.href, t.k, t.t, t.d); }).join('') + '</div>';
 };

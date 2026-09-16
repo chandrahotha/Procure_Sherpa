@@ -13,6 +13,19 @@ PS.acts['prefill-what'] = function (el) {
   if (PS.$('#whatQ')) PS.$('#whatQ').value = el.dataset.q || '';
   PS.acts['what-run']();
 };
+PS.acts['scen-step-done'] = function (el) {
+  var sid = el.dataset.sid, idx = parseInt(el.dataset.idx, 10) || 0;
+  var key = 'scenprog:' + sid;
+  var done = PS.store.get(key, []);
+  var i = done.indexOf(idx);
+  if (i >= 0) done.splice(i, 1); else done.push(idx);
+  PS.store.set(key, done);
+  PS.renderRoute();
+};
+PS.acts['scen-progress-reset'] = function (el) {
+  PS.store.set('scenprog:' + el.dataset.sid, []);
+  PS.renderRoute();
+};
 PS.route('quickstart', function () {
   PS.pageTitle = 'Quick Start';
   var walk = [
