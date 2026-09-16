@@ -3341,7 +3341,7 @@ PS.homeHub = function () {
       '<div class="grid grid-4">' + band.cards.map(function (c) {
         var m = PS.TYPE_META[c.ty] || {};
         var n = count(c.ct);
-        var meta = c.soon ? 'In build' : (n ? n + ' item' + (n === 1 ? '' : 's') : '');
+        var meta = c.soon ? 'Coming soon' : (n ? n + ' item' + (n === 1 ? '' : 's') : '');
         return PS.tile(c.href, '', c.t, c.d, {
           icon: m.icon, acc: m.acc, meta: meta,
           cls: c.soon ? ' soon' : ''
