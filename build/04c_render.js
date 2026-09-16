@@ -21,7 +21,7 @@ PS.badge = function (type, extra) {
 PS.tile = function (href, kicker, title, desc, opts) {
   opts = opts || {};
   var acc = opts.acc || '';
-  return '<a class="tile ' + acc + '" href="' + PS.esc(href) + '">' +
+  return '<a class="tile ' + acc + (opts.cls ? ' ' + opts.cls : '') + '" href="' + PS.esc(href) + '">' +
     (opts.meta ? '<span class="t-meta">' + PS.esc(opts.meta) + '</span>' : '') +
     (opts.icon ? '<div class="t-icon">' + opts.icon + '</div>' : '') +
     (kicker ? '<div class="t-kicker">' + PS.esc(kicker) + '</div>' : '') +

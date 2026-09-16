@@ -355,6 +355,15 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 .step-check{position:absolute;right:12px;top:14px}
 .tl-title{font-weight:700;font-size:.92rem}
 .tl-body{font-size:.83rem;color:var(--dim);margin-top:2px}
+/* ---------- home hub: progression bands ---------- */
+.hub-band{margin:26px 0 0}
+.hub-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 2px 10px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.hub-lvl{font-size:1.02rem;font-weight:800;letter-spacing:.02em}
+.hub-tag{font-size:.66rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:2px 9px}
+.hub-blurb{font-size:.82rem;color:var(--dim)}
+.tile.soon{opacity:.62}
+.tile.soon .t-meta{color:var(--mute);border:1px dashed var(--border-2);border-radius:999px;padding:1px 8px}
+
 /* Section 7: responsive + print + report */
 .report-head{display:none}
 .print-only{display:none}
@@ -1572,7 +1581,7 @@ PS.badge = function (type, extra) {
 PS.tile = function (href, kicker, title, desc, opts) {
   opts = opts || {};
   var acc = opts.acc || '';
-  return '<a class="tile ' + acc + '" href="' + PS.esc(href) + '">' +
+  return '<a class="tile ' + acc + (opts.cls ? ' ' + opts.cls : '') + '" href="' + PS.esc(href) + '">' +
     (opts.meta ? '<span class="t-meta">' + PS.esc(opts.meta) + '</span>' : '') +
     (opts.icon ? '<div class="t-icon">' + opts.icon + '</div>' : '') +
     (kicker ? '<div class="t-kicker">' + PS.esc(kicker) + '</div>' : '') +
@@ -1989,6 +1998,7 @@ PS.printBlock = function (calc, values, out) {
     PS.reportFooter('Decision-support output. Validate assumptions before committing funds.') + '</div>';
 };
 /* ---------- calculator page shell (Section 36, 40, 67) ---------- */
+PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
 PS.calcPage = function (id, params) {
   var calc = PS.byId('calc', id);
@@ -3142,21 +3152,37 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 else setTimeout(PS.boot, 0);
 /* ==========================================================
    Section L: page renderers
-   Home, Quick Start, Favorites, Recently Used (Section 8, 48, 49)
+   Home = the Hub: all cards, beginner -> expert flow (Section 8, 48, 49)
    ========================================================== */
-PS.SECTION_TILES = [
-  { href: '#/list/kb', ty: 'kb', k: 'Knowledge', t: 'Procurement Knowledge Hub', d: 'Fundamentals, lifecycle, sourcing, commercial, supplier, negotiation, contracts, governance and risk concepts.' },
-  { href: '#/list/sop', ty: 'sop', k: 'SOP Center', t: 'Standard operating procedures', d: 'Step-by-step procedures with controls, records, KPIs and an embedded operational checklist.' },
-  { href: '#/what', ty: 'dec', k: 'Decision Center', t: 'What should I do?', d: 'Start with your business problem and get routed to the right process, SOP, checklist, calculator and template.' },
-  { href: '#/list/calc', ty: 'calc', k: 'Toolkit', t: 'Calculators and analysis', d: 'Quotes, landed cost, TCO, negotiation, escalation, payment terms, suppliers, budget, tax and FX.' },
-  { href: '#/list/cl', ty: 'cl', k: 'Checklists', t: 'Operational checklists', d: 'Intake, RFQ, evaluation, negotiation, award, contract, renewal, performance, risk and audit.' },
-  { href: '#/list/tpl', ty: 'tpl', k: 'Templates', t: 'Ready-to-use templates', d: 'RFQ, RFP, evaluation, negotiation plan, award recommendation, business case, justification letters.' },
-  { href: '#/list/kpi', ty: 'kpi', k: 'KPI Center', t: 'Procurement KPI library', d: 'Twenty KPIs with definition, formula, inputs, example, interpretation, limitations and mistakes.' },
-  { href: '#/saved', ty: 'tpl', k: 'Workspace', t: 'Your saved work', d: 'Saved analyses, checklists, templates and decisions - stored only in this browser, with backup and restore.' }
+PS.HUB = [
+  { lvl: 'Start', tag: 'Beginner', blurb: 'Never used a procurement toolkit before? Begin here - each card walks you through.', cards: [
+    { href: '#/quickstart', ty: 'help', t: 'Quick Start', d: 'The guided eight-step tour: from "I have a problem" to a documented decision.' },
+    { href: '#/what', ty: 'dec', t: 'What should I do?', d: 'Describe your situation in plain words - get routed to the right SOP, checklist and calculator.' },
+    { href: '#/scenarios', ty: 'scen', t: 'Guided scenarios', d: 'Real situations - a new purchase, a price increase, a renewal - as step-by-step journeys.', ct: 'scen' },
+    { href: '#/help', ty: 'help', t: 'Help & troubleshooting', d: 'How the app works, where your data lives, how to print, and fixes for common problems.' }
+  ] },
+  { lvl: 'Learn', tag: 'Everyday', blurb: 'Understand the craft: concepts, procedures and the vocabulary of professional procurement.', cards: [
+    { href: '#/list/kb', ty: 'kb', t: 'Knowledge Hub', d: 'Concepts from fundamentals to risk: definition, why it matters, process, example, mistakes.', ct: 'kb' },
+    { href: '#/list/sop', ty: 'sop', t: 'SOP Center', d: 'Step-by-step procedures with controls, records, KPIs and an embedded working checklist.', ct: 'sop' },
+    { href: '#/list/cl', ty: 'cl', t: 'Checklists', d: 'Operational proof-of-work: intake, RFQ, evaluation, negotiation, contract, audit.', ct: 'cl' },
+    { href: '#/glossary', ty: 'gloss', t: 'Glossary', d: 'The language of procurement - BATNA to ZOPA - one line each, searchable.', ct: 'gloss' }
+  ] },
+  { lvl: 'Do', tag: 'Professional', blurb: 'Produce the numbers and documents the job actually requires - then save and print them.', cards: [
+    { href: '#/list/calc', ty: 'calc', t: 'Calculators', d: 'Quotes, landed cost, should-cost, TCO, negotiation savings, escalation, payment terms, approvals.', ct: 'calc' },
+    { href: '#/list/tpl', ty: 'tpl', t: 'Templates', d: 'RFQ, RFP, evaluation forms, negotiation plan, award recommendation, business case - print-ready.', ct: 'tpl' },
+    { href: '#/list/kpi', ty: 'kpi', t: 'KPI Center', d: 'Definitions, formulas, worked examples and the mistakes that make KPI numbers lie.', ct: 'kpi' },
+    { href: '#/saved', ty: 'tpl', t: 'Your workspace', d: 'Saved analyses with your notes, checklist progress, backups - all local to this browser.' }
+  ] },
+  { lvl: 'Master', tag: 'Expert', blurb: 'The strategic layer: structured decisions, maturity assessment and the end-to-end map.', cards: [
+    { href: '#/dec', ty: 'dec', t: 'Decision guides', d: 'Weighted, transparent decision frameworks: sourcing method, make-or-buy, renew or re-source.', ct: 'dec', soon: true },
+    { href: '#/maturity', ty: 'kpi', t: 'Maturity model', d: 'Score your procurement function across the five levels and get the gaps to close next.', soon: true },
+    { href: '#/lifecycle', ty: 'sop', t: 'Lifecycle map', d: 'The end-to-end procurement lifecycle as one navigable picture - every stage linked to its SOP.', soon: true },
+    { href: '#/dash', ty: 'kpi', t: 'Dashboard', d: 'Your activity, coverage and savings snapshot across everything you have used and saved.' }
+  ] }
 ];
 PS.route('home', function () {
   PS.pageTitle = 'Home';
-  return PS.homeHero() + PS.homeTools() + PS.homeActivity() + PS.disclaimer('policy');
+  return PS.homeHero() + PS.homeTools() + PS.homeHub() + PS.homeActivity() + PS.disclaimer('policy');
 });
 /* ---------- quick start, favorites, recently used (Section 8, 49) ---------- */
 PS.acts['home-what'] = function (el) { };
@@ -3297,11 +3323,31 @@ PS.homeTools = function () {
     '<p class="note">Tip: press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump into search.</p></div></div>' +
     '<h2>Quick-start scenarios</h2>' +
     '<p class="note mb8">A scenario is a guided journey: each step links the exact SOP, checklist or calculator for that stage, with a progress tracker.</p>' +
-    '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 6).map(function (s) {
+    '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 3).map(function (s) {
       return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
         { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
-    }).join('') || '<p class="note">Loading scenario library.</p>') + '</div>' +
-    '<div class="grid grid-3">' + PS.SECTION_TILES.map(function (t) { return PS.tile(t.href, t.k, t.t, t.d); }).join('') + '</div>';
+    }).join('') || '') + '</div>';
+};
+PS.homeHub = function () {
+  var count = function (ct) {
+    if (!ct) return 0;
+    var arr = ct === 'gloss' ? (PS.GLOSS || PS.data.gloss || []) : (PS.data[ct] || []);
+    return arr.length;
+  };
+  return (PS.HUB || []).map(function (band) {
+    return '<section class="hub-band"><div class="hub-head"><span class="hub-lvl">' + PS.esc(band.lvl) + '</span>' +
+      '<span class="hub-tag">' + PS.esc(band.tag) + '</span>' +
+      '<span class="hub-blurb">' + PS.esc(band.blurb) + '</span></div>' +
+      '<div class="grid grid-4">' + band.cards.map(function (c) {
+        var m = PS.TYPE_META[c.ty] || {};
+        var n = count(c.ct);
+        var meta = c.soon ? 'In build' : (n ? n + ' item' + (n === 1 ? '' : 's') : '');
+        return PS.tile(c.href, '', c.t, c.d, {
+          icon: m.icon, acc: m.acc, meta: meta,
+          cls: c.soon ? ' soon' : ''
+        });
+      }).join('') + '</div></section>';
+  }).join('');
 };
 PS.homeActivity = function () {
   var recent = PS.recent.list().slice(0, 5);

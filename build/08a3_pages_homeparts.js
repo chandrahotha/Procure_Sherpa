@@ -45,11 +45,31 @@ PS.homeTools = function () {
     '<p class="note">Tip: press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump into search.</p></div></div>' +
     '<h2>Quick-start scenarios</h2>' +
     '<p class="note mb8">A scenario is a guided journey: each step links the exact SOP, checklist or calculator for that stage, with a progress tracker.</p>' +
-    '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 6).map(function (s) {
+    '<div class="grid grid-3">' + ((PS.data.scen || []).slice(0, 3).map(function (s) {
       return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
         { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
-    }).join('') || '<p class="note">Loading scenario library.</p>') + '</div>' +
-    '<div class="grid grid-3">' + PS.SECTION_TILES.map(function (t) { return PS.tile(t.href, t.k, t.t, t.d); }).join('') + '</div>';
+    }).join('') || '') + '</div>';
+};
+PS.homeHub = function () {
+  var count = function (ct) {
+    if (!ct) return 0;
+    var arr = ct === 'gloss' ? (PS.GLOSS || PS.data.gloss || []) : (PS.data[ct] || []);
+    return arr.length;
+  };
+  return (PS.HUB || []).map(function (band) {
+    return '<section class="hub-band"><div class="hub-head"><span class="hub-lvl">' + PS.esc(band.lvl) + '</span>' +
+      '<span class="hub-tag">' + PS.esc(band.tag) + '</span>' +
+      '<span class="hub-blurb">' + PS.esc(band.blurb) + '</span></div>' +
+      '<div class="grid grid-4">' + band.cards.map(function (c) {
+        var m = PS.TYPE_META[c.ty] || {};
+        var n = count(c.ct);
+        var meta = c.soon ? 'In build' : (n ? n + ' item' + (n === 1 ? '' : 's') : '');
+        return PS.tile(c.href, '', c.t, c.d, {
+          icon: m.icon, acc: m.acc, meta: meta,
+          cls: c.soon ? ' soon' : ''
+        });
+      }).join('') + '</div></section>';
+  }).join('');
 };
 PS.homeActivity = function () {
   var recent = PS.recent.list().slice(0, 5);

@@ -1,5 +1,8 @@
 # Build/validate temp artifacts
 _check.js
+node_modules/
+package-lock.json
+
 
 # OS / editor noise
 Thumbs.db

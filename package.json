@@ -1,0 +1,24 @@
+{
+  "name": "sherpa",
+  "version": "1.0.0",
+  "description": "A complete, **offline, single-file procurement toolkit** — knowledge base, SOPs, checklists, templates, calculators, decision guides, KPIs and scenario guides in one HTML file. No install, no server, no internet connection, no account. Your data never leaves your browser.",
+  "main": "_check.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chandrahotha/Procure_Sherpa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chandrahotha/Procure_Sherpa/issues"
+  },
+  "homepage": "https://github.com/chandrahotha/Procure_Sherpa#readme",
+  "dependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

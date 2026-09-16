@@ -1,4 +1,5 @@
 /* ---------- calculator page shell (Section 36, 40, 67) ---------- */
+PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
 PS.calcPage = function (id, params) {
   var calc = PS.byId('calc', id);
