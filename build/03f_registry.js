@@ -59,9 +59,23 @@ PS.REL_LABEL = {
   kpis: 'Related KPIs', scenarios: 'Related scenarios', glossary: 'Related terms'
 };
 PS.REL_TYPE = { concepts: 'kb', sops: 'sop', checklists: 'cl', templates: 'tpl', calcs: 'calc', decisions: 'dec', kpis: 'kpi', scenarios: 'scen', glossary: 'gloss' };
+/* accept legacy singular / short-form rel keys from hand-written content */
+PS.REL_ALIASES = {
+  concepts: 'concepts', kb: 'concepts', concept: 'concepts',
+  sops: 'sops', sop: 'sops',
+  checklists: 'checklists', checklist: 'checklists', cl: 'checklists',
+  templates: 'templates', template: 'templates', tpl: 'templates',
+  calcs: 'calcs', calc: 'calcs', calculator: 'calcs',
+  decisions: 'decisions', decision: 'decisions', dec: 'decisions',
+  kpis: 'kpis', kpi: 'kpis',
+  scenarios: 'scenarios', scenario: 'scenarios', scen: 'scenarios',
+  glossary: 'glossary', gloss: 'glossary', term: 'glossary'
+};
+PS.relKey = function (k) { return PS.REL_ALIASES[k] || k; };
 PS.relatedItems = function (item, key) {
-  var r = (item && item.rel && item.rel[key]) || [];
-  var t = PS.REL_TYPE[key];
+  var ak = PS.relKey(key);
+  var r = (item && item.rel && (item.rel[key] || item.rel[ak])) || [];
+  var t = PS.REL_TYPE[ak];
   var out = [];
   r.forEach(function (id) {
     if (typeof id === 'string' && id.charAt(0) === '!') return; /* forward reference resolved later */
@@ -74,12 +88,12 @@ PS.relatedItems = function (item, key) {
 /* reverse relations: find everything that links to a given item */
 PS.backLinks = function (type, id) {
   var out = [];
-  Object.keys(PS.REL_TYPE).forEach(function (key) {
+  Object.keys(PS.REL_LABEL).forEach(function (key) {
     if (PS.REL_TYPE[key] !== type) return;
     Object.keys(PS.data).forEach(function (dt) {
       (PS.data[dt] || []).forEach(function (it) {
-        var list = (it.rel && it.rel[key]) || [];
-        if (list.indexOf(id) >= 0 && !(dt === type && it.id === id)) {
+        var src = (it.rel && (it.rel[key] || it.rel[PS.relKey(key)])) || [];
+        if (src.indexOf(id) >= 0 && !(dt === type && it.id === id)) {
           out.push({ type: dt, id: it.id, title: it.title || it.term, desc: it.desc || '' });
         }
       });

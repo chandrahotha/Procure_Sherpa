@@ -17,10 +17,10 @@ function balanced(t, start) {
 }
 for (const f of files) {
   const t = fs.readFileSync(path.join(BUILD, f), 'utf8');
-  for (const m of t.matchAll(/PS\.S(?:KB|SOP|CL|TPL|DEC|KPI|GLS|SCN)\(\s*\{/g)) {
+     for (const m of t.matchAll(/PS\.S(?:KB|SOP|DEC|CL|TPL|KPI|GLS|SCN)\(\s*\{/g)) {
     const obj = balanced(t, m.index + m[0].length - 1);
     if (!obj) continue;
-    const im = obj.match(/\bi:\s*"([^"]+)"/);
+    const im = obj.match(/\bi:\s*["']([^"']+)["']/);
     const ty = m[0].match(/KB|SOP|CL|TPL|DEC|KPI|GLS|SCN/)[0];
     const key = { KB: 'kb', SOP: 'sop', CL: 'cl', TPL: 'tpl', DEC: 'dec', KPI: 'kpi', GLS: 'gloss', SCN: 'scen' }[ty];
     if (im) ids[key].add(im[1]);
@@ -30,7 +30,7 @@ for (const f of files) {
       if (rtxt) {
         const rel = {};
         for (const pm of rtxt.matchAll(/(\w+)\s*:\s*\[([^\]]*)\]/g)) {
-          rel[pm[1]] = (pm[2].match(/"([^"]+)"/g) || []).map((x) => x.slice(1, -1));
+          rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
         }
         rels.push({ f, rel });
       }
@@ -47,7 +47,7 @@ for (const f of files) {
         if (rtxt) {
           const rel = {};
           for (const pm of rtxt.matchAll(/(\w+)\s*:\s*\[([^\]]*)\]/g)) {
-            rel[pm[1]] = (pm[2].match(/"([^"]+)"/g) || []).map((x) => x.slice(1, -1));
+            rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
           }
           rels.push({ f, rel });
         }
@@ -55,7 +55,9 @@ for (const f of files) {
     }
   }
 }
-const KEY = { concepts: 'kb', sops: 'sop', cl: 'cl', checklists: 'cl', templates: 'tpl', calcs: 'calc', decisions: 'dec', kpis: 'kpi', scenarios: 'scen', glossary: 'gloss' };
+const ALIAS = { concepts:'concepts', kb:'concepts', concept:'concepts', sops:'sops', sop:'sops', checklists:'checklists', checklist:'checklists', cl:'checklists', templates:'templates', template:'templates', tpl:'templates', calcs:'calcs', calc:'calcs', calculator:'calcs', decisions:'decisions', decision:'decisions', dec:'decisions', kpis:'kpis', kpi:'kpis', scenarios:'scenarios', scenario:'scenarios', scen:'scenarios', glossary:'glossary', gloss:'glossary', term:'glossary' };
+const KEY = { concepts: 'kb', sops: 'sop', checklists: 'cl', templates: 'tpl', calcs: 'calc', decisions: 'dec', kpis: 'kpi', scenarios: 'scen', glossary: 'gloss' };
+const canon = (k) => ALIAS[k] || k;
 /* translate legacy ids into v2 ids before resolving */
 const CALC_LEGACY = /^(calc-)?(savings-analysis|budget-vs-actual|supplier-scorecard|supplier-concentration|make-vs-buy|moq|multi-year-contract|gst|currency|kpi-calculator)$/i;
 const CALC_MAP = {
@@ -73,16 +75,22 @@ const T = {
   dec: (x) => x,
   kb: (x) => x
 };
+const norm = (ty, id) => {
+  if (ty === 'calc') { const m = CALC_LEGACY.exec(id); return m ? CALC_MAP[m[1].toLowerCase()] : id; }
+  return id;
+};
 const broken = {};
 let bad = 0;
 for (const r of rels) {
   for (const [k, list] of Object.entries(r.rel)) {
-    const ty = KEY[k];
+    const ak = canon(k);
+    const ty = KEY[ak];
     if (!ty) { console.log('?? unknown rel key', k, '<-', r.f); bad++; continue; }
     for (const id of list) {
-      if (!ids[ty].has(id)) {
-        broken[ty + ' ' + id] = (broken[ty + ' ' + id] || new Set());
-        broken[ty + ' ' + id].add(r.f);
+      const rid = norm(ty, id);
+      if (!ids[ty].has(rid)) {
+        broken[ty + ' ' + rid] = (broken[ty + ' ' + rid] || new Set());
+        broken[ty + ' ' + rid].add(r.f);
         bad++;
       }
     }
