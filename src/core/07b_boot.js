@@ -31,6 +31,7 @@ PS.boot = function () {
     PS.buildNav();
     PS.wireEvents();
     PS.updateNavCounts();
+    PS.bindGlobalKeys();
     PS.renderRoute();
     PS.pwa();
     if (!PS.storageOK) PS.audit('storage-unavailable', 'Browser storage is blocked; running in session-only mode');

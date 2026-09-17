@@ -166,7 +166,21 @@ PS.search = function (q, opts) {
   });
 
   var limit = opts.limit || 60;
-  var results = out.slice(0, limit).map(function (o) { return o.rec; });
+  var results = out.slice(0, limit).map(function (o) {
+    var r = o.rec;
+    return {
+      type: r.type,
+      id: r.id,
+      title: r.title,
+      cat: r.cat,
+      tags: r.tags,
+      route: r.route,
+      desc: r.desc,
+      text: r.text,
+      score: o.score,
+      shortcut: self.getShortcut(r.type, r.id)
+    };
+  });
   return { query: PS.clean(q, 120), results: results, total: out.length };
 };
 
@@ -209,6 +223,21 @@ PS.cmdPalette = {
     'gloss': 'Glossary Term',
     'scen': 'Scenario Walkthrough',
     'command': 'Platform Command'
+  },
+
+  getShortcut: function (type, id) {
+    var shortcuts = {
+      'academy': 'G A',
+      'sop': 'G S',
+      'calc': 'G C',
+      'cl': 'G L',
+      'tpl': 'G T',
+      'dec': 'G D',
+      'kpi': 'G K',
+      'kb': 'G K',
+      'command': 'G H'
+    };
+    return shortcuts[type] || '';
   },
 
   open: function (initialQuery, filter) {
@@ -272,6 +301,7 @@ PS.cmdPalette = {
       '<span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> Navigate</span>' +
       '<span><kbd>&crarr;</kbd> Open</span>' +
       '<span><kbd>ESC</kbd> Close</span>' +
+      '<span><kbd>Ctrl+Shift+K</kbd> Shortcuts</span>' +
       '</div>' +
       '</div>';
 
@@ -305,6 +335,10 @@ PS.cmdPalette = {
         } else if (e.key === 'Escape') {
           e.preventDefault();
           self.close();
+        } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
+          e.preventDefault();
+          self.close();
+          PS.kbdHelp.open();
         }
       });
     }
@@ -367,12 +401,16 @@ PS.cmdPalette = {
       var typeName = self.typeLabels[item.type] || item.type.toUpperCase();
       var titleHtml = q ? PS.highlight(item.title, q) : PS.esc(item.title);
       var descHtml = PS.esc(item.desc || '');
+      var scoreHtml = item.score ? '<span class="cmd-item-score">' + Math.round(item.score) + '</span>' : '';
+      var shortcutHtml = item.shortcut ? '<kbd class="cmd-shortcut">' + PS.esc(item.shortcut) + '</kbd>' : '';
 
       html += '<div class="cmd-item ' + (isSel ? 'is-selected' : '') + '" data-idx="' + idx + '" data-route="' + PS.escAttr(item.route) + '">' +
         '<div class="cmd-item-main">' +
         '<div class="cmd-item-head">' +
         '<span class="cmd-type-badge cmd-type-' + PS.esc(item.type) + '">' + PS.esc(typeName) + '</span>' +
         '<span class="cmd-item-title">' + titleHtml + '</span>' +
+        scoreHtml +
+        shortcutHtml +
         '</div>' +
         (descHtml ? '<div class="cmd-item-desc">' + descHtml + '</div>' : '') +
         '</div>' +

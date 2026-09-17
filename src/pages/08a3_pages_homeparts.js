@@ -121,3 +121,25 @@ PS.homeThinkingPoint = function () {
     '<a class="btn btn-sm btn-ghost" href="#/sop/sop-procurement-lifecycle">View Lifecycle SOP</a>' +
     '</div></div>';
 };
+
+PS.homeQuickActions = function () {
+  var favs = PS.fav ? PS.fav.list() : [];
+  var recent = PS.recent ? PS.recent.list() : [];
+  var actions = [
+    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
+    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
+    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', icon: '☑️', desc: 'Verify compliance at every step' },
+    { id: 'new-template', label: 'Templates', href: '#/list/tpl', icon: '📝', desc: 'RFQ, RFP, contracts, justifications' },
+    { id: 'what-do', label: 'What should I do?', href: '#/what', icon: '🧭', desc: 'Guided routing from your problem' },
+    { id: 'academy', label: 'Academy', href: '#/academy', icon: '🎓', desc: 'Structured learning paths' }
+  ];
+
+  var html = '<div class="quick-actions no-print">';
+  actions.forEach(function (a) {
+    var isFav = favs.some(function (f) { return f.type === a.id.replace('new-', '').replace('what-do', 'what').replace('academy', 'academy'); });
+    html += '<a class="quick-action-btn" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
+      '<span class="qa-icon">' + a.icon + '</span>' + PS.esc(a.label) + '</a>';
+  });
+  html += '</div>';
+  return html;
+};

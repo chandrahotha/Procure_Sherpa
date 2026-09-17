@@ -2455,6 +2455,114 @@ html[data-theme="dark"] .quiz-tip-cta {
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
+
+/* Mobile calculator bottom sheet */
+@media (max-width: 768px) {
+  .calc-layout { grid-template-columns: 1fr; }
+  .calc-sticky { position: static; }
+  .calc-panel-inputs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    box-shadow: var(--sh-2);
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform .25s cubic-bezier(.16,1,.3,1);
+  }
+  .calc-panel-inputs.is-open { transform: translateY(0); }
+  .calc-panel-results { padding-bottom: 90px; }
+  .calc-sheet-handle { display: flex; align-items: center; justify-content: center; padding: 10px; background: var(--panel-2); border-top: 1px solid var(--border); }
+  .calc-sheet-handle::before { content: ""; width: 36px; height: 4px; background: var(--border-2); border-radius: 2px; }
+  .calc-sheet-trigger {
+    display: inline-flex; align-items: center; gap: 8px;
+    position: fixed; bottom: 16px; right: 16px; z-index: 45;
+    padding: 12px 20px; background: var(--accent); color: var(--accent-ink);
+    border-radius: var(--r-pill); box-shadow: var(--sh-2);
+    font-weight: 600; font-size: .85rem;
+  }
+  .calc-sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(9,13,26,.4);
+    backdrop-filter: blur(2px); z-index: 40;
+    opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s;
+  }
+  .calc-sheet-backdrop.is-open { opacity: 1; visibility: visible; }
+}
+
+/* Table responsive column hiding */
+@media (max-width: 900px) { table th[data-priority="low"], table td[data-priority="low"] { display: none; } }
+@media (max-width: 620px) { table th[data-priority="medium"], table td[data-priority="medium"] { display: none; } }
+
+/* Keyboard shortcuts help panel */
+.kbd-help-panel {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 100; background: var(--panel); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--sh-2);
+  max-width: 520px; width: 90vw; max-height: 80vh; overflow-y: auto;
+  display: none; animation: pop-in .16s ease-out;
+}
+.kbd-help-panel.is-open { display: block; }
+.kbd-help-backdrop { position: fixed; inset: 0; background: rgba(9,13,26,.5); backdrop-filter: blur(3px); z-index: 95; display: none; }
+.kbd-help-backdrop.is-open { display: block; }
+.kbd-help-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.kbd-help-header h2 { margin: 0; font-size: 1.1rem; }
+.kbd-help-close { background: none; border: none; font-size: 1.5rem; line-height: 1; color: var(--mute); cursor: pointer; padding: 4px; }
+.kbd-help-close:hover { color: var(--text); }
+.kbd-help-body { padding: 16px 20px; }
+.kbd-help-section { margin-bottom: 20px; }
+.kbd-help-section:last-child { margin-bottom: 0; }
+.kbd-help-section h3 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); margin: 0 0 12px; font-weight: 700; }
+.kbd-help-grid { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.kbd-help-grid kbd { font-size: .7rem; min-width: 80px; }
+.kbd-help-grid span { font-size: .85rem; color: var(--dim); }
+
+/* Improved toast */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 95; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast { position: relative; left: auto; bottom: auto; transform: none; pointer-events: auto; animation: toast-in .18s ease-out; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-8px); } }
+
+/* Quick actions bar */
+.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: all .12s; }
+.quick-action-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.quick-action-btn .qa-icon { font-size: 1rem; }
+
+/* Calculator loading state */
+.calc-loading { position: relative; pointer-events: none; }
+.calc-loading::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; }
+html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
+.calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Focus visible improvements */
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+
+/* Skip link enhancement */
+.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
+.skip:focus { left: 0; }
+
+/* Nav section animation */
+.nav-list { transition: max-height .2s ease-out, opacity .15s ease-out, padding .15s ease-out; overflow: hidden; }
+.nav-sec[data-open="false"] .nav-list { max-height: 0; opacity: 0; padding: 0; }
+
+/* Command palette richer items */
+.cmd-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 10px; transition: background .1s; }
+.cmd-item.is-selected { background: var(--accent-soft); }
+.cmd-item-main { flex: 1; min-width: 0; }
+.cmd-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; }
+.cmd-type-badge { font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--sunken); color: var(--dim); border: 1px solid var(--border); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.cmd-item-title { font-weight: 600; font-size: .88rem; color: var(--text); line-height: 1.3; }
+.cmd-item-desc { font-size: .76rem; color: var(--mute); line-height: 1.4; }
+.cmd-item-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto; font-size: .68rem; color: var(--mute); }
+.cmd-cat-tag { background: var(--sunken); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.cmd-enter-hint { font-family: var(--mono); opacity: .6; }
+.cmd-item-score { font-family: var(--mono); font-size: .65rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); padding: 1px 6px; border-radius: 4px; }
+.cmd-shortcut { font-family: var(--mono); font-size: .62rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--mute); }
 </style>
 </head>
 
@@ -2529,6 +2637,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   </div>
 </div>
 
+<div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modalRoot"></div>
 
@@ -2731,13 +2840,226 @@ PS.decodeHashPayload = function (raw) {
 };
 /* ---------- toast + modal framework ---------- */
 PS.toast = function (msg, kind) {
-  var t = PS.$('#toast');
-  if (!t) return;
+  var container = PS.$('#toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  var t = document.createElement('div');
   t.className = 'toast' + (kind ? ' is-' + kind : '');
   t.textContent = PS.clean(msg, 400);
-  t.hidden = false;
-  clearTimeout(PS._toastT);
-  PS._toastT = setTimeout(function () { t.hidden = true; }, 3400);
+  t.setAttribute('role', 'alert');
+  t.setAttribute('aria-live', 'polite');
+  container.appendChild(t);
+  clearTimeout(t._toastT);
+  t._toastT = setTimeout(function () {
+    t.style.animation = 'toast-out .18s ease-in forwards';
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 180);
+  }, 3400);
+};
+
+PS.toastContainer = function () {
+  var container = PS.$('#toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  return container;
+};
+
+/* Keyboard shortcuts help panel */
+PS.kbdHelp = {
+  isOpen: false,
+  sections: [
+    { title: 'Global Navigation', items: [
+      { kbd: 'Ctrl+K / /', desc: 'Open Command Palette' },
+      { kbd: 'Ctrl+Shift+K', desc: 'Open Keyboard Shortcuts Help' },
+      { kbd: 'Esc', desc: 'Close modals, palettes, sidebars' },
+      { kbd: 'Alt+Left / Alt+Right', desc: 'Navigate history back/forward' }
+    ]},
+    { title: 'Sidebar & Search', items: [
+      { kbd: 'Ctrl+B', desc: 'Toggle sidebar' },
+      { kbd: 'Ctrl+F', desc: 'Focus global search' },
+      { kbd: '/', desc: 'Focus command palette (when not in input)' }
+    ]},
+    { title: 'Command Palette', items: [
+      { kbd: '↑ / ↓', desc: 'Navigate results' },
+      { kbd: 'Enter', desc: 'Open selected item' },
+      { kbd: 'Tab', desc: 'Switch filter chips' },
+      { kbd: '1-6', desc: 'Quick filter: 1=All, 2=Academy, 3=SOPs, 4=Calculators, 5=Checklists, 6=Templates' }
+    ]},
+    { title: 'Calculators', items: [
+      { kbd: 'Enter', desc: 'Calculate (when in input field)' },
+      { kbd: 'Ctrl+Enter', desc: 'Calculate from anywhere in calculator' },
+      { kbd: 'Ctrl+R', desc: 'Reset calculator' },
+      { kbd: 'Ctrl+E', desc: 'Load example data' },
+      { kbd: 'Ctrl+S', desc: 'Save calculation' },
+      { kbd: 'Ctrl+P', desc: 'Print report' }
+    ]},
+    { title: 'Academy & Learning', items: [
+      { kbd: 'G A', desc: 'Go to Academy hub' },
+      { kbd: 'G P', desc: 'Go to Progress/Transcript' },
+      { kbd: 'G C', desc: 'Go to Certificate' },
+      { kbd: 'Tab / Shift+Tab', desc: 'Navigate quiz options' },
+      { kbd: 'Enter', desc: 'Submit quiz answer' }
+    ]},
+    { title: 'Quick Go (G + key)', items: [
+      { kbd: 'G H', desc: 'Home / Command Center' },
+      { kbd: 'G O', desc: 'Operations Hub' },
+      { kbd: 'G A', desc: 'Academy Hub' },
+      { kbd: 'G S', desc: 'Saved Work' },
+      { kbd: 'G B', desc: 'Backup / Restore' },
+      { kbd: 'G T', desc: 'Settings' }
+    ]}
+  ],
+
+  open: function () {
+    var self = this;
+    if (self.isOpen) return;
+    self.isOpen = true;
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'kbd-help-backdrop';
+    backdrop.id = 'kbdHelpBackdrop';
+    document.body.appendChild(backdrop);
+
+    var panel = document.createElement('div');
+    panel.className = 'kbd-help-panel';
+    panel.id = 'kbdHelpPanel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-labelledby', 'kbdHelpTitle');
+
+    var html = '<div class="kbd-help-header">' +
+      '<h2 id="kbdHelpTitle">Keyboard Shortcuts</h2>' +
+      '<button type="button" class="kbd-help-close" aria-label="Close">&times;</button>' +
+      '</div><div class="kbd-help-body">';
+
+    self.sections.forEach(function (sec) {
+      html += '<div class="kbd-help-section"><h3>' + PS.esc(sec.title) + '</h3><div class="kbd-help-grid">';
+      sec.items.forEach(function (item) {
+        html += '<kbd>' + PS.esc(item.kbd) + '</kbd><span>' + PS.esc(item.desc) + '</span>';
+      });
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+    panel.innerHTML = html;
+    document.body.appendChild(panel);
+
+    // Animate in
+    requestAnimationFrame(function () {
+      backdrop.classList.add('is-open');
+      panel.classList.add('is-open');
+    });
+
+    // Close handlers
+    var close = function () {
+      backdrop.classList.remove('is-open');
+      panel.classList.remove('is-open');
+      setTimeout(function () {
+        if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+        if (panel.parentNode) panel.parentNode.removeChild(panel);
+        self.isOpen = false;
+      }, 160);
+    };
+
+    backdrop.addEventListener('click', close);
+    panel.querySelector('.kbd-help-close').addEventListener('click', close);
+    document.addEventListener('keydown', function onKey(e) {
+      if (e.key === 'Escape') {
+        close();
+        document.removeEventListener('keydown', onKey);
+      }
+    });
+  },
+
+  close: function () {
+    var backdrop = PS.$('#kbdHelpBackdrop');
+    var panel = PS.$('#kbdHelpPanel');
+    if (backdrop) backdrop.classList.remove('is-open');
+    if (panel) panel.classList.remove('is-open');
+    this.isOpen = false;
+  },
+
+  toggle: function () {
+    if (this.isOpen) this.close(); else this.open();
+  }
+};
+
+/* Global keyboard shortcuts */
+PS.bindGlobalKeys = function () {
+  if (PS._globalKeysBound) return;
+  PS._globalKeysBound = true;
+
+  document.addEventListener('keydown', function (e) {
+    // Ignore when in input/textarea/select
+    var target = e.target;
+    var isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
+    var isInModal = document.querySelector('.modal-backdrop:not([hidden])') || document.querySelector('.cmd-palette-backdrop:not([hidden])');
+
+    // Ctrl+K / / - Command Palette
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      if (!isInput) PS.cmdPalette.open();
+    }
+    if (e.key === '/' && !isInput && !isInModal) {
+      e.preventDefault();
+      PS.cmdPalette.open();
+    }
+
+    // Ctrl+Shift+K - Keyboard shortcuts help
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
+      e.preventDefault();
+      PS.kbdHelp.toggle();
+    }
+
+    // Alt+Left/Right - History navigation
+    if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      if (e.key === 'ArrowLeft') window.history.back();
+      else window.history.forward();
+    }
+
+    // Ctrl+B - Toggle sidebar
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      var app = PS.$('.app');
+      if (app) app.classList.toggle('nav-open');
+    }
+
+    // Quick Go shortcuts (G + key) - only when not in input
+    if (!isInput && e.key.toLowerCase() === 'g') {
+      // We'll handle the next key in a keyup handler
+      PS._goMode = true;
+      setTimeout(function () { PS._goMode = false; }, 1000);
+    } else if (PS._goMode && !isInput) {
+      var goMap = {
+        'h': '#/home', 'o': '#/operations', 'a': '#/academy',
+        'p': '#/academy-progress', 'c': '#/certificate',
+        's': '#/saved', 'b': '#/backup', 't': '#/settings',
+        'w': '#/what', 'd': '#/dash-savings', 'm': '#/maturity'
+      };
+      var route = goMap[e.key.toLowerCase()];
+      if (route) {
+        e.preventDefault();
+        window.location.hash = route;
+        PS._goMode = false;
+      }
+    }
+  });
+};
+
+/* Calculator loading state */
+PS.setCalcLoading = function (isLoading) {
+  var form = PS.$('#calcForm');
+  var results = PS.$('.calc-panel-results, #calcResults');
+  if (form) form.classList.toggle('calc-loading', isLoading);
+  if (results) results.classList.toggle('calc-loading', isLoading);
 };
 PS.modal = function (opts) {
   opts = opts || {};
@@ -2752,12 +3074,32 @@ PS.modal = function (opts) {
     '<button type="button" class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-modal="ok">' + PS.esc(opts.okLabel || 'Confirm') + '</button>' +
     '</div></div></div>';
   var back = PS.$('.modal-backdrop', root);
+  var modal = PS.$('.modal', root);
+  
+  // Focus trap
+  var focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  var getFocusable = function () { return Array.from(modal.querySelectorAll(focusableSelector)).filter(function (el) { return el.offsetWidth > 0 || el.offsetHeight > 0; }); };
+  
   function close() {
     root.innerHTML = '';
     document.removeEventListener('keydown', onKey);
     if (prevFocus && prevFocus.focus) { try { prevFocus.focus(); } catch (e) { } }
   }
-  function onKey(e) { if (e.key === 'Escape') { close(); if (opts.onCancel) opts.onCancel(); } }
+  function onKey(e) { 
+    if (e.key === 'Escape') { close(); if (opts.onCancel) opts.onCancel(); }
+    else if (e.key === 'Tab') { trapFocus(e); }
+  }
+  function trapFocus(e) {
+    var focusable = getFocusable();
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }
   document.addEventListener('keydown', onKey);
   back.addEventListener('click', function (e) {
     if (e.target === back) { close(); if (opts.onCancel) opts.onCancel(); }
@@ -3411,7 +3753,21 @@ PS.search = function (q, opts) {
   });
 
   var limit = opts.limit || 60;
-  var results = out.slice(0, limit).map(function (o) { return o.rec; });
+  var results = out.slice(0, limit).map(function (o) {
+    var r = o.rec;
+    return {
+      type: r.type,
+      id: r.id,
+      title: r.title,
+      cat: r.cat,
+      tags: r.tags,
+      route: r.route,
+      desc: r.desc,
+      text: r.text,
+      score: o.score,
+      shortcut: self.getShortcut(r.type, r.id)
+    };
+  });
   return { query: PS.clean(q, 120), results: results, total: out.length };
 };
 
@@ -3454,6 +3810,21 @@ PS.cmdPalette = {
     'gloss': 'Glossary Term',
     'scen': 'Scenario Walkthrough',
     'command': 'Platform Command'
+  },
+
+  getShortcut: function (type, id) {
+    var shortcuts = {
+      'academy': 'G A',
+      'sop': 'G S',
+      'calc': 'G C',
+      'cl': 'G L',
+      'tpl': 'G T',
+      'dec': 'G D',
+      'kpi': 'G K',
+      'kb': 'G K',
+      'command': 'G H'
+    };
+    return shortcuts[type] || '';
   },
 
   open: function (initialQuery, filter) {
@@ -3517,6 +3888,7 @@ PS.cmdPalette = {
       '<span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> Navigate</span>' +
       '<span><kbd>&crarr;</kbd> Open</span>' +
       '<span><kbd>ESC</kbd> Close</span>' +
+      '<span><kbd>Ctrl+Shift+K</kbd> Shortcuts</span>' +
       '</div>' +
       '</div>';
 
@@ -3550,6 +3922,10 @@ PS.cmdPalette = {
         } else if (e.key === 'Escape') {
           e.preventDefault();
           self.close();
+        } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
+          e.preventDefault();
+          self.close();
+          PS.kbdHelp.open();
         }
       });
     }
@@ -3612,12 +3988,16 @@ PS.cmdPalette = {
       var typeName = self.typeLabels[item.type] || item.type.toUpperCase();
       var titleHtml = q ? PS.highlight(item.title, q) : PS.esc(item.title);
       var descHtml = PS.esc(item.desc || '');
+      var scoreHtml = item.score ? '<span class="cmd-item-score">' + Math.round(item.score) + '</span>' : '';
+      var shortcutHtml = item.shortcut ? '<kbd class="cmd-shortcut">' + PS.esc(item.shortcut) + '</kbd>' : '';
 
       html += '<div class="cmd-item ' + (isSel ? 'is-selected' : '') + '" data-idx="' + idx + '" data-route="' + PS.escAttr(item.route) + '">' +
         '<div class="cmd-item-main">' +
         '<div class="cmd-item-head">' +
         '<span class="cmd-type-badge cmd-type-' + PS.esc(item.type) + '">' + PS.esc(typeName) + '</span>' +
         '<span class="cmd-item-title">' + titleHtml + '</span>' +
+        scoreHtml +
+        shortcutHtml +
         '</div>' +
         (descHtml ? '<div class="cmd-item-desc">' + descHtml + '</div>' : '') +
         '</div>' +
@@ -5149,13 +5529,16 @@ PS.runCalc = function (silent) {
   if (!calc) return;
   var values = PS.readCalcInputs();
   if (!PS.showCalcErrors(PS.validateCalc(calc, values))) return;
+  PS.setCalcLoading(true);
   var out;
   try { out = calc.run(values); }
   catch (e) {
     if (window.console && console.error) console.error(e);
     PS.toast('This calculation could not be completed with the values entered. Check that no divisor is zero.', 'danger');
+    PS.setCalcLoading(false);
     return;
   }
+  PS.setCalcLoading(false);
   if (!out) return;
   PS.calcState.values = values;
   PS.calcState.result = out;
@@ -5213,9 +5596,13 @@ PS.renderCalcResult = function (calc, values, out) {
 };
 PS.renderTable = function (t) {
   var num = t.numCols || 0;
-  function cell(c, i) { return '<td' + (i >= (t.headers.length - num) ? ' class="num"' : '') + '>' + PS.esc(c) + '</td>'; }
+  var priorities = t.priorities || []; // 'high', 'medium', 'low'
+  function cell(c, i) { return '<td' + (i >= (t.headers.length - num) ? ' class="num"' : '') + (priorities[i] ? ' data-priority="' + priorities[i] + '"' : '') + '>' + PS.esc(c) + '</td>'; }
   return '<div class="table-wrap"><table>' + (t.caption ? '<caption>' + PS.esc(t.caption) + '</caption>' : '') +
-    '<thead><tr>' + t.headers.map(function (h) { return '<th>' + PS.esc(h) + '</th>'; }).join('') + '</tr></thead>' +
+    '<thead><tr>' + t.headers.map(function (h, i) {
+      var p = priorities[i] ? ' data-priority="' + priorities[i] + '"' : '';
+      return '<th' + p + '>' + PS.esc(h) + '</th>';
+    }).join('') + '</tr></thead>' +
     '<tbody>' + t.rows.map(function (r) {
       return '<tr' + (r.cls ? ' class="' + r.cls + '"' : '') + '>' + r.cells.map(cell).join('') + '</tr>';
     }).join('') + '</tbody>' +
@@ -5276,7 +5663,7 @@ PS.calcPage = function (id, params) {
     if (!t) return '';
     return '<button type="button" class="btn btn-sm" data-act="handoff" data-to="' + PS.esc(h) + '">Send to ' + PS.esc(t.title) + '</button>';
   }).join('');
-  var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
+var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="card card-tight">' +
     '<div class="card-head"><div><h1 style="margin-bottom:2px">' + PS.esc(calc.title) + '</h1>' +
     '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">' +
@@ -5291,7 +5678,7 @@ PS.calcPage = function (id, params) {
     (calc.tags ? '<div style="margin-top:10px">' + PS.tagsRow(calc) + '</div>' : '') +
     '</div>' +
     '<div class="calc-layout">' +
-    '<div class="card"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
+    '<div class="card calc-panel-inputs"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
     '<span class="note">Fields marked <span class="req">*</span> are required</span></div>' +
     '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off" onsubmit="return false;">' +
     PS.groupFields(calc) + '</form>' +
@@ -5302,9 +5689,10 @@ PS.calcPage = function (id, params) {
     '<div class="btn-row tight" style="margin-top:8px">' +
     '<button type="button" class="btn btn-sm" data-act="example">Example</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear">Reset</button>' +
-    '</div></div></div>' +
-    '<div class="calc-sticky"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
-    '<div class="card card-tight no-print"><div class="card-head"><h3>Save &amp; share</h3></div>' +
+    '</div></div>' +
+    '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
+    '<div class="calc-panel-results"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
+    '<div class="card card-tight no-print"><div class="card-head"><h3>Save & share</h3></div>' +
     '<div class="btn-row">' +
     '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-print">Print / PDF</button>' +
@@ -5315,7 +5703,9 @@ PS.calcPage = function (id, params) {
     '<textarea id="calcNotes" rows="2" maxlength="4000" placeholder="Assumptions, alternatives, decision basis…"></textarea></div>' +
     (handoffs ? '<h4 class="mb8" style="margin-top:12px">Send to another tool</h4><div class="btn-row tight">' + handoffs + '</div>' +
       '<p class="note mb0">Compatible fields carry across locally. Nothing leaves this browser.</p>' : '') +
-    '</div></div></div>' +
+    '</div></div>' +
+    '<button type="button" class="calc-sheet-trigger no-print" aria-label="Open calculator inputs" aria-expanded="false" hidden><span>&#9650;</span> Inputs</button>' +
+    '<div class="calc-sheet-backdrop no-print" hidden aria-hidden="true"></div>' +
     PS.calcGuidance(calc) +
     PS.relatedCard('calc', calc) +
     (calc.disclaimer ? PS.alert(calc.disclaimerKind || 'info', 'Note', PS.esc(calc.disclaimer)) : '') +
@@ -5379,6 +5769,53 @@ PS.calcPageInit = function (calc, params) {
     var draft = PS.store.get(PS.K.draft, {});
     if (draft && draft.notes && draft.calc === calc.id) notes.value = draft.notes;
   }
+
+  // Mobile bottom sheet for calculator inputs
+  PS.initCalcBottomSheet();
+};
+
+PS.initCalcBottomSheet = function () {
+  var trigger = PS.$('.calc-sheet-trigger');
+  var panel = PS.$('.calc-panel-inputs');
+  var backdrop = PS.$('.calc-sheet-backdrop');
+  if (!trigger || !panel || !backdrop) return;
+
+  function open() {
+    panel.classList.add('is-open');
+    backdrop.hidden = false;
+    requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.innerHTML = '<span>&#9660;</span> Close Inputs';
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    panel.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    setTimeout(function () { backdrop.hidden = true; }, 200);
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.innerHTML = '<span>&#9650;</span> Inputs';
+    document.body.style.overflow = '';
+  }
+  function toggle() { if (panel.classList.contains('is-open')) close(); else open(); }
+
+  trigger.addEventListener('click', toggle);
+  backdrop.addEventListener('click', close);
+
+  // Close on Escape
+  document.addEventListener('keydown', function onEsc(e) {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      close();
+    }
+  });
+
+  // Show trigger only on mobile
+  function checkMobile() {
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    trigger.hidden = !isMobile;
+    if (!isMobile) { panel.classList.remove('is-open'); backdrop.classList.remove('is-open'); backdrop.hidden = true; }
+  }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
 };
 PS.calcGuidance = function (calc) {
   var rows = [];
@@ -6441,6 +6878,7 @@ PS.boot = function () {
     PS.buildNav();
     PS.wireEvents();
     PS.updateNavCounts();
+    PS.bindGlobalKeys();
     PS.renderRoute();
     PS.pwa();
     if (!PS.storageOK) PS.audit('storage-unavailable', 'Browser storage is blocked; running in session-only mode');
@@ -6474,6 +6912,7 @@ PS.route('home', function () {
   return PS.homeWelcomeCard() +
     PS.homeDualHub() +
     PS.homeSmartResume() +
+    PS.homeQuickActions() +
     PS.homeThinkingPoint() +
     PS.disclaimer('policy');
 });
@@ -6692,6 +7131,28 @@ PS.homeThinkingPoint = function () {
     '<a class="btn btn-sm" href="#/calc/calc-tco">Open TCO Calculator</a>' +
     '<a class="btn btn-sm btn-ghost" href="#/sop/sop-procurement-lifecycle">View Lifecycle SOP</a>' +
     '</div></div>';
+};
+
+PS.homeQuickActions = function () {
+  var favs = PS.fav ? PS.fav.list() : [];
+  var recent = PS.recent ? PS.recent.list() : [];
+  var actions = [
+    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
+    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
+    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', icon: '☑️', desc: 'Verify compliance at every step' },
+    { id: 'new-template', label: 'Templates', href: '#/list/tpl', icon: '📝', desc: 'RFQ, RFP, contracts, justifications' },
+    { id: 'what-do', label: 'What should I do?', href: '#/what', icon: '🧭', desc: 'Guided routing from your problem' },
+    { id: 'academy', label: 'Academy', href: '#/academy', icon: '🎓', desc: 'Structured learning paths' }
+  ];
+
+  var html = '<div class="quick-actions no-print">';
+  actions.forEach(function (a) {
+    var isFav = favs.some(function (f) { return f.type === a.id.replace('new-', '').replace('what-do', 'what').replace('academy', 'academy'); });
+    html += '<a class="quick-action-btn" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
+      '<span class="qa-icon">' + a.icon + '</span>' + PS.esc(a.label) + '</a>';
+  });
+  html += '</div>';
+  return html;
 };
 
 /* ---------- knowledge concept pages (Section 10, 38, 61) ---------- */

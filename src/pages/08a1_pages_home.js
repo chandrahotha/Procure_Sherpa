@@ -15,6 +15,7 @@ PS.route('home', function () {
   return PS.homeWelcomeCard() +
     PS.homeDualHub() +
     PS.homeSmartResume() +
+    PS.homeQuickActions() +
     PS.homeThinkingPoint() +
     PS.disclaimer('policy');
 });

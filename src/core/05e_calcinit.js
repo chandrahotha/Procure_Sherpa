@@ -53,6 +53,53 @@ PS.calcPageInit = function (calc, params) {
     var draft = PS.store.get(PS.K.draft, {});
     if (draft && draft.notes && draft.calc === calc.id) notes.value = draft.notes;
   }
+
+  // Mobile bottom sheet for calculator inputs
+  PS.initCalcBottomSheet();
+};
+
+PS.initCalcBottomSheet = function () {
+  var trigger = PS.$('.calc-sheet-trigger');
+  var panel = PS.$('.calc-panel-inputs');
+  var backdrop = PS.$('.calc-sheet-backdrop');
+  if (!trigger || !panel || !backdrop) return;
+
+  function open() {
+    panel.classList.add('is-open');
+    backdrop.hidden = false;
+    requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.innerHTML = '<span>&#9660;</span> Close Inputs';
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    panel.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    setTimeout(function () { backdrop.hidden = true; }, 200);
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.innerHTML = '<span>&#9650;</span> Inputs';
+    document.body.style.overflow = '';
+  }
+  function toggle() { if (panel.classList.contains('is-open')) close(); else open(); }
+
+  trigger.addEventListener('click', toggle);
+  backdrop.addEventListener('click', close);
+
+  // Close on Escape
+  document.addEventListener('keydown', function onEsc(e) {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      close();
+    }
+  });
+
+  // Show trigger only on mobile
+  function checkMobile() {
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    trigger.hidden = !isMobile;
+    if (!isMobile) { panel.classList.remove('is-open'); backdrop.classList.remove('is-open'); backdrop.hidden = true; }
+  }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
 };
 PS.calcGuidance = function (calc) {
   var rows = [];

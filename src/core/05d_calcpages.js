@@ -13,7 +13,7 @@ PS.calcPage = function (id, params) {
     if (!t) return '';
     return '<button type="button" class="btn btn-sm" data-act="handoff" data-to="' + PS.esc(h) + '">Send to ' + PS.esc(t.title) + '</button>';
   }).join('');
-  var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
+var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="card card-tight">' +
     '<div class="card-head"><div><h1 style="margin-bottom:2px">' + PS.esc(calc.title) + '</h1>' +
     '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">' +
@@ -28,7 +28,7 @@ PS.calcPage = function (id, params) {
     (calc.tags ? '<div style="margin-top:10px">' + PS.tagsRow(calc) + '</div>' : '') +
     '</div>' +
     '<div class="calc-layout">' +
-    '<div class="card"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
+    '<div class="card calc-panel-inputs"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
     '<span class="note">Fields marked <span class="req">*</span> are required</span></div>' +
     '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off" onsubmit="return false;">' +
     PS.groupFields(calc) + '</form>' +
@@ -39,9 +39,10 @@ PS.calcPage = function (id, params) {
     '<div class="btn-row tight" style="margin-top:8px">' +
     '<button type="button" class="btn btn-sm" data-act="example">Example</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear">Reset</button>' +
-    '</div></div></div>' +
-    '<div class="calc-sticky"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
-    '<div class="card card-tight no-print"><div class="card-head"><h3>Save &amp; share</h3></div>' +
+    '</div></div>' +
+    '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
+    '<div class="calc-panel-results"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
+    '<div class="card card-tight no-print"><div class="card-head"><h3>Save & share</h3></div>' +
     '<div class="btn-row">' +
     '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-print">Print / PDF</button>' +
@@ -52,7 +53,9 @@ PS.calcPage = function (id, params) {
     '<textarea id="calcNotes" rows="2" maxlength="4000" placeholder="Assumptions, alternatives, decision basis…"></textarea></div>' +
     (handoffs ? '<h4 class="mb8" style="margin-top:12px">Send to another tool</h4><div class="btn-row tight">' + handoffs + '</div>' +
       '<p class="note mb0">Compatible fields carry across locally. Nothing leaves this browser.</p>' : '') +
-    '</div></div></div>' +
+    '</div></div>' +
+    '<button type="button" class="calc-sheet-trigger no-print" aria-label="Open calculator inputs" aria-expanded="false" hidden><span>&#9650;</span> Inputs</button>' +
+    '<div class="calc-sheet-backdrop no-print" hidden aria-hidden="true"></div>' +
     PS.calcGuidance(calc) +
     PS.relatedCard('calc', calc) +
     (calc.disclaimer ? PS.alert(calc.disclaimerKind || 'info', 'Note', PS.esc(calc.disclaimer)) : '') +

@@ -46,13 +46,16 @@ PS.runCalc = function (silent) {
   if (!calc) return;
   var values = PS.readCalcInputs();
   if (!PS.showCalcErrors(PS.validateCalc(calc, values))) return;
+  PS.setCalcLoading(true);
   var out;
   try { out = calc.run(values); }
   catch (e) {
     if (window.console && console.error) console.error(e);
     PS.toast('This calculation could not be completed with the values entered. Check that no divisor is zero.', 'danger');
+    PS.setCalcLoading(false);
     return;
   }
+  PS.setCalcLoading(false);
   if (!out) return;
   PS.calcState.values = values;
   PS.calcState.result = out;

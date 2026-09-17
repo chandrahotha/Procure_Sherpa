@@ -39,9 +39,13 @@ PS.renderCalcResult = function (calc, values, out) {
 };
 PS.renderTable = function (t) {
   var num = t.numCols || 0;
-  function cell(c, i) { return '<td' + (i >= (t.headers.length - num) ? ' class="num"' : '') + '>' + PS.esc(c) + '</td>'; }
+  var priorities = t.priorities || []; // 'high', 'medium', 'low'
+  function cell(c, i) { return '<td' + (i >= (t.headers.length - num) ? ' class="num"' : '') + (priorities[i] ? ' data-priority="' + priorities[i] + '"' : '') + '>' + PS.esc(c) + '</td>'; }
   return '<div class="table-wrap"><table>' + (t.caption ? '<caption>' + PS.esc(t.caption) + '</caption>' : '') +
-    '<thead><tr>' + t.headers.map(function (h) { return '<th>' + PS.esc(h) + '</th>'; }).join('') + '</tr></thead>' +
+    '<thead><tr>' + t.headers.map(function (h, i) {
+      var p = priorities[i] ? ' data-priority="' + priorities[i] + '"' : '';
+      return '<th' + p + '>' + PS.esc(h) + '</th>';
+    }).join('') + '</tr></thead>' +
     '<tbody>' + t.rows.map(function (r) {
       return '<tr' + (r.cls ? ' class="' + r.cls + '"' : '') + '>' + r.cells.map(cell).join('') + '</tr>';
     }).join('') + '</tbody>' +
