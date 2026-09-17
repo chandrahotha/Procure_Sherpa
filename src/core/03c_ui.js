@@ -41,6 +41,10 @@ PS.modal = function (opts) {
   if (first) { try { first.focus(); if (first.select && first.type !== 'checkbox') first.select(); } catch (e) { } }
   return { el: back, close: close };
 };
+PS.closeModal = function () {
+  var root = PS.$('#modalRoot');
+  if (root) root.innerHTML = '';
+};
 PS.confirm = function (o) {
   o = o || {};
   return PS.modal({
@@ -71,7 +75,7 @@ PS.withDisclaimer = function (kind) {
   var D = {
     policy: 'Approval thresholds and procurement requirements vary by organization. Configure Procure Sherpa in Settings to match your company policy before operational use.',
     tax: 'Tax treatment varies by jurisdiction and transaction type. Verify applicable tax rules before using results for accounting or compliance decisions.',
-    legal: 'Contract and legal guidance in this toolkit is general procurement information and is not a substitute for qualified legal advice.',
+    legal: 'Contract and legal guidance on this platform is general procurement information and is not a substitute for qualified legal advice.',
     finance: 'Financial calculations are decision-support estimates. Validate assumptions before committing funds.',
     data: 'Results depend entirely on the figures you enter. Procure Sherpa does not verify or benchmark supplier data.'
   };

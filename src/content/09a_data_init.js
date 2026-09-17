@@ -17,3 +17,4 @@ var PS_CALC = [];
 var PS_HELP = [];
 PS.MATURITY = [];
 PS.LIFECYCLE = [];
+PS.ACADEMY_FUNCTIONS = [];

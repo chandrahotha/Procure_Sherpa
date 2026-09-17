@@ -74,15 +74,15 @@ PS.disclaimer = function (kind) { return PS.withDisclaimer(kind); };
 PS.reportHead = function (title, subtitle) {
   var p = PS.prefs();
   return '<div class="report-head">' +
-    '<h1>' + PS.esc(PS.APP) + ' \u2014 ' + PS.esc(title) + '</h1>' +
+    '<h1>' + PS.esc(PS.APP) + ' : ' + PS.esc(title) + '</h1>' +
     '<div class="rh-meta">' + (p.orgName ? PS.esc(p.orgName) + ' \u00B7 ' : '') +
     PS.esc(subtitle || '') + ' \u00B7 Generated ' + PS.esc(PS.dateStr()) + ' ' + PS.esc(PS.timeStr()) + '</div></div>';
 };
 PS.reportFooter = function (note) {
   var p = PS.prefs();
   return '<div class="print-only"><p class="note">' + PS.esc(p.reportFooter || '') + '</p>' +
-    '<p class="note">Prepared with Procure Sherpa v' + PS.esc(PS.VERSION) + ' (offline toolkit). ' +
-    PS.esc(note || 'Decision-support output \u2014 validate assumptions before committing funds.') + '</p></div>';
+    '<p class="note">Prepared with Procure Sherpa. ' +
+    PS.esc(note || 'Decision-support output: validate assumptions before committing funds.') + '</p></div>';
 };
 PS.tagsRow = function (item) {
   var tags = (item && item.tags) || [];

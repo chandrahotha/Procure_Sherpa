@@ -33,7 +33,7 @@ PS.route('quickstart', function () {
     { t: '2. Understand the concept first', d: 'Each <a href="#/list/kb">knowledge page</a> answers what it is, why procurement cares, when it is used, the process, an example, the risks and the common mistakes.', i: 'Concept' },
     { t: '3. Follow the SOP', d: 'Open the <a href="#/list/sop">SOP</a> for the work you are doing. Purpose, scope, trigger, steps, decision points, controls, outputs, records and KPIs are on one page.', i: 'SOP' },
     { t: '4. Work the checklist', d: 'Every SOP has an embedded <a href="#/list/cl">checklist</a> you can also use standalone. Progress is saved in this browser.', i: 'Checklist' },
-    { t: '5. Quantify with a calculator', d: 'Use the <a href="#/list/calc">calculator toolkit</a> for quotes, landed cost, TCO, negotiation savings, escalation, payment terms, suppliers, budget, tax and FX. Every tool shows formula, assumptions and interpretation.', i: 'Calculator' },
+    { t: '5. Quantify with a calculator', d: 'Use the <a href="#/list/calc">procurement calculators</a> for quotes, landed cost, TCO, negotiation savings, escalation, payment terms, suppliers, budget, tax and FX. Every tool shows formula, assumptions and interpretation.', i: 'Calculator' },
     { t: '6. Take the decision deliberately', d: 'Use the <a href="#/list/dec">decision guides</a> to test your reasoning, and record the basis in the calculator notes or a <a href="#/list/tpl">template</a>.', i: 'Decision' },
     { t: '7. Document and report', d: 'Save the analysis, then Print / PDF the report. Reports include inputs, results, interpretation, assumptions, notes and methodology.', i: 'Report' },
     { t: '8. Back up before you rely on it', d: 'Open <a href="#/backup">Backup / Restore</a> regularly. Saved work lives only in this browser profile until you export it.', i: 'Workspace' }
@@ -55,7 +55,7 @@ PS.route('fav', function () {
   PS.pageTitle = 'Favorites';
   var favs = PS.fav.list();
   var html = '<div class="card"><h1>Favorites</h1>' +
-    '<p class="card-sub">Tools, SOPs, checklists, templates, concepts and decision guides you starred. Stored in this browser only.</p>' +
+    '<p class="card-sub">Pinned tools, SOPs, checklists, templates, concepts, and decision guides for rapid access.</p>' +
     (favs.length ? '<ul class="res-list">' + favs.map(function (f) {
       var o = f.type === 'gloss' ? PS.glossaryById(f.id) : PS.byId(f.type, f.id);
       return '<li>' + PS.badge(f.type) +
@@ -76,11 +76,11 @@ PS.route('recent', function () {
   var r = PS.recent.list();
   var html = '<div class="card"><div class="card-head"><h1>Recently used</h1><div class="spacer"></div>' +
     (r.length ? '<button type="button" class="btn btn-sm" data-act="recent-clear">Clear list</button>' : '') + '</div>' +
-    '<p class="card-sub">The last ' + r.length + ' pages you opened in this browser.</p>' +
+    '<p class="card-sub">The last ' + r.length + ' operational tools and learning modules accessed in your active session.</p>' +
     (r.length ? '<ul class="res-list">' + r.map(function (x) {
       return '<li>' + PS.badge(x.type) + '<span><a class="res-title" href="' + PS.routeFor(x.type, x.id) + '">' + PS.esc(x.title || x.id) + '</a>' +
         '<div class="res-desc">' + PS.esc(PS.dateTime(x.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<div class="empty">Nothing used yet in this browser.</div>') + '</div>';
+    }).join('') + '</ul>' : '<div class="empty">No recent activity recorded in this session.</div>') + '</div>';
   return html;
 });
 PS.route('list', function (arg, params) {

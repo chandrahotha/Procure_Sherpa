@@ -32,7 +32,7 @@ PS.route('dash', function () {
     '<div class="stat"><div class="s-lab">Supplier assessments</div><div class="s-val">' + supAssess + '</div></div>' +
     '<div class="stat"><div class="s-lab">Open checklists</div><div class="s-val">' + openCl.length + '</div></div>' +
     '<div class="stat"><div class="s-lab">Favorites</div><div class="s-val">' + PS.fav.list().length + '</div></div>' +
-    '<div class="stat"><div class="s-lab">Local storage used</div><div class="s-val">' + PS.group(kb / 1024, 0) + ' KB</div></div>' +
+    '<div class="stat"><div class="s-lab">Workspace Footprint</div><div class="s-val">' + PS.group(kb / 1024, 0) + ' KB</div></div>' +
     '<div class="stat"><div class="s-lab">Audit events kept</div><div class="s-val">' + PS.auditList().length + '</div></div>' +
     '</div>' +
     '<div class="btn-row no-print"><a class="btn btn-primary" href="#/saved">Open saved work</a>' +

@@ -67,7 +67,7 @@ const CALC_MAP = {
   'gst': 'calc-gst-tax', 'currency': 'calc-fx-currency', 'kpi-calculator': 'calc-kpi-calculator'
 };
 const T = {
-  calc: (x) => { const m = CALC_LEGACY.exec(x); return m ? CALC_MAP[m[1].toLowerCase()] : x; },
+  calc: (x) => { const m = CALC_LEGACY.exec(x); return m ? (CALC_MAP[m[2].toLowerCase()] || x) : x; },
   sop: (x) => x,
   cl: (x) => x,
   tpl: (x) => x,
@@ -75,8 +75,59 @@ const T = {
   dec: (x) => x,
   kb: (x) => x
 };
+const SOP_MAP = {
+  'sop-quote-comparison': 'sop-rfq', 'sop-bid-normalization': 'sop-rfq',
+  'sop-commercial-evaluation': 'sop-supplier-evaluation', 'sop-award-recommendation': 'sop-rfp',
+  'sop-negotiation-savings': 'sop-savings-calculation', 'sop-savings-validation': 'sop-savings-calculation',
+  'sop-price-escalation-review': 'sop-supplier-price-increase-review', 'sop-purchase-requisition': 'sop-procurement-intake',
+  'sop-purchase-order': 'sop-procurement-intake', 'sop-single-source': 'sop-procurement-intake',
+  'sop-procurement-exception': 'sop-emergency-procurement', 'sop-requirement-definition': 'sop-procurement-intake',
+  'sop-sourcing-strategy': 'sop-rfq', 'sop-supplier-identification': 'sop-supplier-evaluation',
+  'sop-rfi': 'sop-rfp', 'sop-competitive-bid': 'sop-rfq', 'sop-contract-award': 'sop-contract-review',
+  'sop-supplier-prequalification': 'sop-supplier-evaluation', 'sop-supplier-due-diligence': 'sop-supplier-evaluation',
+  'sop-supplier-segmentation': 'sop-supplier-performance-management', 'sop-supplier-corrective-action': 'sop-supplier-performance-management',
+  'sop-negotiation-execution': 'sop-negotiation-preparation', 'sop-contract-performance-review': 'sop-supplier-performance-management',
+  'sop-landed-cost': 'sop-supplier-price-increase-review', 'sop-contract-change-control': 'sop-contract-review',
+  'sop-compliance-review': 'sop-procurement-audit', 'sop-documentation': 'sop-procurement-audit',
+  'sop-supplier-exit': 'sop-contract-renewal', 'sop-supplier-qualification': 'sop-supplier-evaluation'
+};
+const DEC_MAP = {
+  'dec-unit-price-vs-tco': 'unit-or-tco', 'dec-unit-or-tco': 'unit-or-tco',
+  'dec-negotiate-or-accept': 'negotiate-or-accept', 'dec-accept-price-increase': 'accept-price-increase',
+  'dec-renew-vs-resource': 'renew-vs-resource', 'dec-approve-exception': 'approve-exception',
+  'dec-competitive-vs-single': 'competitive-vs-single', 'dec-make-or-buy': 'make-or-buy',
+  'dec-rfq-or-rfp': 'rfq-or-rfp', 'dec-rfi-or-rfq': 'rfi-or-rfq',
+  'dec-competitive-or-single': 'competitive-or-single', 'dec-framework-agreement': 'framework-agreement',
+  'dec-consolidate-suppliers': 'consolidate-suppliers', 'dec-re-source': 're-source',
+  'dec-supplier-concentration': 'supplier-concentration', 'dec-dual-source': 'dual-source',
+  'dec-supplier-financial-risk': 'supplier-financial-risk'
+};
+const KPI_MAP = {
+  'kpi-payment-terms': 'kpi-working-capital-impact', 'kpi-working-capital': 'kpi-working-capital-impact',
+  'kpi-supplier-performance': 'kpi-otif'
+};
+const KB_MAP = {
+  'kb-cost-drivers': 'cost-breakdown', 'kb-price-escalation': 'should-cost',
+  'kb-indexation': 'currency-fx', 'kb-delegation-of-authority': 'delegation-of-authority',
+  'kb-approval-matrix': 'delegation-of-authority'
+};
+const TPL_MAP = {
+  'tpl-price-increase-assessment': 'tpl-contract-change-request', 'tpl-single-source-justification': 'tpl-single-source',
+  'tpl-statement-of-work': 'tpl-contract-review-checklist'
+};
+const CL_MAP = {
+  'cl-negotiation-preparation': 'cl-negotiation', 'cl-price-increase-review': 'cl-contract-renewal',
+  'cl-supplier-qualification': 'cl-supplier-evaluation'
+};
+
 const norm = (ty, id) => {
-  if (ty === 'calc') { const m = CALC_LEGACY.exec(id); return m ? CALC_MAP[m[1].toLowerCase()] : id; }
+  if (ty === 'calc') { const m = CALC_LEGACY.exec(id); return m ? (CALC_MAP[m[2].toLowerCase()] || id) : id; }
+  if (ty === 'sop') { return SOP_MAP[id] || id; }
+  if (ty === 'dec') { return DEC_MAP[id] || (id.startsWith('dec-') ? id.slice(4) : id); }
+  if (ty === 'kpi') { return KPI_MAP[id] || id; }
+  if (ty === 'kb') { return KB_MAP[id] || (id.startsWith('kb-') ? id.slice(3) : id); }
+  if (ty === 'tpl') { return TPL_MAP[id] || id; }
+  if (ty === 'cl') { return CL_MAP[id] || id; }
   return id;
 };
 const broken = {};

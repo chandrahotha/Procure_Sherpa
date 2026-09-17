@@ -1,4 +1,4 @@
-/* ---------- calculator page shell (Section 36, 40, 67) — makeover: focused two-pane ---------- */
+/* ---------- calculator page shell (Section 36, 40, 67): makeover: focused two-pane ---------- */
 PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
 PS.calcPage = function (id, params) {
@@ -40,7 +40,7 @@ PS.calcPage = function (id, params) {
     '<button type="button" class="btn btn-sm" data-act="example">Example</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear">Reset</button>' +
     '</div></div></div>' +
-    '<div class="calc-sticky"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> — results, interpretation, formula and assumptions appear here.</div></div>' +
+    '<div class="calc-sticky"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
     '<div class="card card-tight no-print"><div class="card-head"><h3>Save &amp; share</h3></div>' +
     '<div class="btn-row">' +
     '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +

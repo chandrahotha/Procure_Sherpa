@@ -52,23 +52,39 @@ PS.wireEvents = function () {
   PS.on('#printBtn', 'click', function () { PS.acts.print(); });
   PS.on('#homeBtn', 'click', function () { PS.closeNav(); });
   PS.on('#favBtn', 'click', function () { PS.acts.fav(); });
+  PS.on('#userProfileBtn', 'click', function () { if (PS.user) PS.user.openModal(); });
   window.addEventListener('hashchange', function () { PS.renderRoute(); });
   window.addEventListener('beforeprint', function () {
     if (PS.calcState && PS.calcState.result && PS.$('#calcForm')) PS.runCalc(true);
   });
+  // Wire topbar search input to launch instant Command Palette
+  var topSearch = PS.$('#q');
+  if (topSearch) {
+    topSearch.addEventListener('focus', function (e) {
+      e.preventDefault();
+      topSearch.blur();
+      if (PS.cmdPalette) PS.cmdPalette.open();
+    });
+  }
+
   document.addEventListener('keydown', function (e) {
     var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      var box = PS.$('#searchQ') || PS.$('#q');
-      if (box) box.focus();
+      if (PS.cmdPalette) PS.cmdPalette.open();
       return;
     }
     if (e.key === '/' && tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
       e.preventDefault();
-      var box2 = PS.$('#searchQ') || PS.$('#q');
-      if (box2) box2.focus();
+      if (PS.cmdPalette) PS.cmdPalette.open();
+      return;
     }
-    if (e.key === 'Escape') PS.closeNav();
+    if (e.key === 'Escape') {
+      if (PS.cmdPalette && PS.cmdPalette.isOpen) {
+        PS.cmdPalette.close();
+      } else {
+        PS.closeNav();
+      }
+    }
   });
 };

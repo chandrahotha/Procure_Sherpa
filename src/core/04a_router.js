@@ -43,6 +43,7 @@ PS.link = function (type, id, label, cls) {
 PS.renderRoute = function () {
   var r = PS.parseHash();
   PS.routeMeta = r;
+  if (PS.syncNavForRoute) PS.syncNavForRoute(r);
   var fn = PS.routes[r.name] || PS.routes.notfound;
   var html = '';
   PS.pageInit = null;
@@ -75,7 +76,7 @@ PS.renderCrumb = function (r) {
   if (!el) return;
   var trail = PS.crumbFor ? PS.crumbFor(r) : null;
   if (!trail || !trail.length) { el.innerHTML = ''; return; }
-  var html = ['<a href="#/home">Home</a>'];
+  var html = ['<a href="#/home">Command Center</a>'];
   trail.forEach(function (t) {
     html.push('<span class="sep">\u203A</span>');
     html.push(t.href ? '<a href="' + t.href + '">' + PS.esc(t.label) + '</a>' : '<span>' + PS.esc(t.label) + '</span>');

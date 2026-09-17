@@ -1,7 +1,7 @@
 /* ==========================================================
    Section J: action handlers (Section 26, 32, 67, 73)
    ========================================================== */
-PS.acts = {};
+PS.acts = PS.acts || {};
 PS.acts.calc = function () { PS.runCalc(false); };
 PS.acts.example = function () { PS.loadCalcExample(); };
 PS.acts.clear = function () {
@@ -29,7 +29,7 @@ PS.acts['calc-save'] = function () {
     title: 'Save this analysis',
     label: 'Title for the saved calculation',
     value: calc.title + ' - ' + PS.dateStr(),
-    hint: 'Saved locally in this browser only. Use Backup / Restore to move it to another device.',
+    hint: 'Persisted to your active workspace session. Export via Backup & Data Management to archive.',
     okLabel: 'Save',
     onOk: function (title) {
       var rec = PS.saved.add({

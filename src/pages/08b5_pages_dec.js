@@ -42,7 +42,7 @@ PS.renderDecisionResult = function (dec, out, answers) {
   var top = out.top || {}, second = out.second || {};
   var html = '<div class="card"><div class="card-head"><h2>Likely approach</h2><div class="spacer"></div>' +
     '<span class="badge badge-type">Guidance</span></div>' +
-    '<div class="res-grid"><div class="res-item pp"><div class="r-lab">Recommended</div><div class="r-val" style="font-size:1.25rem">' + PS.esc(top.label || '\u2014') + '</div>' +
+    '<div class="res-grid"><div class="res-item pp"><div class="r-lab">Recommended</div><div class="r-val" style="font-size:1.25rem">' + PS.esc(top.label || '-') + '</div>' +
     '<div class="r-note">score ' + PS.esc(String(top.score || 0)) + '</div></div>' +
     (second ? '<div class="res-item"><div class="r-lab">Alternative</div><div class="r-val" style="font-size:1.05rem">' + PS.esc(second.label) + '</div>' +
       '<div class="r-note">score ' + PS.esc(String(second.score || 0)) + '</div></div>' : '') + '</div>' +
@@ -56,7 +56,7 @@ PS.renderDecisionResult = function (dec, out, answers) {
     '<p class="note">Scores are the sum of the weights attached to your yes/no answers. They express the strength of the pattern, not a threshold from any particular organization.</p>' +
     '<h3>Your answers</h3>' + '<ul>' + (dec.factors || []).map(function (f, i) {
       var a = answers['f' + i] || 'unsure';
-      return '<li>' + PS.esc(f.q) + ' &mdash; <strong>' + PS.esc(a === 'yes' ? 'yes' : (a === 'no' ? 'no' : 'not sure')) + '</strong>' +
+      return '<li>' + PS.esc(f.q) + ' :  <strong>' + PS.esc(a === 'yes' ? 'yes' : (a === 'no' ? 'no' : 'not sure')) + '</strong>' +
         (a === 'unsure' ? ' <span class="muted">(answers left as not sure carry no weight - revisit them)</span>' : '') + '</li>';
     }).join('') + '</ul>';
   if (dec.followThrough) html += '<h3>Next steps to document</h3>' + PS.ul(dec.followThrough);

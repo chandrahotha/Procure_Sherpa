@@ -40,10 +40,10 @@ PS.calcImpl.scorecard = function (v) {
     as: ['Scores are evidenced judgements, not measurements: garbage scores in, gospel numbers out.',
       'Weights express relative importance and are normalised automatically.'],
     w: w,
-    k: ['Supplier A ' + (isFinite(tA) ? PS.qty(tA) : '—') + ' vs supplier B ' + (isFinite(tB) ? PS.qty(tB) : '—') + ': ' + winner,
-      'Decisive criterion: ' + (swing ? swing.k : '—'),
+    k: ['Supplier A ' + (isFinite(tA) ? PS.qty(tA) : ': ') + ' vs supplier B ' + (isFinite(tB) ? PS.qty(tB) : ': ') + ': ' + winner,
+      'Decisive criterion: ' + (swing ? swing.k : ': '),
       'Evidence the swinging scores before award'],
-    s: winner + ' (' + (isFinite(tA) ? PS.qty(tA) : '—') + ' vs ' + (isFinite(tB) ? PS.qty(tB) : '—') + '), decided on ' + (swing ? swing.k : 'no criterion') + '.',
+    s: winner + ' (' + (isFinite(tA) ? PS.qty(tA) : ': ') + ' vs ' + (isFinite(tB) ? PS.qty(tB) : ': ') + '), decided on ' + (swing ? swing.k : 'no criterion') + '.',
     d: { totalA: tA, totalB: tB, margin: margin, winner: winner }
   });
 };

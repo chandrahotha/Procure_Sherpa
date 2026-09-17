@@ -7,7 +7,7 @@ PS.templateFieldHtml = function (f, value) {
     control = '<textarea id="' + id + '" data-tkey="' + PS.esc(f.k) + '" rows="' + (f.rows || 3) + '" maxlength="4000" placeholder="' + PS.esc(f.ph || '') + '">' + PS.esc(v) + '</textarea>';
   } else if (f.type === 'select') {
     control = '<select id="' + id + '" data-tkey="' + PS.esc(f.k) + '">' + ['', ].concat(f.options || []).map(function (o) {
-      return '<option value="' + PS.esc(o) + '"' + (String(v) === String(o) ? ' selected' : '') + '>' + PS.esc(o || '\u2014 select \u2014') + '</option>';
+      return '<option value="' + PS.esc(o) + '"' + (String(v) === String(o) ? ' selected' : '') + '>' + PS.esc(o || '-- select --') + '</option>';
     }).join('') + '</select>';
   } else if (f.type === 'date') {
     control = '<input type="date" id="' + id + '" data-tkey="' + PS.esc(f.k) + '" value="' + PS.esc(v) + '">';

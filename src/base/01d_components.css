@@ -1,4 +1,4 @@
-/* Section 4: SaaS components — buttons, cards, page heads, tiles, badges, alerts */
+/* Section 4: SaaS components :  buttons, cards, page heads, tiles, badges, alerts */
 .btn{
   display:inline-flex;align-items:center;gap:8px;justify-content:center;
   font:inherit;font-size:.85rem;font-weight:650;min-height:38px;padding:8px 16px;border-radius:10px;

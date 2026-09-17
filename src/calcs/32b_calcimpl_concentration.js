@@ -29,17 +29,17 @@ PS.calcImpl.concentration = function (v) {
     },
     a: '<p>The category scores <strong>' + (isFinite(hhi) ? PS.qty(hhi) : 'no') + ' HHI (' + band[0].toLowerCase() + ')</strong>' +
       (isFinite(top) ? ', with the largest supplier at ' + PS.pct(top) + ' of spend.' : '.') + '</p>' +
-      '<p>Concentration is leverage running the wrong way: the supplier can price it, and you cannot walk away without pain. The remedy is structural — qualify alternates, split awards, redesign specifications — not tougher talk with a supplier who knows you have nowhere to go.</p>',
+      '<p>Concentration is leverage running the wrong way: the supplier can price it, and you cannot walk away without pain. The remedy is structural :  qualify alternates, split awards, redesign specifications :  not tougher talk with a supplier who knows you have nowhere to go.</p>',
     f: ['Share-i = spend-i / total spend',
       'HHI = sum of squared percentage shares (0-10000)'],
     as: ['Only entered spend counts: missing suppliers understate the index.',
       'Bands are competition-economics thresholds reused as risk signals.',
       'Substitutability and switching cost sit outside this number.'],
     w: w,
-    k: ['HHI ' + (isFinite(hhi) ? PS.qty(hhi) : '—') + ': ' + band[0].toLowerCase(),
-      'Top supplier: ' + (isFinite(top) ? PS.pct(top) : '—') + ' of ' + PS.moneyR(total),
+    k: ['HHI ' + (isFinite(hhi) ? PS.qty(hhi) : ': ') + ': ' + band[0].toLowerCase(),
+      'Top supplier: ' + (isFinite(top) ? PS.pct(top) : ': ') + ' of ' + PS.moneyR(total),
       isFinite(hhi) && hhi > 2500 ? 'De-concentration plan required' : 'Monitor top-supplier growth'],
-    s: 'HHI ' + (isFinite(hhi) ? PS.qty(hhi) : '—') + ' (' + band[0].toLowerCase() + '); top supplier ' + (isFinite(top) ? PS.pct(top) : '—') + '.',
+    s: 'HHI ' + (isFinite(hhi) ? PS.qty(hhi) : ': ') + ' (' + band[0].toLowerCase() + '); top supplier ' + (isFinite(top) ? PS.pct(top) : ': ') + '.',
     d: { hhi: hhi, band: band[0], topShare: top, total: total }
   });
 };

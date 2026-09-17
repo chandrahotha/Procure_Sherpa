@@ -8,7 +8,7 @@ PS.LIST_META = {
   tpl: { title: 'Template Library', desc: 'Practical procurement documents with editable fields, notes, copy, print and local save.' },
   dec: { title: 'Decision Center', desc: 'Interactive decision guides that explain the reasoning behind a recommendation. They do not pretend to know your company policy - thresholds are configurable.' },
   kpi: { title: 'KPI Library', desc: 'Definitions, formulas, inputs, interpretation, limitations and common mistakes for procurement KPIs.' },
-  calc: { title: 'Calculator Toolkit', desc: 'Every calculator shows its inputs, validation, formula, assumptions, interpretation and a printable report.' }
+  calc: { title: 'Procurement Calculators', desc: 'Every calculator shows its inputs, validation, formula, assumptions, interpretation and a printable report.' }
 };
 PS.listFilterState = { q: '', sort: 'cat' };
 

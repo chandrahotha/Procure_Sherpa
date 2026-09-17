@@ -1,7 +1,11 @@
 /* ==========================================================
-   Section D: universal search (Section 9, 66)
+   Procure Sherpa v2.0 - Universal Search & Instant Command Palette
+   Features: Weighted relevance scoring, Academy indexing,
+             live keyboard navigation, instant route jump (Ctrl+K)
    ========================================================== */
+
 PS._index = null;
+
 function flat(v, out) {
   if (v === null || v === undefined) return out;
   if (typeof v === 'string' || typeof v === 'number') { out.push(String(v)); return out; }
@@ -9,54 +13,109 @@ function flat(v, out) {
   if (typeof v === 'object') { Object.keys(v).forEach(function (k) { flat(v[k], out); }); return out; }
   return out;
 }
+
 PS.buildIndex = function () {
   if (PS._index) return PS._index;
   var idx = [];
-  function add(type, item, extra) {
+
+  function add(type, item, extra, customRoute) {
     if (!item) return;
     var parts = flat(extra || [], []);
-    var title = item.title || item.term || '';
-    var desc = item.desc || item.summary || item.def || item.purpose || item.question || '';
+    var title = item.title || item.term || item.label || '';
+    var desc = item.desc || item.summary || item.def || item.purpose || item.question || item.tagline || '';
     idx.push({
-      type: type, id: item.id, title: title, cat: item.cat || item.group || '',
+      type: type,
+      id: item.id,
+      title: title,
+      cat: item.cat || item.group || item.module || '',
       tags: (item.tags || []).join(' '),
-      route: PS.routeFor(type, item.id),
+      route: customRoute || PS.routeFor(type, item.id),
       desc: PS.clean(desc, 220),
-      text: (title + ' ' + (item.cat || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
+      text: (title + ' ' + (item.cat || '') + ' ' + (item.module || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
     });
   }
+
+  // 1. Academy Learning Modules
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    add('academy', f, [
+      f.desc, f.tagline, f.what, f.lifecycleStage,
+      (f.why || []).join(' '),
+      (f.sopSteps || []).map(function (s) { return s.title + ' ' + s.desc; }).join(' '),
+      (f.terms || []).map(function (t) { return t.term; }).join(' ')
+    ], '#/academy/' + encodeURIComponent(f.id));
+  });
+
+  // 2. Operational Knowledge Base
   (PS.data.kb || []).forEach(function (x) {
     add('kb', x, [x.def, x.why, x.when, x.how, x.ex, x.risks, x.mistakes]);
   });
+
+  // 3. Digital Standard Operating Procedures
   (PS.data.sop || []).forEach(function (x) {
     add('sop', x, [x.purpose, x.scope, x.trigger, x.inputs, (x.steps || []).map(function (s) { return s.s + ' ' + s.d; }), x.outputs, x.records, x.control]);
   });
+
+  // 4. Compliance Checklists
   (PS.data.cl || []).forEach(function (x) {
     add('cl', x, [(x.sections || []).map(function (s) { return s.g + ' ' + (s.items || []).join(' '); })]);
   });
+
+  // 5. Work Templates
   (PS.data.tpl || []).forEach(function (x) {
     add('tpl', x, [x.purpose, (x.fields || []).map(function (f) { return f.label + ' ' + (f.hint || ''); }), x.prompts]);
   });
+
+  // 6. Decision Matrices
   (PS.data.dec || []).forEach(function (x) {
     add('dec', x, [x.question, (x.factors || []).map(function (f) { return f.q + ' ' + (f.hint || ''); }), x.explain]);
   });
+
+  // 7. Key Performance Indicators
   (PS.data.kpi || []).forEach(function (x) {
     add('kpi', x, [x.def, x.formula, x.inputs, x.interp, x.limits, x.mistakes]);
   });
+
+  // 8. Procurement Glossary
   (PS.data.gloss || []).forEach(function (x) {
     add('gloss', x, [x.def, x.full, x.term]);
   });
+
+  // 9. Guided Scenarios
   (PS.data.scen || []).forEach(function (x) {
     add('scen', x, [x.problem, x.summary, (x.steps || []).map(function (s) { return s.label + ' ' + (s.note || ''); })]);
   });
+
+  // 10. Commercial Calculators
   (PS.data.calc || []).forEach(function (x) {
     add('calc', x, [x.purpose, x.context, (x.fields || []).map(function (f) { return f.label + ' ' + (f.tip || ''); })]);
   });
+
+  // 11. System Help Topics
   (PS.data.help || []).forEach(function (x) { add('help', x, [x.body]); });
+
+  // 12. Core Platform Gateways & Direct Commands
+  var coreCommands = [
+    { id: 'cmd-academy', title: 'Procurement Academy Hub', cat: 'Learning Platform', desc: 'Browse all 16 strategic procurement competency modules.', route: '#/academy', tags: ['learning', 'course', 'curriculum'] },
+    { id: 'cmd-ops-hub', title: 'Operational Practice Hub', cat: 'Operations', desc: 'Access end-to-end execution tools: SOPs, calculators, checklists, and templates.', route: '#/operations', tags: ['tools', 'gateway', 'daily'] },
+    { id: 'cmd-transcript', title: 'Academy Progress & Transcript', cat: 'Learning Platform', desc: 'View complete module completion record and assessment scores.', route: '#/academy-progress', tags: ['grades', 'status', 'badges'] },
+    { id: 'cmd-cert', title: 'Verified Completion Certificate', cat: 'Certification', desc: 'Generate audit-verified completion credential with tamper-evident checksum.', route: '#/certificate', tags: ['diploma', 'audit', 'cips', 'ism'] },
+    { id: 'cmd-dash-savings', title: 'Savings & Spend Dashboard', cat: 'Commercial Controls', desc: 'Portfolio view of realized savings, cost avoidance, and working capital.', route: '#/dash-savings', tags: ['finance', 'controller', 'benefits'] },
+    { id: 'cmd-maturity', title: 'Procurement Maturity Assessment', cat: 'Governance', desc: 'Audit and score your organization commercial sourcing maturity.', route: '#/maturity', tags: ['audit', 'benchmark', 'strategy'] },
+    { id: 'cmd-backup', title: 'Backup & Restore Workspace', cat: 'System Data', desc: 'Export or import your offline local data, saved calculations, and profile.', route: '#/backup', tags: ['export', 'json', 'privacy'] },
+    { id: 'cmd-settings', title: 'System Preferences & Settings', cat: 'System Data', desc: 'Configure default currency, company name, and interface theme.', route: '#/settings', tags: ['config', 'theme', 'dark'] }
+  ];
+  coreCommands.forEach(function (c) {
+    add('command', c, [c.desc, c.tags.join(' ')], c.route);
+  });
+
   PS._index = idx;
   return idx;
 };
-PS.invalidateIndex = function () { PS._index = null; };
+
+PS.invalidateIndex = function () {
+  PS._index = null;
+};
+
 PS.search = function (q, opts) {
   opts = opts || {};
   var idx = PS.buildIndex();
@@ -64,31 +123,53 @@ PS.search = function (q, opts) {
   if (!raw) return { query: '', results: [], total: 0 };
   var tokens = raw.split(/[\s,;]+/).filter(function (t) { return t.length > 0; });
   var out = [];
+
   idx.forEach(function (rec) {
-    if (opts.type && rec.type !== opts.type) return;
-    var score = 0, title = rec.title.toLowerCase(), allHit = true;
+    if (opts.type && opts.type !== 'all') {
+      if (opts.type === 'learning' && rec.type !== 'academy') return;
+      if (opts.type === 'operations' && (rec.type === 'academy' || rec.type === 'command')) return;
+      if (opts.type !== 'learning' && opts.type !== 'operations' && rec.type !== opts.type) return;
+    }
+
+    var score = 0;
+    var title = rec.title.toLowerCase();
+    var allHit = true;
+
     tokens.forEach(function (t) {
       var hit = 0;
-      if (title === t) hit = 120;
-      else if (title.indexOf(t) === 0) hit = 85;
-      else if (title.indexOf(t) > 0) hit = 65;
-      else if (rec.tags.indexOf(t) >= 0) hit = 48;
-      else if (rec.cat.toLowerCase().indexOf(t) >= 0) hit = 34;
-      else if (rec.text.indexOf(t) >= 0) hit = 22;
-      else if (t.length > 4 && rec.text.indexOf(t.slice(0, Math.max(4, t.length - 2))) >= 0) hit = 12;
+      if (title === t) hit = 160;
+      else if (title.indexOf(t) === 0) hit = 100;
+      else if (title.indexOf(' ' + t) >= 0) hit = 75;
+      else if (title.indexOf(t) > 0) hit = 55;
+      else if (rec.type === t) hit = 50;
+      else if (rec.tags.indexOf(t) >= 0) hit = 42;
+      else if (rec.cat.toLowerCase().indexOf(t) >= 0) hit = 32;
+      else if (rec.text.indexOf(t) >= 0) hit = 18;
+      else if (t.length > 4 && rec.text.indexOf(t.slice(0, Math.max(4, t.length - 2))) >= 0) hit = 10;
+
       if (!hit) allHit = false;
       score += hit;
     });
+
     if (!allHit) return;
+
+    // Small boost for Academy modules and core commands when relevant
+    if (rec.type === 'academy') score += 12;
+    if (rec.type === 'command') score += 8;
+
     if (score > 0) out.push({ rec: rec, score: score });
   });
+
   out.sort(function (a, b) {
     if (b.score !== a.score) return b.score - a.score;
     return a.rec.title.localeCompare(b.rec.title);
   });
-  var results = out.slice(0, opts.limit || 60).map(function (o) { return o.rec; });
+
+  var limit = opts.limit || 60;
+  var results = out.slice(0, limit).map(function (o) { return o.rec; });
   return { query: PS.clean(q, 120), results: results, total: out.length };
 };
+
 PS.highlight = function (text, q) {
   var safe = PS.esc(text);
   var tokens = PS.clean(q, 120).toLowerCase().split(/\s+/).filter(function (t) { return t.length > 1; });
@@ -100,5 +181,268 @@ PS.highlight = function (text, q) {
   });
   return safe;
 };
-PS.suggestTerms = ['price increase', 'RFQ', 'RFP', 'TCO', 'payment terms', 'supplier risk',
-  'savings', 'renewal', 'single source', 'negotiation', 'landed cost', 'HHI', 'exception', 'audit', 'KPI'];
+
+PS.suggestTerms = [
+  'price increase', 'RFQ', 'RFP', 'TCO', 'payment terms', 'supplier risk',
+  'savings', 'renewal', 'single source', 'negotiation', 'landed cost',
+  'three-way matching', 'DOA controls', 'HHI', 'audit', 'KPI'
+];
+
+/* ==========================================================
+   Spotlight Command Palette (Ctrl+K)
+   ========================================================== */
+PS.cmdPalette = {
+  isOpen: false,
+  activeIdx: 0,
+  currentFilter: 'all',
+  lastQuery: '',
+
+  typeLabels: {
+    'academy': 'Academy Module',
+    'sop': 'Standard Operating Procedure',
+    'calc': 'Calculator',
+    'cl': 'Checklist',
+    'tpl': 'Work Template',
+    'dec': 'Decision Matrix',
+    'kpi': 'Procurement KPI',
+    'kb': 'Knowledge Guide',
+    'gloss': 'Glossary Term',
+    'scen': 'Scenario Walkthrough',
+    'command': 'Platform Command'
+  },
+
+  open: function (initialQuery, filter) {
+    var self = this;
+    self.isOpen = true;
+    self.activeIdx = 0;
+    self.currentFilter = filter || 'all';
+    self.ensureDom();
+
+    var modal = document.getElementById('cmdPaletteModal');
+    var input = document.getElementById('cmdPaletteInput');
+    if (modal) modal.removeAttribute('hidden');
+    document.body.classList.add('modal-open');
+
+    if (input) {
+      if (initialQuery !== undefined) input.value = initialQuery;
+      input.focus();
+      input.select();
+    }
+
+    self.renderResults();
+  },
+
+  close: function () {
+    var self = this;
+    self.isOpen = false;
+    var modal = document.getElementById('cmdPaletteModal');
+    if (modal) modal.setAttribute('hidden', '');
+    document.body.classList.remove('modal-open');
+  },
+
+  ensureDom: function () {
+    var self = this;
+    if (document.getElementById('cmdPaletteModal')) return;
+
+    var el = document.createElement('div');
+    el.id = 'cmdPaletteModal';
+    el.className = 'cmd-palette-backdrop';
+    el.setAttribute('hidden', '');
+
+    el.innerHTML = '<div class="cmd-palette-container" role="dialog" aria-modal="true" aria-label="Command Palette">' +
+      '<div class="cmd-palette-header">' +
+      '<div class="cmd-palette-input-wrap">' +
+      '<span class="cmd-palette-search-icon" aria-hidden="true">&#128269;</span>' +
+      '<input type="search" id="cmdPaletteInput" class="cmd-palette-input" ' +
+      'placeholder="Search SOPs, tools, academy, calculators, or jump to route..." autocomplete="off" spellcheck="false">' +
+      '<button type="button" class="cmd-palette-close-btn" id="cmdPaletteCloseBtn" aria-label="Close">&#10005;</button>' +
+      '</div>' +
+      '<div class="cmd-palette-filter-row" id="cmdPaletteFilters">' +
+      '<button type="button" class="cmd-filter-chip is-active" data-filter="all">All</button>' +
+      '<button type="button" class="cmd-filter-chip" data-filter="academy">Academy</button>' +
+      '<button type="button" class="cmd-filter-chip" data-filter="sop">SOPs</button>' +
+      '<button type="button" class="cmd-filter-chip" data-filter="calc">Calculators</button>' +
+      '<button type="button" class="cmd-filter-chip" data-filter="cl">Checklists</button>' +
+      '<button type="button" class="cmd-filter-chip" data-filter="tpl">Templates</button>' +
+      '</div>' +
+      '</div>' +
+      '<div class="cmd-palette-body" id="cmdPaletteResultsList">' +
+      '</div>' +
+      '<div class="cmd-palette-footer">' +
+      '<span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> Navigate</span>' +
+      '<span><kbd>&crarr;</kbd> Open</span>' +
+      '<span><kbd>ESC</kbd> Close</span>' +
+      '</div>' +
+      '</div>';
+
+    document.body.appendChild(el);
+
+    // Wire events
+    el.addEventListener('click', function (e) {
+      if (e.target === el) self.close();
+    });
+
+    var closeBtn = document.getElementById('cmdPaletteCloseBtn');
+    if (closeBtn) closeBtn.addEventListener('click', function () { self.close(); });
+
+    var input = document.getElementById('cmdPaletteInput');
+    if (input) {
+      input.addEventListener('input', function () {
+        self.activeIdx = 0;
+        self.renderResults();
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          self.moveActive(1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          self.moveActive(-1);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          self.executeActive();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          self.close();
+        }
+      });
+    }
+
+    var filterRow = document.getElementById('cmdPaletteFilters');
+    if (filterRow) {
+      filterRow.addEventListener('click', function (e) {
+        var btn = e.target.closest('.cmd-filter-chip');
+        if (!btn) return;
+        var f = btn.dataset.filter;
+        self.currentFilter = f;
+        var chips = filterRow.querySelectorAll('.cmd-filter-chip');
+        chips.forEach(function (c) { c.classList.toggle('is-active', c === btn); });
+        self.activeIdx = 0;
+        self.renderResults();
+      });
+    }
+  },
+
+  renderResults: function () {
+    var self = this;
+    var input = document.getElementById('cmdPaletteInput');
+    var list = document.getElementById('cmdPaletteResultsList');
+    if (!list) return;
+
+    var q = input ? input.value.trim() : '';
+    var searchOpts = {
+      type: self.currentFilter,
+      limit: 24
+    };
+
+    var res;
+    if (!q) {
+      // Default: show recommended starting points and top commands
+      var idx = PS.buildIndex();
+      var defaultList = idx.filter(function (x) {
+        if (self.currentFilter && self.currentFilter !== 'all') {
+          return x.type === self.currentFilter;
+        }
+        return x.type === 'command' || x.type === 'academy';
+      }).slice(0, 16);
+      res = { query: '', results: defaultList, total: defaultList.length };
+    } else {
+      res = PS.search(q, searchOpts);
+    }
+
+    self.lastResults = res.results || [];
+    if (!self.lastResults.length) {
+      list.innerHTML = '<div class="cmd-empty-state">' +
+        '<div class="cmd-empty-icon">&#128269;</div>' +
+        '<div class="cmd-empty-title">No matching procurement items found</div>' +
+        '<div class="cmd-empty-desc">Try searching for concepts like <em>price increase</em>, <em>TCO</em>, <em>RFQ</em>, or <em>supplier evaluation</em>.</div>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    self.lastResults.forEach(function (item, idx) {
+      var isSel = idx === self.activeIdx;
+      var typeName = self.typeLabels[item.type] || item.type.toUpperCase();
+      var titleHtml = q ? PS.highlight(item.title, q) : PS.esc(item.title);
+      var descHtml = PS.esc(item.desc || '');
+
+      html += '<div class="cmd-item ' + (isSel ? 'is-selected' : '') + '" data-idx="' + idx + '" data-route="' + PS.escAttr(item.route) + '">' +
+        '<div class="cmd-item-main">' +
+        '<div class="cmd-item-head">' +
+        '<span class="cmd-type-badge cmd-type-' + PS.esc(item.type) + '">' + PS.esc(typeName) + '</span>' +
+        '<span class="cmd-item-title">' + titleHtml + '</span>' +
+        '</div>' +
+        (descHtml ? '<div class="cmd-item-desc">' + descHtml + '</div>' : '') +
+        '</div>' +
+        '<div class="cmd-item-meta">' +
+        (item.cat ? '<span class="cmd-cat-tag">' + PS.esc(item.cat) + '</span>' : '') +
+        '<span class="cmd-enter-hint">&crarr;</span>' +
+        '</div>' +
+        '</div>';
+    });
+
+    list.innerHTML = html;
+
+    // Add click listeners to items
+    var itemEls = list.querySelectorAll('.cmd-item');
+    itemEls.forEach(function (el) {
+      el.addEventListener('click', function () {
+        var route = el.dataset.route;
+        if (route) {
+          self.close();
+          window.location.hash = route;
+        }
+      });
+      el.addEventListener('mouseenter', function () {
+        var idx = parseInt(el.dataset.idx, 10);
+        if (!isNaN(idx)) {
+          self.activeIdx = idx;
+          itemEls.forEach(function (x, i) { x.classList.toggle('is-selected', i === idx); });
+        }
+      });
+    });
+
+    self.scrollActiveIntoView();
+  },
+
+  moveActive: function (delta) {
+    var self = this;
+    if (!self.lastResults || !self.lastResults.length) return;
+    self.activeIdx = (self.activeIdx + delta + self.lastResults.length) % self.lastResults.length;
+    var list = document.getElementById('cmdPaletteResultsList');
+    if (!list) return;
+    var itemEls = list.querySelectorAll('.cmd-item');
+    itemEls.forEach(function (el, i) {
+      el.classList.toggle('is-selected', i === self.activeIdx);
+    });
+    self.scrollActiveIntoView();
+  },
+
+  scrollActiveIntoView: function () {
+    var self = this;
+    var list = document.getElementById('cmdPaletteResultsList');
+    if (!list) return;
+    var activeEl = list.querySelector('.cmd-item.is-selected');
+    if (activeEl) {
+      var listRect = list.getBoundingClientRect();
+      var activeRect = activeEl.getBoundingClientRect();
+      if (activeRect.bottom > listRect.bottom) {
+        list.scrollTop += (activeRect.bottom - listRect.bottom);
+      } else if (activeRect.top < listRect.top) {
+        list.scrollTop -= (listRect.top - activeRect.top);
+      }
+    }
+  },
+
+  executeActive: function () {
+    var self = this;
+    if (!self.lastResults || !self.lastResults.length) return;
+    var item = self.lastResults[self.activeIdx];
+    if (item && item.route) {
+      self.close();
+      window.location.hash = item.route;
+    }
+  }
+};

@@ -38,7 +38,7 @@ PS.glossLinks = function (g) {
       if (o) out.push('<a class="chip" href="' + PS.routeFor(type, id) + '">' + PS.esc(o.title) + '</a>');
     });
   });
-  return out.length ? out.join(' ') : '<span class="muted">&mdash;</span>';
+  return out.length ? out.join(' ') : '<span class="muted">: </span>';
 };
 PS.route('glossary', function (arg, params) {
   PS.pageTitle = 'Procurement Glossary';

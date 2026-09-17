@@ -33,7 +33,7 @@ PS.calcImpl.budgetActual = function (v) {
       ],
       footer: ['Headroom / overhang', isFinite(forecastVar) ? PS.moneyR(-forecastVar) : '\u2014', status[0]]
     },
-    a: '<p>After ' + v.monthsElapsed + ' months, spend is <strong>' + (variance >= 0 ? '' : '') + PS.moneyR(Math.abs(variance)) + ' ' + (variance >= 0 ? 'over' : 'under') + ' pro-rata (' + (isFinite(varPct) ? PS.pct(Math.abs(varPct)) : '—') + ')</strong>, and the run-rate forecasts <strong>' + PS.moneyR(forecast) + '</strong> against a ' + PS.moneyR(v.annualBudget) + ' budget: status <strong>' + (status[0] || 'unknown') + '</strong>.</p>' +
+    a: '<p>After ' + v.monthsElapsed + ' months, spend is <strong>' + (variance >= 0 ? '' : '') + PS.moneyR(Math.abs(variance)) + ' ' + (variance >= 0 ? 'over' : 'under') + ' pro-rata (' + (isFinite(varPct) ? PS.pct(Math.abs(varPct)) : ': ') + ')</strong>, and the run-rate forecasts <strong>' + PS.moneyR(forecast) + '</strong> against a ' + PS.moneyR(v.annualBudget) + ' budget: status <strong>' + (status[0] || 'unknown') + '</strong>.</p>' +
       '<p>Before reacting, split the variance into price, volume and phasing. Phasing reverses by itself, volume needs a demand conversation, and only price is procurement performance. Acting on the total without the split punishes the wrong cause.</p>',
     f: ['Expected to date = budget x months elapsed / 12',
       'Variance = actual - expected; variance % = variance / expected',
@@ -42,8 +42,8 @@ PS.calcImpl.budgetActual = function (v) {
       'The forecast extends today run-rate; known step-changes are not modelled.',
       'Status bands are early-warning defaults, not policy.'],
     w: w,
-    k: ['To date: ' + PS.moneyR(v.actualToDate) + ' vs ' + PS.moneyR(expected) + ' expected (' + (isFinite(varPct) ? (varPct >= 0 ? '+' : '') + PS.pct(varPct) : '—') + ')',
-      'Forecast outturn: ' + PS.moneyR(forecast) + ' — ' + (status[0] || 'unknown').toLowerCase(),
+    k: ['To date: ' + PS.moneyR(v.actualToDate) + ' vs ' + PS.moneyR(expected) + ' expected (' + (isFinite(varPct) ? (varPct >= 0 ? '+' : '') + PS.pct(varPct) : ': ') + ')',
+      'Forecast outturn: ' + PS.moneyR(forecast) + ' :  ' + (status[0] || 'unknown').toLowerCase(),
       'Split variance into price, volume and phasing before acting'],
     s: 'Spend is ' + PS.moneyR(Math.abs(variance)) + ' ' + (variance >= 0 ? 'over' : 'under') + ' pro-rata; run-rate forecasts ' + PS.moneyR(forecast) + ' (' + (status[0] || 'unknown').toLowerCase() + ').',
     d: { variance: variance, varPct: varPct, forecast: forecast, forecastVar: forecastVar, status: status[0] }

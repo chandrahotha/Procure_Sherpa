@@ -32,7 +32,7 @@ PS.calcImpl.savingsAnalysis = function (v) {
       ],
       footer: ['Net annualised', PS.moneyR(netAnn)]
     },
-    a: '<p>The deal saves <strong>' + PS.moneyR(gross) + ' a year (' + (isFinite(grossPct) ? PS.pct(grossPct) : '—') + ')</strong>, worth <strong>' + PS.moneyR(net) + ' net over ' + v.contractMonths + ' months</strong> after ' + PS.moneyR(oneOffs) + ' of one-off costs, paying back in ' + (isFinite(payback) ? PS.qty(payback) + ' months' : 'an uncomputable period') + '.</p>' +
+    a: '<p>The deal saves <strong>' + PS.moneyR(gross) + ' a year (' + (isFinite(grossPct) ? PS.pct(grossPct) : ': ') + ')</strong>, worth <strong>' + PS.moneyR(net) + ' net over ' + v.contractMonths + ' months</strong> after ' + PS.moneyR(oneOffs) + ' of one-off costs, paying back in ' + (isFinite(payback) ? PS.qty(payback) + ' months' : 'an uncomputable period') + '.</p>' +
       '<p>Report the net annualised figure (' + PS.moneyR(netAnn) + '), never the gross, and keep the baseline record attached: finance signs savings against baselines, not against enthusiasm. Track realisation in actuals, because reported savings that never land destroy the next business case.</p>',
     f: ['Gross annual = baseline annual - new annual',
       'Term gross = gross annual x years; net = term gross - one-offs',
@@ -41,10 +41,10 @@ PS.calcImpl.savingsAnalysis = function (v) {
       'One-offs are spread for annualisation but hit cash in year one.',
       'Flat volumes across the term are assumed.'],
     w: w,
-    k: ['Gross: ' + PS.moneyR(gross) + ' a year (' + (isFinite(grossPct) ? PS.pct(grossPct) : '—') + ')',
+    k: ['Gross: ' + PS.moneyR(gross) + ' a year (' + (isFinite(grossPct) ? PS.pct(grossPct) : ': ') + ')',
       'Net over term: ' + PS.moneyR(net) + ' (' + PS.moneyR(netAnn) + ' annualised)',
-      'Payback: ' + (isFinite(payback) ? PS.qty(payback) + ' months' : '—') + ' — report net, track in actuals'],
-    s: 'Net saving ' + PS.moneyR(net) + ' over ' + v.contractMonths + ' months (' + PS.moneyR(netAnn) + ' annualised), payback ' + (isFinite(payback) ? PS.qty(payback) + ' months' : '—') + '.',
+      'Payback: ' + (isFinite(payback) ? PS.qty(payback) + ' months' : ': ') + ' :  report net, track in actuals'],
+    s: 'Net saving ' + PS.moneyR(net) + ' over ' + v.contractMonths + ' months (' + PS.moneyR(netAnn) + ' annualised), payback ' + (isFinite(payback) ? PS.qty(payback) + ' months' : ': ') + '.',
     d: { gross: gross, grossPct: grossPct, net: net, netAnn: netAnn, payback: payback }
   });
 };

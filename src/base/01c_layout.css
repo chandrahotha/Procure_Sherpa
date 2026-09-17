@@ -1,5 +1,58 @@
-/* Section 3: SaaS app shell — sidebar, command topbar, content frame */
 .app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
+.app.has-no-sidebar{grid-template-columns:1fr}
+.app.has-no-sidebar .sidebar,.app.has-no-sidebar #scrim{display:none!important}
+.app.has-no-sidebar .menu-btn{display:none!important}
+.app.has-no-sidebar .main{max-width:1240px;width:100%;margin:0 auto}
+
+/* Sidebar Hub Switcher */
+.sidebar-hub-nav{padding:0 14px 10px}
+.hub-nav-pill-row{display:flex;gap:5px;background:var(--sunken);padding:4px;border-radius:var(--r-sm);border:1px solid var(--border)}
+.hub-nav-pill{
+  flex:1;text-align:center;font-size:.7rem;font-weight:600;padding:5px 6px;border-radius:6px;
+  color:var(--dim);text-decoration:none;background:var(--panel);border:1px solid var(--border);
+  transition:background .12s,color .12s,border-color .12s;white-space:nowrap;display:inline-flex;
+  align-items:center;justify-content:center;gap:4px;
+}
+.hub-nav-pill:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-2);text-decoration:none}
+.hub-nav-pill.is-active{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+
+/* Sidebar Footer Account & Status */
+.sidebar-foot-account{
+  display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--panel-2);
+  border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;margin-bottom:8px;
+  transition:background .12s,border-color .12s;
+}
+.sidebar-foot-account:hover{background:var(--sunken);border-color:var(--border-2)}
+.sidebar-foot-avatar{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  color:#fff;font-size:.72rem;font-weight:700;flex:0 0 28px;
+}
+.sidebar-foot-meta{flex:1;min-width:0}
+.sidebar-foot-name{font-size:.78rem;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-sub{font-size:.68rem;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Nav checkmark for completed Academy functions */
+.nav-status-check{margin-left:auto;font-size:.75rem;font-weight:800;color:var(--ok);padding:0 4px}
+
+/* Section: Visual Data Analytics Charts */
+.chart-container{
+  background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:18px 20px;margin:16px 0;box-shadow:var(--sh);
+}
+.chart-title{
+  font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.chart-badge{
+  font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+}
+.chart-svg-wrap{width:100%;overflow-x:auto;padding-bottom:4px}
+.svg-responsive{width:100%;height:auto;max-height:420px;display:block}
+.chart-empty{padding:28px;text-align:center;color:var(--mute);font-size:.85rem}
+.kraljic-node{cursor:pointer;transition:transform .12s}
+.kraljic-node:hover{transform:scale(1.08)}
+
 .sidebar{
   background:var(--panel);border-right:1px solid var(--border);
   display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40;

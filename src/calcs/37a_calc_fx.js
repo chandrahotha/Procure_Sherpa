@@ -1,7 +1,7 @@
 /* ============ Calc: Currency / FX ============ */
 PS_CALC.push({
   id: 'calc-fx-currency', title: 'Currency / FX', cat: 'Tax & FX Tools', tags: ['fx', 'currency', 'exchange', 'spread', 'conversion'],
-  purpose: 'Convert a foreign-currency amount at your real rate — market rate less the bank spread, less fixed fees — so the effective rate, not the quoted rate, drives the comparison.',
+  purpose: 'Convert a foreign-currency amount at your real rate :  market rate less the bank spread, less fixed fees :  so the effective rate, not the quoted rate, drives the comparison.',
   desc: 'Conversion with spread and fee stripped out into an effective rate.',
   disclaimerKind: 'finance',
   assumptions: ['The rate entered is your dealt or quoted rate for the value date, not a mid-market reference.',

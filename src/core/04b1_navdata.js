@@ -1,98 +1,80 @@
 /* ==========================================================
    Section F: navigation architecture (Section 7, 48)
+   Clean 4-tier segregation:
+   1. Portal & Navigation
+   2. 🎓 Procurement Academy (Learning Hub)
+   3. 💼 Procurement Operations Hub (Execution Hub)
+   4. User Workspace & Settings
    ========================================================== */
-PS.NAV = [
-  { sec: 'Home', icon: '⌂', items: [
-    { label: 'Home', href: '#/home' },
-    { label: 'What Should I Do?', href: '#/what' },
-    { label: 'Quick Start', href: '#/quickstart' },
-    { label: 'Search', href: '#/search' }
+
+PS.NAV_ACADEMY = [
+  { sec: 'Academy Overview', icon: '🎓', items: [
+    { label: 'Academy Curriculum', href: '#/academy' },
+    { label: 'My Progress & Badges', href: '#/academy-progress' },
+    { label: 'Certificate of Mastery', href: '#/certificate' }
   ] },
-  { sec: 'Procurement Knowledge', icon: '▤', items: [
-    { label: 'Knowledge Hub', href: '#/list/kb' },
-    { label: 'Procurement Fundamentals', href: '#/list/kb/Fundamentals' },
-    { label: 'Procurement Lifecycle', href: '#/lifecycle' },
-    { label: 'Sourcing', href: '#/list/kb/Sourcing' },
-    { label: 'Commercial & Cost', href: '#/list/kb/Commercial' },
-    { label: 'Supplier Management', href: '#/list/kb/Supplier Management' },
-    { label: 'Negotiation', href: '#/list/kb/Negotiation' },
-    { label: 'Contracts', href: '#/list/kb/Contracts' },
-    { label: 'Governance', href: '#/list/kb/Governance' },
-    { label: 'Risk', href: '#/list/kb/Risk' },
-    { label: 'Savings & Value', href: '#/list/kb/Savings' },
-    { label: 'Procurement KPIs', href: '#/list/kpi' },
-    { label: 'Procurement Glossary', href: '#/glossary' }
+  { sec: 'Module 1: Foundations', icon: '1️⃣', items: [
+    { label: '1. Mission & Value', href: '#/academy/func-mission-value', funcId: 'func-mission-value' },
+    { label: '2. Spend Analysis', href: '#/academy/func-spend-analysis', funcId: 'func-spend-analysis' },
+    { label: '3. Category Strategy', href: '#/academy/func-category-mgmt', funcId: 'func-category-mgmt' },
+    { label: '4. Scope & SOW', href: '#/academy/func-requirement-scope', funcId: 'func-requirement-scope' }
   ] },
-  { sec: 'SOP Center', icon: '☰', items: [
-    { label: 'All SOPs', href: '#/list/sop' },
-    { label: 'Core Procurement SOPs', href: '#/list/sop/Core' },
-    { label: 'Supplier SOPs', href: '#/list/sop/Supplier' },
-    { label: 'Sourcing SOPs', href: '#/list/sop/Sourcing' },
-    { label: 'Negotiation SOPs', href: '#/list/sop/Negotiation' },
-    { label: 'Contract SOPs', href: '#/list/sop/Contract' },
-    { label: 'Buying SOPs', href: '#/list/sop/Buying' },
-    { label: 'Savings & Governance SOPs', href: '#/list/sop/Savings & Governance' }
+  { sec: 'Module 2: Commercial Sourcing', icon: '2️⃣', items: [
+    { label: '5. Sourcing & RFx Strategy', href: '#/academy/func-rfx-strategy', funcId: 'func-rfx-strategy' },
+    { label: '6. Tender / RFQ Issuance', href: '#/academy/func-rfq-issuance', funcId: 'func-rfq-issuance' },
+    { label: '7. Quote Normalization', href: '#/academy/func-quote-normalization', funcId: 'func-quote-normalization' },
+    { label: '8. Landed Cost & TCO', href: '#/academy/func-landed-cost-tco', funcId: 'func-landed-cost-tco' }
   ] },
-  { sec: 'Decision Center', icon: '⚖', items: [
-    { label: 'All Decision Guides', href: '#/list/dec' },
-    { label: 'What Should I Do?', href: '#/what' },
-    { label: 'Scenario Library', href: '#/scenarios' },
-    { label: 'Procurement Maturity Check', href: '#/maturity' }
+  { sec: 'Module 3: Cost Structure & Risk', icon: '3️⃣', items: [
+    { label: '9. Should-Cost Modeling', href: '#/academy/func-should-cost', funcId: 'func-should-cost' },
+    { label: '10. Supplier Evaluation', href: '#/academy/func-supplier-eval', funcId: 'func-supplier-eval' },
+    { label: '11. Supplier Risk & Vetting', href: '#/academy/func-supplier-risk', funcId: 'func-supplier-risk' },
+    { label: '12. Strategic Negotiation', href: '#/academy/func-negotiation-strategy', funcId: 'func-negotiation-strategy' }
   ] },
-  { sec: 'Checklists', icon: '☑', items: [
-    { label: 'All Checklists', href: '#/list/cl' },
-    { label: 'Intake & Planning', href: '#/list/cl/Intake & Planning' },
-    { label: 'Sourcing', href: '#/list/cl/Sourcing' },
-    { label: 'Evaluation & Award', href: '#/list/cl/Evaluation & Award' },
-    { label: 'Negotiation', href: '#/list/cl/Negotiation' },
-    { label: 'Contract', href: '#/list/cl/Contract' },
-    { label: 'Supplier', href: '#/list/cl/Supplier' },
-    { label: 'Governance', href: '#/list/cl/Governance' },
-    { label: 'Audit', href: '#/list/cl/Audit' }
-  ] },
-  { sec: 'Toolkit', icon: '∑', items: [
-    { label: 'All Calculators', href: '#/list/calc' },
-    { label: 'Quote Tools', href: '#/list/calc/Quote Tools' },
-    { label: 'Cost Tools', href: '#/list/calc/Cost Tools' },
-    { label: 'Negotiation Tools', href: '#/list/calc/Negotiation Tools' },
-    { label: 'Supplier Tools', href: '#/list/calc/Supplier Tools' },
-    { label: 'Buying Decision Tools', href: '#/list/calc/Buying Decision Tools' },
-    { label: 'Budget & Savings Tools', href: '#/list/calc/Budget & Savings Tools' },
-    { label: 'Contract Tools', href: '#/list/calc/Contract Tools' },
-    { label: 'Tax & FX Tools', href: '#/list/calc/Tax & FX Tools' }
-  ] },
-  { sec: 'Templates', icon: '⧉', items: [
-    { label: 'All Templates', href: '#/list/tpl' },
-    { label: 'Sourcing', href: '#/list/tpl/Sourcing' },
-    { label: 'Evaluation', href: '#/list/tpl/Evaluation' },
-    { label: 'Negotiation', href: '#/list/tpl/Negotiation' },
-    { label: 'Supplier', href: '#/list/tpl/Supplier' },
-    { label: 'Contract', href: '#/list/tpl/Contract' },
-    { label: 'Governance', href: '#/list/tpl/Governance' },
-    { label: 'Savings', href: '#/list/tpl/Savings' }
-  ] },
-  { sec: 'KPI Center', icon: '▦', items: [
-    { label: 'KPI Library', href: '#/list/kpi' },
-    { label: 'KPI Calculator', href: '#/calc/kpi-calculator' },
-    { label: 'Savings Dashboard', href: '#/dash-savings' }
-  ] },
-  { sec: 'Workspace', icon: '◍', items: [
-    { label: 'Saved Work', href: '#/saved', badge: 'saved' },
-    { label: 'Favorites', href: '#/fav', badge: 'fav' },
-    { label: 'Recently Used', href: '#/recent' },
-    { label: 'Dashboard', href: '#/dash' },
-    { label: 'Open Checklists', href: '#/saved?type=checklist', badge: 'cl' },
-    { label: 'Backup / Restore', href: '#/backup' },
-    { label: 'Audit Log', href: '#/audit' },
-    { label: 'Settings', href: '#/settings' }
-  ] },
-  { sec: 'Help', icon: '?', items: [
-    { label: 'How to Use', href: '#/help' },
-    { label: 'Methodology', href: '#/help/methodology' },
-    { label: 'Assumptions', href: '#/help/assumptions' },
-    { label: 'Privacy & Security', href: '#/help/privacy' },
-    { label: 'Disclaimers', href: '#/help/disclaimers' },
-    { label: 'Version History', href: '#/help/versions' },
-    { label: 'Troubleshooting', href: '#/help/troubleshooting' }
+  { sec: 'Module 4: Negotiation & Controls', icon: '4️⃣', items: [
+    { label: '13. Commercial Terms & MOQs', href: '#/academy/func-commercial-terms', funcId: 'func-commercial-terms' },
+    { label: '14. Contract Structuring', href: '#/academy/func-contract-structuring', funcId: 'func-contract-structuring' },
+    { label: '15. DOA & Spend Controls', href: '#/academy/func-doa-controls', funcId: 'func-doa-controls' },
+    { label: '16. PO & P2P Execution', href: '#/academy/func-po-execution', funcId: 'func-po-execution' }
   ] }
 ];
+
+PS.NAV_OPERATIONS = [
+  { sec: 'Operations Gateway', icon: '💼', items: [
+    { label: 'Operations Gateway', href: '#/operations' },
+    { label: 'What Should I Do?', href: '#/what' },
+    { label: 'Procurement Lifecycle', href: '#/lifecycle' },
+    { label: 'Maturity Assessment', href: '#/maturity' }
+  ] },
+  { sec: 'Execution Libraries', icon: '📋', items: [
+    { label: 'Standard Operating Procedures', href: '#/list/sop' },
+    { label: 'Procurement Calculators', href: '#/list/calc' },
+    { label: 'Execution Checklists', href: '#/list/cl' },
+    { label: 'Production Templates', href: '#/list/tpl' }
+  ] },
+  { sec: 'Governance & Knowledge', icon: '📚', items: [
+    { label: 'Knowledge Hub & Concepts', href: '#/list/kb' },
+    { label: 'KPIs & Value Metrics', href: '#/list/kpi' },
+    { label: 'Decision Guides & Scenarios', href: '#/list/dec' },
+    { label: 'Procurement Glossary', href: '#/glossary' }
+  ] }
+];
+
+PS.NAV_WORKSPACE = [
+  { sec: 'My Workspace', icon: '📁', items: [
+    { label: 'Saved Work & Reports', href: '#/saved', badge: 'saved' },
+    { label: 'Favorites', href: '#/fav', badge: 'fav' },
+    { label: 'Recently Used', href: '#/recent' }
+  ] },
+  { sec: 'Guidance & Search', icon: '🔍', items: [
+    { label: 'Quick Start Guide', href: '#/quickstart' },
+    { label: 'Global Search', href: '#/search' },
+    { label: 'Help Center', href: '#/help' }
+  ] },
+  { sec: 'Account & System', icon: '⚙', items: [
+    { label: 'Application Settings', href: '#/settings' },
+    { label: 'Audit Log & Backup', href: '#/backup' }
+  ] }
+];
+
+PS.NAV = PS.NAV_ACADEMY.concat(PS.NAV_OPERATIONS).concat(PS.NAV_WORKSPACE);

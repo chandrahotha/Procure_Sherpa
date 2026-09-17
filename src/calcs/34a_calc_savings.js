@@ -1,7 +1,7 @@
 /* ============ Calc: Savings Analysis ============ */
 PS_CALC.push({
   id: 'calc-savings-analysis', title: 'Savings Analysis', cat: 'Budget & Savings Tools', tags: ['savings', 'annualised', 'payback', 'validation'],
-  purpose: 'Turn a negotiated deal into a finance-grade saving: gross, net of implementation cost, annualised over the term, with payback — the format finance will actually sign.',
+  purpose: 'Turn a negotiated deal into a finance-grade saving: gross, net of implementation cost, annualised over the term, with payback :  the format finance will actually sign.',
   desc: 'Gross-to-net savings with annualisation and payback over the contract term.',
   disclaimerKind: 'finance',
   assumptions: ['The baseline is taken as agreed and locked: baseline games are the most common source of phantom savings.',

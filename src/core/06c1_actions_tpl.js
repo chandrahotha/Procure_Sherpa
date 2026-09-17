@@ -30,7 +30,7 @@ PS.templateText = function (tpl, values, notes) {
   lines.push('== NOTES ==');
   lines.push(notes || '(none recorded)');
   lines.push('');
-  lines.push('Generated with Procure Sherpa v' + PS.VERSION + ' (offline toolkit). This is a procurement working template, not legal advice.');
+  lines.push('Generated with Procure Sherpa. This is a procurement working template, not legal advice.');
   if (p.reportFooter) lines.push(p.reportFooter);
   return lines.join('\n');
 };

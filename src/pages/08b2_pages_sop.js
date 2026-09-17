@@ -14,7 +14,7 @@ PS.route('sop', function (id) {
     PS.badge('sop') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
     (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
     PS.sopDocControl(it) +
-    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print / PDF this SOP</button>']) +
+    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>']) +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<div class="grid grid-2">' +
@@ -77,7 +77,7 @@ PS.sopRaci = function (it) {
     '<p class="card-sub">Accountability for each duty. The process owner is accountable for the procedure as a whole.</p>' +
     '<div class="table-wrap"><table><thead><tr><th>Role</th><th>Responsibility under this SOP</th></tr></thead><tbody>' +
     it.raci.map(function (r) {
-      return '<tr><td><strong>' + PS.esc(r.role || '—') + '</strong></td><td>' + PS.esc(r.resp) + '</td></tr>';
+      return '<tr><td><strong>' + PS.esc(r.role || 'Unassigned') + '</strong></td><td>' + PS.esc(r.resp) + '</td></tr>';
     }).join('') + '</tbody></table></div></div>';
 };
 PS.sopDetails = function (it) {
@@ -85,7 +85,7 @@ PS.sopDetails = function (it) {
   if (it.decisions) blocks += PS.section('Decision gates', PS.decisionList(it.decisions), { open: false });
   if (it.control) blocks += PS.section('Controls and approvals', PS.ul(it.control));
   if (it.kpis) blocks += PS.section('How this process is measured', PS.kpiLinks(it.kpis));
-  if (it.records) blocks += PS.section('Records to retain' + (it.retention ? ' — ' + it.retention : ''), PS.ul(it.records));
+  if (it.records) blocks += PS.section('Records to retain' + (it.retention ? ' (' + it.retention + ')' : ''), PS.ul(it.records));
   if (it.risks) blocks += PS.section('Process risks', PS.ul(it.risks));
   if (it.exceptions) blocks += PS.section('Exceptions and escalations', PS.ul(it.exceptions));
   if (it.mistakes) blocks += PS.section('Common mistakes', PS.ul(it.mistakes));
@@ -101,7 +101,7 @@ PS.decisionList = function (list) {
 PS.kpiLinks = function (ids) {
   var items = (ids || []).map(function (k) {
     var o = PS.byId('kpi', k);
-    return o ? '<li><a href="#/kpi/' + encodeURIComponent(o.id) + '">' + PS.esc(o.title) + '</a> &mdash; <span class="muted">' + PS.esc(o.def) + '</span></li>' : '';
+    return o ? '<li><a href="#/kpi/' + encodeURIComponent(o.id) + '">' + PS.esc(o.title) + '</a> : <span class="muted">' + PS.esc(o.def) + '</span></li>' : '';
   }).join('');
   return items ? '<ul>' + items + '</ul>' : '';
 };
@@ -110,8 +110,11 @@ PS.kpiLinks = function (ids) {
 PS.sopChecklistLink = function (it) {
   var cl = it.checklist ? PS.byId('cl', it.checklist) : null;
   if (!cl) return '';
-  return '<div class="card card-tight"><div class="card-head"><h2>Operational checklist</h2><div class="spacer"></div>' +
-    '<a class="btn btn-sm" href="#/cl/' + PS.esc(cl.id) + '">Open checklist</a></div>' +
-    '<p class="card-sub mb0">This procedure is executed using <strong>' + PS.esc(cl.title) +
-    '</strong> in the Checklist library, where completion and notes are tracked. The SOP governs what must happen; the checklist proves it happened.</p></div>';
+  return '<div class="card card-tight">' +
+    '<div class="card-head"><h2>Operational execution checklist</h2></div>' +
+    '<p class="card-sub">Worried about audit compliance or missing mandatory stage gates? ' +
+    'The companion checklist tracks every required deliverable, sign-off, and control step in real time.</p>' +
+    '<div class="actions-row">' +
+    '<a class="btn btn-primary" href="#/cl/' + PS.esc(cl.id) + '">Execute ' + PS.esc(cl.title) + '</a>' +
+    '</div></div>';
 };

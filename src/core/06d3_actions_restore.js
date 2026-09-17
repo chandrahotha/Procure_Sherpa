@@ -36,6 +36,7 @@ PS.applyRestore = function (c, mode, filename) {
       PS.store.set(PS.K.recent, c.recent);
       PS.store.set(PS.K.audit, c.audit);
       if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
+      if (c.academy && PS.academy) PS.academy.save(c.academy);
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -51,6 +52,14 @@ PS.applyRestore = function (c, mode, filename) {
       PS.store.set(PS.K.fav, fav.concat(c.favorites.filter(function (x) { return !fk[x.type + '|' + x.id]; })).slice(0, 120));
       if (!PS.recent.list().length) PS.store.set(PS.K.recent, c.recent);
       if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
+      if (c.academy && PS.academy) {
+        var curA = PS.academy.getAll();
+        var mergedA = Object.assign({}, curA, c.academy);
+        mergedA.completed = Object.assign({}, curA.completed || {}, (c.academy && c.academy.completed) || {});
+        mergedA.badges = Object.assign({}, curA.badges || {}, (c.academy && c.academy.badges) || {});
+        mergedA.scores = Object.assign({}, curA.scores || {}, (c.academy && c.academy.scores) || {});
+        PS.academy.save(mergedA);
+      }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();

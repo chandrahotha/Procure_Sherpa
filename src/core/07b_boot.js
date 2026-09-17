@@ -7,7 +7,7 @@ PS.pwa = function () {
         name: 'Procure Sherpa v2.0', short_name: 'Procure Sherpa',
         start_url: '.', scope: '.', display: 'standalone',
         background_color: '#f2f5fa', theme_color: '#1d4ed8',
-        description: 'Offline procurement professional toolkit: knowledge, SOPs, decision guides, checklists, templates, calculators, KPIs and reports.'
+        description: 'Procurement digital learning platform: interactive modules, SOPs, decision guides, checklists, templates, calculators, KPIs and reports.'
       };
       var url = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
       var link = document.createElement('link');
@@ -27,6 +27,7 @@ PS.boot = function () {
   try {
     PS.migrate();
     PS.applyTheme();
+    if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
     PS.wireEvents();
     PS.updateNavCounts();

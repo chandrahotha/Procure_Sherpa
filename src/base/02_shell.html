@@ -4,22 +4,23 @@
 <div class="app" id="app">
   <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">PS</div>
+      <div class="brand-mark" id="sidebarBrandMark" aria-hidden="true">PS</div>
       <div class="brand-text">
-        <strong>Procure Sherpa</strong>
-        <span id="brandVersion">v2.0 &middot; Offline Toolkit</span>
+        <strong id="sidebarBrandTitle">Procure Sherpa</strong>
+        <span id="brandVersion">Learning Platform</span>
       </div>
       <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">&#10005;</button>
     </div>
+    <div class="sidebar-hub-nav no-print" id="sidebarHubNav"></div>
     <div class="nav-filter no-print">
       <label class="sr-only" for="navFilter">Filter navigation</label>
       <input id="navFilter" type="search" placeholder="Filter menu…" autocomplete="off" aria-label="Filter navigation">
     </div>
     <nav class="nav" id="navRoot" aria-label="Sections"></nav>
-    <div class="sidebar-foot">
+    <div class="sidebar-foot" id="sidebarFoot">
       <div class="privacy-note">
         <span aria-hidden="true">&#128274;</span>
-        <span>Your procurement data stays on your device/browser. No account, no cloud, no tracking.</span>
+        <span>Enterprise Single-Tenant Session &middot; Certified Local Compliance</span>
       </div>
     </div>
   </aside>
@@ -41,7 +42,10 @@
         <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite">&#9734;</button>
         <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report">&#128424;</button>
         <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">&#9686;</button>
-        <a class="btn btn-sm" id="homeBtn" href="#/home" title="Home">&#8962; <span class="hide-sm">Home</span></a>
+        <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile">
+          <span class="user-avatar-pill" id="userAvatarPill">PS</span>
+          <span class="user-name-label hide-sm" id="userNameLabel">Account</span>
+        </button>
       </div>
     </header>
 
@@ -60,7 +64,7 @@
         <a href="#/settings">Settings</a>
         <a href="#/backup">Backup / Restore</a>
       </div>
-      <div id="footNote">Procure Sherpa v2.0 &mdash; offline procurement decision-support toolkit. Not an ERP. Approval thresholds, tax treatment and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
+      <div id="footNote">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
     </footer>
   </div>
 </div>

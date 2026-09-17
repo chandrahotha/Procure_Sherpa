@@ -6,7 +6,7 @@ PS.route('help', function (arg) {
   var chosen = topics.filter(function (t) { return t.id === sel; })[0];
   var html = PS.reportHead('Help Center', topics.length + ' topics') +
     '<div class="card"><h1>Help Center</h1>' +
-    '<p class="card-sub">How Procure Sherpa works, how your data is handled, and what the toolkit does and does not claim to know.</p>' +
+    '<p class="card-sub">How Procure Sherpa works, how your data is handled, and platform guidelines.</p>' +
     '<div class="chips no-print">' + topics.map(function (t) {
       return '<a class="chip' + (t.id === sel ? ' is-on' : '') + '" href="#/help/' + encodeURIComponent(t.id) + '">' + PS.esc(t.title) + '</a>';
     }).join('') + '</div>' +

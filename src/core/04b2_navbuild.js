@@ -1,9 +1,112 @@
-PS.buildNav = function () {
+PS.getHubContext = function (r) {
+  var name = (r && r.name) || 'home';
+  if (name === 'home') return 'portal';
+  if (name === 'academy' || name === 'academy-progress' || name === 'certificate') return 'academy';
+  if (name === 'operations' || name === 'sop' || name === 'calc' || name === 'cl' ||
+      name === 'tpl' || name === 'kpi' || name === 'dec' || name === 'scen' ||
+      name === 'k' || name === 'glossary' || name === 'what' || name === 'lifecycle' ||
+      name === 'maturity' || name === 'dash' || name === 'dash-savings' ||
+      (name === 'list' && r.arg !== 'saved')) {
+    return 'operations';
+  }
+  return 'workspace';
+};
+
+PS.syncNavForRoute = function (r) {
+  var hub = PS.getHubContext(r);
+  var app = PS.$('#app');
+  if (!app) return;
+
+  if (hub === 'portal') {
+    app.classList.add('has-no-sidebar');
+    app.classList.remove('has-sidebar', 'hub-academy', 'hub-operations', 'hub-workspace');
+    return;
+  }
+
+  app.classList.remove('has-no-sidebar');
+  app.classList.add('has-sidebar');
+  app.classList.remove('hub-academy', 'hub-operations', 'hub-workspace');
+  app.classList.add('hub-' + hub);
+
+  if (PS._lastBuiltHub !== hub) {
+    PS.buildNav(hub);
+  } else {
+    if (hub === 'academy') PS.updateAcademyNavChecks();
+  }
+};
+
+PS.updateAcademyNavChecks = function () {
+  if (!PS.academyStore) return;
+  PS.$$('#navRoot a[data-func]').forEach(function (a) {
+    var fid = a.dataset.func;
+    var isComp = PS.academyStore.isFuncCompleted(fid);
+    var chk = a.querySelector('.nav-status-check');
+    if (isComp && !chk) {
+      a.insertAdjacentHTML('beforeend', '<span class="nav-status-check" title="Function Mastered">✓</span>');
+    } else if (!isComp && chk) {
+      chk.remove();
+    }
+  });
+};
+
+PS.buildNav = function (targetHub) {
+  var hub = targetHub || PS.getHubContext(PS.routeMeta);
+  PS._lastBuiltHub = hub;
   var root = PS.$('#navRoot');
   if (!root) return;
+
+  var bMark = PS.$('#sidebarBrandMark');
+  var bTitle = PS.$('#sidebarBrandTitle');
+  var bVer = PS.$('#brandVersion');
+  var hubNav = PS.$('#sidebarHubNav');
+  var foot = PS.$('#sidebarFoot');
+
+  var navList = PS.NAV_ACADEMY;
+  var title = 'Procure Sherpa';
+  var sub = 'Learning Platform';
+  var mark = 'PS';
+  var switcherHtml = '';
+
+  if (hub === 'academy') {
+    navList = PS.NAV_ACADEMY;
+    title = 'Procurement Academy';
+    sub = 'Interactive Learning';
+    mark = '🎓';
+    switcherHtml = '<div class="hub-nav-pill-row">' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼 Operations Hub</a>' +
+      '</div>';
+  } else if (hub === 'operations') {
+    navList = PS.NAV_OPERATIONS;
+    title = 'Operations Hub';
+    sub = 'Execution Repository';
+    mark = '💼';
+    switcherHtml = '<div class="hub-nav-pill-row">' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
+      '</div>';
+  } else if (hub === 'workspace') {
+    navList = PS.NAV_WORKSPACE;
+    title = 'Workspace & Settings';
+    sub = 'User Account & Tools';
+    mark = '⚙';
+    switcherHtml = '<div class="hub-nav-pill-row">' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations">💼 Operations</a>' +
+      '</div>';
+  } else {
+    navList = PS.NAV;
+  }
+
+  if (bMark) bMark.textContent = mark;
+  if (bTitle) bTitle.textContent = title;
+  if (bVer) bVer.textContent = sub;
+  if (hubNav) hubNav.innerHTML = switcherHtml;
+
   var open = PS.prefs().navOpen || {};
-  root.innerHTML = PS.NAV.map(function (g) {
-    var isOpen = open[g.sec] === undefined ? (g.sec === 'Home') : !!open[g.sec];
+  root.innerHTML = navList.map(function (g) {
+    var isOpen = open[g.sec] === undefined ? true : !!open[g.sec];
     return '<div class="nav-sec" data-sec="' + PS.esc(g.sec) + '" data-open="' + (isOpen ? 'true' : 'false') + '">' +
       '<button type="button" class="nav-sec-head" data-navsec="' + PS.esc(g.sec) + '" aria-expanded="' + isOpen + '">' +
       '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.icon || '•') + '</span>' +
@@ -11,10 +114,37 @@ PS.buildNav = function () {
       '<span class="sec-count">' + g.items.length + '</span>' +
       '<span class="chev" aria-hidden="true">▾</span></button>' +
       '<ul class="nav-list">' + g.items.map(function (it) {
-        return '<li data-label="' + PS.esc((it.label + ' ' + g.sec).toLowerCase()) + '"><a href="' + PS.esc(it.href) + '">' + PS.esc(it.label) +
-          (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') + '</a></li>';
+        var isComp = (it.funcId && PS.academyStore) ? PS.academyStore.isFuncCompleted(it.funcId) : false;
+        return '<li data-label="' + PS.esc((it.label + ' ' + g.sec).toLowerCase()) + '">' +
+          '<a href="' + PS.esc(it.href) + '"' + (it.funcId ? ' data-func="' + PS.esc(it.funcId) + '"' : '') + '>' +
+          PS.esc(it.label) +
+          (isComp ? '<span class="nav-status-check" title="Function Mastered">✓</span>' : '') +
+          (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') +
+          '</a></li>';
       }).join('') + '</ul></div>';
   }).join('');
+
+  if (foot && PS.user) {
+    var prof = PS.user.getProfile();
+    var academyStats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 16 };
+    var savedCount = (PS.saved && PS.saved.list) ? PS.saved.list().length : 0;
+    var subText = hub === 'academy' ?
+      (academyStats.completedCount + ' of ' + academyStats.totalCount + ' Mastered') :
+      (savedCount + ' Saved Draft' + (savedCount === 1 ? '' : 's'));
+
+    foot.innerHTML = '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
+      '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || '#4f46e5') + '">' +
+      PS.esc(PS.user.getInitials(prof.name)) + '</div>' +
+      '<div class="sidebar-foot-meta">' +
+      '<div class="sidebar-foot-name">' + PS.esc(prof.name) + '</div>' +
+      '<div class="sidebar-foot-sub">' + PS.esc(subText) + ' &bull; View Profile</div>' +
+      '</div></div>' +
+      '<div class="privacy-note">' +
+      '<span aria-hidden="true">&#128274;</span>' +
+      '<span>Enterprise Client Architecture &middot; Session Secured</span>' +
+      '</div>';
+  }
+
   PS.updateNavCounts();
   PS.wireNavFilter();
 };

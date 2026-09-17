@@ -1,7 +1,7 @@
 {
   "name": "sherpa",
   "version": "1.0.0",
-  "description": "A complete, **offline, single-file procurement toolkit** — knowledge base, SOPs, checklists, templates, calculators, decision guides, KPIs and scenario guides in one HTML file. No install, no server, no internet connection, no account. Your data never leaves your browser.",
+  "description": "An enterprise single-tenant procurement learning and operations platform: competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics compiled into a secure, single-file client architecture.",
   "main": "_check.js",
   "scripts": {
     "build": "node build.mjs",

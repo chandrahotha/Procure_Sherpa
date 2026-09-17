@@ -1,7 +1,7 @@
 /* ============ Calc: KPI Quick Calculator ============ */
 PS_CALC.push({
   id: 'calc-kpi-calculator', title: 'KPI Quick Calculator', cat: 'KPI Tools', tags: ['kpi', 'achievement', 'variance', 'rag', 'target'],
-  purpose: 'Turn any actual-vs-target KPI reading into achievement, variance, trend and a RAG status you can defend — for higher-better and lower-better measures alike.',
+  purpose: 'Turn any actual-vs-target KPI reading into achievement, variance, trend and a RAG status you can defend :  for higher-better and lower-better measures alike.',
   desc: 'Achievement %, variance, prior-period trend and RAG for any KPI.',
   disclaimerKind: 'data',
   assumptions: ['Direction matters: set whether higher or lower readings are better before reading the RAG.',

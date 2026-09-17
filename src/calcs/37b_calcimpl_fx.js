@@ -26,7 +26,7 @@ PS.calcImpl.fxConvert = function (v) {
       ],
       footer: ['Effective rate', isFinite(eff) ? PS.qty(eff) : '\u2014']
     },
-    a: '<p>' + PS.moneyR(v.foreignAmount) + ' at ' + PS.qty(v.exchangeRate) + ' converts to <strong>' + PS.moneyR(net) + ' net</strong> after ' + PS.moneyR(totalCost) + ' of spread and fees — an effective rate of <strong>' + (isFinite(eff) ? PS.qty(eff) : '—') + '</strong>.</p>' +
+    a: '<p>' + PS.moneyR(v.foreignAmount) + ' at ' + PS.qty(v.exchangeRate) + ' converts to <strong>' + PS.moneyR(net) + ' net</strong> after ' + PS.moneyR(totalCost) + ' of spread and fees :  an effective rate of <strong>' + (isFinite(eff) ? PS.qty(eff) : ': ') + '</strong>.</p>' +
       '<p>Compare dealers on the effective rate for your exact amount, never on the spread quote alone: wide spreads hide in round numbers and fixed fees punish small tickets. For recurring flows, fix the conversion mechanics in the contract instead of re-shopping every payment.</p>',
     f: ['Gross home = foreign x rate',
       'Spread cost = gross x spread %; total cost = spread + fee',
@@ -34,10 +34,10 @@ PS.calcImpl.fxConvert = function (v) {
     as: ['Entered rate is the dealt rate for the value date.',
       'Rate movement between quote and settlement is not modelled.'],
     w: w,
-    k: ['Net ' + PS.moneyR(net) + ' at effective rate ' + (isFinite(eff) ? PS.qty(eff) : '—'),
-      'Conversion drag: ' + (isFinite(drag) ? PS.pct(drag) : '—') + ' (' + PS.moneyR(totalCost) + ')',
+    k: ['Net ' + PS.moneyR(net) + ' at effective rate ' + (isFinite(eff) ? PS.qty(eff) : ': '),
+      'Conversion drag: ' + (isFinite(drag) ? PS.pct(drag) : ': ') + ' (' + PS.moneyR(totalCost) + ')',
       'Compare dealers on effective rate for the exact amount'],
-    s: PS.moneyR(v.foreignAmount) + ' converts to ' + PS.moneyR(net) + ' net at effective rate ' + (isFinite(eff) ? PS.qty(eff) : '—') + ' (cost ' + PS.moneyR(totalCost) + ').',
+    s: PS.moneyR(v.foreignAmount) + ' converts to ' + PS.moneyR(net) + ' net at effective rate ' + (isFinite(eff) ? PS.qty(eff) : ': ') + ' (cost ' + PS.moneyR(totalCost) + ').',
     d: { gross: gross, spreadCost: spreadCost, totalCost: totalCost, net: net, effRate: eff }
   });
 };

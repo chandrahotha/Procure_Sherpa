@@ -4,6 +4,8 @@ src/base/01c_layout.css
 src/base/01d_components.css
 src/base/01e_forms_tables.css
 src/base/01f_ui.css
+src/base/01h_academy.css
+src/base/01i_portal_user.css
 src/base/01g_print.css
 src/base/02_shell.html
 src/core/03a_util.js
@@ -14,6 +16,9 @@ src/core/03d2_prefs.js
 src/core/03e_saved.js
 src/core/03f_registry.js
 src/core/03g_search.js
+src/core/03h_academy_store.js
+src/core/03i_user_profile.js
+src/core/03j_charts.js
 src/core/04a_router.js
 src/core/04b1_navdata.js
 src/core/04b2_navbuild.js
@@ -53,6 +58,7 @@ src/pages/08c2b_pages_crumb.js
 src/pages/08c3_pages_savingsdash.js
 src/pages/08c4_pages_savingsdash2.js
 src/pages/08c5_pages_dash.js
+src/pages/08c6_pages_operations_hub.js
 src/pages/08d1_pages_saved.js
 src/pages/08d2_pages_savedlist.js
 src/pages/08e1_pages_backup.js
@@ -60,6 +66,9 @@ src/pages/08e2_pages_settings.js
 src/pages/08e3_pages_settings2.js
 src/pages/08f1_pages_help.js
 src/pages/08f2_pages_maturity.js
+src/pages/08g1_pages_academy.js
+src/pages/08g2_pages_quiz_engine.js
+src/pages/08g3_pages_certificate.js
 src/content/09a_data_init.js
 src/content/09b_expand.js
 src/content/10a_kb_fund1.js
@@ -87,6 +96,9 @@ src/content/15z_gloss_v1.js
 src/content/16z_scn_v1.js
 src/content/17z_kpi_v1.js
 src/content/18a_help_content.js
+src/content/19a_academy_functions_part1.js
+src/content/19b_academy_functions_part2.js
+src/content/19c_academy_functions_part3.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js

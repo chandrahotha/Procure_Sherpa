@@ -1,128 +1,164 @@
 # Procure Sherpa v2.0
 
-A complete, **offline, single-file procurement toolkit** — knowledge base, SOPs, checklists, templates, calculators, decision guides, KPIs and scenario guides in one HTML file. No install, no server, no internet connection, no account. Your data never leaves your browser.
+An enterprise single-tenant procurement learning and operations platform: competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics compiled into a secure, single-file client architecture.
+
+No external servers, no cloud databases, no runtime dependencies, and zero third-party telemetry. All analysis remains strictly within your enterprise client session.
 
 ---
 
-## 🚀 How to start the application
+## Architecture Overview
 
-### Option 1 — Just open it (simplest)
-1. Download or locate **`ProcureSherpa-v2.0.html`** (the built app, in the repo root).
-2. **Double-click it.** It opens in your default browser (Chrome, Edge, Firefox — desktop or mobile) and works immediately.
+Procure Sherpa v2.0 is built on a dual-hub operating model designed to eliminate cognitive clutter by separating strategic competency acquisition from day-to-day operational execution.
 
-That's it. The file is the application. Everything — logic, styling, content — is inside that one file.
-
-### Option 2 — Serve it locally (recommended for daily use)
-```bash
-# from the repo root — pick whichever you have:
-python -m http.server 8080
-#   then open  http://localhost:8080/ProcureSherpa-v2.0.html
-
-npx serve .
+```
+                    ┌──────────────────────────────────────────────┐
+                    │      Executive Command Center (#/home)       │
+                    │  Clean Full-Width Portal & Account Hub       │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+             ┌─────────────────────────────┴─────────────────────────────┐
+             ▼                                                           ▼
+┌─────────────────────────────────────────┐ ┌─────────────────────────────────────────┐
+│     Procurement Academy (#/academy)     │ │        Operations Hub (#/operations)    │
+│  16 Competencies · 5-Tab Pedagogical    │ │  19 Financial Calculators · 13 SOPs     │
+│  Digital SOPs · Crisis Sandboxes · SVG  │ │  27 Compliance Checklists · 33 Templates│
+│  Certificates with Verification Hashes  │ │  20 Decision Guides · 18 KPIs           │
+└─────────────────────────────────────────┘ └─────────────────────────────────────────┘
 ```
 
-Serving instead of double-clicking gives you a stable URL, and avoids any browser
-restrictions on `file://` pages (see Troubleshooting).
+---
 
-### Option 3 — GitHub Pages (share it with your team)
-1. In the GitHub repo: **Settings → Pages → Branch: `main` → Save.**
-2. After ~1 minute the app is live at `https://chandrahotha.github.io/Procure_Sherpa/ProcureSherpa-v2.0.html`.
-3. Anyone with the link can use it; they can also save the page itself for offline use.
+## Core Capabilities
 
-### Option 4 — Carry it with you
-Copy `ProcureSherpa-v2.0.html` to a USB stick. It runs from any machine with a browser — useful on shop-floor PCs or locked-down laptops with no internet.
+### 1. Dual-Hub Workspace & Command Center
 
-> **First visit?** Open the in-app **Quick Start** page (sidebar → Quick Start). It walks you through the eight steps from "I have a problem" to "I have a documented decision".
+* **Distraction-Free Command Center (`#/home`)**: A clean, full-width executive dashboard providing direct gateway access to the Academy and Operations Hub, active draft summaries, and account-level status tracking without navigation sidebars.
+* **Dedicated Context-Aware Hub Sidebars**: Entering either hub automatically configures a dedicated navigation sidebar tailored strictly to that environment, complete with instant hub-switcher controls.
+* **Unified Account Profile & Session Management**: Manages user focus tracks, organizational roles, and tracks mastery milestones across both functional domains.
+
+### 2. Procurement Academy & Competency Curriculum
+
+* **16 Core Digital Competencies**: Spanning Foundations & Strategic Value, Sourcing & Market Engagement, Contracting & Risk, and Cost & Operational Excellence.
+* **Disciplined 5-Tab Learning Pedagogy**:
+  1. **Core Concept**: Theoretical foundation, commercial relevance, process walkthroughs, common failure modes, and governance rules.
+  2. **Procurement Mindset**: Executive perspective, commercial thinking points, and enterprise case studies.
+  3. **Digital SOP**: Controlled procedural workflows detailing step roles, mandatory controls, records generated, and common pitfalls.
+  4. **Interactive Practice**: Scenario-based knowledge evaluations featuring escalating difficulty tiers and automated tactical advisor tips triggered on mistakes.
+  5. **Apply in Laboratory**: Interactive commercial crisis simulation sandboxes paired with hands-on laboratory missions.
+
+### 3. Zero-Dependency Inline SVG Visual Analytics Engine
+
+The platform incorporates a pure inline SVG data visualization engine that executes 100% offline with zero external charting dependencies:
+
+* **Should-Cost Waterfall Buildup (`PS.chart.waterfall`)**: Unbundles cost components (Raw Materials, Direct Labor, Machine Overhead, SG&A Overhead, Fair Supplier Margin) against quoted vendor prices.
+* **Kraljic 2x2 Portfolio Matrix (`PS.chart.kraljic`)**: Segments category expenditure by commercial profit impact and supply market risk into Strategic, Leverage, Bottleneck, and Non-Critical quadrants.
+* **Pareto 80/20 Spend Distribution Curve (`PS.chart.pareto`)**: Combines ranked supplier spend columns with cumulative spend percentage spline curves and an 80% Class A cutoff threshold.
+* **Altman Z-Score Solvency Dial (`PS.chart.zscoreGauge`)**: Calibrated semi-circular radial gauge indicating Distress (< 1.23), Grey Zone (1.23 to 2.90), and Safe Zone (> 2.90) supplier balance sheet liquidity health.
+
+### 4. Interactive Commercial Crisis Simulation Sandboxes
+
+Embedded within the Academy laboratory, each competency features live financial calculation models:
+
+* **Spend Fragmentation & Tail Dissipation**: Pareto spend concentration analysis with Class A isolation and tail supplier consolidation rebate modeling.
+* **Kraljic Portfolio Segmentation**: Category placement across supply risk and profit impact axes with strategic playbook alignment.
+* **Bottom-Up Should-Cost Modeling**: Unbundles material and labor rates to expose supplier margin padding and construct formula-anchored counter-offers.
+* **Critical Supplier Solvency Audit**: Altman Z-Score stress testing evaluating working capital, retained earnings, EBIT, equity, liabilities, and revenue.
+* **Contract Clause Redline Auditing**: Interactive legal risk exposure metering across Limitation of Liability, Dispute Withholding, Warranty/SLA, and IP Rights.
+* **Multi-Criteria Supplier Evaluation (MCDA)**: Weighted scoring comparison across Technical Quality, Landed Price, Delivery Resilience, ESG, and Solvency.
+* **Global Incoterms TLC Normalization**: Equalizes overseas EXW terms against domestic DDP quotes including freight, duties, port drayage, and demurrage buffers.
+* **Capex vs Opex Life-Cycle TCO**: Models 5-year operating equipment trade-offs, energy efficiencies, and capital payback horizons.
+* **Three-Way Match Forensic Audit**: Resolves PO, GRN, and invoice variance discrepancies to enforce SOX 404 payment holds.
+* **Monopoly Renewal Concessions**: Multi-variable commercial concession trading against sole-source vendors.
+* **Emergency Price Increase Defense**: PPI commodity index and labor wage formula counter-offer calculations.
+
+### 5. Verified Completion Certificate & Transcript (`#/certificate`)
+
+* **Tamper-Evident Verification Hash**: Issues cryptographic-style FNV-1a verification checksums (`PS-CERT-XXXX-XXXX-XXXX`) derived deterministically from candidate identity, organizational context, completed competencies, and assessment scores.
+* **Competency Transcript**: Tabular breakdown of all 16 digital procurement modules, lifecycle stages, score percentages, and laboratory mastery statuses.
+* **Print & PDF Optimization**: Clean print stylesheets designed for one-page executive certificate archiving.
+
+### 6. Spotlight Command Palette (Ctrl+K / Cmd+K / `/`)
+
+* Instant modal search accessible from any route.
+* Multi-attribute weighted scoring across Academy competencies, SOPs, checklists, templates, calculators, and system actions.
+* Keyboard navigation (`ArrowUp`, `ArrowDown`, `Enter`, `Escape`) with category filter chips.
 
 ---
 
-## What's inside
+## Operating Instructions
 
-| Area | What you get |
-|---|---|
-| **Knowledge Hub** | ~70 procurement concepts — definition, why it matters, when used, process, example, risks, common mistakes |
-| **SOP Center** | Standard operating procedures with purpose, steps, decision points, controls, records, KPIs and an embedded working checklist |
-| **Decision Center** | "What should I do?" — describe your situation, get routed to the right SOP, checklist, calculator and template; plus structured decision guides |
-| **Toolkit** | Calculators: quote comparison, landed cost, should-cost, TCO, negotiation savings, price increase/escalation, payment terms, PO approval check, and more. Every one shows its formula, assumptions and interpretation |
-| **Checklists** | Operational checklists with saved progress and per-item notes |
-| **Templates** | Fill-in forms for RFQ, RFP, evaluation, negotiation plan, award recommendation, business case and more — printable |
-| **KPI Center** | KPI definitions, formulas, worked examples, interpretation guidance |
-| **Workspace** | Saved analyses, favorites, recently used, full backup/restore — all local |
+### Option 1: Direct File Launch (Simplest)
+1. Locate `ProcureSherpa-v2.0.html` in the repository root.
+2. Double-click the file to launch in any modern web browser (Chrome, Edge, Firefox, Safari).
+3. The platform executes entirely within client memory with zero server dependencies.
 
-## How your data works (privacy)
+### Option 2: Local HTTP Server (Recommended)
+```bash
+# Using Node.js
+npx serve .
 
-- **Everything is stored in your browser's `localStorage`** on your machine. Nothing is sent anywhere - the app makes **zero network requests** after it is loaded.
-- Saved work is keyed to **this browser + this machine**. Clearing browser data deletes it.
-- Use **Backup / Restore** (sidebar) to export a JSON file and move your work between machines or browsers. Do this regularly if you rely on saved work.
+# Using Python
+python -m http.server 8080
+```
+Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
-## Rebuilding / developing
+### Option 3: GitHub Pages Hosting
+1. In repository settings: **Settings -> Pages -> Branch: main -> Save**.
+2. Platform serves directly via GitHub Pages over HTTPS.
 
-This is a **multi-file source project**. The app is assembled from small
-source fragments in `src/` (see `src/README.md` for the folder guide and
-`src/manifest.txt` for the exact build order) into the single-file app:
+---
+
+## Repository Structure & Source Code
+
+`ProcureSherpa-v2.0.html` is a compiled release artifact generated from modular fragments in `src/`. Source modifications must be made within `src/` and recompiled.
+
+```
+ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
+build.mjs                        # Assembly and validation compiler script
+validate.mjs                     # Structural and syntax integrity validator
+src/
+  manifest.txt                   # Linear assembly sequence (142 fragments)
+  base/                          # Design tokens, CSS stylesheets, shell markup
+  core/                          # Runtime engine, state stores, charts, router, search
+  pages/                         # Page view renderers and interactive controllers
+  content/                       # Controlled content libraries, SOPs, checklists, templates
+  calcs/                         # Calculator definitions and implementation algorithms
+tools/
+  smoke.mjs                      # Headless route test suite covering all 59 paths
+  check_rels.mjs                 # Cross-reference referential integrity validator
+  test_quiz_tips.mjs             # Assessment and adaptive tip test harness
+  print_ids.mjs                  # Content registration ID inspector
+```
+
+### Build & Verification Commands
 
 ```powershell
-# Windows PowerShell - assembles and validates in one step:
-.\assemble.ps1
-# (identical to: npm run build)
+# Compile single-file HTML bundle and validate syntax
+node build.mjs
 
-# validate an existing build only:
-node validate.mjs ProcureSherpa-v2.0.html
-# or: npm run validate
+# Run full route smoke tests across all 59 routes
+node tools/smoke.mjs
 
-# headless route smoke test (requires jsdom):
-npm run smoke
+# Validate cross-reference referential integrity
+node tools/check_rels.mjs
 ```
-
-`ProcureSherpa-v2.0.html` is a **generated release artifact** — never edit
-it directly. Always edit the fragment in `src/` and rebuild.
-
-### Repository layout
-
-```
-ProcureSherpa-v2.0.html     <- the app (generated; the only file you need to distribute)
-Procure_Sherpa_v2_Master_Requirements.md   <- functional requirements / spec
-assemble.ps1                <- thin wrapper around the Node builder
-build.mjs                   <- the builder: src/manifest.txt -> single HTML, then validate
-validate.mjs                <- checks: JS syntax, page skeleton, route/action counts
-src/                        <- Source of truth (multi-file project)
-  manifest.txt              <- explicit build order, one fragment path per line
-  base/                     <- document shell + design system (tokens, CSS, shell markup)
-  core/                     <- application engine (utils, storage, search, router,
-                               nav, calc engine, actions, boot)
-  pages/                    <- page renderers (home, lists, help, settings, ...)
-  content/                  <- knowledge libraries (concepts, SOPs, checklists,
-                               templates, decisions, KPIs, glossary, scenarios, help)
-  calcs/                    <- calculators (definition + implementation pairs)
-tools/                      <- development utilities
-  lib.mjs                   <- shared repo-path helpers (no hardcoded paths)
-  convert_v1.mjs            <- converts the v1.1.0 content libraries into v2 fragments
-  check_rels.mjs            <- verifies every cross-reference (rel) resolves (npm run check:rels)
-  smoke.mjs                 <- headless route test over the built app (npm run smoke)
-```
-
-### Editing content
-
-- Add or edit entries with the registration helpers (`PS.SKB(`, `PS.SSOP(`, `PS.SCL(`, `PS.STPL(`, `PS.SDEC(`, `PS.SKPI(`, `PS.SGLS(`, `PS.SSCN(`) in the matching `src/content/*.js` fragment, then re-run `npm run build`.
-- To add a new fragment: create it in the right `src/` subfolder, add one line to `src/manifest.txt` at the correct position (order matters — fragments share one scope), then rebuild.
-- After content changes, run `npm run check:rels` - it lists any cross-reference that points at an id that does not exist.
-
-## Troubleshooting
-
-| Symptom | Cause / fix |
-|---|---|
-| Saved work disappeared | Browser data was cleared, or you switched browser/machine. Restore from your Backup JSON. |
-| "Storage full" or saves fail | `localStorage` is ~5 MB. Remove old saved analyses in Workspace, or export a backup then clear. |
-| App looks unstyled / blank | Old browser (needs a 2018+ evergreen browser) or the file was truncated in transfer - re-download it. |
-| Opened on another machine, nothing saved | That is by design - storage is per browser. Export backup, import on the other machine. |
-| Double-click does nothing on a locked-down PC | Use Option 2 (local server) or Option 3 (GitHub Pages). |
-
-## Status / roadmap
-
-Working today: shell + navigation + search, 19 calculators (quotes, landed cost, should-cost, TCO, negotiation savings, price increase, escalation, payment terms, PO value check, MOQ, make-vs-buy, supplier scorecard, concentration/HHI, budget-vs-actual, savings analysis, multi-year contract, tax, FX, KPI quick calc), knowledge base, SOPs, checklists, templates, KPIs, glossary, scenario guides, decision-center routing, backup/restore, print/PDF reports.
-
-In progress (see `Procure_Sherpa_v2_Master_Requirements.md`): extended SOP library (13 of ~50 written to controlled-document standard), knowledge-base depth review, template confirmation prompts on older forms (done), decision-guide descriptions.
 
 ---
 
-*Procure Sherpa is a guidance and analysis tool. Numbers it produces are only as good as the inputs - validate before you commit spend. It does not replace your organisation's procurement policy.*
+## Governance & Standards Alignment
+
+Procure Sherpa v2.0 content and calculation models are aligned with international procurement standards:
+
+* **Chartered Institute of Procurement & Supply (CIPS)**: Procurement lifecycle stages, sourcing ethics, and supplier relationship management.
+* **Institute for Supply Management (ISM)**: Category management, cost modeling, and strategic sourcing methodologies.
+* **Sarbanes-Oxley Act (SOX 404)**: Segregation of duties, 3-way matching controls, and formal delegation of authority (DOA) financial thresholds ($10,000, $100,000, $250,000).
+* **International Commercial Terms (Incoterms 2020)**: Total landed cost risk and obligation allocation standards.
+* **ISO 20400**: Sustainable procurement and ESG evaluation criteria.
+
+---
+
+## Data Privacy & Security Architecture
+
+* **Single-Tenant Client Session**: All data, inputs, notes, checklist progress, and certifications reside strictly within the client browser memory footprint.
+* **Zero Network Egress**: The application issues zero outbound HTTP requests, trackers, cookies, or telemetry after initial load.
+* **Audit-Compliant Archives**: Full platform state can be exported as structured, human-readable JSON archives via the Data Management center for local backup and migration across workstations.

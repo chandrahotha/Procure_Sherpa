@@ -4,20 +4,20 @@ PS.route('backup', function () {
   var bytes = PS.store.bytes();
   var html = PS.reportHead('Backup and restore', 'Local data management') +
     '<div class="card"><h1>Backup and restore</h1>' +
-    '<p class="lead">A backup is a single JSON file containing your saved work, checklist progress, template entries, favorites, recently used items, settings and audit log. It is written by your browser to your device - nothing is uploaded anywhere.</p>' +
+    '<p class="lead">Enterprise backup generates a standardized JSON archive containing your saved analyses, checklist audit trails, template records, favorites, custom parameters, and compliance logs.</p>' +
     '<div class="grid grid-4">' +
     '<div class="stat"><div class="s-lab">Saved items</div><div class="s-val">' + PS.saved.count() + '</div></div>' +
     '<div class="stat"><div class="s-lab">Checklists with progress</div><div class="s-val">' + Object.keys(PS.clState.all()).length + '</div></div>' +
     '<div class="stat"><div class="s-lab">Templates with entries</div><div class="s-val">' + Object.keys(PS.tplState.all()).length + '</div></div>' +
-    '<div class="stat"><div class="s-lab">Local storage used</div><div class="s-val">' + PS.group(bytes / 1024, 1) + ' KB</div></div>' +
+    '<div class="stat"><div class="s-lab">Workspace Data Footprint</div><div class="s-val">' + PS.group(bytes / 1024, 1) + ' KB</div></div>' +
     '</div>' +
     '<div class="btn-row no-print">' +
     '<button type="button" class="btn btn-primary btn-lg" data-act="backup-export">Export backup now</button>' +
     '<button type="button" class="btn btn-lg" data-act="backup-import">Restore from backup file</button>' +
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
-    '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
+    '<button type="button" class="btn btn-danger" data-act="clear-data">Clear workspace data</button>' +
     '</div>' +
-    '<p class="note">Suggested filename: <code>ProcureSherpa_Backup_' + PS.esc(PS.iso()) + '.json</code>. Because this application stores data per browser profile, a backup is the only way to move your work to another device or browser.</p>' +
+    '<p class="note">Suggested filename: <code>ProcureSherpa_Backup_' + PS.esc(PS.iso()) + '.json</code>. Exporting backups enables seamless migration across workstations, audit handoffs, and disaster recovery preservation.</p>' +
     '</div>' +
     '<div class="grid grid-2">' +
     '<div class="card"><h2>What is inside a backup</h2>' + PS.ul([
@@ -50,7 +50,7 @@ PS.route('audit', function () {
     '<button type="button" class="btn btn-danger" data-act="audit-clear">Clear log</button>' +
     '<button type="button" class="btn btn-ghost" data-act="print">Print log</button>' +
     '</div>' +
-    '<p class="note">This log is not a compliance system of record. It cannot prove who did what on a shared device, and it does not capture work performed outside this toolkit.</p></div>' +
+    '<p class="note">This log is not a compliance system of record. It cannot prove who did what on a shared device, and it does not capture work performed outside this platform.</p></div>' +
     (log.length ? '<div class="card"><div class="table-wrap"><table><thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead><tbody>' +
       log.map(function (a) {
         return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(String(a.e).replace(/-/g, ' ')) + '</td><td>' + PS.esc(a.d) + '</td></tr>';

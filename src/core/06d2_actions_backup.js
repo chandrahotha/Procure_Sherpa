@@ -9,6 +9,7 @@ PS.backupObject = function () {
     recent: PS.recent.list(),
     checklists: PS.clState.all(),
     templates: PS.tplState.all(),
+    academy: PS.academy ? PS.academy.getAll() : null,
     audit: PS.auditList(),
     counts: PS.registrySummary()
   };
@@ -49,6 +50,7 @@ PS.validateBackup = function (obj) {
       recent: Array.isArray(obj.recent) ? obj.recent.filter(function (x) { return x && x.id; }) : [],
       checklists: (obj.checklists && typeof obj.checklists === 'object') ? obj.checklists : {},
       templates: (obj.templates && typeof obj.templates === 'object') ? obj.templates : {},
+      academy: (obj.academy && typeof obj.academy === 'object') ? obj.academy : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };
