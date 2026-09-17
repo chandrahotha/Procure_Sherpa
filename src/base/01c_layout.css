@@ -36,22 +36,84 @@
 
 /* Section: Visual Data Analytics Charts */
 .chart-container{
-  background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-md);
-  padding:18px 20px;margin:16px 0;box-shadow:var(--sh);
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:20px 22px;margin:16px 0;box-shadow:var(--sh);
+  position:relative;overflow:hidden;
+  animation:chart-in .4s ease-out;
+}
+@keyframes chart-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.chart-container::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--chart-gradient,var(--accent-gradient));
+  opacity:.9;
 }
 .chart-title{
-  font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:14px;
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
 }
 .chart-badge{
-  font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;
-  background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  font-size:.66rem;font-weight:700;padding:3px 10px;border-radius:999px;
+  background:var(--badge-bg,var(--accent-soft));color:var(--badge-color,var(--accent));
+  border:1px solid color-mix(in srgb,var(--badge-color,var(--accent)) 30%,transparent);
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
 .chart-svg-wrap{width:100%;overflow-x:auto;padding-bottom:4px}
-.svg-responsive{width:100%;height:auto;max-height:420px;display:block}
-.chart-empty{padding:28px;text-align:center;color:var(--mute);font-size:.85rem}
+.svg-responsive{width:100%;height:auto;max-height:420px;display:block;transition:transform .14s}
+.chart-container:hover .svg-responsive{transform:scale(1.005)}
+.chart-empty{padding:32px;text-align:center;color:var(--mute);font-size:.85rem;background:var(--panel-2);border-radius:var(--r-sm);border:1.5px dashed var(--border-2)}
 .kraljic-node{cursor:pointer;transition:transform .12s}
-.kraljic-node:hover{transform:scale(1.08)}
+.kraljic-node:hover{transform:scale(1.12);filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
+
+/* Chart variant: waterfall */
+.chart-waterfall{badge-bg:var(--kb-soft);badge-color:var(--kb);--chart-gradient:var(--kb-gradient)}
+.chart-kraljic{badge-bg:var(--sop-soft);badge-color:var(--sop);--chart-gradient:var(--sop-gradient)}
+.chart-pareto{badge-bg:var(--kpi-soft);badge-color:var(--kpi);--chart-gradient:var(--kpi-gradient)}
+.chart-zscore{badge-bg:var(--dec-soft);badge-color:var(--dec);--chart-gradient:var(--dec-gradient)}
+
+/* Animated metric counter */
+.metric-counter{
+  font-size:2.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;
+  background:var(--metric-gradient,var(--accent-gradient));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:count-up .8s ease-out;
+}
+@keyframes count-up{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+/* Progress ring for dashboard */
+.progress-ring-svg{width:64px;height:64px;transform:rotate(-90deg)}
+.progress-ring-bg{fill:none;stroke:var(--border);stroke-width:5}
+.progress-ring-fg{
+  fill:none;stroke:var(--ring-gradient,var(--accent-gradient));stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:160;stroke-dashoffset:160;
+  transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.1));
+}
+
+/* Dashboard stat card */
+.dash-stat{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:20px;box-shadow:var(--sh);transition:transform .14s,box-shadow .14s,border-color .14s;
+}
+.dash-stat:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:var(--accent)}
+.dash-stat-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:1.25rem;margin-bottom:12px}
+.dash-stat-value{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:4px 0}
+.dash-stat-label{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+
+/* Timeline with progress */
+.timeline-progress{position:relative;padding-left:28px}
+.timeline-progress::before{
+  content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-3));
+}
+.timeline-progress .timeline-step{position:relative;padding:12px 0 12px 16px}
+.timeline-progress .timeline-step::before{
+  content:"";position:absolute;left:-16px;top:16px;width:14px;height:14px;border-radius:50%;
+  background:var(--panel);border:3px solid var(--accent);z-index:1;
+  box-shadow:0 0 0 4px var(--bg);
+}
+.timeline-progress .timeline-step.is-done::before{background:var(--ok);border-color:var(--ok)}
+.timeline-progress .timeline-step.is-current::before{background:var(--accent);border-color:var(--accent);animation:pulse-ring 2s ease-out infinite}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 var(--accent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
 
 .sidebar{
   background:var(--panel);border-right:1px solid var(--border);

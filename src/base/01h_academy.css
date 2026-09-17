@@ -216,66 +216,149 @@
 }
 .func-card {
   display: block;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 18px 20px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.14s, border-color 0.14s, box-shadow 0.14s;
-  position: relative;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px 22px;
+  text-decoration:none;
+  color:inherit;
+  transition:transform .14s,border-color .14s,box-shadow .14s;
+  position:relative;
+  overflow:hidden;
 }
-.func-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-  box-shadow: var(--sh-1);
-  text-decoration: none;
+.func-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--func-gradient,var(--academy-gradient));
+  opacity:0;transition:opacity .14s;
 }
-.func-card.is-mastered {
-  border-color: #10b981;
+.func-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--func-border,var(--academy));
+  box-shadow:var(--sh-2),var(--sh-glow);
+  text-decoration:none;
 }
-.func-card.is-mastered::after {
-  content: "✓ Mastered";
-  position: absolute;
-  top: 14px; right: 14px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #059669;
-  background: #ecfdf5;
-  padding: 2px 8px;
-  border-radius: 999px;
+.func-card:hover::before{opacity:1}
+.func-card.is-mastered{
+  border-color:var(--ok);
 }
-html[data-theme="dark"] .func-card.is-mastered::after {
-  background: #064e3b;
-  color: #6ee7b7;
+.func-card.is-mastered::before{opacity:1}
+.func-card.is-mastered::after{
+  content:"✓ Mastered";
+  position:absolute;
+  top:14px;right:14px;
+  font-size:.68rem;font-weight:700;
+  color:var(--ok);
+  background:var(--ok-soft);
+  padding:2px 8px;border-radius:999px;
+  box-shadow:0 2px 8px rgba(5,150,105,.15);
 }
-.func-card-kicker {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--mute);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
+html[data-theme="dark"] .func-card.is-mastered::after{
+  background:#064e3b;color:#6ee7b7;
 }
-.func-card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
+.func-card-kicker{
+  font-size:.7rem;font-weight:800;
+  color:var(--func-kicker,var(--academy));
+  text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:8px;
 }
-.func-card-desc {
-  font-size: 0.85rem;
-  color: var(--dim);
-  line-height: 1.5;
-  margin-bottom: 12px;
+.func-card-title{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+.func-card-desc{font-size:.85rem;color:var(--dim);line-height:1.55;margin-bottom:14px;}
+.func-card-meta{display:flex;align-items:center;gap:12px;font-size:.76rem;color:var(--mute);}
+
+/* Semantic function card variants */
+.func-card.mission-value{
+  --func-gradient:var(--academy-gradient);
+  --func-border:var(--academy);
+  --func-kicker:var(--academy);
 }
-.func-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.76rem;
-  color: var(--mute);
+.func-card.spend-analysis{
+  --func-gradient:var(--kb-gradient);
+  --func-border:var(--kb);
+  --func-kicker:var(--kb);
 }
+.func-card.category-mgmt{
+  --func-gradient:var(--sop-gradient);
+  --func-border:var(--sop);
+  --func-kicker:var(--sop);
+}
+.func-card.should-cost{
+  --func-gradient:var(--calc-gradient);
+  --func-border:var(--calc);
+  --func-kicker:var(--calc);
+}
+.func-card.supplier-risk{
+  --func-gradient:var(--dec-gradient);
+  --func-border:var(--dec);
+  --func-kicker:var(--dec);
+}
+.func-card.contract-structuring{
+  --func-gradient:var(--tpl-gradient);
+  --func-border:var(--tpl);
+  --func-kicker:var(--tpl);
+}
+.func-card.supplier-eval{
+  --func-gradient:var(--cl-gradient);
+  --func-border:var(--cl);
+  --func-kicker:var(--cl);
+}
+.func-card.negotiation-strategy{
+  --func-gradient:var(--dec-gradient);
+  --func-border:var(--dec);
+  --func-kicker:var(--dec);
+}
+.func-card.srm-scorecards{
+  --func-gradient:var(--cl-gradient);
+  --func-border:var(--cl);
+  --func-kicker:var(--cl);
+}
+.func-card.landed-cost-tco{
+  --func-gradient:var(--kpi-gradient);
+  --func-border:var(--kpi);
+  --func-kicker:var(--kpi);
+}
+.func-card.rfx-strategy{
+  --func-gradient:var(--sop-gradient);
+  --func-border:var(--sop);
+  --func-kicker:var(--sop).
+}
+.func-card.audit-compliance{
+  --func-gradient:var(--gloss-gradient);
+  --func-border:var(--gloss);
+  --func-kicker:var(--gloss).
+}
+
+/* Module badge with gradient */
+.module-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:999px;
+  font-size:.7rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.06em;
+  color:#fff;background:var(--module-gradient,var(--academy-gradient));
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+
+/* Progress ring for module completion */
+.module-progress-ring{width:48px;height:48px;transform:rotate(-90deg);flex-shrink:0}
+.module-progress-bg{fill:none;stroke:var(--border);stroke-width:4}
+.module-progress-fg{
+  fill:none;stroke:var(--module-gradient,var(--academy-gradient));stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:125;stroke-dashoffset:125;
+  transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.1));
+}
+
+/* Badge grid for achievements */
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px}
+.badge-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;text-align:center;transition:transform .14s,box-shadow .14s,border-color .14s;
+}
+.badge-card:hover{transform:translateY(-2px);box-shadow:var(--sh-1);border-color:var(--accent)}
+.badge-card.is-unlocked{border-color:var(--ok);background:var(--ok-soft)}
+.badge-card.is-locked{opacity:.55;filter:grayscale(.3)}
+.badge-icon{font-size:2.5rem;margin-bottom:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
+.badge-name{font-weight:700;font-size:.9rem;margin-bottom:4px;color:var(--text)}
+.badge-desc{font-size:.75rem;color:var(--dim);line-height:1.5}
 
 /* ---------- Digital SOP Stepper ---------- */
 .sop-stepper {

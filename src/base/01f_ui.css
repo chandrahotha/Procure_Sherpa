@@ -95,19 +95,35 @@ html[data-theme="dark"] .hub-card .hub-step{background:var(--accent);color:#fff}
 .kv dt{color:var(--mute);font-weight:600}
 .kv dd{margin:0;color:var(--text)}
 .empty{border:1.5px dashed var(--border-2);border-radius:var(--r);padding:26px 20px;text-align:center;color:var(--mute);font-size:.86rem;background:var(--panel-2)}
-/* badge tint variants per content type */
-.badge.acc-kb{background:#efeaff;color:#5b3df0}.badge.acc-sop{background:#e7efff;color:#1d4fb8}
-.badge.acc-cl{background:#e2f6ea;color:#0b6f3f}.badge.acc-tpl{background:#faf0dd;color:#8a5a12}
-.badge.acc-calc{background:#dcf4f1;color:#0b6f66}.badge.acc-dec{background:#fbe9f4;color:#a11e6e}
-.badge.acc-kpi{background:#fdf0dc;color:#9a5510}.badge.acc-scen{background:#fdeae0;color:#b44515}
-html[data-theme="dark"] .badge.acc-kb{background:#2a2350;color:#b9a8ff}
-html[data-theme="dark"] .badge.acc-sop{background:#1c2c4f;color:#9ec1ff}
-html[data-theme="dark"] .badge.acc-cl{background:#153426;color:#7fd8a5}
-html[data-theme="dark"] .badge.acc-tpl{background:#3a2f14;color:#e8c476}
-html[data-theme="dark"] .badge.acc-calc{background:#123733;color:#6fd3c7}
-html[data-theme="dark"] .badge.acc-dec{background:#3c1c31;color:#f0a4d2}
-html[data-theme="dark"] .badge.acc-kpi{background:#3a2a10;color:#f2b866}
-html[data-theme="dark"] .badge.acc-scen{background:#3c2214;color:#f5a76f}
+/* badge tint variants per content type - using semantic CSS variables */
+.badge.acc-kb{background:var(--kb-soft);color:var(--kb);border-color:color-mix(in srgb,var(--kb) 30%,transparent)}
+.badge.acc-sop{background:var(--sop-soft);color:var(--sop);border-color:color-mix(in srgb,var(--sop) 30%,transparent)}
+.badge.acc-cl{background:var(--cl-soft);color:var(--cl);border-color:color-mix(in srgb,var(--cl) 30%,transparent)}
+.badge.acc-tpl{background:var(--tpl-soft);color:var(--tpl);border-color:color-mix(in srgb,var(--tpl) 30%,transparent)}
+.badge.acc-calc{background:var(--calc-soft);color:var(--calc);border-color:color-mix(in srgb,var(--calc) 30%,transparent)}
+.badge.acc-dec{background:var(--dec-soft);color:var(--dec);border-color:color-mix(in srgb,var(--dec) 30%,transparent)}
+.badge.acc-kpi{background:var(--kpi-soft);color:var(--kpi);border-color:color-mix(in srgb,var(--kpi) 30%,transparent)}
+.badge.acc-scen{background:var(--scen-soft);color:var(--scen);border-color:color-mix(in srgb,var(--scen) 30%,transparent)}
+.badge.acc-gloss{background:var(--gloss-soft);color:var(--gloss);border-color:color-mix(in srgb,var(--gloss) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-kb{background:var(--kb-soft);color:var(--kb);border-color:color-mix(in srgb,var(--kb) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-sop{background:var(--sop-soft);color:var(--sop);border-color:color-mix(in srgb,var(--sop) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-cl{background:var(--cl-soft);color:var(--cl);border-color:color-mix(in srgb,var(--cl) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-tpl{background:var(--tpl-soft);color:var(--tpl);border-color:color-mix(in srgb,var(--tpl) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-calc{background:var(--calc-soft);color:var(--calc);border-color:color-mix(in srgb,var(--calc) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-dec{background:var(--dec-soft);color:var(--dec);border-color:color-mix(in srgb,var(--dec) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-kpi{background:var(--kpi-soft);color:var(--kpi);border-color:color-mix(in srgb,var(--kpi) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-scen{background:var(--scen-soft);color:var(--scen);border-color:color-mix(in srgb,var(--scen) 30%,transparent)}
+html[data-theme="dark"] .badge.acc-gloss{background:var(--gloss-soft);color:var(--gloss);border-color:color-mix(in srgb,var(--gloss) 30%,transparent)}
+/* gradient badge variants */
+.badge-gradient.acc-kb{background:var(--kb-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-sop{background:var(--sop-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-cl{background:var(--cl-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-tpl{background:var(--tpl-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-calc{background:var(--calc-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-dec{background:var(--dec-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-kpi{background:var(--kpi-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-scen{background:var(--scen-gradient);color:#fff;border-color:transparent}
+.badge-gradient.acc-gloss{background:var(--gloss-gradient);color:#fff;border-color:transparent}
 /* scenario / journey stepper */
 .pbar{height:8px;border-radius:5px;background:var(--sunken);overflow:hidden;margin:10px 0 4px;border:1px solid var(--border)}
 .pbar-fill{height:100%;background:linear-gradient(90deg,var(--ok),#34d399);border-radius:5px;transition:width .25s ease}
