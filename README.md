@@ -57,40 +57,55 @@ Copy `ProcureSherpa-v2.0.html` to a USB stick. It runs from any machine with a b
 
 ## Rebuilding / developing
 
-The app is assembled from small source fragments in `build/`, concatenated in filename order:
+This is a **multi-file source project**. The app is assembled from small
+source fragments in `src/` (see `src/README.md` for the folder guide and
+`src/manifest.txt` for the exact build order) into the single-file app:
 
 ```powershell
 # Windows PowerShell - assembles and validates in one step:
 .\assemble.ps1
-# -> writes ProcureSherpa-v2.0.html and runs syntax + content validation
+# (identical to: npm run build)
 
 # validate an existing build only:
 node validate.mjs ProcureSherpa-v2.0.html
+# or: npm run validate
+
+# headless route smoke test (requires jsdom):
+npm run smoke
 ```
+
+`ProcureSherpa-v2.0.html` is a **generated release artifact** — never edit
+it directly. Always edit the fragment in `src/` and rebuild.
 
 ### Repository layout
 
 ```
-ProcureSherpa-v2.0.html     <- the app (the only file you need to distribute)
+ProcureSherpa-v2.0.html     <- the app (generated; the only file you need to distribute)
 Procure_Sherpa_v2_Master_Requirements.md   <- functional requirements / spec
-assemble.ps1                <- build: concatenate build/* -> single HTML, then validate
+assemble.ps1                <- thin wrapper around the Node builder
+build.mjs                   <- the builder: src/manifest.txt -> single HTML, then validate
 validate.mjs                <- checks: JS syntax, page skeleton, route/action counts
-build/                      <- source fragments, concatenated in filename order
-  01*-02*                   <- head, CSS, shell markup
-  03*-07*                   <- utils, storage, search, router, nav, calc engine, boot
-  08*                       <- page renderers (home, lists, help, settings, ...)
-  09*-18*                   <- content: concepts, SOPs, checklists, templates,
-                               decisions, KPIs, glossary, scenarios, help
-  20*-28*                   <- calculators (definition + implementation pairs)
+src/                        <- Source of truth (multi-file project)
+  manifest.txt              <- explicit build order, one fragment path per line
+  base/                     <- document shell + design system (tokens, CSS, shell markup)
+  core/                     <- application engine (utils, storage, search, router,
+                               nav, calc engine, actions, boot)
+  pages/                    <- page renderers (home, lists, help, settings, ...)
+  content/                  <- knowledge libraries (concepts, SOPs, checklists,
+                               templates, decisions, KPIs, glossary, scenarios, help)
+  calcs/                    <- calculators (definition + implementation pairs)
 tools/                      <- development utilities
+  lib.mjs                   <- shared repo-path helpers (no hardcoded paths)
   convert_v1.mjs            <- converts the v1.1.0 content libraries into v2 fragments
-  check_rels.mjs            <- verifies every cross-reference (rel) resolves
+  check_rels.mjs            <- verifies every cross-reference (rel) resolves (npm run check:rels)
+  smoke.mjs                 <- headless route test over the built app (npm run smoke)
 ```
 
 ### Editing content
 
-- Add or edit entries with the registration helpers (`PS.SKB(`, `PS.SSOP(`, `PS.SCL(`, `PS.STPL(`, `PS.SDEC(`, `PS.SKPI(`, `PS.SGLS(`, `PS.SSCN(`) in the matching `build/1x_*.js` fragment, then re-run `assemble.ps1`.
-- After content changes, run `node tools/check_rels.mjs` - it lists any cross-reference that points at an id that does not exist.
+- Add or edit entries with the registration helpers (`PS.SKB(`, `PS.SSOP(`, `PS.SCL(`, `PS.STPL(`, `PS.SDEC(`, `PS.SKPI(`, `PS.SGLS(`, `PS.SSCN(`) in the matching `src/content/*.js` fragment, then re-run `npm run build`.
+- To add a new fragment: create it in the right `src/` subfolder, add one line to `src/manifest.txt` at the correct position (order matters — fragments share one scope), then rebuild.
+- After content changes, run `npm run check:rels` - it lists any cross-reference that points at an id that does not exist.
 
 ## Troubleshooting
 
@@ -104,9 +119,9 @@ tools/                      <- development utilities
 
 ## Status / roadmap
 
-Working today: shell + navigation + search, 9 calculators (quotes, landed cost, should-cost, TCO, negotiation savings, price increase, escalation, payment terms, PO value check), knowledge base, SOPs, checklists, templates, KPIs, glossary, scenario guides, decision-center routing, backup/restore, print/PDF reports.
+Working today: shell + navigation + search, 19 calculators (quotes, landed cost, should-cost, TCO, negotiation savings, price increase, escalation, payment terms, PO value check, MOQ, make-vs-buy, supplier scorecard, concentration/HHI, budget-vs-actual, savings analysis, multi-year contract, tax, FX, KPI quick calc), knowledge base, SOPs, checklists, templates, KPIs, glossary, scenario guides, decision-center routing, backup/restore, print/PDF reports.
 
-In progress (see `Procure_Sherpa_v2_Master_Requirements.md`): remaining calculators (MOQ, make-vs-buy, supplier scorecard, concentration, budget-vs-actual, savings analysis, multi-year contract, FX, tax), decision guides, maturity model, lifecycle map.
+In progress (see `Procure_Sherpa_v2_Master_Requirements.md`): extended SOP library (13 of ~50 written to controlled-document standard), knowledge-base depth review, template confirmation prompts on older forms (done), decision-guide descriptions.
 
 ---
 

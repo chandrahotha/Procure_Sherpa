@@ -4,7 +4,11 @@
   "description": "A complete, **offline, single-file procurement toolkit** — knowledge base, SOPs, checklists, templates, calculators, decision guides, KPIs and scenario guides in one HTML file. No install, no server, no internet connection, no account. Your data never leaves your browser.",
   "main": "_check.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.mjs",
+    "validate": "node validate.mjs ProcureSherpa-v2.0.html",
+    "check:rels": "node tools/check_rels.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "test": "node build.mjs"
   },
   "repository": {
     "type": "git",

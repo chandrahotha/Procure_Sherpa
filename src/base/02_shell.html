@@ -1,0 +1,76 @@
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">PS</div>
+      <div class="brand-text">
+        <strong>Procure Sherpa</strong>
+        <span id="brandVersion">v2.0 &middot; Offline Toolkit</span>
+      </div>
+      <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">&#10005;</button>
+    </div>
+    <div class="nav-filter no-print">
+      <label class="sr-only" for="navFilter">Filter navigation</label>
+      <input id="navFilter" type="search" placeholder="Filter menu…" autocomplete="off" aria-label="Filter navigation">
+    </div>
+    <nav class="nav" id="navRoot" aria-label="Sections"></nav>
+    <div class="sidebar-foot">
+      <div class="privacy-note">
+        <span aria-hidden="true">&#128274;</span>
+        <span>Your procurement data stays on your device/browser. No account, no cloud, no tracking.</span>
+      </div>
+    </div>
+  </aside>
+
+  <button class="scrim" id="scrim" type="button" hidden aria-label="Close navigation"></button>
+
+  <div class="content">
+    <header class="topbar no-print">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
+      <form class="search-mini" id="miniSearch" role="search" action="#/search" method="get" onsubmit="event.preventDefault();PS.go('search',{q:document.getElementById('q').value});">
+        <label class="sr-only" for="q">Search Procure Sherpa</label>
+        <div class="search-wrap">
+          <input id="q" name="q" type="search" placeholder="Search knowledge, SOPs, calculators, checklists, templates, KPIs…" autocomplete="off">
+          <span class="search-kbd" aria-hidden="true">Ctrl K</span>
+        </div>
+        <button class="btn btn-sm btn-primary" type="submit">Search</button>
+      </form>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite">&#9734;</button>
+        <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report">&#128424;</button>
+        <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">&#9686;</button>
+        <a class="btn btn-sm" id="homeBtn" href="#/home" title="Home">&#8962; <span class="hide-sm">Home</span></a>
+      </div>
+    </header>
+
+    <nav class="crumb no-print" id="crumb" aria-label="Breadcrumb"></nav>
+    <main class="main" id="main" tabindex="-1"></main>
+
+    <footer class="footer no-print">
+      <div class="foot-links">
+        <a href="#/help">Help Center</a>
+        <a href="#/help/methodology">Methodology</a>
+        <a href="#/help/assumptions">Assumptions</a>
+        <a href="#/glossary">Glossary</a>
+        <a href="#/help/privacy">Privacy</a>
+        <a href="#/help/disclaimers">Disclaimers</a>
+        <a href="#/help/versions">Version history</a>
+        <a href="#/settings">Settings</a>
+        <a href="#/backup">Backup / Restore</a>
+      </div>
+      <div id="footNote">Procure Sherpa v2.0 &mdash; offline procurement decision-support toolkit. Not an ERP. Approval thresholds, tax treatment and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
+    </footer>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+/* ==========================================================
+   Procure Sherpa v2.0 - application script
+   Section A: namespace, constants, utilities
+   ========================================================== */

@@ -1,8 +1,8 @@
 /* Static check: every rel id must resolve to a registered item of the right type. */
 import fs from 'node:fs';
 import path from 'node:path';
-const BUILD = 'd:/DT_Works/Free Tools/Sherpa/build';
-const files = fs.readdirSync(BUILD).filter((f) => f.endsWith('.js')).sort();
+import { SRC, listFiles, baseName, readSrc } from './lib.mjs';
+const files = listFiles().filter((f) => f.endsWith('.js'));
 const ids = { kb: new Set(), sop: new Set(), cl: new Set(), tpl: new Set(), dec: new Set(), kpi: new Set(), gloss: new Set(), calc: new Set(), scen: new Set() };
 const rels = [];
 const slug = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -16,7 +16,7 @@ function balanced(t, start) {
   return null;
 }
 for (const f of files) {
-  const t = fs.readFileSync(path.join(BUILD, f), 'utf8');
+  const t = readSrc(f);
      for (const m of t.matchAll(/PS\.S(?:KB|SOP|DEC|CL|TPL|KPI|GLS|SCN)\(\s*\{/g)) {
     const obj = balanced(t, m.index + m[0].length - 1);
     if (!obj) continue;
@@ -90,7 +90,7 @@ for (const r of rels) {
       const rid = norm(ty, id);
       if (!ids[ty].has(rid)) {
         broken[ty + ' ' + rid] = (broken[ty + ' ' + rid] || new Set());
-        broken[ty + ' ' + rid].add(r.f);
+        broken[ty + ' ' + rid].add(baseName(r.f));
         bad++;
       }
     }

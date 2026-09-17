@@ -6,7 +6,10 @@ import path from 'node:path';
 import vm from 'node:vm';
 
 const V1 = 'E:/Downloads/Procurement_AIO-main/Procurement_AIO-main';
-const BUILD = 'd:/DT_Works/Free Tools/Sherpa/build';
+/* One-shot v1 -> v2 migration script (already run). Paths are repo-relative;
+   content fragments are emitted into src/content/. */
+import { SRC_CONTENT, listFiles, baseName, readSrc } from './lib.mjs';
+const BUILD = SRC_CONTENT;
 const slug = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const J = JSON.stringify;
 const jList = (arr) => J(String((arr || []).join(';')));
