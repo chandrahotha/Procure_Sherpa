@@ -96,7 +96,10 @@ PS.kbdHelp = {
 
     var html = '<div class="kbd-help-header">' +
       '<h2 id="kbdHelpTitle">Keyboard Shortcuts</h2>' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd">Print Cheat Sheet</button>' +
       '<button type="button" class="kbd-help-close" aria-label="Close">&times;</button>' +
+      '</div>' +
       '</div><div class="kbd-help-body">';
 
     self.sections.forEach(function (sec) {
@@ -148,6 +151,45 @@ PS.kbdHelp = {
 
   toggle: function () {
     if (this.isOpen) this.close(); else this.open();
+  },
+
+  /* Printable cheat sheet */
+  printCheatSheet: function () {
+    var self = this;
+    var html = '<!DOCTYPE html><html><head><title>Procure Sherpa - Keyboard Shortcuts Cheat Sheet</title>' +
+      '<style>' +
+      '@page { margin: 12mm; size: A4; }' +
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; }' +
+      'h1 { font-size: 18pt; margin: 0 0 4pt; border-bottom: 2px solid #333; padding-bottom: 4pt; }' +
+      'h2 { font-size: 13pt; margin: 16pt 0 6pt; color: #333; border-bottom: 1px solid #999; padding-bottom: 2pt; }' +
+      'table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; font-size: 10pt; }' +
+      'th, td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; vertical-align: top; }' +
+      'th { background: #f0f0f0; font-weight: bold; width: 30%; }' +
+      'kbd { font-family: "SF Mono", "Fira Code", Consolas, monospace; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-size: 9.5pt; white-space: nowrap; }' +
+      '.footer { margin-top: 24pt; font-size: 8pt; color: #666; text-align: center; }' +
+      '@media print { .no-print { display: none !important; } }' +
+      '</style></head><body>' +
+      '<h1>Procure Sherpa v2.0 — Keyboard Shortcuts Cheat Sheet</h1>' +
+      '<p style="margin: 4pt 0 16pt; color: #666;">Offline-first procurement toolkit | <span id="printDate"></span></p>';
+
+    self.sections.forEach(function (sec) {
+      html += '<h2>' + PS.esc(sec.title) + '</h2><table><tbody>';
+      sec.items.forEach(function (item) {
+        html += '<tr><td><kbd>' + PS.esc(item.kbd) + '</kbd></td><td>' + PS.esc(item.desc) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    });
+
+    html += '<div class="footer">Generated from Procure Sherpa ' + PS.VERSION + ' | ' +
+      'Press Ctrl+P to print/save as PDF | All shortcuts work offline</div>' +
+      '<scr' + 'ipt>document.getElementById("printDate").textContent = new Date().toLocaleString();</scr' + 'ipt>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(function () { win.print(); }, 300);
   }
 };
 

@@ -1,6 +1,7 @@
 /* ---------- UI-level actions ---------- */
 PS.acts.theme = function () { PS.toggleTheme(); };
 PS.acts.print = function () { try { window.print(); } catch (e) { PS.toast('Printing is not available in this browser.', 'danger'); } };
+PS.acts['print-kbd'] = function () { PS.kbdHelp.printCheatSheet(); };
 PS.acts.fav = function () {
   var c = PS.currentItem;
   if (!c) { PS.toast('Open a page before adding it to favorites.'); return; }
@@ -136,4 +137,70 @@ PS.acts['cl-export'] = function () {
   PS.download('ProcureSherpa_Checklist_' + c.id + '_' + PS.iso() + '.csv',
     PS.toCSV(['Section', 'Item', 'Status'], rows), 'text/csv');
   PS.audit('checklist-exported', c.item.title);
+};
+
+/* ---------- saved workspace bulk actions ---------- */
+PS.acts['saved-clear-selection'] = function () {
+  PS.savedView.selected = {};
+  PS.renderRoute();
+};
+
+PS.acts['saved-item-toggle'] = function (el) {
+  var id = el.dataset.id;
+  var sel = PS.savedView.selected || {};
+  if (el.checked) sel[id] = true; else delete sel[id];
+  PS.savedView.selected = sel;
+  PS.renderRoute();
+};
+
+PS.acts['saved-select-all'] = function (el) {
+  var sel = PS.savedView.selected || {};
+  var items = PS.saved.list();
+  var v = PS.savedView;
+  if (v.type) items = items.filter(function (r) { return r.type === v.type; });
+  if (PS.clean(v.q)) {
+    var q = v.q.toLowerCase();
+    items = items.filter(function (r) {
+      return (r.title + ' ' + (r.notes || '') + ' ' + (r.tags || []).join(' ')).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  if (el.checked) {
+    items.forEach(function (r) { sel[r.id] = true; });
+  } else {
+    PS.savedView.selected = {};
+  }
+  PS.renderRoute();
+};
+
+PS.acts['saved-bulk-delete'] = function () {
+  var sel = PS.savedView.selected || {};
+  var ids = Object.keys(sel);
+  if (!ids.length) return;
+  PS.confirm({
+    title: 'Delete ' + ids.length + ' saved item' + (ids.length > 1 ? 's' : '') + '?',
+    body: '<p>This action cannot be undone. The items will be permanently removed from your local workspace.</p>',
+    okLabel: 'Delete',
+    danger: true,
+    onOk: function () {
+      var saved = PS.saved.list();
+      var remaining = saved.filter(function (r) { return !sel[r.id]; });
+      PS.store.set(PS.K.saved, remaining);
+      PS.savedView.selected = {};
+      PS.audit('saved-bulk-deleted', ids.length + ' items');
+      PS.toast('Deleted ' + ids.length + ' item' + (ids.length > 1 ? 's' : '') + '.', 'ok');
+      PS.renderRoute();
+    }
+  });
+};
+
+PS.acts['saved-bulk-export'] = function () {
+  var sel = PS.savedView.selected || {};
+  var ids = Object.keys(sel);
+  if (!ids.length) return;
+  var saved = PS.saved.list();
+  var toExport = saved.filter(function (r) { return sel[r.id]; });
+  PS.download('ProcureSherpa_BulkExport_' + PS.iso() + '.json',
+    PS.toJSON({ exported: PS.iso(), items: toExport }, 2), 'application/json');
+  PS.audit('saved-bulk-exported', ids.length + ' items');
+  PS.toast('Exported ' + ids.length + ' item' + (ids.length > 1 ? 's' : '') + ' as JSON.', 'ok');
 };

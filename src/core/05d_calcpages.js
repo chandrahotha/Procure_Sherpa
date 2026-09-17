@@ -47,6 +47,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-print">Print / PDF</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-csv">CSV</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-markdown">Copy as Markdown</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy">Copy summary</button>' +
     '</div>' +
     '<div class="field" style="margin-top:12px;margin-bottom:0"><label for="calcNotes">Notes for the report</label>' +

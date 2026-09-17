@@ -19,8 +19,25 @@ PS.renderSavedList = function () {
       ? 'No saved items match this filter.'
       : 'Nothing saved yet. Save a calculation, checklist, template or decision and it appears here with search, rename, duplicate, export and delete.');
   }
-  return '<div class="card">' + items.map(function (r) {
+
+  // Bulk actions state
+  var sel = PS.savedView.selected || {};
+  var hasSelection = Object.keys(sel).length > 0;
+
+  var html = '<div class="card">';
+  if (hasSelection) {
+    html += '<div class="saved-bulk-bar no-print" style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r-sm);margin:-16px -16px 16px;border-radius:var(--r) var(--r) 0 0">' +
+      '<span class="flex items-center gap8"><input type="checkbox" id="savedSelectAll" ' + (Object.keys(sel).length === items.length ? 'checked' : '') + ' aria-label="Select all visible"><label for="savedSelectAll" style="font-weight:600">' + Object.keys(sel).length + ' selected</label></span>' +
+      '<div class="spacer"></div>' +
+      '<div class="btn-row tight">' +
+      '<button type="button" class="btn btn-sm" data-act="saved-bulk-export">Export selected</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-bulk-delete">Delete selected</button>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="saved-clear-selection">Clear selection</button>' +
+      '</div></div>';
+  }
+  html += items.map(function (r) {
     var d = r.data || {}, summary = '', isHtml = false;
+    var isSelected = !!sel[r.id];
     if (Array.isArray(d.results) && d.results.length) {
       summary = d.results.slice(0, 4).map(function (x) { return PS.esc(x.label) + ': ' + PS.esc(x.value); }).join(' &middot; ');
       isHtml = true;
@@ -34,8 +51,8 @@ PS.renderSavedList = function () {
       summary = 'Average maturity level ' + PS.esc(PS.round(d.average, 2)) + ' of 5';
       isHtml = true;
     }
-    return '<div class="card card-tight" style="background:var(--panel-2)">' +
-      '<div class="card-head"><div><strong>' + PS.esc(r.title) + '</strong> ' + PS.badge(r.type) +
+    return '<div class="card card-tight" style="background:' + (isSelected ? 'var(--accent-soft)' : 'var(--panel-2)') + ';border-color:' + (isSelected ? 'var(--accent)' : 'var(--border)') + '">' +
+      '<div class="card-head"><div><input type="checkbox" class="saved-item-checkbox" data-id="' + PS.esc(r.id) + '"' + (isSelected ? ' checked' : '') + ' aria-label="Select ' + PS.esc(r.title) + '"><strong>' + PS.esc(r.title) + '</strong> ' + PS.badge(r.type) +
       '<div class="res-desc">Created ' + PS.esc(PS.dateStr(r.created)) + ' &middot; modified ' + PS.esc(PS.dateStr(r.modified)) +
       ((r.tags || []).length ? ' &middot; tags: ' + PS.esc(r.tags.join(', ')) : '') + '</div></div>' +
       '<div class="spacer"></div>' +
@@ -54,4 +71,5 @@ PS.renderSavedList = function () {
       '<div class="print-only"><p>' + (isHtml ? summary.replace(/&middot;/g, ' | ') : PS.esc(summary)) + '</p><p>' + PS.esc(r.notes || '') + '</p></div>' +
       '</div>';
   }).join('') + '</div>';
+  return html;
 };

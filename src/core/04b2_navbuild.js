@@ -171,7 +171,18 @@ PS.toggleNav = function (open) {
 };
 PS.closeNav = function () { PS.toggleNav(false); };
 PS.applyTheme = function (theme) {
-  var t = theme || PS.prefs().theme || 'light';
+  var p = PS.prefs();
+  var schedule = p.themeSchedule || 'manual';
+  var t;
+
+  if (schedule === 'system' && window.matchMedia) {
+    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } else if (schedule === 'auto') {
+    t = PS.getScheduledTheme();
+  } else {
+    t = theme || p.theme || 'light';
+  }
+
   if (t !== 'light' && t !== 'dark') t = 'light';
   document.documentElement.setAttribute('data-theme', t);
   try {
@@ -182,6 +193,58 @@ PS.applyTheme = function (theme) {
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';
   var lab = PS.$('#themeLabel');
   if (lab) lab.textContent = t === 'dark' ? 'Dark mode is on' : 'Light mode is on';
+};
+
+PS.getScheduledTheme = function () {
+  var p = PS.prefs();
+  var start = p.themeAutoStart || '06:00';
+  var end = p.themeAutoEnd || '20:00';
+  var now = new Date();
+  var currentMinutes = now.getHours() * 60 + now.getMinutes();
+  var parseTime = function (str) {
+    var parts = str.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  };
+  var startMin = parseTime(start);
+  var endMin = parseTime(end);
+  // Light mode during day (start to end), dark mode at night
+  if (startMin <= endMin) {
+    return (currentMinutes >= startMin && currentMinutes < endMin) ? 'light' : 'dark';
+  } else {
+    // Overnight schedule (e.g., 22:00 to 06:00)
+    return (currentMinutes >= startMin || currentMinutes < endMin) ? 'dark' : 'light';
+  }
+};
+
+PS.startThemeScheduler = function () {
+  if (PS._themeSchedulerInterval) return;
+  var check = function () {
+    var p = PS.prefs();
+    if (p.themeSchedule === 'auto') {
+      var scheduled = PS.getScheduledTheme();
+      if (scheduled !== p.theme) {
+        PS.savePrefs({ theme: scheduled }, true);
+        PS.applyTheme(scheduled);
+      }
+    } else if (p.themeSchedule === 'system' && window.matchMedia) {
+      var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (system !== p.theme) {
+        PS.savePrefs({ theme: system }, true);
+        PS.applyTheme(system);
+      }
+    }
+  };
+  // Check immediately
+  check();
+  // Then check every minute
+  PS._themeSchedulerInterval = setInterval(check, 60000);
+};
+
+PS.stopThemeScheduler = function () {
+  if (PS._themeSchedulerInterval) {
+    clearInterval(PS._themeSchedulerInterval);
+    PS._themeSchedulerInterval = null;
+  }
 };
 PS.toggleTheme = function () {
   var cur = PS.prefs().theme === 'dark' ? 'light' : 'dark';

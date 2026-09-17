@@ -181,7 +181,7 @@ PS.search = function (q, opts) {
       shortcut: self.getShortcut(r.type, r.id)
     };
   });
-  return { query: PS.clean(q, 120), results: results, total: out.length };
+  return { query: PS.clean(q, 120), results: results, total: out.length, suggestions: PS.getSearchSuggestions(q) };
 };
 
 PS.highlight = function (text, q) {
@@ -194,6 +194,65 @@ PS.highlight = function (text, q) {
     } catch (e) { }
   });
   return safe;
+};
+
+PS.levenshtein = function (a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  var matrix = [];
+  for (var i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+  for (var j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+  for (var i = 1; i <= b.length; i++) {
+    for (var j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+};
+
+PS.getSearchSuggestions = function (query, maxSuggestions) {
+  maxSuggestions = maxSuggestions || 3;
+  var q = PS.clean(query, 120).toLowerCase();
+  if (!q || q.length < 3) return [];
+
+  var idx = PS.buildIndex();
+  var terms = new Set();
+
+  // Collect all searchable terms from index
+  idx.forEach(function (rec) {
+    terms.add(rec.title.toLowerCase());
+    if (rec.cat) terms.add(rec.cat.toLowerCase());
+    (rec.tags || '').split(' ').forEach(function (t) { if (t.length > 2) terms.add(t); });
+  });
+
+  // Add known suggest terms
+  PS.suggestTerms.forEach(function (t) { terms.add(t.toLowerCase()); });
+
+  // Find closest matches by Levenshtein distance
+  var suggestions = [];
+  terms.forEach(function (term) {
+    if (term.length < 3) return;
+    var dist = PS.levenshtein(q, term);
+    var maxDist = Math.max(2, Math.floor(q.length * 0.3));
+    if (dist <= maxDist && term !== q) {
+      suggestions.push({ term: term, distance: dist });
+    }
+  });
+
+  suggestions.sort(function (a, b) {
+    if (a.distance !== b.distance) return a.distance - b.distance;
+    return a.term.localeCompare(b.term);
+  });
+
+  return suggestions.slice(0, maxSuggestions).map(function (s) { return s.term; });
 };
 
 PS.suggestTerms = [
@@ -302,6 +361,7 @@ PS.cmdPalette = {
       '<span><kbd>&crarr;</kbd> Open</span>' +
       '<span><kbd>ESC</kbd> Close</span>' +
       '<span><kbd>Ctrl+Shift+K</kbd> Shortcuts</span>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd" style="margin-left:auto">Print Cheat Sheet</button>' +
       '</div>' +
       '</div>';
 
@@ -386,13 +446,49 @@ PS.cmdPalette = {
     }
 
     self.lastResults = res.results || [];
+    var suggestions = res.suggestions || [];
+    var showSuggestions = suggestions.length && (self.lastResults.length < 5 || !self.lastResults.length);
+
     if (!self.lastResults.length) {
+      var suggestionHtml = showSuggestions ? '<div class="cmd-suggestions">' +
+        '<div class="cmd-suggestion-label">Did you mean?</div>' +
+        '<div class="cmd-suggestion-chips">' +
+        suggestions.map(function (s) {
+          return '<button type="button" class="cmd-suggestion-chip" data-suggest="' + PS.escAttr(s) + '">' + PS.esc(s) + '</button>';
+        }).join('') +
+        '</div></div>' : '';
+
       list.innerHTML = '<div class="cmd-empty-state">' +
         '<div class="cmd-empty-icon">&#128269;</div>' +
         '<div class="cmd-empty-title">No matching procurement items found</div>' +
         '<div class="cmd-empty-desc">Try searching for concepts like <em>price increase</em>, <em>TCO</em>, <em>RFQ</em>, or <em>supplier evaluation</em>.</div>' +
+        suggestionHtml +
         '</div>';
+      // Wire suggestion chips
+      if (showSuggestions) {
+        list.querySelectorAll('.cmd-suggestion-chip').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var suggest = btn.dataset.suggest;
+            if (suggest && input) {
+              input.value = suggest;
+              self.activeIdx = 0;
+              self.renderResults();
+            }
+          });
+        });
+      }
       return;
+    }
+
+    // Also show suggestions inline if few results
+    if (showSuggestions) {
+      html += '<div class="cmd-suggestions" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">' +
+        '<div class="cmd-suggestion-label">Did you mean?</div>' +
+        '<div class="cmd-suggestion-chips">' +
+        suggestions.map(function (s) {
+          return '<button type="button" class="cmd-suggestion-chip" data-suggest="' + PS.escAttr(s) + '">' + PS.esc(s) + '</button>';
+        }).join('') +
+        '</div></div>';
     }
 
     var html = '';

@@ -69,6 +69,12 @@ PS.acts['calc-copy'] = function () {
   if (!calc || !PS.calcState.result) return;
   PS.copy(PS.calcSummaryText(calc, PS.calcState.values, PS.calcState.result), calc.title + ' summary');
 };
+PS.acts['calc-markdown'] = function () {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc || !PS.calcState.result) { PS.runCalc(true); }
+  if (!calc || !PS.calcState.result) return;
+  PS.copy(PS.calcMarkdown(calc, PS.calcState.values, PS.calcState.result), calc.title + ' Markdown');
+};
 PS.acts.share = function () {
   var calc = PS.byId('calc', PS.calcState.id);
   if (!calc) return;
@@ -111,4 +117,17 @@ PS.acts.handoff = function (el) {
   PS.pendingPrefill = { to: to, from: calc.id, values: PS.readCalcInputs(), t: new Date().toISOString() };
   PS.audit('cross-tool-handoff', calc.title + ' \u2192 ' + target.title);
   PS.go('calc', null, to);
+};
+PS.acts['chart-export'] = function (el) {
+  var type = el.dataset.chartType;
+  var svg = document.querySelector('.chart-container .svg-responsive svg');
+  if (!svg) { PS.toast('No chart found on this page.', 'danger'); return; }
+  var filenames = {
+    waterfall: 'should-cost-waterfall.svg',
+    kraljic: 'kraljic-matrix.svg',
+    pareto: 'pareto-spend.svg',
+    zscore: 'altman-zscore-gauge.svg'
+  };
+  PS.chart.exportSVG(svg, filenames[type] || 'chart.svg');
+  PS.toast('SVG downloaded', 'ok');
 };

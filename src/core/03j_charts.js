@@ -8,6 +8,23 @@
    ========================================================== */
 
 PS.chart = {
+  /* Export SVG as file */
+  exportSVG: function (svgElement, filename) {
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(svgElement);
+    if (!source.match(/^<svg[^>]*xmlns/)) {
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    var blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'chart.svg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
   /* Should-Cost Waterfall Buildup Chart */
   waterfall: function (items, opts) {
     opts = opts || {};
@@ -100,7 +117,10 @@ PS.chart = {
       '</defs>';
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Should-Cost Composition Waterfall <span class="chart-badge">TCO Cost Buildup</span></div>' +
+      '<div class="chart-title"><span>Should-Cost Composition Waterfall</span> <span class="chart-badge">TCO Cost Buildup</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="waterfall" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Should-Cost Waterfall">' +
       defs + svgParts.join('') +
@@ -167,7 +187,10 @@ PS.chart = {
     });
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Kraljic Sourcing Portfolio Matrix <span class="chart-badge">Strategic Positioning</span></div>' +
+      '<div class="chart-title"><span>Kraljic Sourcing Portfolio Matrix</span> <span class="chart-badge">Strategic Positioning</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="kraljic" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Kraljic Portfolio Matrix">' +
       svg.join('') +
@@ -257,7 +280,10 @@ PS.chart = {
     }
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Pareto Spend Distribution (80/20 Rule) <span class="chart-badge">Spend Analysis</span></div>' +
+      '<div class="chart-title"><span>Pareto Spend Distribution (80/20 Rule)</span> <span class="chart-badge">Spend Analysis</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="pareto" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Pareto Spend Distribution">' +
       svg.join('') +
@@ -316,7 +342,10 @@ PS.chart = {
     ];
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Altman Z-Score Solvency Dial <span class="chart-badge">Supplier Financial Health</span></div>' +
+      '<div class="chart-title"><span>Altman Z-Score Solvency Dial</span> <span class="chart-badge">Supplier Financial Health</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px;justify-content:center">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="zscore" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap" style="text-align:center;">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:380px; margin:0 auto;" role="img" aria-label="Altman Z-Score Gauge">' +
       svg.join('') +

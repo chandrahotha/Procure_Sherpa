@@ -43,6 +43,16 @@ PS.route('saved', function (arg, params) {
       var el = PS.$(sel);
       if (el) el.addEventListener('change', function () { PS.acts['saved-filter'](); });
     });
+    // Event delegation for checkboxes
+    var list = PS.$('#savedList');
+    if (list) {
+      list.addEventListener('change', function (e) {
+        var cb = e.target.closest('.saved-item-checkbox');
+        if (cb) PS.acts['saved-item-toggle'](cb);
+        var sa = e.target.closest('#savedSelectAll');
+        if (sa) PS.acts['saved-select-all'](sa);
+      });
+    }
   };
   return html;
 });

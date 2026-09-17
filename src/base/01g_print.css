@@ -170,5 +170,16 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .cmd-enter-hint { font-family: var(--mono); opacity: .6; }
 .cmd-item-score { font-family: var(--mono); font-size: .65rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); padding: 1px 6px; border-radius: 4px; }
 .cmd-shortcut { font-family: var(--mono); font-size: .62rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--mute); }
+
+/* Search suggestions */
+.cmd-suggestions { font-size: .75rem; }
+.cmd-suggestion-label { font-weight: 600; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; font-size: .65rem; }
+.cmd-suggestion-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmd-suggestion-chip {
+  background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--r-pill); padding: 4px 10px; font-size: .7rem; font-weight: 600; cursor: pointer;
+  transition: all .12s;
+}
+.cmd-suggestion-chip:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 </style>
 </head>

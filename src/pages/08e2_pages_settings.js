@@ -15,6 +15,7 @@ PS.route('settings', function () {
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
     '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
     '</div></div>' + PS.disclaimer('policy');
+  PS.pageInit = function () { PS.initThemeScheduleOptions(); };
   return html;
 });
 PS.settingsOrgCard = function (p) {
@@ -37,9 +38,12 @@ PS.settingsFormatCard = function (p) {
     '</select></div>' +
     '<div class="field"><label for="setDecimals">Decimal places for currency</label><input type="number" id="setDecimals" min="0" max="4" step="1" value="' + PS.esc(p.decimals) + '">' +
     '<span class="hint">Headline results are rounded to avoid false precision, for example ' + PS.esc(PS.moneyR(18492.84)) + ' rather than ' + PS.esc(PS.money(18492.837492, 2)) + '.</span></div>' +
-    '<div class="field"><label for="setTheme">Theme</label><select id="setTheme">' +
-    '<option value="light"' + (p.theme === 'light' ? ' selected' : '') + '>Light</option>' +
-    '<option value="dark"' + (p.theme === 'dark' ? ' selected' : '') + '>Dark</option>' +
-    '</select><span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
+    '<div class="field"><label for="setThemeSchedule">Theme schedule</label><select id="setThemeSchedule">' +
+    '<option value="manual"' + (p.themeSchedule === 'manual' ? ' selected' : '') + '>Manual (use toggle button)</option>' +
+    '<option value="auto"' + (p.themeSchedule === 'auto' ? ' selected' : '') + '>Auto (by time of day)</option>' +
+    '<option value="system"' + (p.themeSchedule === 'system' ? ' selected' : '') + '>Follow system (OS/Browser)</option>' +
+    '</select>' +
+    '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:8px"></div>' +
+    '<span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
     '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div></div>';
 };

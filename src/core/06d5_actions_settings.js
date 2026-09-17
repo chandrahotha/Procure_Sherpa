@@ -18,6 +18,9 @@ PS.acts['settings-save'] = function () {
     reportFooter: PS.clean(g('#setFooter'), 300),
     defaultAssumptions: PS.clean(g('#setAssumptions'), 1200),
     theme: g('#setTheme') || PS.prefs().theme,
+    themeSchedule: g('#setThemeSchedule') || PS.prefs().themeSchedule,
+    themeAutoStart: g('#setThemeAutoStart') || PS.prefs().themeAutoStart,
+    themeAutoEnd: g('#setThemeAutoEnd') || PS.prefs().themeAutoEnd,
     thresholds: thresholds.length ? thresholds : PS.DEFAULT_PREFS.thresholds
   });
   PS.applyTheme();

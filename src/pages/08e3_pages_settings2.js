@@ -24,3 +24,26 @@ PS.settingsAssumptionCard = function (p) {
     '</div>' +
     '<p class="note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters.</p></div>';
 };
+
+PS.initThemeScheduleOptions = function () {
+  var select = PS.$('#setThemeSchedule');
+  var container = PS.$('#themeScheduleOptions');
+  if (!select || !container) return;
+
+  function render() {
+    var val = select.value;
+    var p = PS.prefs();
+    if (val === 'auto') {
+      container.innerHTML = '<div class="fields-2">' +
+        '<div class="field"><label for="setThemeAutoStart">Light mode from</label><input type="time" id="setThemeAutoStart" value="' + PS.esc(p.themeAutoStart || '06:00') + '"></div>' +
+        '<div class="field"><label for="setThemeAutoEnd">Dark mode from</label><input type="time" id="setThemeAutoEnd" value="' + PS.esc(p.themeAutoEnd || '20:00') + '"></div>' +
+        '</div>' +
+        '<p class="note">Light mode will be active between the start and end times. Outside that window, dark mode applies.</p>';
+    } else {
+      container.innerHTML = '';
+    }
+  }
+
+  select.addEventListener('change', render);
+  render();
+};

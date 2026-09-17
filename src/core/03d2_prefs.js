@@ -1,6 +1,9 @@
 /* ---------- preferences / settings (Section 42) ---------- */
 PS.DEFAULT_PREFS = {
   theme: 'light',
+  themeSchedule: 'manual', // 'manual', 'auto', 'system'
+  themeAutoStart: '06:00', // 6 AM
+  themeAutoEnd: '20:00',   // 8 PM
   currency: 'USD',
   orgName: '',
   deptName: '',

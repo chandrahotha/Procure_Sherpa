@@ -27,6 +27,7 @@ PS.boot = function () {
   try {
     PS.migrate();
     PS.applyTheme();
+    PS.startThemeScheduler();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
     PS.wireEvents();

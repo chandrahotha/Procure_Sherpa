@@ -2563,6 +2563,17 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .cmd-enter-hint { font-family: var(--mono); opacity: .6; }
 .cmd-item-score { font-family: var(--mono); font-size: .65rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); padding: 1px 6px; border-radius: 4px; }
 .cmd-shortcut { font-family: var(--mono); font-size: .62rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--mute); }
+
+/* Search suggestions */
+.cmd-suggestions { font-size: .75rem; }
+.cmd-suggestion-label { font-weight: 600; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; font-size: .65rem; }
+.cmd-suggestion-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmd-suggestion-chip {
+  background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--r-pill); padding: 4px 10px; font-size: .7rem; font-weight: 600; cursor: pointer;
+  transition: all .12s;
+}
+.cmd-suggestion-chip:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 </style>
 </head>
 
@@ -2936,7 +2947,10 @@ PS.kbdHelp = {
 
     var html = '<div class="kbd-help-header">' +
       '<h2 id="kbdHelpTitle">Keyboard Shortcuts</h2>' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd">Print Cheat Sheet</button>' +
       '<button type="button" class="kbd-help-close" aria-label="Close">&times;</button>' +
+      '</div>' +
       '</div><div class="kbd-help-body">';
 
     self.sections.forEach(function (sec) {
@@ -2988,6 +3002,45 @@ PS.kbdHelp = {
 
   toggle: function () {
     if (this.isOpen) this.close(); else this.open();
+  },
+
+  /* Printable cheat sheet */
+  printCheatSheet: function () {
+    var self = this;
+    var html = '<!DOCTYPE html><html><head><title>Procure Sherpa - Keyboard Shortcuts Cheat Sheet</title>' +
+      '<style>' +
+      '@page { margin: 12mm; size: A4; }' +
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; }' +
+      'h1 { font-size: 18pt; margin: 0 0 4pt; border-bottom: 2px solid #333; padding-bottom: 4pt; }' +
+      'h2 { font-size: 13pt; margin: 16pt 0 6pt; color: #333; border-bottom: 1px solid #999; padding-bottom: 2pt; }' +
+      'table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; font-size: 10pt; }' +
+      'th, td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; vertical-align: top; }' +
+      'th { background: #f0f0f0; font-weight: bold; width: 30%; }' +
+      'kbd { font-family: "SF Mono", "Fira Code", Consolas, monospace; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-size: 9.5pt; white-space: nowrap; }' +
+      '.footer { margin-top: 24pt; font-size: 8pt; color: #666; text-align: center; }' +
+      '@media print { .no-print { display: none !important; } }' +
+      '</style></head><body>' +
+      '<h1>Procure Sherpa v2.0 — Keyboard Shortcuts Cheat Sheet</h1>' +
+      '<p style="margin: 4pt 0 16pt; color: #666;">Offline-first procurement toolkit | <span id="printDate"></span></p>';
+
+    self.sections.forEach(function (sec) {
+      html += '<h2>' + PS.esc(sec.title) + '</h2><table><tbody>';
+      sec.items.forEach(function (item) {
+        html += '<tr><td><kbd>' + PS.esc(item.kbd) + '</kbd></td><td>' + PS.esc(item.desc) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    });
+
+    html += '<div class="footer">Generated from Procure Sherpa ' + PS.VERSION + ' | ' +
+      'Press Ctrl+P to print/save as PDF | All shortcuts work offline</div>' +
+      '<scr' + 'ipt>document.getElementById("printDate").textContent = new Date().toLocaleString();</scr' + 'ipt>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(function () { win.print(); }, 300);
   }
 };
 
@@ -3243,6 +3296,9 @@ PS.warnOnce = function (tag, msg) {
 /* ---------- preferences / settings (Section 42) ---------- */
 PS.DEFAULT_PREFS = {
   theme: 'light',
+  themeSchedule: 'manual', // 'manual', 'auto', 'system'
+  themeAutoStart: '06:00', // 6 AM
+  themeAutoEnd: '20:00',   // 8 PM
   currency: 'USD',
   orgName: '',
   deptName: '',
@@ -3768,7 +3824,7 @@ PS.search = function (q, opts) {
       shortcut: self.getShortcut(r.type, r.id)
     };
   });
-  return { query: PS.clean(q, 120), results: results, total: out.length };
+  return { query: PS.clean(q, 120), results: results, total: out.length, suggestions: PS.getSearchSuggestions(q) };
 };
 
 PS.highlight = function (text, q) {
@@ -3781,6 +3837,65 @@ PS.highlight = function (text, q) {
     } catch (e) { }
   });
   return safe;
+};
+
+PS.levenshtein = function (a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  var matrix = [];
+  for (var i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+  for (var j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+  for (var i = 1; i <= b.length; i++) {
+    for (var j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+};
+
+PS.getSearchSuggestions = function (query, maxSuggestions) {
+  maxSuggestions = maxSuggestions || 3;
+  var q = PS.clean(query, 120).toLowerCase();
+  if (!q || q.length < 3) return [];
+
+  var idx = PS.buildIndex();
+  var terms = new Set();
+
+  // Collect all searchable terms from index
+  idx.forEach(function (rec) {
+    terms.add(rec.title.toLowerCase());
+    if (rec.cat) terms.add(rec.cat.toLowerCase());
+    (rec.tags || '').split(' ').forEach(function (t) { if (t.length > 2) terms.add(t); });
+  });
+
+  // Add known suggest terms
+  PS.suggestTerms.forEach(function (t) { terms.add(t.toLowerCase()); });
+
+  // Find closest matches by Levenshtein distance
+  var suggestions = [];
+  terms.forEach(function (term) {
+    if (term.length < 3) return;
+    var dist = PS.levenshtein(q, term);
+    var maxDist = Math.max(2, Math.floor(q.length * 0.3));
+    if (dist <= maxDist && term !== q) {
+      suggestions.push({ term: term, distance: dist });
+    }
+  });
+
+  suggestions.sort(function (a, b) {
+    if (a.distance !== b.distance) return a.distance - b.distance;
+    return a.term.localeCompare(b.term);
+  });
+
+  return suggestions.slice(0, maxSuggestions).map(function (s) { return s.term; });
 };
 
 PS.suggestTerms = [
@@ -3889,6 +4004,7 @@ PS.cmdPalette = {
       '<span><kbd>&crarr;</kbd> Open</span>' +
       '<span><kbd>ESC</kbd> Close</span>' +
       '<span><kbd>Ctrl+Shift+K</kbd> Shortcuts</span>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd" style="margin-left:auto">Print Cheat Sheet</button>' +
       '</div>' +
       '</div>';
 
@@ -3973,13 +4089,49 @@ PS.cmdPalette = {
     }
 
     self.lastResults = res.results || [];
+    var suggestions = res.suggestions || [];
+    var showSuggestions = suggestions.length && (self.lastResults.length < 5 || !self.lastResults.length);
+
     if (!self.lastResults.length) {
+      var suggestionHtml = showSuggestions ? '<div class="cmd-suggestions">' +
+        '<div class="cmd-suggestion-label">Did you mean?</div>' +
+        '<div class="cmd-suggestion-chips">' +
+        suggestions.map(function (s) {
+          return '<button type="button" class="cmd-suggestion-chip" data-suggest="' + PS.escAttr(s) + '">' + PS.esc(s) + '</button>';
+        }).join('') +
+        '</div></div>' : '';
+
       list.innerHTML = '<div class="cmd-empty-state">' +
         '<div class="cmd-empty-icon">&#128269;</div>' +
         '<div class="cmd-empty-title">No matching procurement items found</div>' +
         '<div class="cmd-empty-desc">Try searching for concepts like <em>price increase</em>, <em>TCO</em>, <em>RFQ</em>, or <em>supplier evaluation</em>.</div>' +
+        suggestionHtml +
         '</div>';
+      // Wire suggestion chips
+      if (showSuggestions) {
+        list.querySelectorAll('.cmd-suggestion-chip').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var suggest = btn.dataset.suggest;
+            if (suggest && input) {
+              input.value = suggest;
+              self.activeIdx = 0;
+              self.renderResults();
+            }
+          });
+        });
+      }
       return;
+    }
+
+    // Also show suggestions inline if few results
+    if (showSuggestions) {
+      html += '<div class="cmd-suggestions" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">' +
+        '<div class="cmd-suggestion-label">Did you mean?</div>' +
+        '<div class="cmd-suggestion-chips">' +
+        suggestions.map(function (s) {
+          return '<button type="button" class="cmd-suggestion-chip" data-suggest="' + PS.escAttr(s) + '">' + PS.esc(s) + '</button>';
+        }).join('') +
+        '</div></div>';
     }
 
     var html = '';
@@ -4444,6 +4596,23 @@ PS.acts['user-profile-open'] = function () {
    ========================================================== */
 
 PS.chart = {
+  /* Export SVG as file */
+  exportSVG: function (svgElement, filename) {
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(svgElement);
+    if (!source.match(/^<svg[^>]*xmlns/)) {
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    var blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'chart.svg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
   /* Should-Cost Waterfall Buildup Chart */
   waterfall: function (items, opts) {
     opts = opts || {};
@@ -4536,7 +4705,10 @@ PS.chart = {
       '</defs>';
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Should-Cost Composition Waterfall <span class="chart-badge">TCO Cost Buildup</span></div>' +
+      '<div class="chart-title"><span>Should-Cost Composition Waterfall</span> <span class="chart-badge">TCO Cost Buildup</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="waterfall" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Should-Cost Waterfall">' +
       defs + svgParts.join('') +
@@ -4603,7 +4775,10 @@ PS.chart = {
     });
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Kraljic Sourcing Portfolio Matrix <span class="chart-badge">Strategic Positioning</span></div>' +
+      '<div class="chart-title"><span>Kraljic Sourcing Portfolio Matrix</span> <span class="chart-badge">Strategic Positioning</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="kraljic" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Kraljic Portfolio Matrix">' +
       svg.join('') +
@@ -4693,7 +4868,10 @@ PS.chart = {
     }
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Pareto Spend Distribution (80/20 Rule) <span class="chart-badge">Spend Analysis</span></div>' +
+      '<div class="chart-title"><span>Pareto Spend Distribution (80/20 Rule)</span> <span class="chart-badge">Spend Analysis</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="pareto" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" role="img" aria-label="Pareto Spend Distribution">' +
       svg.join('') +
@@ -4752,7 +4930,10 @@ PS.chart = {
     ];
 
     return '<div class="chart-container">' +
-      '<div class="chart-title">Altman Z-Score Solvency Dial <span class="chart-badge">Supplier Financial Health</span></div>' +
+      '<div class="chart-title"><span>Altman Z-Score Solvency Dial</span> <span class="chart-badge">Supplier Financial Health</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px;justify-content:center">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="zscore" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
       '<div class="chart-svg-wrap" style="text-align:center;">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:380px; margin:0 auto;" role="img" aria-label="Altman Z-Score Gauge">' +
       svg.join('') +
@@ -5136,7 +5317,18 @@ PS.toggleNav = function (open) {
 };
 PS.closeNav = function () { PS.toggleNav(false); };
 PS.applyTheme = function (theme) {
-  var t = theme || PS.prefs().theme || 'light';
+  var p = PS.prefs();
+  var schedule = p.themeSchedule || 'manual';
+  var t;
+
+  if (schedule === 'system' && window.matchMedia) {
+    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } else if (schedule === 'auto') {
+    t = PS.getScheduledTheme();
+  } else {
+    t = theme || p.theme || 'light';
+  }
+
   if (t !== 'light' && t !== 'dark') t = 'light';
   document.documentElement.setAttribute('data-theme', t);
   try {
@@ -5147,6 +5339,58 @@ PS.applyTheme = function (theme) {
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';
   var lab = PS.$('#themeLabel');
   if (lab) lab.textContent = t === 'dark' ? 'Dark mode is on' : 'Light mode is on';
+};
+
+PS.getScheduledTheme = function () {
+  var p = PS.prefs();
+  var start = p.themeAutoStart || '06:00';
+  var end = p.themeAutoEnd || '20:00';
+  var now = new Date();
+  var currentMinutes = now.getHours() * 60 + now.getMinutes();
+  var parseTime = function (str) {
+    var parts = str.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  };
+  var startMin = parseTime(start);
+  var endMin = parseTime(end);
+  // Light mode during day (start to end), dark mode at night
+  if (startMin <= endMin) {
+    return (currentMinutes >= startMin && currentMinutes < endMin) ? 'light' : 'dark';
+  } else {
+    // Overnight schedule (e.g., 22:00 to 06:00)
+    return (currentMinutes >= startMin || currentMinutes < endMin) ? 'dark' : 'light';
+  }
+};
+
+PS.startThemeScheduler = function () {
+  if (PS._themeSchedulerInterval) return;
+  var check = function () {
+    var p = PS.prefs();
+    if (p.themeSchedule === 'auto') {
+      var scheduled = PS.getScheduledTheme();
+      if (scheduled !== p.theme) {
+        PS.savePrefs({ theme: scheduled }, true);
+        PS.applyTheme(scheduled);
+      }
+    } else if (p.themeSchedule === 'system' && window.matchMedia) {
+      var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (system !== p.theme) {
+        PS.savePrefs({ theme: system }, true);
+        PS.applyTheme(system);
+      }
+    }
+  };
+  // Check immediately
+  check();
+  // Then check every minute
+  PS._themeSchedulerInterval = setInterval(check, 60000);
+};
+
+PS.stopThemeScheduler = function () {
+  if (PS._themeSchedulerInterval) {
+    clearInterval(PS._themeSchedulerInterval);
+    PS._themeSchedulerInterval = null;
+  }
 };
 PS.toggleTheme = function () {
   var cur = PS.prefs().theme === 'dark' ? 'light' : 'dark';
@@ -5648,6 +5892,61 @@ PS.printBlock = function (calc, values, out) {
     '<h3>Related methodology</h3>' + PS.ul(out.formula || []) +
     PS.reportFooter('Decision-support output. Validate assumptions before committing funds.') + '</div>';
 };
+
+PS.calcMarkdown = function (calc, values, out) {
+  var lines = [];
+  lines.push('# ' + calc.title);
+  lines.push('');
+  lines.push('**Generated:** ' + PS.dateTime());
+  if (PS.orgLine()) lines.push('**Organisation:** ' + PS.orgLine());
+  lines.push('');
+  lines.push('## Inputs');
+  lines.push('');
+  (calc.fields || []).forEach(function (f) {
+    var v = values[f.k];
+    var shown = (v === null || v === undefined || v === '') ? '*not provided*'
+      : (f.type === 'check' ? (v ? 'Yes' : 'No')
+        : (f.type === 'number' && f.unit === 'currency' ? PS.money(v)
+          : (f.type === 'number' && f.unit === 'percent' ? PS.pct(v) : String(v))));
+    lines.push('- **' + f.label + '**: ' + shown + (f.unit ? ' ' + f.unit : ''));
+  });
+  lines.push('');
+  lines.push('## Results');
+  lines.push('');
+  (out.results || []).forEach(function (r) {
+    lines.push('- **' + r.label + '**: ' + r.value + (r.note ? ' — ' + r.note : ''));
+  });
+  if (out.summaryText) {
+    lines.push('');
+    lines.push('## Interpretation');
+    lines.push('');
+    lines.push(out.summaryText);
+  }
+  if (out.keyFindings && out.keyFindings.length) {
+    lines.push('');
+    lines.push('## Key Findings');
+    lines.push('');
+    out.keyFindings.forEach(function (k) { lines.push('- ' + k); });
+  }
+  var assumptions = (out.assumptions || []).concat(calc.assumptions || []);
+  if (assumptions.length) {
+    lines.push('');
+    lines.push('## Assumptions');
+    lines.push('');
+    assumptions.forEach(function (a) { lines.push('- ' + a); });
+  }
+  var notes = PS.$('#calcNotes') ? PS.$('#calcNotes').value : '';
+  if (notes) {
+    lines.push('');
+    lines.push('## Notes');
+    lines.push('');
+    lines.push(notes);
+  }
+  lines.push('');
+  lines.push('---');
+  lines.push('*Generated by Procure Sherpa v' + PS.VERSION + ' — Decision-support output. Validate assumptions before committing funds.*');
+  return lines.join('\n');
+};
 /* ---------- calculator page shell (Section 36, 40, 67): makeover: focused two-pane ---------- */
 PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
@@ -5697,6 +5996,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-print">Print / PDF</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-csv">CSV</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-markdown">Copy as Markdown</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy">Copy summary</button>' +
     '</div>' +
     '<div class="field" style="margin-top:12px;margin-bottom:0"><label for="calcNotes">Notes for the report</label>' +
@@ -5993,6 +6293,12 @@ PS.acts['calc-copy'] = function () {
   if (!calc || !PS.calcState.result) return;
   PS.copy(PS.calcSummaryText(calc, PS.calcState.values, PS.calcState.result), calc.title + ' summary');
 };
+PS.acts['calc-markdown'] = function () {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc || !PS.calcState.result) { PS.runCalc(true); }
+  if (!calc || !PS.calcState.result) return;
+  PS.copy(PS.calcMarkdown(calc, PS.calcState.values, PS.calcState.result), calc.title + ' Markdown');
+};
 PS.acts.share = function () {
   var calc = PS.byId('calc', PS.calcState.id);
   if (!calc) return;
@@ -6036,9 +6342,23 @@ PS.acts.handoff = function (el) {
   PS.audit('cross-tool-handoff', calc.title + ' \u2192 ' + target.title);
   PS.go('calc', null, to);
 };
+PS.acts['chart-export'] = function (el) {
+  var type = el.dataset.chartType;
+  var svg = document.querySelector('.chart-container .svg-responsive svg');
+  if (!svg) { PS.toast('No chart found on this page.', 'danger'); return; }
+  var filenames = {
+    waterfall: 'should-cost-waterfall.svg',
+    kraljic: 'kraljic-matrix.svg',
+    pareto: 'pareto-spend.svg',
+    zscore: 'altman-zscore-gauge.svg'
+  };
+  PS.chart.exportSVG(svg, filenames[type] || 'chart.svg');
+  PS.toast('SVG downloaded', 'ok');
+};
 /* ---------- UI-level actions ---------- */
 PS.acts.theme = function () { PS.toggleTheme(); };
 PS.acts.print = function () { try { window.print(); } catch (e) { PS.toast('Printing is not available in this browser.', 'danger'); } };
+PS.acts['print-kbd'] = function () { PS.kbdHelp.printCheatSheet(); };
 PS.acts.fav = function () {
   var c = PS.currentItem;
   if (!c) { PS.toast('Open a page before adding it to favorites.'); return; }
@@ -6174,6 +6494,72 @@ PS.acts['cl-export'] = function () {
   PS.download('ProcureSherpa_Checklist_' + c.id + '_' + PS.iso() + '.csv',
     PS.toCSV(['Section', 'Item', 'Status'], rows), 'text/csv');
   PS.audit('checklist-exported', c.item.title);
+};
+
+/* ---------- saved workspace bulk actions ---------- */
+PS.acts['saved-clear-selection'] = function () {
+  PS.savedView.selected = {};
+  PS.renderRoute();
+};
+
+PS.acts['saved-item-toggle'] = function (el) {
+  var id = el.dataset.id;
+  var sel = PS.savedView.selected || {};
+  if (el.checked) sel[id] = true; else delete sel[id];
+  PS.savedView.selected = sel;
+  PS.renderRoute();
+};
+
+PS.acts['saved-select-all'] = function (el) {
+  var sel = PS.savedView.selected || {};
+  var items = PS.saved.list();
+  var v = PS.savedView;
+  if (v.type) items = items.filter(function (r) { return r.type === v.type; });
+  if (PS.clean(v.q)) {
+    var q = v.q.toLowerCase();
+    items = items.filter(function (r) {
+      return (r.title + ' ' + (r.notes || '') + ' ' + (r.tags || []).join(' ')).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  if (el.checked) {
+    items.forEach(function (r) { sel[r.id] = true; });
+  } else {
+    PS.savedView.selected = {};
+  }
+  PS.renderRoute();
+};
+
+PS.acts['saved-bulk-delete'] = function () {
+  var sel = PS.savedView.selected || {};
+  var ids = Object.keys(sel);
+  if (!ids.length) return;
+  PS.confirm({
+    title: 'Delete ' + ids.length + ' saved item' + (ids.length > 1 ? 's' : '') + '?',
+    body: '<p>This action cannot be undone. The items will be permanently removed from your local workspace.</p>',
+    okLabel: 'Delete',
+    danger: true,
+    onOk: function () {
+      var saved = PS.saved.list();
+      var remaining = saved.filter(function (r) { return !sel[r.id]; });
+      PS.store.set(PS.K.saved, remaining);
+      PS.savedView.selected = {};
+      PS.audit('saved-bulk-deleted', ids.length + ' items');
+      PS.toast('Deleted ' + ids.length + ' item' + (ids.length > 1 ? 's' : '') + '.', 'ok');
+      PS.renderRoute();
+    }
+  });
+};
+
+PS.acts['saved-bulk-export'] = function () {
+  var sel = PS.savedView.selected || {};
+  var ids = Object.keys(sel);
+  if (!ids.length) return;
+  var saved = PS.saved.list();
+  var toExport = saved.filter(function (r) { return sel[r.id]; });
+  PS.download('ProcureSherpa_BulkExport_' + PS.iso() + '.json',
+    PS.toJSON({ exported: PS.iso(), items: toExport }, 2), 'application/json');
+  PS.audit('saved-bulk-exported', ids.length + ' items');
+  PS.toast('Exported ' + ids.length + ' item' + (ids.length > 1 ? 's' : '') + ' as JSON.', 'ok');
 };
 /* ---------- template actions (Section 69) ---------- */
 PS.templateValues = function (tpl) {
@@ -6662,6 +7048,9 @@ PS.acts['settings-save'] = function () {
     reportFooter: PS.clean(g('#setFooter'), 300),
     defaultAssumptions: PS.clean(g('#setAssumptions'), 1200),
     theme: g('#setTheme') || PS.prefs().theme,
+    themeSchedule: g('#setThemeSchedule') || PS.prefs().themeSchedule,
+    themeAutoStart: g('#setThemeAutoStart') || PS.prefs().themeAutoStart,
+    themeAutoEnd: g('#setThemeAutoEnd') || PS.prefs().themeAutoEnd,
     thresholds: thresholds.length ? thresholds : PS.DEFAULT_PREFS.thresholds
   });
   PS.applyTheme();
@@ -6874,6 +7263,7 @@ PS.boot = function () {
   try {
     PS.migrate();
     PS.applyTheme();
+    PS.startThemeScheduler();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
     PS.wireEvents();
@@ -8270,6 +8660,16 @@ PS.route('saved', function (arg, params) {
       var el = PS.$(sel);
       if (el) el.addEventListener('change', function () { PS.acts['saved-filter'](); });
     });
+    // Event delegation for checkboxes
+    var list = PS.$('#savedList');
+    if (list) {
+      list.addEventListener('change', function (e) {
+        var cb = e.target.closest('.saved-item-checkbox');
+        if (cb) PS.acts['saved-item-toggle'](cb);
+        var sa = e.target.closest('#savedSelectAll');
+        if (sa) PS.acts['saved-select-all'](sa);
+      });
+    }
   };
   return html;
 });
@@ -8303,8 +8703,25 @@ PS.renderSavedList = function () {
       ? 'No saved items match this filter.'
       : 'Nothing saved yet. Save a calculation, checklist, template or decision and it appears here with search, rename, duplicate, export and delete.');
   }
-  return '<div class="card">' + items.map(function (r) {
+
+  // Bulk actions state
+  var sel = PS.savedView.selected || {};
+  var hasSelection = Object.keys(sel).length > 0;
+
+  var html = '<div class="card">';
+  if (hasSelection) {
+    html += '<div class="saved-bulk-bar no-print" style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r-sm);margin:-16px -16px 16px;border-radius:var(--r) var(--r) 0 0">' +
+      '<span class="flex items-center gap8"><input type="checkbox" id="savedSelectAll" ' + (Object.keys(sel).length === items.length ? 'checked' : '') + ' aria-label="Select all visible"><label for="savedSelectAll" style="font-weight:600">' + Object.keys(sel).length + ' selected</label></span>' +
+      '<div class="spacer"></div>' +
+      '<div class="btn-row tight">' +
+      '<button type="button" class="btn btn-sm" data-act="saved-bulk-export">Export selected</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-bulk-delete">Delete selected</button>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="saved-clear-selection">Clear selection</button>' +
+      '</div></div>';
+  }
+  html += items.map(function (r) {
     var d = r.data || {}, summary = '', isHtml = false;
+    var isSelected = !!sel[r.id];
     if (Array.isArray(d.results) && d.results.length) {
       summary = d.results.slice(0, 4).map(function (x) { return PS.esc(x.label) + ': ' + PS.esc(x.value); }).join(' &middot; ');
       isHtml = true;
@@ -8318,8 +8735,8 @@ PS.renderSavedList = function () {
       summary = 'Average maturity level ' + PS.esc(PS.round(d.average, 2)) + ' of 5';
       isHtml = true;
     }
-    return '<div class="card card-tight" style="background:var(--panel-2)">' +
-      '<div class="card-head"><div><strong>' + PS.esc(r.title) + '</strong> ' + PS.badge(r.type) +
+    return '<div class="card card-tight" style="background:' + (isSelected ? 'var(--accent-soft)' : 'var(--panel-2)') + ';border-color:' + (isSelected ? 'var(--accent)' : 'var(--border)') + '">' +
+      '<div class="card-head"><div><input type="checkbox" class="saved-item-checkbox" data-id="' + PS.esc(r.id) + '"' + (isSelected ? ' checked' : '') + ' aria-label="Select ' + PS.esc(r.title) + '"><strong>' + PS.esc(r.title) + '</strong> ' + PS.badge(r.type) +
       '<div class="res-desc">Created ' + PS.esc(PS.dateStr(r.created)) + ' &middot; modified ' + PS.esc(PS.dateStr(r.modified)) +
       ((r.tags || []).length ? ' &middot; tags: ' + PS.esc(r.tags.join(', ')) : '') + '</div></div>' +
       '<div class="spacer"></div>' +
@@ -8338,6 +8755,7 @@ PS.renderSavedList = function () {
       '<div class="print-only"><p>' + (isHtml ? summary.replace(/&middot;/g, ' | ') : PS.esc(summary)) + '</p><p>' + PS.esc(r.notes || '') + '</p></div>' +
       '</div>';
   }).join('') + '</div>';
+  return html;
 };
 /* ---------- backup, restore, audit (Section 28, 29, 75) ---------- */
 PS.route('backup', function () {
@@ -8422,6 +8840,7 @@ PS.route('settings', function () {
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
     '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
     '</div></div>' + PS.disclaimer('policy');
+  PS.pageInit = function () { PS.initThemeScheduleOptions(); };
   return html;
 });
 PS.settingsOrgCard = function (p) {
@@ -8444,10 +8863,13 @@ PS.settingsFormatCard = function (p) {
     '</select></div>' +
     '<div class="field"><label for="setDecimals">Decimal places for currency</label><input type="number" id="setDecimals" min="0" max="4" step="1" value="' + PS.esc(p.decimals) + '">' +
     '<span class="hint">Headline results are rounded to avoid false precision, for example ' + PS.esc(PS.moneyR(18492.84)) + ' rather than ' + PS.esc(PS.money(18492.837492, 2)) + '.</span></div>' +
-    '<div class="field"><label for="setTheme">Theme</label><select id="setTheme">' +
-    '<option value="light"' + (p.theme === 'light' ? ' selected' : '') + '>Light</option>' +
-    '<option value="dark"' + (p.theme === 'dark' ? ' selected' : '') + '>Dark</option>' +
-    '</select><span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
+    '<div class="field"><label for="setThemeSchedule">Theme schedule</label><select id="setThemeSchedule">' +
+    '<option value="manual"' + (p.themeSchedule === 'manual' ? ' selected' : '') + '>Manual (use toggle button)</option>' +
+    '<option value="auto"' + (p.themeSchedule === 'auto' ? ' selected' : '') + '>Auto (by time of day)</option>' +
+    '<option value="system"' + (p.themeSchedule === 'system' ? ' selected' : '') + '>Follow system (OS/Browser)</option>' +
+    '</select>' +
+    '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:8px"></div>' +
+    '<span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
     '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div></div>';
 };
 PS.settingsThresholdCard = function (p) {
@@ -8475,6 +8897,29 @@ PS.settingsAssumptionCard = function (p) {
     '<div class="stat"><div class="s-lab">Default holding rate</div><div class="s-val">' + PS.esc(p.defaults.holdingRate) + '%</div></div>' +
     '</div>' +
     '<p class="note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters.</p></div>';
+};
+
+PS.initThemeScheduleOptions = function () {
+  var select = PS.$('#setThemeSchedule');
+  var container = PS.$('#themeScheduleOptions');
+  if (!select || !container) return;
+
+  function render() {
+    var val = select.value;
+    var p = PS.prefs();
+    if (val === 'auto') {
+      container.innerHTML = '<div class="fields-2">' +
+        '<div class="field"><label for="setThemeAutoStart">Light mode from</label><input type="time" id="setThemeAutoStart" value="' + PS.esc(p.themeAutoStart || '06:00') + '"></div>' +
+        '<div class="field"><label for="setThemeAutoEnd">Dark mode from</label><input type="time" id="setThemeAutoEnd" value="' + PS.esc(p.themeAutoEnd || '20:00') + '"></div>' +
+        '</div>' +
+        '<p class="note">Light mode will be active between the start and end times. Outside that window, dark mode applies.</p>';
+    } else {
+      container.innerHTML = '';
+    }
+  }
+
+  select.addEventListener('change', render);
+  render();
 };
 /* ---------- help center (Section 75) ---------- */
 PS.route('help', function (arg) {
