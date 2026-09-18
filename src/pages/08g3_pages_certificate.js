@@ -71,7 +71,7 @@ PS.route('certificate', function () {
     '</div>' +
     '<div class="cert-actions-right">' +
     '<button type="button" class="btn btn-sm" data-act="user-profile-open">Edit Name & Organization</button> ' +
-    '<button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print Official Certificate / Save PDF</button>' +
+    '<button type="button" class="btn btn-primary btn-sm" data-act="print">Print Official Certificate / Save PDF</button>' +
     '</div>' +
     '</div>' +
 

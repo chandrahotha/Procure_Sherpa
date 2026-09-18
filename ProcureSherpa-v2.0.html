@@ -7,6 +7,7 @@
 <meta name="description" content="Procure Sherpa: enterprise digital learning platform and operational execution system for procurement professionals: interactive learning journeys, controlled SOPs, decision guides, compliance checklists, production templates, financial calculators, and value KPIs.">
 <meta name="application-name" content="Procure Sherpa">
 <meta name="theme-color" content="#5346f5">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Procure Sherpa | Procurement Digital Learning Platform</title>
 <style>
 /* ==========================================================
@@ -144,7 +145,7 @@ button{font-family:inherit}
 .sidebar-hub-nav{padding:0 14px 10px}
 .hub-nav-pill-row{display:flex;gap:5px;background:var(--sunken);padding:4px;border-radius:var(--r-sm);border:1px solid var(--border)}
 .hub-nav-pill{
-  flex:1;text-align:center;font-size:.72rem;font-weight:600;padding:5px 6px;border-radius:var(--r-xs);
+  flex:1;text-align:center;font-size:.7rem;font-weight:650;padding:5px 6px;border-radius:var(--r-xs);
   color:var(--dim);text-decoration:none;background:var(--panel);border:1px solid var(--border);
   transition:background .12s,color .12s,border-color .12s;white-space:nowrap;display:inline-flex;
   align-items:center;justify-content:center;gap:4px;
@@ -258,36 +259,37 @@ button{font-family:inherit}
 .nav-filter input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 .nav-filter input::placeholder{color:var(--mute)}
 .nav{flex:1;overflow-y:auto;padding:2px 12px 20px;scrollbar-width:thin}
-.nav-sec{margin:2px 0 3px}
+.nav-sec{margin:1px 0 2px}
 .nav-sec-head{
-  width:100%;display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;
-  padding:8px 8px 6px;border-radius:var(--r-sm);color:var(--mute);font:inherit;font-size:.72rem;
-  font-weight:800;letter-spacing:.09em;text-transform:uppercase;text-align:left;
+  width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
+  padding:9px 10px 7px;border-radius:10px;color:var(--mute);font:inherit;font-size:.68rem;
+  font-weight:800;letter-spacing:.11em;text-transform:uppercase;text-align:left;
+  transition:color .12s,background .12s;
 }
-.nav-sec-head:hover{background:var(--sunken);color:var(--text)}
+.nav-sec-head:hover{background:var(--panel-2);color:var(--dim)}
 .nav-sec-head .sec-ico{
-  width:24px;height:24px;flex:0 0 24px;border-radius:8px;display:grid;place-items:center;
-  background:var(--sunken);border:1px solid var(--border);font-size:.82rem;font-style:normal;color:var(--dim);
+  width:20px;height:20px;flex:0 0 20px;border-radius:6px;display:grid;place-items:center;
+  background:var(--sunken);font-size:.74rem;font-style:normal;color:var(--dim);
 }
 .nav-sec-head .sec-count{
-  font-size:.68rem;font-weight:700;background:var(--sunken);border:1px solid var(--border);
-  border-radius:999px;padding:1px 7px;line-height:1.6;color:var(--dim);
+  font-size:.64rem;font-weight:700;background:var(--sunken);border:1px solid var(--border);
+  border-radius:999px;padding:0 6px;line-height:1.7;color:var(--mute);
 }
-.nav-sec-head .chev{margin-left:auto;transition:transform .16s;font-size:.7em;opacity:.6}
+.nav-sec-head .chev{margin-left:auto;transition:transform .16s;font-size:.62em;opacity:.55}
 .nav-sec[data-open="false"] .nav-list{display:none}
 .nav-sec[data-open="false"] .chev{transform:rotate(-90deg)}
-.nav-list{list-style:none;margin:0;padding:1px 0 6px}
+.nav-list{list-style:none;margin:0;padding:1px 0 7px}
 .nav-list a{
-  position:relative;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
-  font-size:.88rem;font-weight:500;line-height:1.4;text-decoration:none;border:1px solid transparent;
-  transition:background .12s,color .12s,border-color .12s;
+  position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
+  font-size:.86rem;font-weight:520;line-height:1.4;text-decoration:none;
+  transition:background .12s,color .12s,transform .08s;
 }
-.nav-list a:hover{background:var(--panel-2);color:var(--text);text-decoration:none;border-color:var(--border)}
-.nav-list a.is-current{background:var(--accent-soft);color:var(--accent);font-weight:700;border-color:color-mix(in srgb,var(--accent) 22%,transparent)}
+.nav-list a:hover{background:var(--panel-2);color:var(--text);transform:translateX(2px)}
+.nav-list a.is-current{background:var(--accent-soft);color:var(--accent);font-weight:700}
 .nav-list a.is-current::before{
-  content:"";position:absolute;left:-12px;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--accent);
+  content:"";position:absolute;left:-6px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--accent);
 }
-.nav-badge{margin-left:auto;font-size:.66rem;color:var(--mute);font-weight:700;background:var(--sunken);border:1px solid var(--border);border-radius:999px;padding:1px 7px;line-height:1.6}
+.nav-badge{margin-left:auto;font-size:.64rem;color:var(--mute);font-weight:700;background:var(--sunken);border:1px solid var(--border);border-radius:999px;padding:0 7px;line-height:1.7;min-width:20px;text-align:center}
 a.is-current .nav-badge{background:rgba(255,255,255,.65);color:inherit;border-color:transparent}
 html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)}
 .nav-empty{padding:18px 12px;text-align:center;color:var(--mute);font-size:.82rem}
@@ -2805,20 +2807,20 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
       <div class="brand-mark" id="sidebarBrandMark" aria-hidden="true">PS</div>
       <div class="brand-text">
         <strong id="sidebarBrandTitle">Procure Sherpa</strong>
-        <span id="brandVersion">Learning Platform</span>
+        <span id="brandVersion" data-i18n="app.tagline">Learning Platform</span>
       </div>
       <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">&#10005;</button>
     </div>
     <div class="sidebar-hub-nav no-print" id="sidebarHubNav"></div>
     <div class="nav-filter no-print">
       <label class="sr-only" for="navFilter">Filter navigation</label>
-      <input id="navFilter" type="search" placeholder="Filter menu…" autocomplete="off" aria-label="Filter navigation">
+      <input id="navFilter" type="search" placeholder="Filter menu…" autocomplete="off" data-i18n-placeholder="nav.filter" aria-label="Filter navigation">
     </div>
     <nav class="nav" id="navRoot" aria-label="Sections"></nav>
     <div class="sidebar-foot" id="sidebarFoot">
       <div class="privacy-note">
         <span aria-hidden="true">&#128274;</span>
-        <span>Enterprise Single-Tenant Session &middot; Zero Data Egress</span>
+        <span data-i18n="privacy.session">Enterprise Single-Tenant Session &middot; Zero Data Egress</span>
       </div>
     </div>
   </aside>
@@ -2828,13 +2830,13 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
   <div class="content">
     <header class="topbar no-print">
       <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
-      <form class="search-mini" id="miniSearch" role="search" action="#/search" method="get" onsubmit="event.preventDefault();PS.go('search',{q:document.getElementById('q').value});">
+      <form class="search-mini" id="miniSearch" role="search" action="#/search" method="get">
         <label class="sr-only" for="q">Search Procure Sherpa</label>
         <div class="search-wrap">
-          <input id="q" name="q" type="search" placeholder="Search knowledge, SOPs, calculators, checklists, templates, KPIs…" autocomplete="off">
+          <input id="q" name="q" type="search" placeholder="Search knowledge, SOPs, calculators, checklists, templates, KPIs…" autocomplete="off" data-i18n-placeholder="topbar.search">
           <span class="search-kbd" aria-hidden="true">Ctrl K</span>
         </div>
-        <button class="btn btn-sm btn-primary" type="submit">Search</button>
+        <button class="btn btn-sm btn-primary" type="submit" data-i18n="common.search">Search</button>
       </form>
       <div class="topbar-actions">
         <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite">&#9734;</button>
@@ -2842,7 +2844,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
         <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">&#9686;</button>
         <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile">
           <span class="user-avatar-pill" id="userAvatarPill">PS</span>
-          <span class="user-name-label hide-sm" id="userNameLabel">Account</span>
+          <span class="user-name-label hide-sm" id="userNameLabel" data-i18n="topbar.account">Account</span>
         </button>
       </div>
     </header>
@@ -2862,7 +2864,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
         <a href="#/settings">Settings</a>
         <a href="#/backup">Backup / Restore</a>
       </div>
-      <div id="footNote">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
+      <div id="footNote" data-i18n="footer.note">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
     </footer>
   </div>
 </div>
@@ -4749,12 +4751,12 @@ PS.user = {
       '</div>' +
 
       '<div class="hub-jump-row mb16" style="display:flex; gap:8px; flex-wrap:wrap;">' +
-      '<a class="btn btn-sm btn-ghost" href="#/home" onclick="PS.closeModal();">⌂ Command Center</a>' +
-      '<a class="btn btn-sm btn-primary" href="#/academy" onclick="PS.closeModal();">🎓 Academy Curriculum &rarr;</a>' +
-      '<a class="btn btn-sm" href="#/operations" onclick="PS.closeModal();" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
+      '<a class="btn btn-sm btn-ghost" href="#/home" data-act="user-profile-close">⌂ Command Center</a>' +
+      '<a class="btn btn-sm btn-primary" href="#/academy" data-act="user-profile-close">🎓 Academy Curriculum &rarr;</a>' +
+      '<a class="btn btn-sm" href="#/operations" data-act="user-profile-close" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
       '</div>' +
 
-      '<form id="profileEditForm" onsubmit="event.preventDefault();">' +
+      '<form id="profileEditForm">' +
       '<div class="field mb12">' +
       '<label class="label" for="profNameInput">Your Display Name</label>' +
       '<input class="input" type="text" id="profNameInput" value="' + PS.esc(prof.name) + '" required placeholder="e.g. Alex Morgan">' +
@@ -4810,6 +4812,9 @@ PS.user = {
 PS.acts = PS.acts || {};
 PS.acts['user-profile-open'] = function () {
   PS.user.openModal();
+};
+PS.acts['user-profile-close'] = function () {
+  PS.closeModal();
 };
 
 /* ==========================================================
@@ -5292,91 +5297,59 @@ PS.updateNavCounts = function () {
 };
 /* ==========================================================
    Section F: navigation architecture (Section 7, 48)
-   Clean 4-tier segregation:
-   1. Portal & Navigation
-   2. 🎓 Procurement Academy (Learning Hub)
-   3. 💼 Procurement Operations Hub (Execution Hub)
-   4. User Workspace & Settings
+   Professional 3-hub structure:
+   1. Procurement Academy (Learning Hub) - dynamic from curriculum
+   2. Operations Hub (Execution Hub)
+   3. Workspace & Settings
+   Sections collapse; module sections default closed so the
+   sidebar stays calm even with many curriculum items.
    ========================================================== */
 
-PS.NAV_ACADEMY = [
-  { sec: 'Academy Overview', icon: '🎓', items: [
-    { label: 'Academy Curriculum', href: '#/academy' },
-    { label: 'My Progress & Badges', href: '#/academy-progress' },
-    { label: 'Certificate of Mastery', href: '#/certificate' }
-  ] },
-  { sec: 'Module 1: Foundations', icon: '1️⃣', items: [
-    { label: '1. Mission & Value', href: '#/academy/func-mission-value', funcId: 'func-mission-value' },
-    { label: '2. Spend Analysis', href: '#/academy/func-spend-analysis', funcId: 'func-spend-analysis' },
-    { label: '3. Category Strategy', href: '#/academy/func-category-mgmt', funcId: 'func-category-mgmt' },
-    { label: '4. Scope & SOW', href: '#/academy/func-requirement-scope', funcId: 'func-requirement-scope' }
-  ] },
-  { sec: 'Module 2: Commercial Sourcing', icon: '2️⃣', items: [
-    { label: '5. Sourcing & RFx Strategy', href: '#/academy/func-rfx-strategy', funcId: 'func-rfx-strategy' },
-    { label: '6. Tender / RFQ Issuance', href: '#/academy/func-rfq-issuance', funcId: 'func-rfq-issuance' },
-    { label: '7. Quote Normalization', href: '#/academy/func-quote-normalization', funcId: 'func-quote-normalization' },
-    { label: '8. Landed Cost & TCO', href: '#/academy/func-landed-cost-tco', funcId: 'func-landed-cost-tco' }
-  ] },
-  { sec: 'Module 3: Cost Structure & Risk', icon: '3️⃣', items: [
-    { label: '9. Should-Cost Modeling', href: '#/academy/func-should-cost', funcId: 'func-should-cost' },
-    { label: '10. Supplier Evaluation', href: '#/academy/func-supplier-eval', funcId: 'func-supplier-eval' },
-    { label: '11. Supplier Risk & Vetting', href: '#/academy/func-supplier-risk', funcId: 'func-supplier-risk' },
-    { label: '12. Strategic Negotiation', href: '#/academy/func-negotiation-strategy', funcId: 'func-negotiation-strategy' }
-  ] },
-  { sec: 'Module 4: Negotiation & Controls', icon: '4️⃣', items: [
-    { label: '13. Commercial Terms & MOQs', href: '#/academy/func-commercial-terms', funcId: 'func-commercial-terms' },
-    { label: '14. Contract Structuring', href: '#/academy/func-contract-structuring', funcId: 'func-contract-structuring' },
-    { label: '15. DOA & Spend Controls', href: '#/academy/func-doa-controls', funcId: 'func-doa-controls' },
-    { label: '16. PO & P2P Execution', href: '#/academy/func-po-execution', funcId: 'func-po-execution' }
-  ] }
-];
-
 PS.NAV_OPERATIONS = [
-  { sec: 'Operations Gateway', icon: '💼', items: [
-    { label: 'Operations Gateway', href: '#/operations' },
+  { sec: 'Start Here', items: [
     { label: 'What Should I Do?', href: '#/what' },
     { label: 'Procurement Lifecycle', href: '#/lifecycle' },
     { label: 'Maturity Assessment', href: '#/maturity' }
   ] },
-  { sec: 'Execution Libraries', icon: '📋', items: [
-    { label: 'Standard Operating Procedures', href: '#/list/sop' },
-    { label: 'Procurement Calculators', href: '#/list/calc' },
-    { label: 'Execution Checklists', href: '#/list/cl' },
-    { label: 'Production Templates', href: '#/list/tpl' }
+  { sec: 'Execution Libraries', items: [
+    { label: 'SOPs & Procedures', href: '#/list/sop' },
+    { label: 'Calculators', href: '#/list/calc' },
+    { label: 'Checklists', href: '#/list/cl' },
+    { label: 'Templates', href: '#/list/tpl' }
   ] },
-  { sec: 'Governance & Knowledge', icon: '📚', items: [
-    { label: 'Knowledge Hub & Concepts', href: '#/list/kb' },
-    { label: 'KPIs & Value Metrics', href: '#/list/kpi' },
-    { label: 'Decision Guides & Scenarios', href: '#/list/dec' },
-    { label: 'Procurement Glossary', href: '#/glossary' }
+  { sec: 'Reference & Governance', items: [
+    { label: 'Knowledge Hub', href: '#/list/kb' },
+    { label: 'KPIs & Metrics', href: '#/list/kpi' },
+    { label: 'Decision Guides', href: '#/list/dec' },
+    { label: 'Scenarios', href: '#/scenarios' },
+    { label: 'Glossary', href: '#/glossary' }
   ] },
-  { sec: 'Intelligence & Automation', icon: '🤖', items: [
+  { sec: 'Intelligence', items: [
     { label: 'Procurement Copilot', href: '#/copilot' },
-    { label: 'Certification Exams', href: '#/exams' },
     { label: 'Spend Data Model', href: '#/spend-model' },
-    { label: 'Document Pack Builder', href: '#/docpack' }
+    { label: 'Doc Pack Builder', href: '#/docpack' }
   ] }
 ];
 
 PS.NAV_WORKSPACE = [
-  { sec: 'My Workspace', icon: '📁', items: [
-    { label: 'Saved Work & Reports', href: '#/saved', badge: 'saved' },
+  { sec: 'My Work', items: [
+    { label: 'Saved Work', href: '#/saved', badge: 'saved' },
     { label: 'Favorites', href: '#/fav', badge: 'fav' },
     { label: 'Recently Used', href: '#/recent' },
     { label: 'Savings Dashboard', href: '#/dash-savings' }
   ] },
-  { sec: 'Guidance & Search', icon: '🔍', items: [
-    { label: 'Quick Start Guide', href: '#/quickstart' },
+  { sec: 'Support', items: [
     { label: 'Global Search', href: '#/search' },
+    { label: 'Quick Start', href: '#/quickstart' },
     { label: 'Help Center', href: '#/help' }
   ] },
-  { sec: 'Account & System', icon: '⚙', items: [
-    { label: 'Application Settings', href: '#/settings' },
-    { label: 'Audit Log & Backup', href: '#/backup' }
+  { sec: 'System', items: [
+    { label: 'Settings', href: '#/settings' },
+    { label: 'Backup & Audit', href: '#/backup' }
   ] }
 ];
 
-PS.NAV = PS.NAV_ACADEMY.concat(PS.NAV_OPERATIONS).concat(PS.NAV_WORKSPACE);
+PS.NAV = PS.NAV_OPERATIONS.concat(PS.NAV_WORKSPACE);
 
 /* ==========================================================
    Academy sidebar nav is generated from PS.ACADEMY_FUNCTIONS at
@@ -5436,6 +5409,16 @@ PS.syncNavForRoute = function (r) {
   var app = PS.$('#app');
   if (!app) return;
 
+  /* highlight the current hub in the switcher pills */
+  PS.$$('.hub-nav-pill').forEach(function (pill) {
+    var href = pill.getAttribute('href') || '';
+    var isHub = (hub === 'academy' && href === '#/academy') ||
+      (hub === 'operations' && href === '#/operations') ||
+      (hub === 'portal' && href === '#/home') ||
+      (hub === 'workspace' && (href === '#/settings' || href === '#/backup' || href === '#/saved'));
+    pill.classList.toggle('is-active', isHub);
+  });
+
   if (hub === 'portal') {
     app.classList.add('has-no-sidebar');
     app.classList.remove('has-sidebar', 'hub-academy', 'hub-operations', 'hub-workspace');
@@ -5469,7 +5452,8 @@ PS.updateAcademyNavChecks = function () {
 };
 
 /* Academy nav sections generated from the curriculum so the sidebar
-   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership). */
+   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership).
+   Module sections default to collapsed; the active module auto-expands. */
 PS.buildAcademyNav = function () {
   var funcs = PS.ACADEMY_FUNCTIONS || [];
   var labels = PS.ACADEMY_NAV_LABELS || {};
@@ -5480,7 +5464,7 @@ PS.buildAcademyNav = function () {
     var fullSec = f.module || 'Curriculum';
     var secName = secShort[fullSec] || fullSec;
     if (!byName[secName]) {
-      byName[secName] = { sec: secName, icon: (sections.length + 1) + '\uFE0F\u20E3', items: [] };
+      byName[secName] = { sec: secName, ico: String(sections.length + 1), items: [], defaultClosed: true };
       sections.push(byName[secName]);
     }
     var shortTitle = f.title ? String(f.title).replace(/^The /, '') : f.id;
@@ -5490,10 +5474,11 @@ PS.buildAcademyNav = function () {
       funcId: f.id
     });
   });
-  /* Overview section always leads */
-  var overview = { sec: 'Academy Overview', icon: '\uD83C\uDF93', items: [
+  /* Overview section always leads, never collapses by default */
+  var overview = { sec: 'Academy Overview', ico: '★', items: [
     { label: 'Academy Curriculum', href: '#/academy' },
     { label: 'My Progress & Badges', href: '#/academy-progress' },
+    { label: 'Certification Exams', href: '#/exams' },
     { label: 'Certificate of Mastery', href: '#/certificate' }
   ] };
   return [overview].concat(sections);
@@ -5511,42 +5496,42 @@ PS.buildNav = function (targetHub) {
   var hubNav = PS.$('#sidebarHubNav');
   var foot = PS.$('#sidebarFoot');
 
-  var navList = PS.NAV_ACADEMY;
+  var navList = PS.NAV_OPERATIONS;
   var title = 'Procure Sherpa';
   var sub = 'Learning Platform';
   var mark = 'PS';
   var switcherHtml = '';
 
   if (hub === 'academy') {
-    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_ACADEMY;
+    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_OPERATIONS;
     title = 'Procurement Academy';
     sub = 'Interactive Learning';
-    mark = '🎓';
+    mark = 'A';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼 Operations Hub</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">Operations Hub</a>' +
       '</div>';
   } else if (hub === 'operations') {
     navList = PS.NAV_OPERATIONS;
     title = 'Operations Hub';
     sub = 'Practitioner Tools';
-    mark = '💼';
+    mark = 'O';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">Academy</a>' +
       '</div>';
   } else if (hub === 'workspace') {
     navList = PS.NAV_WORKSPACE;
     title = 'Workspace & Settings';
     sub = 'User Account & Tools';
-    mark = '⚙';
+    mark = 'W';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">Academy</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">Operations</a>' +
       '</div>';
   } else {
-    navList = PS.NAV;
+    navList = PS.NAV_OPERATIONS;
   }
 
   if (bMark) bMark.textContent = mark;
@@ -5556,18 +5541,20 @@ PS.buildNav = function (targetHub) {
 
   var open = PS.prefs().navOpen || {};
   root.innerHTML = navList.map(function (g) {
-    var isOpen = open[g.sec] === undefined ? true : !!open[g.sec];
+    var isOpen = open[g.sec] === undefined ? (g.defaultClosed ? false : true) : !!open[g.sec];
+    var secLabel = (PS.i18n && g.i18n) ? PS.i18n.t(g.i18n) : g.sec;
     return '<div class="nav-sec" data-sec="' + PS.esc(g.sec) + '" data-open="' + (isOpen ? 'true' : 'false') + '">' +
       '<button type="button" class="nav-sec-head" data-navsec="' + PS.esc(g.sec) + '" aria-expanded="' + isOpen + '">' +
-      '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.icon || '•') + '</span>' +
-      '<span>' + PS.esc(g.sec) + '</span>' +
+      '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.ico || '') + '</span>' +
+      '<span>' + PS.esc(secLabel) + '</span>' +
       '<span class="sec-count">' + g.items.length + '</span>' +
       '<span class="chev" aria-hidden="true">▾</span></button>' +
       '<ul class="nav-list">' + g.items.map(function (it) {
         var isComp = (it.funcId && PS.academyStore) ? PS.academyStore.isFuncCompleted(it.funcId) : false;
-        return '<li data-label="' + PS.esc((it.label + ' ' + g.sec).toLowerCase()) + '">' +
+        var itLabel = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
+        return '<li data-label="' + PS.esc((itLabel + ' ' + secLabel).toLowerCase()) + '">' +
           '<a href="' + PS.esc(it.href) + '"' + (it.funcId ? ' data-func="' + PS.esc(it.funcId) + '"' : '') + '>' +
-          PS.esc(it.label) +
+          PS.esc(itLabel) +
           (isComp ? '<span class="nav-status-check" title="Function Mastered">✓</span>' : '') +
           (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') +
           '</a></li>';
@@ -6281,7 +6268,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="calc-layout">' +
     '<div class="card calc-panel-inputs"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
     '<span class="note">Fields marked <span class="req">*</span> are required</span></div>' +
-    '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off" onsubmit="return false;">' +
+    '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off">' +
     PS.groupFields(calc) + '</form>' +
     '<div class="calc-actions no-print">' +
     '<div class="btn-row">' +
@@ -6660,6 +6647,147 @@ PS.acts['chart-export'] = function (el) {
   };
   PS.chart.exportSVG(svg, filenames[type] || 'chart.svg');
   PS.toast('SVG downloaded', 'ok');
+};
+/* ==========================================================
+   Internationalization architecture (roadmap 6.2)
+   PS.i18n provides the t() pattern, locale resolution and a
+   string catalog. The app currently ships EN-only content, but
+   the chrome (shell, nav, topbar, common actions) routes through
+   t() so additional locale catalogs can drop in without touching
+   feature code.
+
+   Usage:
+     PS.i18n.t('nav.calculators')            -> 'Calculators'
+     PS.i18n.t('saved.items', {n: 5})        -> '5 items' (plural-safe)
+     PS.i18n.current()                       -> 'en'
+   To add a locale: register PS.i18n.CATALOG['fr'] = {...}.
+   ========================================================== */
+
+PS.i18n = PS.i18n || {};
+
+/* English is the source-of-truth catalog. Keys are dotted and
+   grouped by area so future catalogs mirror this shape exactly. */
+PS.i18n.CATALOG = {
+  en: {
+    'app.name': 'Procure Sherpa',
+    'app.tagline': 'Learning Platform',
+
+    'hub.home': 'Command Center',
+    'hub.academy': 'Academy',
+    'hub.operations': 'Operations',
+    'hub.workspace': 'Workspace & Settings',
+    'hub.academyTitle': 'Procurement Academy',
+    'hub.academySub': 'Interactive Learning',
+    'hub.opsTitle': 'Operations Hub',
+    'hub.opsSub': 'Practitioner Tools',
+    'hub.workspaceTitle': 'Workspace & Settings',
+    'hub.workspaceSub': 'User Account & Tools',
+
+    'nav.filter': 'Filter menu\u2026',
+    'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',
+    'nav.saved': 'Saved Work',
+    'nav.fav': 'Favorites',
+    'nav.recent': 'Recently Used',
+    'nav.help': 'Help Center',
+
+    'topbar.search': 'Search knowledge, SOPs, calculators, checklists, templates, KPIs\u2026',
+    'topbar.fav': 'Add or remove this page from favorites',
+    'topbar.print': 'Print / save report as PDF',
+    'topbar.theme': 'Toggle dark mode',
+    'topbar.profile': 'My Account & Role Profile',
+    'topbar.account': 'Account',
+
+    'footer.privacy': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress',
+    'footer.note': 'Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.',
+
+    'common.cancel': 'Cancel',
+    'common.confirm': 'Confirm',
+    'common.close': 'Close',
+    'common.save': 'Save',
+    'common.delete': 'Delete',
+    'common.reset': 'Reset',
+    'common.search': 'Search',
+    'common.print': 'Print / PDF',
+    'common.back': 'Back',
+    'common.next': 'Next',
+    'common.add': 'Add',
+    'common.remove': 'Remove',
+    'common.edit': 'Edit',
+
+    'calc.calculate': 'Calculate',
+    'calc.example': 'Load example',
+    'calc.reset': 'Reset',
+    'calc.save': 'Save to workspace',
+    'calc.markdown': 'Copy as Markdown',
+    'calc.copySummary': 'Copy summary',
+    'calc.whatif': 'What-if analysis',
+    'calc.shareStatic': 'Static share page',
+
+    'saved.items': '{n} item(s) stored',
+    'audit.events': 'local events',
+
+    'privacy.session': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress'
+  }
+};
+
+PS.i18n._locale = null;
+
+PS.i18n.current = function () {
+  if (!PS.i18n._locale) {
+    var stored = PS.prefs && PS.prefs().locale;
+    PS.i18n._locale = (stored && PS.i18n.CATALOG[stored]) ? stored : 'en';
+  }
+  return PS.i18n._locale;
+};
+
+/* Set locale at runtime; persists through prefs when available. */
+PS.i18n.setLocale = function (code) {
+  if (!PS.i18n.CATALOG[code]) code = 'en';
+  PS.i18n._locale = code;
+  if (PS.savePrefs) PS.savePrefs({ locale: code }, true);
+  document.documentElement.setAttribute('lang', code);
+  PS.i18n.applyDom();
+  return code;
+};
+
+/* Look up a key. Falls back gracefully: exact key -> {n} substitution,
+   then the raw key (so missing keys are visibly broken, not silent). */
+PS.i18n.t = function (key, vars) {
+  var cat = PS.i18n.CATALOG[PS.i18n.current()] || PS.i18n.CATALOG.en;
+  var s = cat[key];
+  if (s === undefined) {
+    s = key;
+    if (window.console && console.warn) console.warn('i18n: missing key ' + key);
+  }
+  if (vars) {
+    Object.keys(vars).forEach(function (k) {
+      s = s.split('{' + k + '}').join(String(vars[k]));
+    });
+  }
+  return s;
+};
+
+/* Rewrite all data-i18n attributes in the live DOM. Used on boot and
+   after a locale change so persistent chrome updates without re-render. */
+PS.i18n.applyDom = function () {
+  PS.$$('[data-i18n]').forEach(function (el) {
+    var key = el.getAttribute('data-i18n');
+    var plural = el.getAttribute('data-i18n-count');
+    var txt;
+    if (plural) {
+      var n = PS.num(el.getAttribute('data-i18n-n')) || 0;
+      txt = PS.i18n.t(key, { n: n });
+    } else {
+      txt = PS.i18n.t(key);
+    }
+    el.textContent = txt;
+  });
+  PS.$$('[data-i18n-placeholder]').forEach(function (el) {
+    el.setAttribute('placeholder', PS.i18n.t(el.getAttribute('data-i18n-placeholder')));
+  });
+  PS.$$('[data-i18n-title]').forEach(function (el) {
+    el.setAttribute('title', PS.i18n.t(el.getAttribute('data-i18n-title')));
+  });
 };
 /* ---------- UI-level actions ---------- */
 PS.acts.theme = function () { PS.toggleTheme(); };
@@ -7371,6 +7499,9 @@ PS.acts['settings-save'] = function () {
     themeAutoEnd: g('#setThemeAutoEnd') || PS.prefs().themeAutoEnd,
     thresholds: thresholds.length ? thresholds : PS.DEFAULT_PREFS.thresholds
   });
+  if (PS.$('#setLocale') && PS.i18n && PS.i18n.setLocale) {
+    PS.i18n.setLocale(PS.$('#setLocale').value);
+  }
   PS.applyTheme();
   PS.buildNav();
   PS.renderRoute();
@@ -7630,10 +7761,10 @@ PS.copilot.save = function (c) {
 PS.copilot.transcript = function () {
   return PS.copilot.all().transcript || [];
 };
-PS.copilot.addExchange = function (q, answer, hits) {
+PS.copilot.addExchange = function (q, answer, hits, confidence) {
   var c = PS.copilot.all();
   c.transcript = c.transcript || [];
-  c.transcript.unshift({ q: PS.clean(q, 200), a: PS.clean(answer, 1200), hits: hits || [], t: new Date().toISOString() });
+  c.transcript.unshift({ q: PS.clean(q, 200), a: PS.clean(answer, 1200), hits: hits || [], confidence: confidence || 0, t: new Date().toISOString() });
   c.transcript = c.transcript.slice(0, 30);
   PS.copilot.save(c);
 };
@@ -7681,20 +7812,56 @@ PS.copilot.tokens = function (q) {
   });
 };
 
+/* Light suffix stemming so "negotiation" matches "negotiate"/"negotiating".
+   Conservative: only strips common inflectional suffixes from terms longer
+   than 5 chars, and never to a root shorter than 4 chars. */
+PS.copilot.stem = function (t) {
+  if (typeof t !== 'string' || t.length < 5) return t;
+  var lower = t.toLowerCase();
+  var suffix = [
+    ['negotiations', 'negotiat'], ['negotiating', 'negotiat'], ['negotiated', 'negotiat'],
+    ['purchasing', 'purchas'], ['purchased', 'purchas'], ['purchases', 'purchas'],
+    ['suppliers', 'supplier'], ['contracts', 'contract'], ['sourcing', 'sourc'],
+    ['escalations', 'escalat'], ['escalated', 'escalat'], ['forecasts', 'forecast'],
+    ['analyses', 'analys'], ['analytics', 'analytic'], ['strategies', 'strateg'],
+    ['checklists', 'checklist'], ['categories', 'categor'], ['commodities', 'commodit'],
+    ['liabilities', 'liabilit'], ['equities', 'equit'], ['revenues', 'revenue'],
+    ['invoices', 'invoice'], ['payments', 'payment'], ['deliveries', 'deliveri']
+  ];
+  for (var i = 0; i < suffix.length; i++) {
+    if (lower.slice(-suffix[i][0].length) === suffix[i][0]) return suffix[i][1];
+  }
+  /* generic: -ing / -ed / -es / -s when safe */
+  if (lower.length > 6 && lower.slice(-3) === 'ing') return lower.slice(0, -3);
+  if (lower.length > 6 && lower.slice(-2) === 'ed') return lower.slice(0, -2);
+  if (lower.length > 5 && lower.slice(-2) === 'es') return lower.slice(0, -2);
+  if (lower.length > 6 && lower.slice(-1) === 's') return lower.slice(0, -1);
+  return lower;
+};
+
+/* Score helper that also matches stemmed forms so the index does not
+   need pre-stemming (keeps index building cheap). */
+PS.copilot.matches = function (text, term) {
+  if (text.indexOf(term) >= 0) return true;
+  var st = PS.copilot.stem(term);
+  if (st !== term && text.indexOf(st) >= 0) return true;
+  return false;
+};
+
 /* ---------------- retrieval ---------------- */
 PS.copilot.ask = function (q) {
   var idx = PS.copilot.buildIndex();
   var tokens = PS.copilot.tokens(q);
-  if (!tokens.length) return { hits: [], answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
+  if (!tokens.length) return { hits: [], confidence: 0, answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
   var scored = [];
   idx.forEach(function (rec) {
     var score = 0, matched = 0;
     tokens.forEach(function (t) {
-      var titleHit = rec.title.toLowerCase().indexOf(t) >= 0;
-      var bodyHit = rec.text.indexOf(t) >= 0;
+      var titleHit = PS.copilot.matches(rec.title.toLowerCase(), t);
+      var bodyHit = PS.copilot.matches(rec.text, t);
       if (titleHit) score += 5;
       if (bodyHit) { score += 2; matched++; }
-      if (rec.cat.toLowerCase().indexOf(t) >= 0) score += 2;
+      if (PS.copilot.matches(rec.cat.toLowerCase(), t)) score += 2;
     });
     if (matched) scored.push({ rec: rec, score: score });
   });
@@ -7702,14 +7869,27 @@ PS.copilot.ask = function (q) {
     if (b.score !== a.score) return b.score - a.score;
     return a.rec.title.localeCompare(b.rec.title);
   });
+  /* confidence: proportion of query tokens matched, weighted by spread.
+     A query where every token hit the top doc is high-confidence;
+     a query where only one of several tokens matched is low-confidence. */
+  var top = scored[0];
+  var matchedTokens = 0;
+  if (top) {
+    tokens.forEach(function (t) {
+      var titleHit = PS.copilot.matches(top.rec.title.toLowerCase(), t);
+      var bodyHit = PS.copilot.matches(top.rec.text, t);
+      if (titleHit || bodyHit) matchedTokens++;
+    });
+  }
+  var confidence = tokens.length ? Math.round((matchedTokens / tokens.length) * 100) : 0;
   var hits = scored.slice(0, 5).map(function (s) { return s.rec; });
-  var answer = PS.copilot.answerFor(q, hits, tokens);
-  return { hits: hits, answer: answer };
+  var answer = PS.copilot.answerFor(q, hits, tokens, confidence);
+  return { hits: hits, confidence: confidence, answer: answer };
 };
 
 /* Build a plain-language answer with inline citations from the top hits. */
-PS.copilot.answerFor = function (q, hits, tokens) {
-  if (!hits.length) return 'No confident local match for "' + PS.clean(q, 120) + '". Try the global search (Ctrl+K) or rephrase with procurement terms.';
+PS.copilot.answerFor = function (q, hits, tokens, confidence) {
+  if (!hits.length) return 'I could not find a confident match for "' + PS.clean(q, 120) + '" in the local library. Try the global search (Ctrl+K), or rephrase with procurement terms such as "landed cost" or "3-way match".';
   var top = hits[0];
   var detail = '';
   if (top.type === 'gloss') {
@@ -7731,8 +7911,22 @@ PS.copilot.answerFor = function (q, hits, tokens) {
   detail = detail ? detail : top.title;
   if (detail.length > 480) detail = detail.slice(0, 477) + '\u2026';
   var name = PS.typeLabel(top.type);
-  return 'Based on the local library, the closest match is "' + top.title + '" (' + name + '). ' + detail +
-    ' Open the linked page below for the full, cited source.';
+
+  /* Honest confidence signalling: below 60% we say so plainly. */
+  var lowConfidence = confidence !== undefined && confidence < 60;
+  var verdict = lowConfidence
+    ? 'I found a partial match, but I am not fully confident it answers your question. The closest local entry is "'
+    : 'Based on the local library, the best match is "';
+  return verdict + top.title + '" (' + name + '). ' + detail +
+    (lowConfidence
+      ? ' Verify this entry before relying on it, or try rephrasing your question.'
+      : ' Open the linked page below for the full, cited source.');
+};
+
+PS.copilot.confidenceTag = function (confidence) {
+  if (confidence >= 80) return '<span class="badge" style="background:var(--ok-soft);color:var(--ok);font-weight:700">High match</span>';
+  if (confidence >= 60) return '<span class="badge" style="background:var(--warn-soft);color:var(--warn);font-weight:700">Partial match</span>';
+  return '<span class="badge" style="background:var(--danger-soft);color:var(--danger);font-weight:700">Low confidence</span>';
 };
 
 PS.copilot.citesHtml = function (hits) {
@@ -7768,12 +7962,12 @@ PS.copilot.renderExchange = function (q) {
   var qClean = PS.clean(q, 200);
   if (!qClean) return;
   var res = PS.copilot.ask(qClean);
-  PS.copilot.addExchange(qClean, res.answer, res.hits.map(function (h) { return { type: h.type, id: h.id, title: h.title }; }));
+  PS.copilot.addExchange(qClean, res.answer, res.hits.map(function (h) { return { type: h.type, id: h.id, title: h.title }; }), res.confidence);
   var chat = PS.$('#copilotChat');
   if (!chat) return;
   var userHtml = '<div class="copilot-msg is-user"><div class="cp-avatar" aria-hidden="true">You</div><div class="cp-bubble">' + PS.esc(qClean) + '</div></div>';
   var aiHtml = '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' +
-    PS.esc(res.answer) + PS.copilot.citesHtml(res.hits) + '</div></div>';
+    PS.copilot.confidenceTag(res.confidence) + ' ' + PS.esc(res.answer) + PS.copilot.citesHtml(res.hits) + '</div></div>';
   chat.insertAdjacentHTML('beforeend', userHtml + aiHtml);
   chat.scrollTop = chat.scrollHeight;
   if (PS.$('#copilotInput')) PS.$('#copilotInput').value = '';
@@ -8544,6 +8738,24 @@ PS.wireEvents = function () {
       if (PS.clean(q.value).length >= 3) PS.go('search', { q: q.value });
     }, 450));
   }
+  /* CSP-safe form submission: no inline onsubmit handlers.
+     Each form carries its own data-act or is wired here. */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || !f.tagName || f.tagName.toLowerCase() !== 'form') return;
+    e.preventDefault();
+    var act = f.getAttribute('data-act') || (f.id ? f.id : '');
+    if (act === 'miniSearch') {
+      var sq = PS.$('#q');
+      PS.go('search', { q: sq ? sq.value : '' });
+      return;
+    }
+    if (act === 'profileEditForm') return;
+    if (f.id === 'calcForm') { PS.runCalc(false); return; }
+    if (f.id === 'tplForm') return;
+    if (f.id === 'decForm') return;
+    if (f.id === 'matForm') return;
+  });
   PS.on('#menuBtn', 'click', function () { PS.toggleNav(); });
   PS.on('#sidebarClose', 'click', function () { PS.closeNav(); });
   PS.on('#scrim', 'click', function () { PS.closeNav(); });
@@ -8617,6 +8829,7 @@ PS.boot = function () {
     PS.migrate();
     PS.applyTheme();
     PS.startThemeScheduler();
+    if (PS.i18n && PS.i18n.applyDom) PS.i18n.applyDom();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
     PS.wireEvents();
@@ -9204,7 +9417,7 @@ PS.route('tpl', function (id) {
     (st.modified ? '<p class="note">Last saved locally ' + PS.esc(PS.dateTime(st.modified)) + '</p>' : '') +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
-    '<form id="tplForm" autocomplete="off" onsubmit="return false;">' +
+    '<form id="tplForm" autocomplete="off">' +
     (it.sections || []).map(function (s) {
       return '<div class="card"><h3>' + PS.esc(s.g) + '</h3>' +
         (s.note ? '<p class="card-sub">' + PS.esc(s.note) + '</p>' : '') +
@@ -9252,7 +9465,7 @@ PS.route('dec', function (id) {
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<div class="grid grid-2">' +
-    '<div class="card"><h2>Questions to answer</h2><form id="decForm" onsubmit="return false;">' +
+    '<div class="card"><h2>Questions to answer</h2><form id="decForm">' +
     (it.factors || []).map(function (f, i) {
       return '<div class="field"><label>' + PS.esc(f.q) + '</label>' +
         (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') +
@@ -10246,15 +10459,21 @@ PS.settingsFormatCard = function (p) {
     '</select>' +
     '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:8px"></div>' +
     '<span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
-    '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div></div>';
+    '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div>' +
+    '<div class="field"><label for="setLocale">Interface language</label><select id="setLocale">' +
+    Object.keys(PS.i18n.CATALOG).map(function (code) {
+      return '<option value="' + PS.esc(code) + '"' + (code === PS.i18n.current() ? ' selected' : '') + '>' + PS.esc(code.toUpperCase()) + '</option>';
+    }).join('') +
+    '</select>' +
+    '<span class="hint">Language applies to the app chrome (nav, search, footer). Content is currently authored in English; extra catalogs can be added to PS.i18n.CATALOG without touching feature code.</span></div></div>';
 };
 PS.settingsThresholdCard = function (p) {
   return '<div class="card"><h2>Approval thresholds</h2>' +
     '<p class="card-sub">Enter your own delegated authority levels. The PO Value Check calculator uses this table to show which approval level a value falls into. Leave a limit at 0 to mean no upper bound for that level.</p>' +
     '<div class="table-wrap"><table><thead><tr><th>Approval level</th><th class="num">Up to (value)</th><th></th></tr></thead><tbody id="thresholdRows">' +
     (p.thresholds || []).map(function (t) {
-      return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80"></td>' +
-        '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px"></td>' +
+      return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></td>' +
+        '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></td>' +
         '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td></tr>';
     }).join('') + '</tbody></table></div>' +
     '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add">Add approval level</button></div>' +
@@ -10359,7 +10578,7 @@ PS.route('maturity', function () {
     '<button type="button" class="btn" data-act="maturity-save">Save assessment</button>' +
     '<button type="button" class="btn btn-ghost" data-act="print">Print / PDF</button>' +
     '</div></div>' +
-    '<form id="matForm" class="card" onsubmit="return false;"><h2>Rating levels</h2>' +
+    '<form id="matForm" class="card"><h2>Rating levels</h2>' +
     PS.renderSimpleTable({ headers: ['Level', 'Meaning'], rows: [
       ['1 - Ad hoc', 'Activity depends on individuals. Little documentation, no consistent process, spend visibility limited.'],
       ['2 - Emerging', 'Basic process exists and is sometimes followed. Documentation is inconsistent.'],
@@ -11906,7 +12125,7 @@ PS.route('certificate', function () {
     '</div>' +
     '<div class="cert-actions-right">' +
     '<button type="button" class="btn btn-sm" data-act="user-profile-open">Edit Name & Organization</button> ' +
-    '<button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print Official Certificate / Save PDF</button>' +
+    '<button type="button" class="btn btn-primary btn-sm" data-act="print">Print Official Certificate / Save PDF</button>' +
     '</div>' +
     '</div>' +
 
@@ -12039,7 +12258,7 @@ PS.route('copilot', function () {
   PS.pageTitle = 'Procurement Copilot';
   var trans = PS.copilot.transcript();
   var chatBody = '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div>' +
-    '<div class="cp-bubble">Hello. I am your offline procurement assistant. Ask me about concepts, processes, calculators, terms or scenarios - every answer is drawn from the bundled library on this device, with citations you can open.</div></div>';
+    '<div class="cp-bubble">Hello. I am a local knowledge assistant, not a generative AI model. Every answer is retrieved from the bundled library on this device, with citations you can open. I mark my confidence so you can judge when to verify.</div></div>';
   if (trans.length) {
     trans.slice().reverse().forEach(function (x) {
       var cites = (x.hits || []).map(function (h) {
@@ -12050,21 +12269,23 @@ PS.route('copilot', function () {
           PS.esc(t ? (t.title || t.term) : h.title) + ' <span class="badge">' + PS.esc(PS.typeLabel(h.type)) + '</span></a>';
       }).join('');
       chatBody += '<div class="copilot-msg is-user"><div class="cp-avatar" aria-hidden="true">You</div><div class="cp-bubble">' + PS.esc(x.q) + '</div></div>' +
-        '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' + PS.esc(x.a) + (cites ? '<div class="cp-cites">' + cites + '</div>' : '') + '</div></div>';
+        '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' +
+        PS.copilot.confidenceTag(x.confidence) + ' ' + PS.esc(x.a) + (cites ? '<div class="cp-cites">' + cites + '</div>' : '') + '</div></div>';
     });
   }
-  return PS.reportHead('Procurement Copilot', 'Offline knowledge assistant') +
+  return PS.reportHead('Procurement Copilot', 'Local knowledge assistant') +
     '<div class="copilot-shell"><div class="card"><div class="card-head"><div><h1>Ask the Copilot</h1>' +
-    '<p class="card-sub">Local retrieval answers with inline citations. Nothing leaves this browser.</p></div>' +
+    '<p class="card-sub">Local retrieval answers with inline citations and an honest confidence signal. Nothing leaves this browser.</p></div>' +
     '<div class="spacer"></div>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="copilot-clear">Clear transcript</button></div>' +
     '<div class="copilot-chat" id="copilotChat" style="max-height:520px;overflow-y:auto">' + chatBody + '</div>' +
     '<div class="copilot-input-row">' +
+    '<label class="sr-only" for="copilotInput">Ask the copilot a question</label>' +
     '<input type="text" id="copilotInput" placeholder="Ask e.g. What is TCO, or how do I handle a price increase?" maxlength="200">' +
     '<button type="button" class="btn btn-primary" data-act="copilot-ask">Ask</button>' +
     '</div>' +
     '<div class="cp-suggest">' + PS.copilot.suggestions(4) + '</div>' +
-    '<p class="note">The Copilot matches your words against bundled content only - it is not connected to any model or server. Always validate figures before acting.</p>' +
+    '<p class="note">The Copilot is a keyword-based retrieval tool over bundled content only - it is not connected to any model or server, and it cannot reason. Treat "High match" as worth reading, "Low confidence" as worth verifying. Always validate figures before acting.</p>' +
     '</div></div>' +
     PS.disclaimer('data');
   PS.pageInit = function () {

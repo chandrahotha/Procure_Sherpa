@@ -3,8 +3,8 @@ PS.settingsThresholdCard = function (p) {
     '<p class="card-sub">Enter your own delegated authority levels. The PO Value Check calculator uses this table to show which approval level a value falls into. Leave a limit at 0 to mean no upper bound for that level.</p>' +
     '<div class="table-wrap"><table><thead><tr><th>Approval level</th><th class="num">Up to (value)</th><th></th></tr></thead><tbody id="thresholdRows">' +
     (p.thresholds || []).map(function (t) {
-      return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80"></td>' +
-        '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px"></td>' +
+      return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></td>' +
+        '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></td>' +
         '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td></tr>';
     }).join('') + '</tbody></table></div>' +
     '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add">Add approval level</button></div>' +

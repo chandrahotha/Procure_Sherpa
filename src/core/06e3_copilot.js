@@ -21,10 +21,10 @@ PS.copilot.save = function (c) {
 PS.copilot.transcript = function () {
   return PS.copilot.all().transcript || [];
 };
-PS.copilot.addExchange = function (q, answer, hits) {
+PS.copilot.addExchange = function (q, answer, hits, confidence) {
   var c = PS.copilot.all();
   c.transcript = c.transcript || [];
-  c.transcript.unshift({ q: PS.clean(q, 200), a: PS.clean(answer, 1200), hits: hits || [], t: new Date().toISOString() });
+  c.transcript.unshift({ q: PS.clean(q, 200), a: PS.clean(answer, 1200), hits: hits || [], confidence: confidence || 0, t: new Date().toISOString() });
   c.transcript = c.transcript.slice(0, 30);
   PS.copilot.save(c);
 };
@@ -72,20 +72,56 @@ PS.copilot.tokens = function (q) {
   });
 };
 
+/* Light suffix stemming so "negotiation" matches "negotiate"/"negotiating".
+   Conservative: only strips common inflectional suffixes from terms longer
+   than 5 chars, and never to a root shorter than 4 chars. */
+PS.copilot.stem = function (t) {
+  if (typeof t !== 'string' || t.length < 5) return t;
+  var lower = t.toLowerCase();
+  var suffix = [
+    ['negotiations', 'negotiat'], ['negotiating', 'negotiat'], ['negotiated', 'negotiat'],
+    ['purchasing', 'purchas'], ['purchased', 'purchas'], ['purchases', 'purchas'],
+    ['suppliers', 'supplier'], ['contracts', 'contract'], ['sourcing', 'sourc'],
+    ['escalations', 'escalat'], ['escalated', 'escalat'], ['forecasts', 'forecast'],
+    ['analyses', 'analys'], ['analytics', 'analytic'], ['strategies', 'strateg'],
+    ['checklists', 'checklist'], ['categories', 'categor'], ['commodities', 'commodit'],
+    ['liabilities', 'liabilit'], ['equities', 'equit'], ['revenues', 'revenue'],
+    ['invoices', 'invoice'], ['payments', 'payment'], ['deliveries', 'deliveri']
+  ];
+  for (var i = 0; i < suffix.length; i++) {
+    if (lower.slice(-suffix[i][0].length) === suffix[i][0]) return suffix[i][1];
+  }
+  /* generic: -ing / -ed / -es / -s when safe */
+  if (lower.length > 6 && lower.slice(-3) === 'ing') return lower.slice(0, -3);
+  if (lower.length > 6 && lower.slice(-2) === 'ed') return lower.slice(0, -2);
+  if (lower.length > 5 && lower.slice(-2) === 'es') return lower.slice(0, -2);
+  if (lower.length > 6 && lower.slice(-1) === 's') return lower.slice(0, -1);
+  return lower;
+};
+
+/* Score helper that also matches stemmed forms so the index does not
+   need pre-stemming (keeps index building cheap). */
+PS.copilot.matches = function (text, term) {
+  if (text.indexOf(term) >= 0) return true;
+  var st = PS.copilot.stem(term);
+  if (st !== term && text.indexOf(st) >= 0) return true;
+  return false;
+};
+
 /* ---------------- retrieval ---------------- */
 PS.copilot.ask = function (q) {
   var idx = PS.copilot.buildIndex();
   var tokens = PS.copilot.tokens(q);
-  if (!tokens.length) return { hits: [], answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
+  if (!tokens.length) return { hits: [], confidence: 0, answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
   var scored = [];
   idx.forEach(function (rec) {
     var score = 0, matched = 0;
     tokens.forEach(function (t) {
-      var titleHit = rec.title.toLowerCase().indexOf(t) >= 0;
-      var bodyHit = rec.text.indexOf(t) >= 0;
+      var titleHit = PS.copilot.matches(rec.title.toLowerCase(), t);
+      var bodyHit = PS.copilot.matches(rec.text, t);
       if (titleHit) score += 5;
       if (bodyHit) { score += 2; matched++; }
-      if (rec.cat.toLowerCase().indexOf(t) >= 0) score += 2;
+      if (PS.copilot.matches(rec.cat.toLowerCase(), t)) score += 2;
     });
     if (matched) scored.push({ rec: rec, score: score });
   });
@@ -93,14 +129,27 @@ PS.copilot.ask = function (q) {
     if (b.score !== a.score) return b.score - a.score;
     return a.rec.title.localeCompare(b.rec.title);
   });
+  /* confidence: proportion of query tokens matched, weighted by spread.
+     A query where every token hit the top doc is high-confidence;
+     a query where only one of several tokens matched is low-confidence. */
+  var top = scored[0];
+  var matchedTokens = 0;
+  if (top) {
+    tokens.forEach(function (t) {
+      var titleHit = PS.copilot.matches(top.rec.title.toLowerCase(), t);
+      var bodyHit = PS.copilot.matches(top.rec.text, t);
+      if (titleHit || bodyHit) matchedTokens++;
+    });
+  }
+  var confidence = tokens.length ? Math.round((matchedTokens / tokens.length) * 100) : 0;
   var hits = scored.slice(0, 5).map(function (s) { return s.rec; });
-  var answer = PS.copilot.answerFor(q, hits, tokens);
-  return { hits: hits, answer: answer };
+  var answer = PS.copilot.answerFor(q, hits, tokens, confidence);
+  return { hits: hits, confidence: confidence, answer: answer };
 };
 
 /* Build a plain-language answer with inline citations from the top hits. */
-PS.copilot.answerFor = function (q, hits, tokens) {
-  if (!hits.length) return 'No confident local match for "' + PS.clean(q, 120) + '". Try the global search (Ctrl+K) or rephrase with procurement terms.';
+PS.copilot.answerFor = function (q, hits, tokens, confidence) {
+  if (!hits.length) return 'I could not find a confident match for "' + PS.clean(q, 120) + '" in the local library. Try the global search (Ctrl+K), or rephrase with procurement terms such as "landed cost" or "3-way match".';
   var top = hits[0];
   var detail = '';
   if (top.type === 'gloss') {
@@ -122,8 +171,22 @@ PS.copilot.answerFor = function (q, hits, tokens) {
   detail = detail ? detail : top.title;
   if (detail.length > 480) detail = detail.slice(0, 477) + '\u2026';
   var name = PS.typeLabel(top.type);
-  return 'Based on the local library, the closest match is "' + top.title + '" (' + name + '). ' + detail +
-    ' Open the linked page below for the full, cited source.';
+
+  /* Honest confidence signalling: below 60% we say so plainly. */
+  var lowConfidence = confidence !== undefined && confidence < 60;
+  var verdict = lowConfidence
+    ? 'I found a partial match, but I am not fully confident it answers your question. The closest local entry is "'
+    : 'Based on the local library, the best match is "';
+  return verdict + top.title + '" (' + name + '). ' + detail +
+    (lowConfidence
+      ? ' Verify this entry before relying on it, or try rephrasing your question.'
+      : ' Open the linked page below for the full, cited source.');
+};
+
+PS.copilot.confidenceTag = function (confidence) {
+  if (confidence >= 80) return '<span class="badge" style="background:var(--ok-soft);color:var(--ok);font-weight:700">High match</span>';
+  if (confidence >= 60) return '<span class="badge" style="background:var(--warn-soft);color:var(--warn);font-weight:700">Partial match</span>';
+  return '<span class="badge" style="background:var(--danger-soft);color:var(--danger);font-weight:700">Low confidence</span>';
 };
 
 PS.copilot.citesHtml = function (hits) {
@@ -159,12 +222,12 @@ PS.copilot.renderExchange = function (q) {
   var qClean = PS.clean(q, 200);
   if (!qClean) return;
   var res = PS.copilot.ask(qClean);
-  PS.copilot.addExchange(qClean, res.answer, res.hits.map(function (h) { return { type: h.type, id: h.id, title: h.title }; }));
+  PS.copilot.addExchange(qClean, res.answer, res.hits.map(function (h) { return { type: h.type, id: h.id, title: h.title }; }), res.confidence);
   var chat = PS.$('#copilotChat');
   if (!chat) return;
   var userHtml = '<div class="copilot-msg is-user"><div class="cp-avatar" aria-hidden="true">You</div><div class="cp-bubble">' + PS.esc(qClean) + '</div></div>';
   var aiHtml = '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' +
-    PS.esc(res.answer) + PS.copilot.citesHtml(res.hits) + '</div></div>';
+    PS.copilot.confidenceTag(res.confidence) + ' ' + PS.esc(res.answer) + PS.copilot.citesHtml(res.hits) + '</div></div>';
   chat.insertAdjacentHTML('beforeend', userHtml + aiHtml);
   chat.scrollTop = chat.scrollHeight;
   if (PS.$('#copilotInput')) PS.$('#copilotInput').value = '';

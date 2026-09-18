@@ -45,5 +45,11 @@ PS.settingsFormatCard = function (p) {
     '</select>' +
     '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:8px"></div>' +
     '<span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
-    '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div></div>';
+    '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div>' +
+    '<div class="field"><label for="setLocale">Interface language</label><select id="setLocale">' +
+    Object.keys(PS.i18n.CATALOG).map(function (code) {
+      return '<option value="' + PS.esc(code) + '"' + (code === PS.i18n.current() ? ' selected' : '') + '>' + PS.esc(code.toUpperCase()) + '</option>';
+    }).join('') +
+    '</select>' +
+    '<span class="hint">Language applies to the app chrome (nav, search, footer). Content is currently authored in English; extra catalogs can be added to PS.i18n.CATALOG without touching feature code.</span></div></div>';
 };

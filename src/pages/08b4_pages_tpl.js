@@ -42,7 +42,7 @@ PS.route('tpl', function (id) {
     (st.modified ? '<p class="note">Last saved locally ' + PS.esc(PS.dateTime(st.modified)) + '</p>' : '') +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
-    '<form id="tplForm" autocomplete="off" onsubmit="return false;">' +
+    '<form id="tplForm" autocomplete="off">' +
     (it.sections || []).map(function (s) {
       return '<div class="card"><h3>' + PS.esc(s.g) + '</h3>' +
         (s.note ? '<p class="card-sub">' + PS.esc(s.note) + '</p>' : '') +

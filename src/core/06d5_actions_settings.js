@@ -23,6 +23,9 @@ PS.acts['settings-save'] = function () {
     themeAutoEnd: g('#setThemeAutoEnd') || PS.prefs().themeAutoEnd,
     thresholds: thresholds.length ? thresholds : PS.DEFAULT_PREFS.thresholds
   });
+  if (PS.$('#setLocale') && PS.i18n && PS.i18n.setLocale) {
+    PS.i18n.setLocale(PS.$('#setLocale').value);
+  }
   PS.applyTheme();
   PS.buildNav();
   PS.renderRoute();

@@ -18,6 +18,16 @@ PS.syncNavForRoute = function (r) {
   var app = PS.$('#app');
   if (!app) return;
 
+  /* highlight the current hub in the switcher pills */
+  PS.$$('.hub-nav-pill').forEach(function (pill) {
+    var href = pill.getAttribute('href') || '';
+    var isHub = (hub === 'academy' && href === '#/academy') ||
+      (hub === 'operations' && href === '#/operations') ||
+      (hub === 'portal' && href === '#/home') ||
+      (hub === 'workspace' && (href === '#/settings' || href === '#/backup' || href === '#/saved'));
+    pill.classList.toggle('is-active', isHub);
+  });
+
   if (hub === 'portal') {
     app.classList.add('has-no-sidebar');
     app.classList.remove('has-sidebar', 'hub-academy', 'hub-operations', 'hub-workspace');
@@ -51,7 +61,8 @@ PS.updateAcademyNavChecks = function () {
 };
 
 /* Academy nav sections generated from the curriculum so the sidebar
-   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership). */
+   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership).
+   Module sections default to collapsed; the active module auto-expands. */
 PS.buildAcademyNav = function () {
   var funcs = PS.ACADEMY_FUNCTIONS || [];
   var labels = PS.ACADEMY_NAV_LABELS || {};
@@ -62,7 +73,7 @@ PS.buildAcademyNav = function () {
     var fullSec = f.module || 'Curriculum';
     var secName = secShort[fullSec] || fullSec;
     if (!byName[secName]) {
-      byName[secName] = { sec: secName, icon: (sections.length + 1) + '\uFE0F\u20E3', items: [] };
+      byName[secName] = { sec: secName, ico: String(sections.length + 1), items: [], defaultClosed: true };
       sections.push(byName[secName]);
     }
     var shortTitle = f.title ? String(f.title).replace(/^The /, '') : f.id;
@@ -72,10 +83,11 @@ PS.buildAcademyNav = function () {
       funcId: f.id
     });
   });
-  /* Overview section always leads */
-  var overview = { sec: 'Academy Overview', icon: '\uD83C\uDF93', items: [
+  /* Overview section always leads, never collapses by default */
+  var overview = { sec: 'Academy Overview', ico: '★', items: [
     { label: 'Academy Curriculum', href: '#/academy' },
     { label: 'My Progress & Badges', href: '#/academy-progress' },
+    { label: 'Certification Exams', href: '#/exams' },
     { label: 'Certificate of Mastery', href: '#/certificate' }
   ] };
   return [overview].concat(sections);
@@ -93,42 +105,42 @@ PS.buildNav = function (targetHub) {
   var hubNav = PS.$('#sidebarHubNav');
   var foot = PS.$('#sidebarFoot');
 
-  var navList = PS.NAV_ACADEMY;
+  var navList = PS.NAV_OPERATIONS;
   var title = 'Procure Sherpa';
   var sub = 'Learning Platform';
   var mark = 'PS';
   var switcherHtml = '';
 
   if (hub === 'academy') {
-    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_ACADEMY;
+    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_OPERATIONS;
     title = 'Procurement Academy';
     sub = 'Interactive Learning';
-    mark = '🎓';
+    mark = 'A';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼 Operations Hub</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">Operations Hub</a>' +
       '</div>';
   } else if (hub === 'operations') {
     navList = PS.NAV_OPERATIONS;
     title = 'Operations Hub';
     sub = 'Practitioner Tools';
-    mark = '💼';
+    mark = 'O';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">Academy</a>' +
       '</div>';
   } else if (hub === 'workspace') {
     navList = PS.NAV_WORKSPACE;
     title = 'Workspace & Settings';
     sub = 'User Account & Tools';
-    mark = '⚙';
+    mark = 'W';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">Academy</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">Operations</a>' +
       '</div>';
   } else {
-    navList = PS.NAV;
+    navList = PS.NAV_OPERATIONS;
   }
 
   if (bMark) bMark.textContent = mark;
@@ -138,18 +150,20 @@ PS.buildNav = function (targetHub) {
 
   var open = PS.prefs().navOpen || {};
   root.innerHTML = navList.map(function (g) {
-    var isOpen = open[g.sec] === undefined ? true : !!open[g.sec];
+    var isOpen = open[g.sec] === undefined ? (g.defaultClosed ? false : true) : !!open[g.sec];
+    var secLabel = (PS.i18n && g.i18n) ? PS.i18n.t(g.i18n) : g.sec;
     return '<div class="nav-sec" data-sec="' + PS.esc(g.sec) + '" data-open="' + (isOpen ? 'true' : 'false') + '">' +
       '<button type="button" class="nav-sec-head" data-navsec="' + PS.esc(g.sec) + '" aria-expanded="' + isOpen + '">' +
-      '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.icon || '•') + '</span>' +
-      '<span>' + PS.esc(g.sec) + '</span>' +
+      '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.ico || '') + '</span>' +
+      '<span>' + PS.esc(secLabel) + '</span>' +
       '<span class="sec-count">' + g.items.length + '</span>' +
       '<span class="chev" aria-hidden="true">▾</span></button>' +
       '<ul class="nav-list">' + g.items.map(function (it) {
         var isComp = (it.funcId && PS.academyStore) ? PS.academyStore.isFuncCompleted(it.funcId) : false;
-        return '<li data-label="' + PS.esc((it.label + ' ' + g.sec).toLowerCase()) + '">' +
+        var itLabel = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
+        return '<li data-label="' + PS.esc((itLabel + ' ' + secLabel).toLowerCase()) + '">' +
           '<a href="' + PS.esc(it.href) + '"' + (it.funcId ? ' data-func="' + PS.esc(it.funcId) + '"' : '') + '>' +
-          PS.esc(it.label) +
+          PS.esc(itLabel) +
           (isComp ? '<span class="nav-status-check" title="Function Mastered">✓</span>' : '') +
           (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') +
           '</a></li>';

@@ -139,12 +139,12 @@ PS.user = {
       '</div>' +
 
       '<div class="hub-jump-row mb16" style="display:flex; gap:8px; flex-wrap:wrap;">' +
-      '<a class="btn btn-sm btn-ghost" href="#/home" onclick="PS.closeModal();">⌂ Command Center</a>' +
-      '<a class="btn btn-sm btn-primary" href="#/academy" onclick="PS.closeModal();">🎓 Academy Curriculum &rarr;</a>' +
-      '<a class="btn btn-sm" href="#/operations" onclick="PS.closeModal();" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
+      '<a class="btn btn-sm btn-ghost" href="#/home" data-act="user-profile-close">⌂ Command Center</a>' +
+      '<a class="btn btn-sm btn-primary" href="#/academy" data-act="user-profile-close">🎓 Academy Curriculum &rarr;</a>' +
+      '<a class="btn btn-sm" href="#/operations" data-act="user-profile-close" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
       '</div>' +
 
-      '<form id="profileEditForm" onsubmit="event.preventDefault();">' +
+      '<form id="profileEditForm">' +
       '<div class="field mb12">' +
       '<label class="label" for="profNameInput">Your Display Name</label>' +
       '<input class="input" type="text" id="profNameInput" value="' + PS.esc(prof.name) + '" required placeholder="e.g. Alex Morgan">' +
@@ -200,4 +200,7 @@ PS.user = {
 PS.acts = PS.acts || {};
 PS.acts['user-profile-open'] = function () {
   PS.user.openModal();
+};
+PS.acts['user-profile-close'] = function () {
+  PS.closeModal();
 };

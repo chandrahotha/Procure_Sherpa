@@ -11,7 +11,7 @@ PS.route('maturity', function () {
     '<button type="button" class="btn" data-act="maturity-save">Save assessment</button>' +
     '<button type="button" class="btn btn-ghost" data-act="print">Print / PDF</button>' +
     '</div></div>' +
-    '<form id="matForm" class="card" onsubmit="return false;"><h2>Rating levels</h2>' +
+    '<form id="matForm" class="card"><h2>Rating levels</h2>' +
     PS.renderSimpleTable({ headers: ['Level', 'Meaning'], rows: [
       ['1 - Ad hoc', 'Activity depends on individuals. Little documentation, no consistent process, spend visibility limited.'],
       ['2 - Emerging', 'Basic process exists and is sometimes followed. Documentation is inconsistent.'],

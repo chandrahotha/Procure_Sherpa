@@ -45,6 +45,24 @@ PS.wireEvents = function () {
       if (PS.clean(q.value).length >= 3) PS.go('search', { q: q.value });
     }, 450));
   }
+  /* CSP-safe form submission: no inline onsubmit handlers.
+     Each form carries its own data-act or is wired here. */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || !f.tagName || f.tagName.toLowerCase() !== 'form') return;
+    e.preventDefault();
+    var act = f.getAttribute('data-act') || (f.id ? f.id : '');
+    if (act === 'miniSearch') {
+      var sq = PS.$('#q');
+      PS.go('search', { q: sq ? sq.value : '' });
+      return;
+    }
+    if (act === 'profileEditForm') return;
+    if (f.id === 'calcForm') { PS.runCalc(false); return; }
+    if (f.id === 'tplForm') return;
+    if (f.id === 'decForm') return;
+    if (f.id === 'matForm') return;
+  });
   PS.on('#menuBtn', 'click', function () { PS.toggleNav(); });
   PS.on('#sidebarClose', 'click', function () { PS.closeNav(); });
   PS.on('#scrim', 'click', function () { PS.closeNav(); });

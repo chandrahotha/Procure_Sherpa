@@ -42,3 +42,13 @@ if (!m) {
 fs.writeFileSync(CHECK, m[1]);
 execFileSync(process.execPath, ['--check', CHECK], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 'inherit' });
+
+/* Hard performance budget gate: fail the build if the single-file
+   bundle exceeds the ceiling. The bundle is the entire load cost. */
+const BUDGET_KB = 1600;
+const sizeKB = fs.statSync(OUT).size / 1024;
+if (sizeKB > BUDGET_KB) {
+  console.error('FAIL: bundle size ' + sizeKB.toFixed(0) + ' KB exceeds budget ' + BUDGET_KB + ' KB');
+  process.exit(1);
+}
+console.log('perf budget: ' + sizeKB.toFixed(0) + ' KB (budget ' + BUDGET_KB + ' KB) - ok');

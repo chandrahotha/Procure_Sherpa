@@ -20,7 +20,7 @@ PS.route('dec', function (id) {
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<div class="grid grid-2">' +
-    '<div class="card"><h2>Questions to answer</h2><form id="decForm" onsubmit="return false;">' +
+    '<div class="card"><h2>Questions to answer</h2><form id="decForm">' +
     (it.factors || []).map(function (f, i) {
       return '<div class="field"><label>' + PS.esc(f.q) + '</label>' +
         (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') +

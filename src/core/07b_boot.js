@@ -28,6 +28,7 @@ PS.boot = function () {
     PS.migrate();
     PS.applyTheme();
     PS.startThemeScheduler();
+    if (PS.i18n && PS.i18n.applyDom) PS.i18n.applyDom();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
     PS.wireEvents();

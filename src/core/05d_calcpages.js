@@ -30,7 +30,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="calc-layout">' +
     '<div class="card calc-panel-inputs"><div class="card-head"><h2>Inputs</h2><div class="spacer"></div>' +
     '<span class="note">Fields marked <span class="req">*</span> are required</span></div>' +
-    '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off" onsubmit="return false;">' +
+    '<form id="calcForm" data-calc="' + PS.esc(calc.id) + '" autocomplete="off">' +
     PS.groupFields(calc) + '</form>' +
     '<div class="calc-actions no-print">' +
     '<div class="btn-row">' +

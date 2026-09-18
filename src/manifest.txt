@@ -33,6 +33,7 @@ src/core/05d_calcpages.js
 src/core/05e_calcinit.js
 src/core/05f_calccompact.js
 src/core/06a_actions_calc.js
+src/core/06a1_i18n.js
 src/core/06b_actions_ui.js
 src/core/06c1_actions_tpl.js
 src/core/06c2_actions_dec.js

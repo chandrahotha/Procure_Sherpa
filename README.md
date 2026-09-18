@@ -126,18 +126,23 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
 ```
 ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
-build.mjs                        # Assembly and validation compiler script
+build.mjs                        # Assembly + syntax + validation + performance budget gate
 validate.mjs                     # Structural and syntax integrity validator
 src/
-  manifest.txt                   # Linear assembly sequence (142 fragments)
+  manifest.txt                   # Linear assembly sequence (158 fragments)
   base/                          # Design tokens, CSS stylesheets, shell markup
-  core/                          # Runtime engine, state stores, charts, router, search
+  core/                          # Runtime engine, state stores, charts, router, search, i18n
   pages/                         # Page view renderers and interactive controllers
   content/                       # Controlled content libraries, SOPs, checklists, templates
   calcs/                         # Calculator definitions and implementation algorithms
 tools/
   smoke.mjs                      # Headless route test suite covering all 63 paths
   check_rels.mjs                 # Cross-reference referential integrity validator
+  test_calcs.mjs                 # Calculator correctness harness (all 19 calculators)
+  test_calc_values.mjs           # Expected-value fixtures: hand-computed math assertions
+  security_audit.mjs             # CSP / eval / inline-handler / credential scan
+  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes
+  perf_check.mjs                 # Single-file payload budget checker
   test_quiz_tips.mjs             # Assessment and adaptive tip test harness
   print_ids.mjs                  # Content registration ID inspector
 ```
@@ -145,15 +150,36 @@ tools/
 ### Build & Verification Commands
 
 ```powershell
-# Compile single-file HTML bundle and validate syntax
+# Compile single-file HTML bundle and validate syntax + performance budget
 node build.mjs
 
-# Run full route smoke tests across all 59 routes
+# Full production QA gate (build + all audits)
+npm run qa
+
+# Calculator correctness: asserts every calcImpl produces well-formed, finite output
+node tools/test_calcs.mjs
+
+# Run full route smoke tests across all 63 routes
 node tools/smoke.mjs
 
 # Validate cross-reference referential integrity
 node tools/check_rels.mjs
+
+# Security audit: eval/new Function/inline handlers/javascript: URLs/CSP hygiene
+node tools/security_audit.mjs
+
+# Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs across 38 routes
+node tools/a11y_audit.mjs
+
+# Performance budget check (HTML/JS/CSS payload ceilings)
+node tools/perf_check.mjs
 ```
+
+The `npm run qa` gate runs build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), route smoke (63 routes), security scan, accessibility scan and the performance budget in one pass. Any failure exits non-zero so CI blocks the release.
+
+### Expected-Value Calculator Fixtures
+
+`tools/test_calc_values.mjs` goes beyond "does it run" and proves the calculators compute *correct* answers. Every one of the 19 calculators is run with its documented example (or a synthetic case) and the numeric output payload is asserted against a figure **computed independently by hand** in the test file — covering landed cost, TCO, negotiation savings, should-cost, price increase, price escalation, payment terms, PO value check, MOQ, make-vs-buy, supplier scorecard, concentration/HHI, budget-vs-actual, savings analysis, multi-year contract cost, GST, FX and KPI calculators. These fixtures catch silent formula regressions, inverted signs and broken rounding that finite-output tests cannot.
 
 ---
 

@@ -1,90 +1,58 @@
 /* ==========================================================
    Section F: navigation architecture (Section 7, 48)
-   Clean 4-tier segregation:
-   1. Portal & Navigation
-   2. 🎓 Procurement Academy (Learning Hub)
-   3. 💼 Procurement Operations Hub (Execution Hub)
-   4. User Workspace & Settings
+   Professional 3-hub structure:
+   1. Procurement Academy (Learning Hub) - dynamic from curriculum
+   2. Operations Hub (Execution Hub)
+   3. Workspace & Settings
+   Sections collapse; module sections default closed so the
+   sidebar stays calm even with many curriculum items.
    ========================================================== */
 
-PS.NAV_ACADEMY = [
-  { sec: 'Academy Overview', icon: '🎓', items: [
-    { label: 'Academy Curriculum', href: '#/academy' },
-    { label: 'My Progress & Badges', href: '#/academy-progress' },
-    { label: 'Certificate of Mastery', href: '#/certificate' }
-  ] },
-  { sec: 'Module 1: Foundations', icon: '1️⃣', items: [
-    { label: '1. Mission & Value', href: '#/academy/func-mission-value', funcId: 'func-mission-value' },
-    { label: '2. Spend Analysis', href: '#/academy/func-spend-analysis', funcId: 'func-spend-analysis' },
-    { label: '3. Category Strategy', href: '#/academy/func-category-mgmt', funcId: 'func-category-mgmt' },
-    { label: '4. Scope & SOW', href: '#/academy/func-requirement-scope', funcId: 'func-requirement-scope' }
-  ] },
-  { sec: 'Module 2: Commercial Sourcing', icon: '2️⃣', items: [
-    { label: '5. Sourcing & RFx Strategy', href: '#/academy/func-rfx-strategy', funcId: 'func-rfx-strategy' },
-    { label: '6. Tender / RFQ Issuance', href: '#/academy/func-rfq-issuance', funcId: 'func-rfq-issuance' },
-    { label: '7. Quote Normalization', href: '#/academy/func-quote-normalization', funcId: 'func-quote-normalization' },
-    { label: '8. Landed Cost & TCO', href: '#/academy/func-landed-cost-tco', funcId: 'func-landed-cost-tco' }
-  ] },
-  { sec: 'Module 3: Cost Structure & Risk', icon: '3️⃣', items: [
-    { label: '9. Should-Cost Modeling', href: '#/academy/func-should-cost', funcId: 'func-should-cost' },
-    { label: '10. Supplier Evaluation', href: '#/academy/func-supplier-eval', funcId: 'func-supplier-eval' },
-    { label: '11. Supplier Risk & Vetting', href: '#/academy/func-supplier-risk', funcId: 'func-supplier-risk' },
-    { label: '12. Strategic Negotiation', href: '#/academy/func-negotiation-strategy', funcId: 'func-negotiation-strategy' }
-  ] },
-  { sec: 'Module 4: Negotiation & Controls', icon: '4️⃣', items: [
-    { label: '13. Commercial Terms & MOQs', href: '#/academy/func-commercial-terms', funcId: 'func-commercial-terms' },
-    { label: '14. Contract Structuring', href: '#/academy/func-contract-structuring', funcId: 'func-contract-structuring' },
-    { label: '15. DOA & Spend Controls', href: '#/academy/func-doa-controls', funcId: 'func-doa-controls' },
-    { label: '16. PO & P2P Execution', href: '#/academy/func-po-execution', funcId: 'func-po-execution' }
-  ] }
-];
-
 PS.NAV_OPERATIONS = [
-  { sec: 'Operations Gateway', icon: '💼', items: [
-    { label: 'Operations Gateway', href: '#/operations' },
+  { sec: 'Start Here', items: [
     { label: 'What Should I Do?', href: '#/what' },
     { label: 'Procurement Lifecycle', href: '#/lifecycle' },
     { label: 'Maturity Assessment', href: '#/maturity' }
   ] },
-  { sec: 'Execution Libraries', icon: '📋', items: [
-    { label: 'Standard Operating Procedures', href: '#/list/sop' },
-    { label: 'Procurement Calculators', href: '#/list/calc' },
-    { label: 'Execution Checklists', href: '#/list/cl' },
-    { label: 'Production Templates', href: '#/list/tpl' }
+  { sec: 'Execution Libraries', items: [
+    { label: 'SOPs & Procedures', href: '#/list/sop' },
+    { label: 'Calculators', href: '#/list/calc' },
+    { label: 'Checklists', href: '#/list/cl' },
+    { label: 'Templates', href: '#/list/tpl' }
   ] },
-  { sec: 'Governance & Knowledge', icon: '📚', items: [
-    { label: 'Knowledge Hub & Concepts', href: '#/list/kb' },
-    { label: 'KPIs & Value Metrics', href: '#/list/kpi' },
-    { label: 'Decision Guides & Scenarios', href: '#/list/dec' },
-    { label: 'Procurement Glossary', href: '#/glossary' }
+  { sec: 'Reference & Governance', items: [
+    { label: 'Knowledge Hub', href: '#/list/kb' },
+    { label: 'KPIs & Metrics', href: '#/list/kpi' },
+    { label: 'Decision Guides', href: '#/list/dec' },
+    { label: 'Scenarios', href: '#/scenarios' },
+    { label: 'Glossary', href: '#/glossary' }
   ] },
-  { sec: 'Intelligence & Automation', icon: '🤖', items: [
+  { sec: 'Intelligence', items: [
     { label: 'Procurement Copilot', href: '#/copilot' },
-    { label: 'Certification Exams', href: '#/exams' },
     { label: 'Spend Data Model', href: '#/spend-model' },
-    { label: 'Document Pack Builder', href: '#/docpack' }
+    { label: 'Doc Pack Builder', href: '#/docpack' }
   ] }
 ];
 
 PS.NAV_WORKSPACE = [
-  { sec: 'My Workspace', icon: '📁', items: [
-    { label: 'Saved Work & Reports', href: '#/saved', badge: 'saved' },
+  { sec: 'My Work', items: [
+    { label: 'Saved Work', href: '#/saved', badge: 'saved' },
     { label: 'Favorites', href: '#/fav', badge: 'fav' },
     { label: 'Recently Used', href: '#/recent' },
     { label: 'Savings Dashboard', href: '#/dash-savings' }
   ] },
-  { sec: 'Guidance & Search', icon: '🔍', items: [
-    { label: 'Quick Start Guide', href: '#/quickstart' },
+  { sec: 'Support', items: [
     { label: 'Global Search', href: '#/search' },
+    { label: 'Quick Start', href: '#/quickstart' },
     { label: 'Help Center', href: '#/help' }
   ] },
-  { sec: 'Account & System', icon: '⚙', items: [
-    { label: 'Application Settings', href: '#/settings' },
-    { label: 'Audit Log & Backup', href: '#/backup' }
+  { sec: 'System', items: [
+    { label: 'Settings', href: '#/settings' },
+    { label: 'Backup & Audit', href: '#/backup' }
   ] }
 ];
 
-PS.NAV = PS.NAV_ACADEMY.concat(PS.NAV_OPERATIONS).concat(PS.NAV_WORKSPACE);
+PS.NAV = PS.NAV_OPERATIONS.concat(PS.NAV_WORKSPACE);
 
 /* ==========================================================
    Academy sidebar nav is generated from PS.ACADEMY_FUNCTIONS at
