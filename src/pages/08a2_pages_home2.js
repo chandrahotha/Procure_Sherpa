@@ -74,7 +74,7 @@ PS.acts['fav-remove'] = function (el) {
 PS.route('recent', function () {
   PS.pageTitle = 'Recently Used';
   var r = PS.recent.list();
-  var html = '<div class="card"><div class="card-head"><h1>Recently used</h1><div class="spacer"></div>' +
+  var html = '<div class="card"><div class="card-head"><h1>Recently Used</h1><div class="spacer"></div>' +
     (r.length ? '<button type="button" class="btn btn-sm" data-act="recent-clear">Clear list</button>' : '') + '</div>' +
     '<p class="card-sub">The last ' + r.length + ' operational tools and learning modules accessed in your active session.</p>' +
     (r.length ? '<ul class="res-list">' + r.map(function (x) {

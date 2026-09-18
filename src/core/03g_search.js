@@ -102,7 +102,11 @@ PS.buildIndex = function () {
     { id: 'cmd-dash-savings', title: 'Savings & Spend Dashboard', cat: 'Commercial Controls', desc: 'Portfolio view of realized savings, cost avoidance, and working capital.', route: '#/dash-savings', tags: ['finance', 'controller', 'benefits'] },
     { id: 'cmd-maturity', title: 'Procurement Maturity Assessment', cat: 'Governance', desc: 'Audit and score your organization commercial sourcing maturity.', route: '#/maturity', tags: ['audit', 'benchmark', 'strategy'] },
     { id: 'cmd-backup', title: 'Backup & Restore Workspace', cat: 'System Data', desc: 'Export or import your offline local data, saved calculations, and profile.', route: '#/backup', tags: ['export', 'json', 'privacy'] },
-    { id: 'cmd-settings', title: 'System Preferences & Settings', cat: 'System Data', desc: 'Configure default currency, company name, and interface theme.', route: '#/settings', tags: ['config', 'theme', 'dark'] }
+    { id: 'cmd-settings', title: 'System Preferences & Settings', cat: 'System Data', desc: 'Configure default currency, company name, and interface theme.', route: '#/settings', tags: ['config', 'theme', 'dark'] },
+    { id: 'cmd-copilot', title: 'Procurement Copilot', cat: 'Intelligence', desc: 'Ask the offline assistant about concepts, processes and calculators.', route: '#/copilot', tags: ['ai', 'assistant', 'ask', 'chat'] },
+    { id: 'cmd-exams', title: 'Certification Exams', cat: 'Academy', desc: 'Timed, randomised exams from the Academy question bank.', route: '#/exams', tags: ['test', 'certification', 'quiz'] },
+    { id: 'cmd-spend-model', title: 'Spend Data Model', cat: 'Intelligence', desc: 'Edit the category-supplier hierarchy feeding Pareto and Kraljic charts.', route: '#/spend-model', tags: ['spend', 'pareto', 'kraljic', 'supplier'] },
+    { id: 'cmd-docpack', title: 'Document Pack Builder', cat: 'Intelligence', desc: 'Assemble RFI/RFP/contract packs with a cover sheet and contents.', route: '#/docpack', tags: ['rfp', 'rfi', 'contract', 'pack', 'print'] }
   ];
   coreCommands.forEach(function (c) {
     add('command', c, [c.desc, c.tags.join(' ')], c.route);
@@ -178,7 +182,7 @@ PS.search = function (q, opts) {
       desc: r.desc,
       text: r.text,
       score: o.score,
-      shortcut: self.getShortcut(r.type, r.id)
+      shortcut: (PS.cmdPalette && PS.cmdPalette.getShortcut) ? PS.cmdPalette.getShortcut(r.type, r.id) : ''
     };
   });
   return { query: PS.clean(q, 120), results: results, total: out.length, suggestions: PS.getSearchSuggestions(q) };

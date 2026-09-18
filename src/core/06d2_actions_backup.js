@@ -11,6 +11,9 @@ PS.backupObject = function () {
     templates: PS.tplState.all(),
     academy: PS.academy ? PS.academy.getAll() : null,
     audit: PS.auditList(),
+    exams: PS.exams ? PS.exams.all() : null,
+    spend: PS.spendModel ? PS.spendModel.all() : null,
+    copilot: PS.copilot ? PS.copilot.all() : null,
     counts: PS.registrySummary()
   };
 };
@@ -51,6 +54,9 @@ PS.validateBackup = function (obj) {
       checklists: (obj.checklists && typeof obj.checklists === 'object') ? obj.checklists : {},
       templates: (obj.templates && typeof obj.templates === 'object') ? obj.templates : {},
       academy: (obj.academy && typeof obj.academy === 'object') ? obj.academy : null,
+      exams: (obj.exams && typeof obj.exams === 'object') ? obj.exams : null,
+      spend: (obj.spend && typeof obj.spend === 'object') ? obj.spend : null,
+      copilot: (obj.copilot && typeof obj.copilot === 'object') ? obj.copilot : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };

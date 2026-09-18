@@ -37,6 +37,9 @@ PS.applyRestore = function (c, mode, filename) {
       PS.store.set(PS.K.audit, c.audit);
       if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
       if (c.academy && PS.academy) PS.academy.save(c.academy);
+      if (c.exams) PS.store.set(PS.K.exams, c.exams);
+      if (c.spend) PS.store.set(PS.K.spend, c.spend);
+      if (c.copilot) PS.store.set(PS.K.copilot, c.copilot);
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -60,6 +63,9 @@ PS.applyRestore = function (c, mode, filename) {
         mergedA.scores = Object.assign({}, curA.scores || {}, (c.academy && c.academy.scores) || {});
         PS.academy.save(mergedA);
       }
+      if (c.exams) { var curE = PS.store.get(PS.K.exams, {}); PS.store.set(PS.K.exams, Object.assign({}, curE, c.exams)); }
+      if (c.spend) { var curS = PS.store.get(PS.K.spend, {}); PS.store.set(PS.K.spend, Object.assign({}, curS, c.spend)); }
+      if (c.copilot) { var curC = PS.store.get(PS.K.copilot, {}); PS.store.set(PS.K.copilot, Object.assign({}, curC, c.copilot)); }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();

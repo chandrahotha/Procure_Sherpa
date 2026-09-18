@@ -1,0 +1,150 @@
+/* ==========================================================
+   Procure Sherpa v2.1 - Global Responsive & Chrome Utilities
+   Section: breakpoints, mobile sheet, toasts, kbd help,
+   focus states, command palette extras
+   ========================================================== */
+
+/* ---------- Responsive breakpoints ---------- */
+@media (max-width:1080px){
+  .fields-3{grid-template-columns:1fr 1fr}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;width:min(86vw,320px);transform:translateX(-102%);transition:transform .18s ease-out}
+  .app.nav-open .sidebar{transform:none;box-shadow:var(--sh-2)}
+  .sidebar-close{display:inline-grid}
+  .menu-btn{display:inline-grid}
+  .main{padding:12px 14px 44px}
+  .crumb{padding:8px 14px 0}
+  .fields-2,.fields-3{grid-template-columns:1fr}
+  table th[data-priority="low"], table td[data-priority="low"] { display: none; }
+}
+@media (max-width:620px){
+  body{font-size:14.5px}
+  .topbar{flex-wrap:wrap;gap:8px;padding:8px 12px}
+  .search-mini{order:3;flex-basis:100%;max-width:none;margin:0}
+  .search-kbd{display:none}
+  .topbar-actions{order:2}
+  .hide-sm{display:none}
+  .dash-head{padding:20px 18px}
+  .dash-head h1{font-size:1.42rem}
+  .card{padding:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .res-item.pp .r-val{font-size:1.4rem}
+  th,td{padding:7px 9px}
+  .modal{padding:18px}
+  table th[data-priority="medium"], table td[data-priority="medium"] { display: none; }
+}
+
+/* ---------- Mobile calculator bottom sheet ---------- */
+@media (max-width: 768px) {
+  .calc-layout { grid-template-columns: 1fr; }
+  .calc-sticky { position: static; }
+  .calc-panel-inputs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    box-shadow: var(--sh-2);
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform .25s cubic-bezier(.16,1,.3,1);
+  }
+  .calc-panel-inputs.is-open { transform: translateY(0); }
+  .calc-panel-results { padding-bottom: 90px; }
+  .calc-sheet-handle { display: flex; align-items: center; justify-content: center; padding: 10px; background: var(--panel-2); border-top: 1px solid var(--border); }
+  .calc-sheet-handle::before { content: ""; width: 36px; height: 4px; background: var(--border-2); border-radius: 2px; }
+  .calc-sheet-trigger {
+    display: inline-flex; align-items: center; gap: 8px;
+    position: fixed; bottom: 16px; right: 16px; z-index: 45;
+    padding: 12px 20px; background: var(--accent); color: var(--accent-ink);
+    border-radius: var(--r-pill); box-shadow: var(--sh-2);
+    font-weight: 600; font-size: .85rem;
+  }
+  .calc-sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(9,13,26,.4);
+    backdrop-filter: blur(2px); z-index: 40;
+    opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s;
+  }
+  .calc-sheet-backdrop.is-open { opacity: 1; visibility: visible; }
+}
+
+/* ---------- Stacked toasts (single definition) ---------- */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 95; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast {
+  position: relative; left: auto; bottom: auto; transform: none; pointer-events: auto;
+  background:#101828;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:11px 20px;font-size:.86rem;font-weight:550;
+  box-shadow:var(--sh-2);max-width:92vw;text-align:center;animation:toast-in .18s ease-out;
+}
+html[data-theme="dark"] .toast { background:#f2f5fb;color:#0f172a; }
+.toast.is-danger { background: var(--danger); color: #fff; border-color: transparent; }
+.toast.is-ok { background: var(--ok); color: #fff; border-color: transparent; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-8px); } }
+
+/* ---------- Quick actions bar ---------- */
+.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: all .12s; }
+.quick-action-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.quick-action-btn .qa-icon { font-size: 1rem; }
+
+/* ---------- Calculator loading state ---------- */
+.calc-loading { position: relative; pointer-events: none; }
+.calc-loading::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; }
+html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
+.calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Focus states (single definition) ---------- */
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+
+/* ---------- Skip link ---------- */
+.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
+.skip:focus { left: 0; }
+
+/* ---------- Keyboard shortcuts help panel ---------- */
+.kbd-help-panel {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 100; background: var(--panel); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--sh-2);
+  max-width: 520px; width: 90vw; max-height: 80vh; overflow-y: auto;
+  display: none; animation: pop-in .16s ease-out;
+}
+.kbd-help-panel.is-open { display: block; }
+.kbd-help-backdrop { position: fixed; inset: 0; background: rgba(9,13,26,.5); backdrop-filter: blur(3px); z-index: 95; display: none; }
+.kbd-help-backdrop.is-open { display: block; }
+.kbd-help-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.kbd-help-header h2 { margin: 0; font-size: 1.1rem; }
+.kbd-help-close { background: none; border: none; font-size: 1.5rem; line-height: 1; color: var(--mute); cursor: pointer; padding: 4px; }
+.kbd-help-close:hover { color: var(--text); }
+.kbd-help-body { padding: 16px 20px; }
+.kbd-help-section { margin-bottom: 20px; }
+.kbd-help-section:last-child { margin-bottom: 0; }
+.kbd-help-section h3 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); margin: 0 0 12px; font-weight: 700; }
+.kbd-help-grid { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.kbd-help-grid kbd { font-size: .7rem; min-width: 80px; }
+.kbd-help-grid span { font-size: .85rem; color: var(--dim); }
+
+/* ---------- Command palette extras (row layout from 01i portal styles) ---------- */
+.cmd-item-score { font-family: var(--mono); font-size: .65rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); padding: 1px 6px; border-radius: 4px; }
+.cmd-shortcut { font-family: var(--mono); font-size: .62rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--mute); }
+
+/* ---------- Search suggestions ---------- */
+.cmd-suggestions { font-size: .75rem; }
+.cmd-suggestion-label { font-weight: 600; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; font-size: .65rem; }
+.cmd-suggestion-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmd-suggestion-chip {
+  background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--r-pill); padding: 4px 10px; font-size: .7rem; font-weight: 600; cursor: pointer;
+  transition: all .12s;
+}
+.cmd-suggestion-chip:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}

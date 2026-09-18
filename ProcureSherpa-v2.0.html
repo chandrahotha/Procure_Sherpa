@@ -6,52 +6,56 @@
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="Procure Sherpa: enterprise digital learning platform and operational execution system for procurement professionals: interactive learning journeys, controlled SOPs, decision guides, compliance checklists, production templates, financial calculators, and value KPIs.">
 <meta name="application-name" content="Procure Sherpa">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#5346f5">
 <title>Procure Sherpa | Procurement Digital Learning Platform</title>
 <style>
 /* ==========================================================
-   Procure Sherpa v2.0 - Design System
-   Section 1: tokens
+   Procure Sherpa v2.1 - Design System
+   Section 1: design tokens
    ========================================================== */
 :root{
-  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --font:"Inter","Segoe UI Variable Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
-  --bg:#f3f5fa; --panel:#ffffff; --panel-2:#f8fafd; --sunken:#edf1f7;
-  --text:#0f172a; --dim:#3f4c63; --mute:#6b7a90;
-  --border:#e2e8f2; --border-2:#c7d2e3;
-  --accent:#4f46e5; --accent-2:#4338ca; --accent-3:#7c3aed; --accent-ink:#ffffff; --accent-soft:#eef0fe;
-  --ring:0 0 0 3px rgba(79,70,229,.18);
-  --ok:#047857; --ok-2:#059669; --ok-soft:#e4f6ee;
+
+  --bg:#f3f5fb; --panel:#ffffff; --panel-2:#f7f9fd; --sunken:#edf1f8;
+  --text:#0e1526; --dim:#3d4b66; --mute:#68768f;
+  --border:#e3e8f4; --border-2:#c9d3e6;
+
+  --accent:#5346f5; --accent-2:#4331d8; --accent-3:#8b5cf6; --accent-ink:#ffffff; --accent-soft:#eeeffe;
+  --ring:0 0 0 3px rgba(83,70,245,.20);
+  --ok:#047857; --ok-2:#059669; --ok-soft:#e3f6ec;
   --warn:#b45309; --warn-2:#d97706; --warn-soft:#fdf0dd;
   --danger:#dc2626; --danger-2:#ef4444; --danger-soft:#fdecec;
   --info:#0284c7; --info-2:#06b6d4; --info-soft:#e4f3fb;
 
   /* Semantic content type colors */
-  --kb:#7c5cff; --kb-soft:#efeaff; --kb-gradient:linear-gradient(135deg,#7c5cff 0%,#a855f7 100%);
-  --sop:#2563eb; --sop-soft:#e7efff; --sop-gradient:linear-gradient(135deg,#2563eb 0%,#3b82f6 100%);
-  --cl:#059669; --cl-soft:#e2f6ea; --cl-gradient:linear-gradient(135deg,#059669 0%,#10b981 100%);
-  --tpl:#d97706; --tpl-soft:#faf0dd; --tpl-gradient:linear-gradient(135deg,#d97706 0%,#f59e0b 100%);
-  --calc:#0d9488; --calc-soft:#dcf4f1; --calc-gradient:linear-gradient(135deg,#0d9488 0%,#14b8a6 100%);
+  --kb:#6d4aff; --kb-soft:#efeaff; --kb-gradient:linear-gradient(135deg,#6d4aff 0%,#a855f7 100%);
+  --sop:#2f6bff; --sop-soft:#e7efff; --sop-gradient:linear-gradient(135deg,#2f6bff 0%,#38bdf8 100%);
+  --cl:#059669; --cl-soft:#e2f6ea; --cl-gradient:linear-gradient(135deg,#059669 0%,#34d399 100%);
+  --tpl:#d97706; --tpl-soft:#faf0dd; --tpl-gradient:linear-gradient(135deg,#d97706 0%,#fbbf24 100%);
+  --calc:#0d9488; --calc-soft:#dcf4f1; --calc-gradient:linear-gradient(135deg,#0d9488 0%,#2dd4bf 100%);
   --dec:#db2777; --dec-soft:#fbe9f4; --dec-gradient:linear-gradient(135deg,#db2777 0%,#f43f5e 100%);
-  --kpi:#ea580c; --kpi-soft:#fdf0dc; --kpi-gradient:linear-gradient(135deg,#ea580c 0%,#f97316 100%);
-  --scen:#7c3aed; --scen-soft:#fdeae0; --scen-gradient:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);
+  --kpi:#ea580c; --kpi-soft:#fdf0dc; --kpi-gradient:linear-gradient(135deg,#ea580c 0%,#fb923c 100%);
+  --scen:#7c3aed; --scen-soft:#f1eaff; --scen-gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 100%);
   --gloss:#64748b; --gloss-soft:#f1f5f9; --gloss-gradient:linear-gradient(135deg,#64748b 0%,#94a3b8 100%);
   --academy:#6366f1; --academy-soft:#eef2ff; --academy-gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
-  --ops:#0d9488; --ops-soft:#dcf4f1; --ops-gradient:linear-gradient(135deg,#0d9488 0%,#14b8a6 100%);
+  --ops:#0d9488; --ops-soft:#dcf4f1; --ops-gradient:linear-gradient(135deg,#0d9488 0%,#2dd4bf 100%);
 
-  --r:14px; --r-sm:10px; --r-lg:22px; --r-pill:999px;
+  --r-xs:8px; --r-sm:10px; --r:14px; --r-lg:22px; --r-xl:26px; --r-pill:999px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:20px; --space-6:24px; --space-7:32px; --space-8:40px;
   --sh:0 1px 2px rgba(16,24,40,.05);
   --sh-1:0 2px 6px rgba(16,24,40,.06),0 12px 28px rgba(16,24,40,.09);
   --sh-2:0 16px 48px rgba(16,24,40,.18);
-  --sh-glow:0 0 0 1px rgba(79,70,229,.15),0 4px 14px rgba(79,70,229,.12);
+  --sh-glow:0 0 0 1px rgba(83,70,245,.15),0 4px 14px rgba(83,70,245,.12);
   --side:280px; --top:64px;
 }
 html[data-theme="dark"]{
-  --bg:#090e1a; --panel:#101829; --panel-2:#152036; --sunken:#070c16;
+  --bg:#070b16; --panel:#0e1626; --panel-2:#141f37; --sunken:#050a12;
   --text:#e9eefb; --dim:#a9b8d4; --mute:#7d8cab;
   --border:#223050; --border-2:#35496f;
-  --accent:#818cf8; --accent-2:#6366f1; --accent-3:#a78bfa; --accent-ink:#ffffff; --accent-soft:rgba(129,140,248,.14);
-  --ring:0 0 0 3px rgba(129,140,248,.25);
+  --accent:#8b93ff; --accent-2:#6d78f8; --accent-3:#a78bfa; --accent-ink:#0b1020; --accent-soft:rgba(139,147,255,.15);
+  --ring:0 0 0 3px rgba(139,147,255,.25);
   --ok:#34d399; --ok-2:#6ee7b7; --ok-soft:#0f2a20;
   --warn:#fbbf24; --warn-2:#fde047; --warn-soft:#2b2113;
   --danger:#f87171; --danger-2:#fca5a5; --danger-soft:#2d1614;
@@ -72,7 +76,7 @@ html[data-theme="dark"]{
   --sh:0 1px 2px rgba(0,0,0,.5);
   --sh-1:0 2px 10px rgba(0,0,0,.5),0 14px 32px rgba(0,0,0,.45);
   --sh-2:0 16px 48px rgba(0,0,0,.6);
-  --sh-glow:0 0 0 1px rgba(129,140,248,.2),0 4px 14px rgba(129,140,248,.15);
+  --sh-glow:0 0 0 1px rgba(139,147,255,.2),0 4px 14px rgba(139,147,255,.15);
 }
 
 /* Section 2: reset + SaaS type scale */
@@ -114,10 +118,17 @@ button{font-family:inherit}
 .right{text-align:right}
 .nowrap{white-space:nowrap}
 .mono{font-family:var(--mono);font-size:.86rem}
-.mt0{margin-top:0}.mt8{margin-top:8px}.mb0{margin-bottom:0}.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}
+.mt0{margin-top:0}.mt4{margin-top:4px}.mt8{margin-top:8px}.mb0{margin-bottom:0}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
 .stack-sm>*+*{margin-top:8px}
 .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .flex-between{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.gap8{gap:8px}.gap12{gap:12px}
+.t-xs{font-size:.78rem}.t-sm{font-size:.85rem}.t-lg{font-size:1.1rem}
+.t-dim{color:var(--dim)}.t-mute{color:var(--mute)}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-accent{color:var(--accent)}.text-ok{color:var(--ok)}.text-info{color:var(--info)}
 .spacer{flex:1 1 auto}
 .lead{font-size:.95rem;color:var(--dim);line-height:1.6}
 .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
@@ -133,7 +144,7 @@ button{font-family:inherit}
 .sidebar-hub-nav{padding:0 14px 10px}
 .hub-nav-pill-row{display:flex;gap:5px;background:var(--sunken);padding:4px;border-radius:var(--r-sm);border:1px solid var(--border)}
 .hub-nav-pill{
-  flex:1;text-align:center;font-size:.7rem;font-weight:600;padding:5px 6px;border-radius:6px;
+  flex:1;text-align:center;font-size:.72rem;font-weight:600;padding:5px 6px;border-radius:var(--r-xs);
   color:var(--dim);text-decoration:none;background:var(--panel);border:1px solid var(--border);
   transition:background .12s,color .12s,border-color .12s;white-space:nowrap;display:inline-flex;
   align-items:center;justify-content:center;gap:4px;
@@ -190,22 +201,16 @@ button{font-family:inherit}
 .kraljic-node:hover{transform:scale(1.12);filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
 
 /* Chart variant: waterfall */
-.chart-waterfall{badge-bg:var(--kb-soft);badge-color:var(--kb);--chart-gradient:var(--kb-gradient)}
+.chart-waterfall{--badge-bg:var(--kb-soft);--badge-color:var(--kb);--chart-gradient:var(--kb-gradient)}
 .chart-kraljic{badge-bg:var(--sop-soft);badge-color:var(--sop);--chart-gradient:var(--sop-gradient)}
 .chart-pareto{badge-bg:var(--kpi-soft);badge-color:var(--kpi);--chart-gradient:var(--kpi-gradient)}
 .chart-zscore{badge-bg:var(--dec-soft);badge-color:var(--dec);--chart-gradient:var(--dec-gradient)}
 
-/* Animated metric counter */
-.metric-counter{
-  font-size:2.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;
-  background:var(--metric-gradient,var(--accent-gradient));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:count-up .8s ease-out;
-}
 @keyframes count-up{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 
-/* Progress ring for dashboard */
+/* Progress ring (used by dashboards and gamification) */
 .progress-ring-svg{width:64px;height:64px;transform:rotate(-90deg)}
+.progress-ring-svg.ring-sm{width:44px;height:44px}
 .progress-ring-bg{fill:none;stroke:var(--border);stroke-width:5}
 .progress-ring-fg{
   fill:none;stroke:var(--ring-gradient,var(--accent-gradient));stroke-width:5;stroke-linecap:round;
@@ -213,16 +218,6 @@ button{font-family:inherit}
   transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
   filter:drop-shadow(0 2px 6px rgba(0,0,0,.1));
 }
-
-/* Dashboard stat card */
-.dash-stat{
-  background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:20px;box-shadow:var(--sh);transition:transform .14s,box-shadow .14s,border-color .14s;
-}
-.dash-stat:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:var(--accent)}
-.dash-stat-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:1.25rem;margin-bottom:12px}
-.dash-stat-value{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:4px 0}
-.dash-stat-label{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
 
 /* Timeline with progress */
 .timeline-progress{position:relative;padding-left:28px}
@@ -247,8 +242,8 @@ button{font-family:inherit}
 .brand{display:flex;align-items:center;gap:11px;padding:16px 16px 14px}
 .brand-mark{
   width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;
-  background:linear-gradient(135deg,#6366f1,var(--accent) 55%,#7c3aed);color:#fff;font-weight:800;font-size:.8rem;
-  letter-spacing:.03em;box-shadow:0 4px 14px rgba(79,70,229,.35),inset 0 1px 0 rgba(255,255,255,.25);
+  background:linear-gradient(135deg,var(--academy),var(--accent) 55%,var(--accent-3));color:var(--accent-ink);font-weight:800;font-size:.8rem;
+  letter-spacing:.03em;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.25);
 }
 .brand-text strong{display:block;font-size:.98rem;line-height:1.2;letter-spacing:-.015em}
 .brand-text span{display:block;font-size:.68rem;color:var(--mute);margin-top:2px;font-weight:600;letter-spacing:.04em}
@@ -266,8 +261,8 @@ button{font-family:inherit}
 .nav-sec{margin:2px 0 3px}
 .nav-sec-head{
   width:100%;display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;
-  padding:8px 8px 6px;border-radius:var(--r-sm);color:var(--mute);font:inherit;font-size:.66rem;
-  font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-align:left;
+  padding:8px 8px 6px;border-radius:var(--r-sm);color:var(--mute);font:inherit;font-size:.72rem;
+  font-weight:800;letter-spacing:.09em;text-transform:uppercase;text-align:left;
 }
 .nav-sec-head:hover{background:var(--sunken);color:var(--text)}
 .nav-sec-head .sec-ico{
@@ -275,7 +270,7 @@ button{font-family:inherit}
   background:var(--sunken);border:1px solid var(--border);font-size:.82rem;font-style:normal;color:var(--dim);
 }
 .nav-sec-head .sec-count{
-  font-size:.64rem;font-weight:700;background:var(--sunken);border:1px solid var(--border);
+  font-size:.68rem;font-weight:700;background:var(--sunken);border:1px solid var(--border);
   border-radius:999px;padding:1px 7px;line-height:1.6;color:var(--dim);
 }
 .nav-sec-head .chev{margin-left:auto;transition:transform .16s;font-size:.7em;opacity:.6}
@@ -284,7 +279,7 @@ button{font-family:inherit}
 .nav-list{list-style:none;margin:0;padding:1px 0 6px}
 .nav-list a{
   position:relative;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
-  font-size:.855rem;font-weight:500;line-height:1.4;text-decoration:none;border:1px solid transparent;
+  font-size:.88rem;font-weight:500;line-height:1.4;text-decoration:none;border:1px solid transparent;
   transition:background .12s,color .12s,border-color .12s;
 }
 .nav-list a:hover{background:var(--panel-2);color:var(--text);text-decoration:none;border-color:var(--border)}
@@ -351,12 +346,14 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .btn:active{transform:translateY(1px)}
 .btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
-.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 32%,transparent)}
-.btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 32%,transparent)}
+.btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink)}
 .btn-ghost{background:transparent;border-color:transparent;color:var(--accent)}
 .btn-ghost:hover{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
 .btn-danger{border-color:color-mix(in srgb,var(--danger) 55%,var(--border));color:var(--danger);background:var(--panel)}
 .btn-danger:hover{background:var(--danger-soft);border-color:var(--danger)}
+.btn-ops{background:var(--ops);border-color:var(--ops);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--ops) 30%,transparent)}
+.btn-ops:hover{background:color-mix(in srgb,var(--ops) 85%,#000);border-color:color-mix(in srgb,var(--ops) 85%,#000);color:#fff}
 .btn-sm{min-height:32px;padding:5px 12px;font-size:.79rem;border-radius:9px}
 .btn-lg{min-height:48px;padding:12px 24px;font-size:.95rem;border-radius:12px}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -386,40 +383,6 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .card-head h1{font-size:1.3rem}.card-head h2{font-size:1.08rem}.card-head h3{font-size:.95rem}
 .card-sub{color:var(--mute);font-size:.85rem;margin:-6px 0 14px;max-width:92ch;line-height:1.55}
 
-/* Card variant: elevated with gradient border */
-.card-gradient{
-  border:1px solid transparent;
-  background:var(--panel);
-  background-clip:padding-box;
-}
-.card-gradient::before{
-  content:"";position:absolute;inset:-1px;
-  border-radius:calc(var(--r) + 1px);
-  background:var(--card-gradient,var(--accent-gradient));
-  z-index:-1;
-  opacity:.6;
-}
-.card-gradient:hover::before{opacity:1}
-
-/* Card variant: glassmorphism */
-.card-glass{
-  background:rgba(255,255,255,.7);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.3);
-}
-html[data-theme="dark"] .card-glass{
-  background:rgba(16,24,41,.7);
-  border:1px solid rgba(255,255,255,.1);
-}
-
-/* Card variant: outlined with accent */
-.card-accent{border:2px solid var(--accent);background:var(--accent-soft)}
-.card-accent .card-head h1,.card-accent .card-head h2,.card-accent .card-head h3{color:var(--accent)}
-
-/* Hover lift for interactive cards */
-.card-interactive{transition:transform .14s,box-shadow .14s,border-color .14s}
-.card-interactive:hover{transform:translateY(-2px);box-shadow:var(--sh-2);border-color:var(--accent)}
 /* SaaS page header */
 .page-head{margin:6px 0 18px}
 .page-head h1{font-size:1.65rem;margin:6px 0 4px;letter-spacing:-.025em}
@@ -539,27 +502,6 @@ html[data-theme="dark"] .card-glass{
   --tacc:var(--academy);
 }
 
-/* Gradient overlay variant for featured tiles */
-.tile-gradient{
-  background:linear-gradient(145deg,var(--panel) 0%,var(--panel-2) 100%);
-}
-.tile-gradient::after{
-  content:"";position:absolute;inset:0;
-  background:var(--tile-gradient);
-  opacity:.03;pointer-events:none;border-radius:var(--r);
-}
-
-/* Animated progress ring */
-.progress-ring{
-  width:48px;height:48px;transform:rotate(-90deg);
-}
-.progress-ring-bg{fill:none;stroke:var(--border);stroke-width:4}
-.progress-ring-fg{
-  fill:none;stroke:var(--tile-gradient);stroke-width:4;stroke-linecap:round;
-  stroke-dasharray:125;stroke-dashoffset:125;
-  transition:stroke-dashoffset .6s ease-out;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.1));
-}
 /* stat cards */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
 .stat{
@@ -731,17 +673,8 @@ mark{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;bor
 .modal h2{margin-top:0}
 .modal-body{color:var(--dim);font-size:.9rem;line-height:1.6}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
-.toast{
-  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:95;
-  background:#101828;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:11px 20px;font-size:.86rem;font-weight:550;
-  box-shadow:var(--sh-2);max-width:92vw;text-align:center;animation:toast-in .18s ease-out;
-}
-html[data-theme="dark"] .toast{background:#f2f5fb;color:#0f172a}
-.toast.is-danger{background:var(--danger);color:#fff;border-color:transparent}
-.toast.is-ok{background:var(--ok);color:#fff;border-color:transparent}
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
 @keyframes pop-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes toast-in{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 /* dashboard header (home) */
 .dash-head{
   position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--border);
@@ -749,7 +682,7 @@ html[data-theme="dark"] .toast{background:#f2f5fb;color:#0f172a}
 }
 .dash-head::before{
   content:"";position:absolute;inset:0 0 auto 0;height:4px;
-  background:linear-gradient(90deg,#6366f1,var(--accent) 35%,#0d9488 70%,#d97706);
+  background:linear-gradient(90deg,var(--academy),var(--accent) 35%,var(--ops) 70%,var(--tpl));
 }
 .dash-head::after{
   content:"";position:absolute;top:-90px;right:-70px;width:300px;height:300px;border-radius:50%;pointer-events:none;
@@ -761,17 +694,6 @@ html[data-theme="dark"] .toast{background:#f2f5fb;color:#0f172a}
 .dash-sub{position:relative;color:var(--dim);font-size:.92rem;margin:0 0 16px;max-width:76ch;line-height:1.6}
 .dash-search{position:relative;max-width:600px}
 .dash-head .btn-row{position:relative}
-/* home modules */
-.hub-flow{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.hub-card .hub-step{
-  width:30px;height:30px;flex:0 0 30px;border-radius:9px;display:grid;place-items:center;
-  background:var(--text);color:var(--bg);font-weight:800;font-size:.82rem;
-}
-html[data-theme="dark"] .hub-card .hub-step{background:var(--accent);color:#fff}
-.get-started{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.get-started .gs-steps{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:220px}
-.gs-step{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--dim);font-weight:550}
-.gs-step .n{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.7rem;font-weight:800;display:grid;place-items:center}
 .util-links{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:.8rem;color:var(--mute);margin:2px 2px 0}
 .util-links a{padding:3px 8px;border-radius:7px;font-weight:600}
 .util-links a:hover{background:var(--sunken);text-decoration:none}
@@ -832,7 +754,7 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 
 /* ---------- Academy Hero & Progress Header ---------- */
 .academy-hero {
-  background: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(99,102,241,0.04) 50%, rgba(124,58,237,0.08) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, transparent) 0%, color-mix(in srgb, var(--academy) 4%, transparent) 50%, color-mix(in srgb, var(--accent-3) 8%, transparent) 100%);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 24px 28px;
@@ -846,7 +768,7 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
   top: -40px; right: -40px;
   width: 140px; height: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
   pointer-events: none;
 }
 .academy-title-row {
@@ -907,7 +829,7 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 .thinking-point-card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-left: 5px solid #6366f1;
+  border-left: 5px solid var(--academy);
   border-radius: var(--r);
   padding: 22px 24px;
   margin: 18px 0;
@@ -922,7 +844,7 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6366f1;
+  color: var(--academy);
   margin-bottom: 10px;
 }
 .thinking-point-quote {
@@ -947,11 +869,11 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--text);
-  border-left: 3px solid #0284c7;
+  border-left: 3px solid var(--info);
   margin-top: 10px;
 }
 .thinking-point-case strong {
-  color: #0284c7;
+  color: var(--info);
   display: block;
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -961,14 +883,14 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 .thinking-point-reflect {
   margin-top: 14px;
   padding: 10px 14px;
-  background: rgba(99,102,241,0.06);
-  border: 1px dashed rgba(99,102,241,0.3);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent) 32%, transparent);
   border-radius: var(--r-sm);
   font-size: 0.86rem;
   color: var(--dim);
 }
 .thinking-point-reflect strong {
-  color: #4f46e5;
+  color: var(--accent);
 }
 
 /* ---------- Function Learning Tabs ---------- */
@@ -1146,12 +1068,12 @@ html[data-theme="dark"] .func-card.is-mastered::after{
 .func-card.rfx-strategy{
   --func-gradient:var(--sop-gradient);
   --func-border:var(--sop);
-  --func-kicker:var(--sop).
+  --func-kicker:var(--sop);
 }
 .func-card.audit-compliance{
   --func-gradient:var(--gloss-gradient);
   --func-border:var(--gloss);
-  --func-kicker:var(--gloss).
+  --func-kicker:var(--gloss);
 }
 
 /* Module badge with gradient */
@@ -1160,32 +1082,9 @@ html[data-theme="dark"] .func-card.is-mastered::after{
   padding:4px 12px;border-radius:999px;
   font-size:.7rem;font-weight:800;
   text-transform:uppercase;letter-spacing:.06em;
-  color:#fff;background:var(--module-gradient,var(--academy-gradient));
+  color:var(--accent-ink);background:var(--module-gradient,var(--academy-gradient));
   box-shadow:0 2px 8px rgba(0,0,0,.12);
 }
-
-/* Progress ring for module completion */
-.module-progress-ring{width:48px;height:48px;transform:rotate(-90deg);flex-shrink:0}
-.module-progress-bg{fill:none;stroke:var(--border);stroke-width:4}
-.module-progress-fg{
-  fill:none;stroke:var(--module-gradient,var(--academy-gradient));stroke-width:4;stroke-linecap:round;
-  stroke-dasharray:125;stroke-dashoffset:125;
-  transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.1));
-}
-
-/* Badge grid for achievements */
-.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px}
-.badge-card{
-  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px;text-align:center;transition:transform .14s,box-shadow .14s,border-color .14s;
-}
-.badge-card:hover{transform:translateY(-2px);box-shadow:var(--sh-1);border-color:var(--accent)}
-.badge-card.is-unlocked{border-color:var(--ok);background:var(--ok-soft)}
-.badge-card.is-locked{opacity:.55;filter:grayscale(.3)}
-.badge-icon{font-size:2.5rem;margin-bottom:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
-.badge-name{font-weight:700;font-size:.9rem;margin-bottom:4px;color:var(--text)}
-.badge-desc{font-size:.75rem;color:var(--dim);line-height:1.5}
 
 /* ---------- Digital SOP Stepper ---------- */
 .sop-stepper {
@@ -1301,12 +1200,12 @@ html[data-theme="dark"] .func-card.is-mastered::after{
   background: var(--sunken);
   color: var(--dim);
 }
-.quiz-type-tag.scenario { background: #e0f2fe; color: #0369a1; }
-.quiz-type-tag.red-flag { background: #fee2e2; color: #b91c1c; }
-.quiz-type-tag.calc { background: #fef3c7; color: #b45309; }
-html[data-theme="dark"] .quiz-type-tag.scenario { background: #082f49; color: #7dd3fc; }
-html[data-theme="dark"] .quiz-type-tag.red-flag { background: #450a0a; color: #fca5a5; }
-html[data-theme="dark"] .quiz-type-tag.calc { background: #451a03; color: #fcd34d; }
+.quiz-type-tag.scenario { background: var(--info-soft); color: var(--info); }
+.quiz-type-tag.red-flag { background: var(--danger-soft); color: var(--danger); }
+.quiz-type-tag.calc { background: var(--warn-soft); color: var(--warn); }
+html[data-theme="dark"] .quiz-type-tag.scenario { background: var(--info-soft); color: var(--info-2); }
+html[data-theme="dark"] .quiz-type-tag.red-flag { background: var(--danger-soft); color: var(--danger-2); }
+html[data-theme="dark"] .quiz-type-tag.calc { background: var(--warn-soft); color: var(--warn-2); }
 
 .quiz-scenario-context {
   background: var(--panel-2);
@@ -1519,7 +1418,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 .procurement-principle-callout {
   margin-top: 10px;
   padding: 10px 14px;
-  background: rgba(79,70,229,0.08);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
   border-left: 3px solid var(--accent);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   font-size: 0.86rem;
@@ -1527,66 +1426,6 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 .procurement-principle-callout strong {
   color: var(--accent);
-}
-
-/* ---------- Laboratory Mission Card (Apply) ---------- */
-.lab-card {
-  background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
-  border: 2px solid var(--accent);
-  border-radius: var(--r);
-  padding: 24px;
-  margin: 20px 0;
-  box-shadow: var(--sh-1);
-}
-.lab-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--accent);
-  padding: 3px 10px;
-  border-radius: var(--r-pill);
-  margin-bottom: 10px;
-}
-.lab-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-}
-.lab-desc {
-  font-size: 0.92rem;
-  color: var(--dim);
-  line-height: 1.6;
-  margin-bottom: 18px;
-}
-.lab-task-box {
-  background: var(--sunken);
-  border-radius: var(--r-sm);
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-}
-.lab-task-box h4 {
-  font-size: 0.88rem;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-.lab-task-box ol {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--dim);
-}
-.lab-actions-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 /* ---------- Achievement Badges Grid ---------- */
@@ -1605,8 +1444,8 @@ html[data-theme="dark"] .quiz-tip-cta {
   transition: transform 0.14s, border-color 0.14s;
 }
 .badge-card.is-unlocked {
-  border-color: #6366f1;
-  background: linear-gradient(to bottom, var(--panel), rgba(99,102,241,0.04));
+  border-color: var(--academy);
+  background: linear-gradient(to bottom, var(--panel), color-mix(in srgb, var(--academy) 4%, transparent));
 }
 .badge-card.is-locked {
   opacity: 0.55;
@@ -1627,64 +1466,6 @@ html[data-theme="dark"] .quiz-tip-cta {
   font-size: 0.74rem;
   color: var(--mute);
   line-height: 1.4;
-}
-
-/* ---------- Home Quick Tracks ---------- */
-.home-tracks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin: 18px 0;
-}
-.track-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 22px 24px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-.track-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-  box-shadow: var(--sh-1);
-  text-decoration: none;
-}
-.track-card.is-primary {
-  border-color: var(--accent);
-  background: linear-gradient(135deg, var(--panel) 0%, rgba(99,102,241,0.05) 100%);
-}
-.track-kicker {
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-.track-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.track-desc {
-  font-size: 0.88rem;
-  color: var(--dim);
-  line-height: 1.5;
-  margin-bottom: 16px;
-  flex: 1;
-}
-.track-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--accent);
 }
 
 /* ==========================================================
@@ -1968,16 +1749,16 @@ html[data-theme="dark"] .quiz-tip-cta {
   gap: 6px;
   padding: 4px 10px;
   border-radius: var(--r-pill);
-  background: rgba(220, 38, 38, 0.12);
-  color: #dc2626;
+  background: var(--danger-soft);
+  color: var(--danger);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .sandbox-crisis-banner {
-  background: rgba(239, 68, 68, 0.05);
-  border-left: 4px solid #ef4444;
+  background: color-mix(in srgb, var(--danger) 5%, transparent);
+  border-left: 4px solid var(--danger-2);
   border-radius: 4px;
   padding: 14px 16px;
   margin-bottom: 20px;
@@ -2103,8 +1884,8 @@ html[data-theme="dark"] .quiz-tip-cta {
   display: inline-block;
   padding: 3px 9px;
   border-radius: var(--r-pill);
-  background: rgba(13, 148, 136, 0.12);
-  color: #0d9488;
+  background: var(--ops-soft);
+  color: var(--ops);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -2225,7 +2006,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79,70,229,0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 .track-options-wrap {
   display: grid;
@@ -2276,7 +2057,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   top: -60px; right: -60px;
   width: 180px; height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(79,70,229,0.12), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
   pointer-events: none;
 }
 .home-user-badge-row {
@@ -2295,7 +2076,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(79,70,229,0.22);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .home-user-meta h1 {
   font-size: 1.45rem;
@@ -2353,10 +2134,10 @@ html[data-theme="dark"] .quiz-tip-cta {
   box-shadow: var(--sh-1);
 }
 .hub-portal-card.is-learning {
-  border-left: 6px solid var(--accent);
+  border-left: 6px solid var(--academy);
 }
 .hub-portal-card.is-operations {
-  border-left: 6px solid #0d9488;
+  border-left: 6px solid var(--ops);
 }
 .hub-card-header {
   display: flex;
@@ -2377,8 +2158,8 @@ html[data-theme="dark"] .quiz-tip-cta {
   color: var(--accent);
 }
 .hub-badge.operations {
-  background: rgba(13,148,136,0.12);
-  color: #0d9488;
+  background: var(--ops-soft);
+  color: var(--ops);
 }
 .hub-card-title {
   font-size: 1.35rem;
@@ -2420,7 +2201,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 
 /* ---------- Operations Gateway Matrix ---------- */
 .ops-gateway-hero {
-  background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(14,165,233,0.06) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ops) 8%, transparent) 0%, color-mix(in srgb, var(--info) 6%, transparent) 100%);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 24px 28px;
@@ -2437,17 +2218,19 @@ html[data-theme="dark"] .quiz-tip-cta {
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 18px 20px;
-  transition: border-color 0.14s, transform 0.14s;
+  transition: border-color 0.14s, transform 0.14s, box-shadow 0.14s;
 }
 .ops-phase-card:hover {
-  border-color: var(--accent);
+  border-color: var(--ops);
+  transform: translateY(-2px);
+  box-shadow: var(--sh-1);
 }
 .ops-phase-kicker {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #0d9488;
+  color: var(--ops);
   margin-bottom: 6px;
 }
 .ops-phase-title {
@@ -2636,17 +2419,17 @@ html[data-theme="dark"] .quiz-tip-cta {
   border-radius: var(--r-pill);
   flex-shrink: 0;
 }
-.cmd-type-academy { background: rgba(99,102,241,0.15); color: var(--accent); }
-.cmd-type-sop { background: rgba(13,148,136,0.15); color: #0d9488; }
-.cmd-type-calc { background: rgba(2,132,199,0.15); color: #0284c7; }
-.cmd-type-cl { background: rgba(22,163,74,0.15); color: #16a34a; }
-.cmd-type-tpl { background: rgba(217,119,6,0.15); color: #d97706; }
-.cmd-type-dec { background: rgba(147,51,234,0.15); color: #9333ea; }
-.cmd-type-kpi { background: rgba(234,88,12,0.15); color: #ea580c; }
-.cmd-type-command { background: rgba(71,85,105,0.15); color: var(--text); }
-.cmd-type-kb { background: rgba(100,116,139,0.15); color: var(--dim); }
-.cmd-type-gloss { background: rgba(100,116,139,0.12); color: var(--dim); }
-.cmd-type-scen { background: rgba(16,185,129,0.15); color: #10b981; }
+.cmd-type-academy { background: color-mix(in srgb, var(--academy) 15%, transparent); color: var(--academy); }
+.cmd-type-sop { background: color-mix(in srgb, var(--sop) 15%, transparent); color: var(--sop); }
+.cmd-type-calc { background: color-mix(in srgb, var(--calc) 18%, transparent); color: var(--calc); }
+.cmd-type-cl { background: color-mix(in srgb, var(--cl) 15%, transparent); color: var(--cl); }
+.cmd-type-tpl { background: color-mix(in srgb, var(--tpl) 15%, transparent); color: var(--tpl); }
+.cmd-type-dec { background: color-mix(in srgb, var(--dec) 15%, transparent); color: var(--dec); }
+.cmd-type-kpi { background: color-mix(in srgb, var(--kpi) 15%, transparent); color: var(--kpi); }
+.cmd-type-command { background: color-mix(in srgb, var(--gloss) 20%, transparent); color: var(--text); }
+.cmd-type-kb { background: color-mix(in srgb, var(--kb) 15%, transparent); color: var(--kb); }
+.cmd-type-gloss { background: color-mix(in srgb, var(--gloss) 14%, transparent); color: var(--dim); }
+.cmd-type-scen { background: color-mix(in srgb, var(--scen) 15%, transparent); color: var(--scen); }
 
 .cmd-item-title {
   font-size: 0.92rem;
@@ -2732,9 +2515,13 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 
 
-/* Section 7: responsive + print + report */
-.report-head{display:none}
-.print-only{display:none}
+/* ==========================================================
+   Procure Sherpa v2.1 - Global Responsive & Chrome Utilities
+   Section: breakpoints, mobile sheet, toasts, kbd help,
+   focus states, command palette extras
+   ========================================================== */
+
+/* ---------- Responsive breakpoints ---------- */
 @media (max-width:1080px){
   .fields-3{grid-template-columns:1fr 1fr}
 }
@@ -2747,6 +2534,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   .main{padding:12px 14px 44px}
   .crumb{padding:8px 14px 0}
   .fields-2,.fields-3{grid-template-columns:1fr}
+  table th[data-priority="low"], table td[data-priority="low"] { display: none; }
 }
 @media (max-width:620px){
   body{font-size:14.5px}
@@ -2762,42 +2550,10 @@ html[data-theme="dark"] .quiz-tip-cta {
   .res-item.pp .r-val{font-size:1.4rem}
   th,td{padding:7px 9px}
   .modal{padding:18px}
-}
-@media print{
-  @page{size:auto;margin:14mm 12mm}
-  html,body{background:#fff!important;color:#000!important}
-  .sidebar,.topbar,.crumb,.footer,.scrim,.no-print,.toast,.modal-backdrop,.nav-sec-head,.dash-head .btn-row,.dash-search{display:none!important}
-  .app{display:block;min-height:0}
-  .content{display:block}
-  .main{padding:0;max-width:none;animation:none}
-  .dash-head{background:#fff!important;color:#000!important;border:1px solid #000;border-radius:0;padding:10px 0;margin-bottom:10px;box-shadow:none!important}
-  .dash-head::before,.dash-head::after{display:none}
-  .dash-head h1,.dash-head .dash-sub,.dash-head .dash-date{color:#000!important}
-  .card,.tile,.stat,.results,.res-item,.table-wrap,details.acc,.fieldset{
-    box-shadow:none!important;border:1px solid #767676!important;background:#fff!important;break-inside:avoid;
-  }
-  .report-head{display:block;border-bottom:2px solid #000;margin-bottom:10px;padding-bottom:6px}
-  .report-head h1{font-size:1.15rem;margin:0}
-  .report-head .rh-meta{font-size:.78rem;color:#333}
-  .print-only{display:block}
-  table{font-size:.75rem;page-break-inside:auto}
-  thead th{background:#eee!important;color:#000!important}
-  tr{page-break-inside:avoid}
-  .badge{border:1px solid #767676!important;background:#fff!important;color:#000!important}
-  .alert{border:1px solid #767676!important;background:#fff!important;padding-left:13px}
-  .alert::before{display:none}
-  a{color:#000!important;text-decoration:none}
-  details.acc>summary{list-style:none}
-  details.acc>summary::after{display:none}
-  details.acc{page-break-inside:avoid}
-  details.acc .acc-body{display:block!important}
-  .mono,.num{font-family:Consolas,"Courier New",monospace}
-}
-@media (prefers-reduced-motion:reduce){
-  *{transition:none!important;animation:none!important}
+  table th[data-priority="medium"], table td[data-priority="medium"] { display: none; }
 }
 
-/* Mobile calculator bottom sheet */
+/* ---------- Mobile calculator bottom sheet ---------- */
 @media (max-width: 768px) {
   .calc-layout { grid-template-columns: 1fr; }
   .calc-sticky { position: static; }
@@ -2833,11 +2589,41 @@ html[data-theme="dark"] .quiz-tip-cta {
   .calc-sheet-backdrop.is-open { opacity: 1; visibility: visible; }
 }
 
-/* Table responsive column hiding */
-@media (max-width: 900px) { table th[data-priority="low"], table td[data-priority="low"] { display: none; } }
-@media (max-width: 620px) { table th[data-priority="medium"], table td[data-priority="medium"] { display: none; } }
+/* ---------- Stacked toasts (single definition) ---------- */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 95; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast {
+  position: relative; left: auto; bottom: auto; transform: none; pointer-events: auto;
+  background:#101828;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:11px 20px;font-size:.86rem;font-weight:550;
+  box-shadow:var(--sh-2);max-width:92vw;text-align:center;animation:toast-in .18s ease-out;
+}
+html[data-theme="dark"] .toast { background:#f2f5fb;color:#0f172a; }
+.toast.is-danger { background: var(--danger); color: #fff; border-color: transparent; }
+.toast.is-ok { background: var(--ok); color: #fff; border-color: transparent; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-8px); } }
 
-/* Keyboard shortcuts help panel */
+/* ---------- Quick actions bar ---------- */
+.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: all .12s; }
+.quick-action-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.quick-action-btn .qa-icon { font-size: 1rem; }
+
+/* ---------- Calculator loading state ---------- */
+.calc-loading { position: relative; pointer-events: none; }
+.calc-loading::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; }
+html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
+.calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Focus states (single definition) ---------- */
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+
+/* ---------- Skip link ---------- */
+.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
+.skip:focus { left: 0; }
+
+/* ---------- Keyboard shortcuts help panel ---------- */
 .kbd-help-panel {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   z-index: 100; background: var(--panel); border: 1px solid var(--border);
@@ -2860,52 +2646,11 @@ html[data-theme="dark"] .quiz-tip-cta {
 .kbd-help-grid kbd { font-size: .7rem; min-width: 80px; }
 .kbd-help-grid span { font-size: .85rem; color: var(--dim); }
 
-/* Improved toast */
-.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 95; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
-.toast { position: relative; left: auto; bottom: auto; transform: none; pointer-events: auto; animation: toast-in .18s ease-out; }
-@keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-@keyframes toast-out { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-8px); } }
-
-/* Quick actions bar */
-.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: all .12s; }
-.quick-action-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); text-decoration: none; }
-.quick-action-btn .qa-icon { font-size: 1rem; }
-
-/* Calculator loading state */
-.calc-loading { position: relative; pointer-events: none; }
-.calc-loading::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; }
-html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
-.calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Focus visible improvements */
-:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
-.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
-
-/* Skip link enhancement */
-.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
-.skip:focus { left: 0; }
-
-/* Nav section animation */
-.nav-list { transition: max-height .2s ease-out, opacity .15s ease-out, padding .15s ease-out; overflow: hidden; }
-.nav-sec[data-open="false"] .nav-list { max-height: 0; opacity: 0; padding: 0; }
-
-/* Command palette richer items */
-.cmd-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 10px; transition: background .1s; }
-.cmd-item.is-selected { background: var(--accent-soft); }
-.cmd-item-main { flex: 1; min-width: 0; }
-.cmd-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; }
-.cmd-type-badge { font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--sunken); color: var(--dim); border: 1px solid var(--border); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
-.cmd-item-title { font-weight: 600; font-size: .88rem; color: var(--text); line-height: 1.3; }
-.cmd-item-desc { font-size: .76rem; color: var(--mute); line-height: 1.4; }
-.cmd-item-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto; font-size: .68rem; color: var(--mute); }
-.cmd-cat-tag { background: var(--sunken); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
-.cmd-enter-hint { font-family: var(--mono); opacity: .6; }
+/* ---------- Command palette extras (row layout from 01i portal styles) ---------- */
 .cmd-item-score { font-family: var(--mono); font-size: .65rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); padding: 1px 6px; border-radius: 4px; }
 .cmd-shortcut { font-family: var(--mono); font-size: .62rem; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--mute); }
 
-/* Search suggestions */
+/* ---------- Search suggestions ---------- */
 .cmd-suggestions { font-size: .75rem; }
 .cmd-suggestion-label { font-weight: 600; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; font-size: .65rem; }
 .cmd-suggestion-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -2915,6 +2660,139 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
   transition: all .12s;
 }
 .cmd-suggestion-chip:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+/* ==========================================================
+   Phase 11 feature styles: Copilot, Exams, Spend Model,
+   Doc Pack, What-If, Static Share
+   ========================================================== */
+
+/* ---------- Offline Copilot chat ---------- */
+.copilot-shell { max-width: 900px; }
+.copilot-chat { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
+.copilot-msg { display: flex; gap: 10px; }
+.copilot-msg .cp-avatar {
+  flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.8rem;
+}
+.copilot-msg.is-user { flex-direction: row-reverse; }
+.copilot-msg.is-user .cp-avatar { background: var(--calc-soft); color: var(--calc); }
+.cp-bubble {
+  max-width: 82%; padding: 10px 14px; border-radius: var(--r);
+  background: var(--panel-2); border: 1px solid var(--border); font-size: 0.94rem; line-height: 1.55;
+}
+.copilot-msg.is-user .cp-bubble { background: var(--accent-soft); border-color: transparent; }
+.cp-cites { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-cite { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: var(--r-pill);
+  background: var(--panel); border: 1px solid var(--border); font-size: 0.78rem; color: var(--dim); text-decoration: none; }
+.cp-cite:hover { border-color: var(--accent); color: var(--accent); }
+.cp-cite .tick { color: var(--ok); font-weight: 700; }
+.cp-suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.cp-suggest .chip { cursor: pointer; }
+.copilot-input-row { display: flex; gap: 8px; margin-top: 16px; }
+.copilot-input-row input { flex: 1; }
+
+/* ---------- Exam runner ---------- */
+.exam-runner { max-width: 820px; }
+.exam-timer { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--warn-2); }
+.exam-timer.is-urgent { color: var(--danger-2); animation: pulse-soft 1s infinite; }
+@keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+.exam-progress-track { height: 8px; background: var(--sunken); border-radius: var(--r-pill); overflow: hidden; margin: 10px 0 4px; }
+.exam-progress-fill { height: 100%; background: var(--accent-gradient, var(--accent)); transition: width .25s ease; }
+.exam-q { margin-top: 16px; }
+.exam-option { display: block; width: 100%; text-align: left; margin-bottom: 8px; }
+.exam-option.is-correct { border-color: var(--ok); background: var(--ok-soft); }
+.exam-option.is-wrong { border-color: var(--danger); background: var(--danger-soft); }
+.exam-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 18px; }
+.exam-bank-card { margin-bottom: 12px; }
+
+/* ---------- Spend model editor ---------- */
+.spend-editor .cat-row { border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 14px; background: var(--panel-2); }
+.spend-editor .cat-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.spend-editor .cat-head input[type="text"] { flex: 1; min-width: 180px; }
+.spend-editor .sup-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--panel);
+  border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 10px; margin-bottom: 8px; }
+.spend-editor .sup-row input[type="text"] { flex: 1; min-width: 160px; }
+.spend-editor .sup-row .sup-spend { width: 150px; }
+.spend-editor .drag-handle { cursor: grab; color: var(--mute); font-size: 1.1rem; user-select: none; }
+.spend-editor .drag-handle:active { cursor: grabbing; }
+.spend-editor .range-mini { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--dim); }
+.spend-editor .range-mini input { width: 90px; }
+.spend-chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+@media (max-width: 900px) { .spend-chart-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Doc pack ---------- */
+.docpack-pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.docpack-pick-list label { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: var(--r-sm); background: var(--panel-2); font-size: .9rem; cursor: pointer; }
+.docpack-pick-list label:hover { border-color: var(--accent); }
+.docpack-cover { text-align: center; padding: 30px 20px; }
+.docpack-cover h1 { font-size: 1.6rem; margin-bottom: 4px; }
+.docpack-section { page-break-inside: avoid; margin-bottom: 18px; }
+.docpack-section h2 { border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; }
+.docpack-line { border-bottom: 1px dotted var(--border-2); margin: 14px 0 4px; height: 18px; }
+
+/* ---------- What-if comparison ---------- */
+.whatif-panel { margin-top: 14px; }
+.whatif-panel .res-item { font-size: .95rem; }
+.whatif-delta-input { width: 110px; }
+
+/* ---------- Static share ---------- */
+.share-static-note { max-width: 1100px; margin: 0 auto 14px; padding: 8px 14px; font-size: .82rem; color: var(--mute);
+  border: 1px dashed var(--border-2); border-radius: var(--r-sm); background: var(--panel-2); }
+.static-share-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* ---------- Route gateway cards on home ---------- */
+.phase11-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.phase11-card { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: var(--r); border: 1px solid var(--border);
+  background: var(--panel); text-decoration: none; color: var(--text); transition: border-color .15s, box-shadow .15s; }
+.phase11-card:hover { border-color: var(--accent); box-shadow: var(--sh-glow); }
+.phase11-card .p11-ico { font-size: 1.5rem; }
+.phase11-card .p11-title { font-weight: 700; font-size: 1rem; }
+.phase11-card .p11-desc { font-size: .85rem; color: var(--dim); line-height: 1.45; }
+/* ==========================================================
+   Procure Sherpa v2.1 - Print & Report Styles
+   Section 7: print media + report header
+   (global responsive styles live in 01j_global_extras.css)
+   ========================================================== */
+.report-head{display:none}
+.print-only{display:none}
+@media print{
+  @page{size:auto;margin:14mm 12mm}
+  html,body{background:#fff!important;color:#000!important}
+  .sidebar,.topbar,.crumb,.footer,.scrim,.no-print,.toast,.toast-container,.modal-backdrop,.kbd-help-panel,.kbd-help-backdrop,.cmd-palette-backdrop,.nav-sec-head,.dash-head .btn-row,.dash-search{display:none!important}
+  .app{display:block;min-height:0}
+  .app.has-no-sidebar .sidebar,.app.has-no-sidebar #scrim{display:none!important}
+  .content{display:block}
+  .main{padding:0;max-width:none;animation:none}
+  .dash-head{background:#fff!important;color:#000!important;border:1px solid #000;border-radius:0;padding:10px 0;margin-bottom:10px;box-shadow:none!important}
+  .dash-head::before,.dash-head::after{display:none}
+  .dash-head h1,.dash-head .dash-sub,.dash-head .dash-date{color:#000!important}
+  .card,.tile,.stat,.results,.res-item,.table-wrap,details.acc,.fieldset{
+    box-shadow:none!important;border:1px solid #767676!important;background:#fff!important;break-inside:avoid;
+  }
+  .report-head{display:block;border-bottom:2px solid #000;margin-bottom:10px;padding-bottom:6px}
+  .report-head h1{font-size:1.15rem;margin:0}
+  .report-head .rh-meta{font-size:.78rem;color:#333}
+  .print-only{display:block}
+  table{font-size:.75rem;page-break-inside:auto}
+  thead th{background:#eee!important;color:#000!important}
+  tr{page-break-inside:avoid}
+  .badge{border:1px solid #767676!important;background:#fff!important;color:#000!important}
+  .alert{border:1px solid #767676!important;background:#fff!important;padding-left:13px}
+  .alert::before{display:none}
+  a{color:#000!important;text-decoration:none}
+  details.acc>summary{list-style:none}
+  details.acc>summary::after{display:none}
+  details.acc{page-break-inside:avoid}
+  details.acc .acc-body{display:block!important}
+  .mono,.num{font-family:Consolas,"Courier New",monospace}
+}
 </style>
 </head>
 
@@ -2940,7 +2818,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
     <div class="sidebar-foot" id="sidebarFoot">
       <div class="privacy-note">
         <span aria-hidden="true">&#128274;</span>
-        <span>Enterprise Single-Tenant Session &middot; Certified Local Compliance</span>
+        <span>Enterprise Single-Tenant Session &middot; Zero Data Egress</span>
       </div>
     </div>
   </aside>
@@ -2990,7 +2868,6 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 </div>
 
 <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modalRoot"></div>
 
 <script>
@@ -3563,7 +3440,11 @@ PS.K = {
   schema: 'ps_schema_version',
   nav: 'ps_nav_state',
   draft: 'ps_draft',
-  maturity: 'ps_maturity'
+  maturity: 'ps_maturity',
+  exams: 'ps_exams',
+  spend: 'ps_spend_model',
+  copilot: 'ps_copilot',
+  docpacks: 'ps_docpacks'
 };
 /* legacy v1.1.0 keys inspected for migration (Section 55) */
 PS.LEGACY = ['ps_saved', 'ps_savedQuotes', 'ps_savedCalculations', 'ps_calculations',
@@ -4086,7 +3967,11 @@ PS.buildIndex = function () {
     { id: 'cmd-dash-savings', title: 'Savings & Spend Dashboard', cat: 'Commercial Controls', desc: 'Portfolio view of realized savings, cost avoidance, and working capital.', route: '#/dash-savings', tags: ['finance', 'controller', 'benefits'] },
     { id: 'cmd-maturity', title: 'Procurement Maturity Assessment', cat: 'Governance', desc: 'Audit and score your organization commercial sourcing maturity.', route: '#/maturity', tags: ['audit', 'benchmark', 'strategy'] },
     { id: 'cmd-backup', title: 'Backup & Restore Workspace', cat: 'System Data', desc: 'Export or import your offline local data, saved calculations, and profile.', route: '#/backup', tags: ['export', 'json', 'privacy'] },
-    { id: 'cmd-settings', title: 'System Preferences & Settings', cat: 'System Data', desc: 'Configure default currency, company name, and interface theme.', route: '#/settings', tags: ['config', 'theme', 'dark'] }
+    { id: 'cmd-settings', title: 'System Preferences & Settings', cat: 'System Data', desc: 'Configure default currency, company name, and interface theme.', route: '#/settings', tags: ['config', 'theme', 'dark'] },
+    { id: 'cmd-copilot', title: 'Procurement Copilot', cat: 'Intelligence', desc: 'Ask the offline assistant about concepts, processes and calculators.', route: '#/copilot', tags: ['ai', 'assistant', 'ask', 'chat'] },
+    { id: 'cmd-exams', title: 'Certification Exams', cat: 'Academy', desc: 'Timed, randomised exams from the Academy question bank.', route: '#/exams', tags: ['test', 'certification', 'quiz'] },
+    { id: 'cmd-spend-model', title: 'Spend Data Model', cat: 'Intelligence', desc: 'Edit the category-supplier hierarchy feeding Pareto and Kraljic charts.', route: '#/spend-model', tags: ['spend', 'pareto', 'kraljic', 'supplier'] },
+    { id: 'cmd-docpack', title: 'Document Pack Builder', cat: 'Intelligence', desc: 'Assemble RFI/RFP/contract packs with a cover sheet and contents.', route: '#/docpack', tags: ['rfp', 'rfi', 'contract', 'pack', 'print'] }
   ];
   coreCommands.forEach(function (c) {
     add('command', c, [c.desc, c.tags.join(' ')], c.route);
@@ -4162,7 +4047,7 @@ PS.search = function (q, opts) {
       desc: r.desc,
       text: r.text,
       score: o.score,
-      shortcut: self.getShortcut(r.type, r.id)
+      shortcut: (PS.cmdPalette && PS.cmdPalette.getShortcut) ? PS.cmdPalette.getShortcut(r.type, r.id) : ''
     };
   });
   return { query: PS.clean(q, 120), results: results, total: out.length, suggestions: PS.getSearchSuggestions(q) };
@@ -5464,6 +5349,12 @@ PS.NAV_OPERATIONS = [
     { label: 'KPIs & Value Metrics', href: '#/list/kpi' },
     { label: 'Decision Guides & Scenarios', href: '#/list/dec' },
     { label: 'Procurement Glossary', href: '#/glossary' }
+  ] },
+  { sec: 'Intelligence & Automation', icon: '🤖', items: [
+    { label: 'Procurement Copilot', href: '#/copilot' },
+    { label: 'Certification Exams', href: '#/exams' },
+    { label: 'Spend Data Model', href: '#/spend-model' },
+    { label: 'Document Pack Builder', href: '#/docpack' }
   ] }
 ];
 
@@ -5471,7 +5362,8 @@ PS.NAV_WORKSPACE = [
   { sec: 'My Workspace', icon: '📁', items: [
     { label: 'Saved Work & Reports', href: '#/saved', badge: 'saved' },
     { label: 'Favorites', href: '#/fav', badge: 'fav' },
-    { label: 'Recently Used', href: '#/recent' }
+    { label: 'Recently Used', href: '#/recent' },
+    { label: 'Savings Dashboard', href: '#/dash-savings' }
   ] },
   { sec: 'Guidance & Search', icon: '🔍', items: [
     { label: 'Quick Start Guide', href: '#/quickstart' },
@@ -5485,14 +5377,54 @@ PS.NAV_WORKSPACE = [
 ];
 
 PS.NAV = PS.NAV_ACADEMY.concat(PS.NAV_OPERATIONS).concat(PS.NAV_WORKSPACE);
+
+/* ==========================================================
+   Academy sidebar nav is generated from PS.ACADEMY_FUNCTIONS at
+   runtime so membership, ordering, and module names always match
+   the published curriculum. The maps below provide curated short
+   labels; the builder falls back to the kicker + title.
+   ========================================================== */
+PS.ACADEMY_NAV_LABELS = {
+  'func-mission-value': '1.1 Mission & Value',
+  'func-spend-analysis': '1.2 Spend Analysis',
+  'func-category-mgmt': '1.3 Category Strategy',
+  'func-requirement-scope': '2.1 Scope & SOW',
+  'func-rfx-strategy': '2.2 Sourcing & RFx',
+  'func-rfq-issuance': '2.3 Tender / RFQ Issuance',
+  'func-quote-normalization': '3.1 Quote Normalization',
+  'func-landed-cost-tco': '3.2 Landed Cost & TCO',
+  'func-should-cost': '3.3 Should-Cost Modeling',
+  'func-supplier-eval': '4.1 Supplier Evaluation',
+  'func-supplier-risk': '4.2 Supplier Risk & Vetting',
+  'func-negotiation-strategy': '5.1 Negotiation Strategy',
+  'func-commercial-terms': '5.2 Commercial Terms & MOQs',
+  'func-contract-structuring': '6.1 Contract Structuring',
+  'func-doa-controls': '6.2 DOA & Spend Controls',
+  'func-po-execution': '7.1 PO & P2P Execution',
+  'func-threeway-matching': '7.2 3-Way Matching',
+  'func-srm-scorecards': '8.1 SRM & Scorecards',
+  'func-savings-reporting': '8.2 Savings Reporting'
+};
+
+PS.ACADEMY_NAV_SEC_SHORT = {
+  'Module 1: Foundations, Strategy & Spend Intelligence': 'Module 1: Foundations & Spend',
+  'Module 2: Requirement Definition & Market Engagement': 'Module 2: Requirements & Market',
+  'Module 3: Commercial Analysis & Cost Engineering': 'Module 3: Cost Engineering',
+  'Module 4: Supplier Evaluation & Risk Management': 'Module 4: Supplier Evaluation & Risk',
+  'Module 5: Negotiation Strategy & Commercial Terms': 'Module 5: Negotiation & Terms',
+  'Module 6: Contracting & Governance': 'Module 6: Contracts & Governance',
+  'Module 7: Operational Purchasing & Order Execution (P2P)': 'Module 7: P2P Execution',
+  'Module 8: Supplier Management & Value Realization': 'Module 8: SRM & Value'
+};
 PS.getHubContext = function (r) {
   var name = (r && r.name) || 'home';
   if (name === 'home') return 'portal';
-  if (name === 'academy' || name === 'academy-progress' || name === 'certificate') return 'academy';
+  if (name === 'academy' || name === 'academy-progress' || name === 'certificate' || name === 'exams') return 'academy';
   if (name === 'operations' || name === 'sop' || name === 'calc' || name === 'cl' ||
       name === 'tpl' || name === 'kpi' || name === 'dec' || name === 'scen' ||
       name === 'k' || name === 'glossary' || name === 'what' || name === 'lifecycle' ||
       name === 'maturity' || name === 'dash' || name === 'dash-savings' ||
+      name === 'copilot' || name === 'spend-model' || name === 'docpack' ||
       (name === 'list' && r.arg !== 'saved')) {
     return 'operations';
   }
@@ -5536,6 +5468,37 @@ PS.updateAcademyNavChecks = function () {
   });
 };
 
+/* Academy nav sections generated from the curriculum so the sidebar
+   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership). */
+PS.buildAcademyNav = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var labels = PS.ACADEMY_NAV_LABELS || {};
+  var secShort = PS.ACADEMY_NAV_SEC_SHORT || {};
+  var sections = [], byName = {};
+  funcs.forEach(function (f) {
+    if (!f || !f.id) return;
+    var fullSec = f.module || 'Curriculum';
+    var secName = secShort[fullSec] || fullSec;
+    if (!byName[secName]) {
+      byName[secName] = { sec: secName, icon: (sections.length + 1) + '\uFE0F\u20E3', items: [] };
+      sections.push(byName[secName]);
+    }
+    var shortTitle = f.title ? String(f.title).replace(/^The /, '') : f.id;
+    byName[secName].items.push({
+      label: labels[f.id] || shortTitle,
+      href: '#/academy/' + f.id,
+      funcId: f.id
+    });
+  });
+  /* Overview section always leads */
+  var overview = { sec: 'Academy Overview', icon: '\uD83C\uDF93', items: [
+    { label: 'Academy Curriculum', href: '#/academy' },
+    { label: 'My Progress & Badges', href: '#/academy-progress' },
+    { label: 'Certificate of Mastery', href: '#/certificate' }
+  ] };
+  return [overview].concat(sections);
+};
+
 PS.buildNav = function (targetHub) {
   var hub = targetHub || PS.getHubContext(PS.routeMeta);
   PS._lastBuiltHub = hub;
@@ -5555,7 +5518,7 @@ PS.buildNav = function (targetHub) {
   var switcherHtml = '';
 
   if (hub === 'academy') {
-    navList = PS.NAV_ACADEMY;
+    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_ACADEMY;
     title = 'Procurement Academy';
     sub = 'Interactive Learning';
     mark = '🎓';
@@ -5566,7 +5529,7 @@ PS.buildNav = function (targetHub) {
   } else if (hub === 'operations') {
     navList = PS.NAV_OPERATIONS;
     title = 'Operations Hub';
-    sub = 'Execution Repository';
+    sub = 'Practitioner Tools';
     mark = '💼';
     switcherHtml = '<div class="hub-nav-pill-row">' +
       '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
@@ -5578,9 +5541,9 @@ PS.buildNav = function (targetHub) {
     sub = 'User Account & Tools';
     mark = '⚙';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations">💼 Operations</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼</a>' +
       '</div>';
   } else {
     navList = PS.NAV;
@@ -5620,7 +5583,7 @@ PS.buildNav = function (targetHub) {
       (savedCount + ' Saved Draft' + (savedCount === 1 ? '' : 's'));
 
     foot.innerHTML = '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
-      '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || '#4f46e5') + '">' +
+      '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' +
       PS.esc(PS.user.getInitials(prof.name)) + '</div>' +
       '<div class="sidebar-foot-meta">' +
       '<div class="sidebar-foot-name">' + PS.esc(prof.name) + '</div>' +
@@ -5628,7 +5591,7 @@ PS.buildNav = function (targetHub) {
       '</div></div>' +
       '<div class="privacy-note">' +
       '<span aria-hidden="true">&#128274;</span>' +
-      '<span>Enterprise Client Architecture &middot; Session Secured</span>' +
+      '<span>Enterprise Single-Tenant Session &middot; Zero Data Egress</span>' +
       '</div>';
   }
 
@@ -5674,12 +5637,10 @@ PS.applyTheme = function (theme) {
   document.documentElement.setAttribute('data-theme', t);
   try {
     var mt = document.querySelector('meta[name="theme-color"]');
-    if (mt) mt.setAttribute('content', t === 'dark' ? '#0d1421' : '#1d4ed8');
+    if (mt) mt.setAttribute('content', t === 'dark' ? '#070b16' : '#5346f5');
   } catch (e) { }
   var tb = PS.$('#themeBtn');
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';
-  var lab = PS.$('#themeLabel');
-  if (lab) lab.textContent = t === 'dark' ? 'Dark mode is on' : 'Light mode is on';
 };
 
 PS.getScheduledTheme = function () {
@@ -6339,6 +6300,10 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-sm" data-act="calc-csv">CSV</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-markdown">Copy as Markdown</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy">Copy summary</button>' +
+    '</div>' +
+    '<div class="btn-row" style="margin-top:8px">' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="whatif-open">\u2696 What-if analysis</button>' +
+    '<button type="button" class="btn btn-sm" data-act="share-static">\u2197 Static share page</button>' +
     '</div>' +
     '<div class="field" style="margin-top:12px;margin-bottom:0"><label for="calcNotes">Notes for the report</label>' +
     '<textarea id="calcNotes" rows="2" maxlength="4000" placeholder="Assumptions, alternatives, decision basis…"></textarea></div>' +
@@ -7175,6 +7140,9 @@ PS.backupObject = function () {
     templates: PS.tplState.all(),
     academy: PS.academy ? PS.academy.getAll() : null,
     audit: PS.auditList(),
+    exams: PS.exams ? PS.exams.all() : null,
+    spend: PS.spendModel ? PS.spendModel.all() : null,
+    copilot: PS.copilot ? PS.copilot.all() : null,
     counts: PS.registrySummary()
   };
 };
@@ -7215,6 +7183,9 @@ PS.validateBackup = function (obj) {
       checklists: (obj.checklists && typeof obj.checklists === 'object') ? obj.checklists : {},
       templates: (obj.templates && typeof obj.templates === 'object') ? obj.templates : {},
       academy: (obj.academy && typeof obj.academy === 'object') ? obj.academy : null,
+      exams: (obj.exams && typeof obj.exams === 'object') ? obj.exams : null,
+      spend: (obj.spend && typeof obj.spend === 'object') ? obj.spend : null,
+      copilot: (obj.copilot && typeof obj.copilot === 'object') ? obj.copilot : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };
@@ -7280,6 +7251,9 @@ PS.applyRestore = function (c, mode, filename) {
       PS.store.set(PS.K.audit, c.audit);
       if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
       if (c.academy && PS.academy) PS.academy.save(c.academy);
+      if (c.exams) PS.store.set(PS.K.exams, c.exams);
+      if (c.spend) PS.store.set(PS.K.spend, c.spend);
+      if (c.copilot) PS.store.set(PS.K.copilot, c.copilot);
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -7303,6 +7277,9 @@ PS.applyRestore = function (c, mode, filename) {
         mergedA.scores = Object.assign({}, curA.scores || {}, (c.academy && c.academy.scores) || {});
         PS.academy.save(mergedA);
       }
+      if (c.exams) { var curE = PS.store.get(PS.K.exams, {}); PS.store.set(PS.K.exams, Object.assign({}, curE, c.exams)); }
+      if (c.spend) { var curS = PS.store.get(PS.K.spend, {}); PS.store.set(PS.K.spend, Object.assign({}, curS, c.spend)); }
+      if (c.copilot) { var curC = PS.store.get(PS.K.copilot, {}); PS.store.set(PS.K.copilot, Object.assign({}, curC, c.copilot)); }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();
@@ -7419,6 +7396,1041 @@ PS.acts['threshold-add'] = function () {
 PS.acts['threshold-del'] = function (el) {
   var tr = el.closest ? el.closest('tr') : null;
   if (tr) tr.remove();
+};
+/* ==========================================================
+   Phase 11 - Static Share Pages (roadmap 11.2)
+   Export any route as a self-contained, read-only HTML
+   snapshot for Confluence / SharePoint / email / wiki.
+   ========================================================== */
+
+PS.staticShare = {
+  lastTitle: '',
+  lastHtml: '',
+
+  /* Build a standalone HTML document from the current page. */
+  build: function (title) {
+    var main = PS.$('#main');
+    if (!main) return '';
+    var clone = main.cloneNode(true);
+    /* strip interactive / session-only furniture */
+    PS.$$('.no-print, [data-act], form, input, select, textarea, button, .calc-sheet-trigger, .calc-sheet-backdrop', clone)
+      .forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    /* inline app styles so the snapshot renders identically offline */
+    var css = PS.$$('style').map(function (s) { return s.textContent || ''; }).join('\n');
+    var body = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<title>' + PS.esc(title || document.title || 'Procure Sherpa') + '</title>' +
+      '<style>' + css + '</style></head><body>' +
+      '<div class="share-static-note">Static snapshot of "' + PS.esc(title || '') + '" - generated ' +
+      PS.esc(PS.dateTime()) + ' from Procure Sherpa ' + PS.esc(PS.VERSION) + '. Interactive controls were removed; figures are as shown.</div>' +
+      '<main class="main">' + clone.innerHTML + '</main>' +
+      '<div class="footer" style="text-align:center;padding:20px;color:var(--mute);font-size:.8rem">Prepared with Procure Sherpa - ' +
+      PS.esc(PS.dateTime()) + '</div></body></html>';
+    return body;
+  },
+
+  open: function () {
+    var title = (PS.pageTitle || '').replace(/ \|.*$/, '') || document.title || 'Procure Sherpa';
+    var html = PS.staticShare.build(title);
+    if (!html) { PS.toast('Nothing to share on this page yet.', 'danger'); return; }
+    PS.staticShare.lastTitle = title;
+    PS.staticShare.lastHtml = html;
+    PS.modal({
+      title: 'Create a static share page',
+      body: '<p>A read-only, self-contained HTML snapshot of this page will be created. It can be pasted into a wiki, SharePoint, Confluence or an email, or saved as a file for archival.</p>' +
+        '<p class="note">The snapshot keeps text, tables, charts and figures, but removes buttons, inputs and session controls. It contains the values currently on screen - do not share commercially sensitive figures through unsecured channels.</p>' +
+        '<div class="btn-row">' +
+        '<button type="button" class="btn btn-primary" data-act="static-share-copy">Copy HTML</button>' +
+        '<button type="button" class="btn" data-act="static-share-download">Download .html</button>' +
+        '<button type="button" class="btn btn-ghost" data-act="static-share-preview">Preview</button>' +
+        '</div>',
+      okLabel: 'Close',
+      cancelLabel: null
+    });
+  }
+};
+
+PS.acts['share-static'] = function () { PS.staticShare.open(); };
+PS.acts['static-share-copy'] = function () {
+  if (!PS.staticShare.lastHtml) PS.staticShare.open();
+  if (!PS.staticShare.lastHtml) return;
+  PS.copy(PS.staticShare.lastHtml, 'Static share HTML');
+  PS.audit('static-share-copied', PS.staticShare.lastTitle || document.title);
+};
+PS.acts['static-share-download'] = function () {
+  if (!PS.staticShare.lastHtml) PS.staticShare.open();
+  if (!PS.staticShare.lastHtml) return;
+  var base = PS.clean((PS.staticShare.lastTitle || 'ProcureSherpa').replace(/[^\w]+/g, '_'), 60);
+  PS.download(base + '_' + PS.iso() + '.html', PS.staticShare.lastHtml, 'text/html');
+  PS.audit('static-share-downloaded', PS.staticShare.lastTitle || 'page');
+};
+PS.acts['static-share-preview'] = function () {
+  if (!PS.staticShare.lastHtml) PS.staticShare.open();
+  if (!PS.staticShare.lastHtml) return;
+  try {
+    var win = window.open('', '_blank');
+    win.document.write(PS.staticShare.lastHtml);
+    win.document.close();
+    win.focus();
+    PS.audit('static-share-previewed', PS.staticShare.lastTitle || 'page');
+  } catch (e) { PS.toast('Preview could not be opened.', 'danger'); }
+};
+/* ==========================================================
+   Phase 11 - What-If Branching (roadmap 11.3)
+   Vary one calculator input, compare the base result against
+   a scenario result side-by-side, and save scenario branches
+   into the workspace as audit-ready records.
+   ========================================================== */
+
+PS.whatif = PS.whatif || {};
+
+PS.whatif.DEFAULT_DELTAS = [-10, -5, 0, 5, 10, 20];
+
+/* Numeric field keys for the current calculator that can be varied. */
+PS.whatif.variableKeys = function (calc) {
+  var out = [];
+  (calc.fields || []).forEach(function (f) {
+    if (f.type === 'number') out.push(f.k);
+  });
+  return out;
+};
+
+/* Run the calculator impl with a modified value set (does not touch the form). */
+PS.whatif.runWith = function (calc, values) {
+  var v = {};
+  Object.keys(values || {}).forEach(function (k) { v[k] = values[k]; });
+  if (!PS.showCalcErrors(PS.validateCalc(calc, v))) return null;
+  try { return calc.run(v); }
+  catch (e) { if (window.console && console.error) console.error(e); return null; }
+};
+
+/* Build a result comparison table (base vs scenario) for one varied field. */
+PS.whatif.compareHtml = function (calc, baseOut, scenOut) {
+  var labels = [], byLabel = {};
+  (baseOut.results || []).forEach(function (r) {
+    labels.push(r.label);
+    byLabel[r.label] = { base: r.value, baseNote: r.note || '' };
+  });
+  (scenOut.results || []).forEach(function (r) {
+    if (byLabel[r.label]) byLabel[r.label].scen = r.value;
+    else { labels.push(r.label); byLabel[r.label] = { scen: r.value }; }
+  });
+  if (!labels.length) return '<p class="note">This calculator produced no comparable result rows.</p>';
+  var rows = labels.map(function (l) {
+    var b = byLabel[l];
+    return '<tr><td>' + PS.esc(l) + '</td>' +
+      '<td class="num">' + PS.esc(b.base === undefined ? '\u2014' : b.base) + '</td>' +
+      '<td class="num">' + PS.esc(b.scen === undefined ? '\u2014' : b.scen) + '</td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead><tr><th>Result</th><th class="num">Base</th><th class="num">Scenario</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
+};
+
+/* Open the what-if panel on the current calculator. */
+PS.acts['whatif-open'] = function () {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc) return;
+  if (!PS.calcState.result) PS.runCalc(true);
+  if (!PS.calcState.result) { PS.toast('Calculate a result first, then explore what-if scenarios.', 'warn'); return; }
+  var keys = PS.whatif.variableKeys(calc);
+  if (!keys.length) { PS.toast('This calculator has no numeric inputs to vary.', 'warn'); return; }
+  var fieldOpts = keys.map(function (k) {
+    var f = (calc.fields || []).filter(function (x) { return x.k === k; })[0];
+    return '<option value="' + PS.esc(k) + '">' + PS.esc(f ? f.label : k) + '</option>';
+  }).join('');
+  var deltaOpts = PS.whatif.DEFAULT_DELTAS.map(function (d) {
+    return '<option value="' + d + '">' + (d > 0 ? '+' : '') + d + '%</option>';
+  }).join('');
+  PS.modal({
+    title: 'What-if analysis: ' + calc.title,
+    body: '<p>Vary one input while keeping everything else fixed, then compare the result against your current calculation.</p>' +
+      '<div class="field"><label for="whatifField">Field to vary</label><select id="whatifField">' + fieldOpts + '</select></div>' +
+      '<div class="field"><label for="whatifDelta">Change by</label><select id="whatifDelta">' + deltaOpts + '</select></div>' +
+      '<div class="btn-row"><button type="button" class="btn btn-primary" data-act="whatif-run">Run what-if</button></div>' +
+      '<div id="whatifResult" class="whatif-panel"></div>',
+    okLabel: 'Close', cancelLabel: null
+  });
+};
+
+PS.acts['whatif-run'] = function () {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc) return;
+  var fEl = PS.$('#whatifField');
+  var dEl = PS.$('#whatifDelta');
+  if (!fEl || !dEl) return;
+  var k = fEl.value;
+  var deltaPct = PS.num(dEl.value) / 100;
+  var baseValues = PS.calcState.values;
+  var baseOut = PS.calcState.result;
+  var scenValues = {};
+  Object.keys(baseValues).forEach(function (kk) { scenValues[kk] = baseValues[kk]; });
+  var cur = PS.num(baseValues[k]);
+  if (!isFinite(cur)) { PS.toast('That field needs a numeric value first.', 'danger'); return; }
+  scenValues[k] = PS.round(cur * (1 + deltaPct), 6);
+  var scenOut = PS.whatif.runWith(calc, scenValues);
+  var box = PS.$('#whatifResult');
+  if (!scenOut) { if (box) box.innerHTML = PS.alert('danger', 'Scenario failed', 'The varied input failed validation or could not be calculated.'); return; }
+  if (box) {
+    box.innerHTML = '<h4>Base vs ' + (deltaPct > 0 ? '+' : '') + (deltaPct * 100) + '% on "' + PS.esc(k) + '"</h4>' +
+      PS.whatif.compareHtml(calc, baseOut, scenOut) +
+      '<div class="btn-row" style="margin-top:12px">' +
+      '<button type="button" class="btn btn-sm btn-primary" data-act="whatif-save" data-delta="' + (deltaPct * 100) + '" data-key="' + PS.escAttr(k) + '" data-val="' + PS.escAttr(scenValues[k]) + '">Save scenario branch</button>' +
+      '</div>';
+  }
+};
+
+PS.acts['whatif-save'] = function (el) {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc) return;
+  var key = el.dataset.key;
+  var delta = PS.num(el.dataset.delta);
+  var val = el.dataset.val;
+  var baseValues = PS.calcState.values;
+  var scenValues = {};
+  Object.keys(baseValues).forEach(function (kk) { scenValues[kk] = baseValues[kk]; });
+  scenValues[key] = val;
+  var scenOut = PS.whatif.runWith(calc, scenValues);
+  if (!scenOut) { PS.toast('Could not run the scenario for saving.', 'danger'); return; }
+  var field = (calc.fields || []).filter(function (x) { return x.k === key; })[0];
+  var rec = PS.saved.add({
+    type: 'whatif', title: calc.title + ' - what-if ' + (delta > 0 ? '+' : '') + delta + '%',
+    data: {
+      kind: 'whatif', calc: calc.id, calcTitle: calc.title, field: key,
+      fieldLabel: field ? field.label : key, deltaPct: delta,
+      baseValues: baseValues, scenValues: scenValues,
+      baseResults: PS.calcState.result ? PS.calcState.result.results : [],
+      scenResults: scenOut.results || [], created: new Date().toISOString()
+    }
+  });
+  if (rec) {
+    PS.toast('Scenario branch saved to your workspace.', 'ok');
+    PS.audit('whatif-saved', calc.title + ' ' + (delta > 0 ? '+' : '') + delta + '% on ' + key);
+  }
+};
+/* ==========================================================
+   Phase 11 - Offline AI Copilot (roadmap 11.1)
+   Local retrieval + rule-based answer engine over the bundled
+   KB, glossary, SOPs, scenarios and calculators. Zero network.
+   ========================================================== */
+
+PS.copilot = PS.copilot || {};
+
+PS.copilot.STOP = new Set(('a an and are as at be but by for from has have he her his i in is it its of on or she that the their this to was were we what when which who will with you your the and or for not no yes can could should would do does did').split(' '));
+
+PS.copilot.KEY = 'ps_copilot';
+
+PS.copilot.all = function () {
+  var c = PS.store.get(PS.copilot.KEY, {});
+  return (c && typeof c === 'object') ? c : {};
+};
+PS.copilot.save = function (c) {
+  PS.store.set(PS.copilot.KEY, c);
+};
+
+PS.copilot.transcript = function () {
+  return PS.copilot.all().transcript || [];
+};
+PS.copilot.addExchange = function (q, answer, hits) {
+  var c = PS.copilot.all();
+  c.transcript = c.transcript || [];
+  c.transcript.unshift({ q: PS.clean(q, 200), a: PS.clean(answer, 1200), hits: hits || [], t: new Date().toISOString() });
+  c.transcript = c.transcript.slice(0, 30);
+  PS.copilot.save(c);
+};
+PS.copilot.clearTranscript = function () {
+  var c = PS.copilot.all();
+  c.transcript = [];
+  PS.copilot.save(c);
+};
+
+/* ---------------- content index ---------------- */
+PS.copilot._index = null;
+PS.copilot.buildIndex = function () {
+  if (PS.copilot._index) return PS.copilot._index;
+  var idx = [];
+  function push(type, id, title, cat, route, text) {
+    if (!id || !text) return;
+    idx.push({ type: type, id: id, title: PS.clean(title, 160), cat: PS.clean(cat, 60), route: route || PS.routeFor(type, id), text: String(text).toLowerCase() });
+  }
+  (PS.data.kb || []).forEach(function (x) {
+    push('kb', x.id, x.title, x.cat, PS.routeFor('kb', x.id),
+      [x.title, x.def, x.full, (x.why || []).join(' '), (x.how || []).join(' '), (x.when || []).join(' '), (x.mistakes || []).join(' ')].join(' '));
+  });
+  (PS.data.gloss || []).forEach(function (x) {
+    push('gloss', x.id, x.term, 'Glossary', '#/glossary?term=' + encodeURIComponent(x.id), [x.term, x.def, x.full, (x.why || []).join(' ')].join(' '));
+  });
+  (PS.data.sop || []).forEach(function (x) {
+    push('sop', x.id, x.title, x.cat, PS.routeFor('sop', x.id),
+      [x.title, x.purpose, x.scope, (x.steps || []).map(function (s) { return s.s + ' ' + s.d; }).join(' '), (x.flow || []).join(' ')].join(' '));
+  });
+  (PS.data.scen || []).forEach(function (x) {
+    push('scen', x.id, x.title, x.cat, PS.routeFor('scen', x.id), [x.title, x.problem, x.summary, (x.steps || []).map(function (s) { return s.label; }).join(' ')].join(' '));
+  });
+  (PS.data.calc || []).forEach(function (x) {
+    push('calc', x.id, x.title, x.cat, PS.routeFor('calc', x.id), [x.title, x.purpose, x.context, (x.fields || []).map(function (f) { return f.label; }).join(' ')].join(' '));
+  });
+  PS.copilot._index = idx;
+  return idx;
+};
+PS.copilot.invalidateIndex = function () { PS.copilot._index = null; };
+
+/* ---------------- tokenization ---------------- */
+PS.copilot.tokens = function (q) {
+  return PS.clean(q, 200).toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(function (t) {
+    return t.length > 1 && !PS.copilot.STOP.has(t);
+  });
+};
+
+/* ---------------- retrieval ---------------- */
+PS.copilot.ask = function (q) {
+  var idx = PS.copilot.buildIndex();
+  var tokens = PS.copilot.tokens(q);
+  if (!tokens.length) return { hits: [], answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
+  var scored = [];
+  idx.forEach(function (rec) {
+    var score = 0, matched = 0;
+    tokens.forEach(function (t) {
+      var titleHit = rec.title.toLowerCase().indexOf(t) >= 0;
+      var bodyHit = rec.text.indexOf(t) >= 0;
+      if (titleHit) score += 5;
+      if (bodyHit) { score += 2; matched++; }
+      if (rec.cat.toLowerCase().indexOf(t) >= 0) score += 2;
+    });
+    if (matched) scored.push({ rec: rec, score: score });
+  });
+  scored.sort(function (a, b) {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.rec.title.localeCompare(b.rec.title);
+  });
+  var hits = scored.slice(0, 5).map(function (s) { return s.rec; });
+  var answer = PS.copilot.answerFor(q, hits, tokens);
+  return { hits: hits, answer: answer };
+};
+
+/* Build a plain-language answer with inline citations from the top hits. */
+PS.copilot.answerFor = function (q, hits, tokens) {
+  if (!hits.length) return 'No confident local match for "' + PS.clean(q, 120) + '". Try the global search (Ctrl+K) or rephrase with procurement terms.';
+  var top = hits[0];
+  var detail = '';
+  if (top.type === 'gloss') {
+    var g = PS.glossaryById(top.id);
+    if (g) detail = g.def + (g.full ? ' ' + g.full : '');
+  } else if (top.type === 'kb') {
+    var kb = PS.byId('kb', top.id);
+    if (kb) detail = kb.def + (kb.full ? ' ' + kb.full : '');
+  } else if (top.type === 'sop') {
+    var sop = PS.byId('sop', top.id);
+    if (sop) detail = sop.purpose;
+  } else if (top.type === 'scen') {
+    var sc = PS.byId('scen', top.id);
+    if (sc) detail = sc.summary || sc.problem;
+  } else if (top.type === 'calc') {
+    var ca = PS.byId('calc', top.id);
+    if (ca) detail = ca.purpose;
+  }
+  detail = detail ? detail : top.title;
+  if (detail.length > 480) detail = detail.slice(0, 477) + '\u2026';
+  var name = PS.typeLabel(top.type);
+  return 'Based on the local library, the closest match is "' + top.title + '" (' + name + '). ' + detail +
+    ' Open the linked page below for the full, cited source.';
+};
+
+PS.copilot.citesHtml = function (hits) {
+  if (!hits.length) return '';
+  return '<div class="cp-cites">' + hits.map(function (h, i) {
+    var route = h.type === 'gloss' ? '#/glossary?term=' + encodeURIComponent(h.id) : PS.routeFor(h.type, h.id);
+    return '<a class="cp-cite" href="' + PS.esc(route) + '"><span class="tick">' + (i + 1) + '</span>' +
+      PS.esc(h.title) + ' <span class="badge">' + PS.esc(PS.typeLabel(h.type)) + '</span></a>';
+  }).join('') + '</div>';
+};
+
+/* ---------- page-level actions ---------- */
+PS.acts['copilot-ask'] = function (el) {
+  var q = PS.$('#copilotInput') ? PS.$('#copilotInput').value : '';
+  if (!PS.clean(q)) { PS.toast('Type a question first.', 'warn'); return; }
+  PS.copilot.renderExchange(q);
+};
+PS.acts['copilot-suggest'] = function (el) {
+  var q = el.dataset.q || '';
+  if (!q) return;
+  PS.copilot.renderExchange(q);
+};
+PS.acts['copilot-clear'] = function () {
+  PS.confirm({
+    title: 'Clear copilot transcript?',
+    body: '<p>This clears the local chat transcript for this browser only.</p>',
+    okLabel: 'Clear transcript', danger: true,
+    onOk: function () { PS.copilot.clearTranscript(); PS.renderRoute(); PS.toast('Transcript cleared.', 'ok'); }
+  });
+};
+
+PS.copilot.renderExchange = function (q) {
+  var qClean = PS.clean(q, 200);
+  if (!qClean) return;
+  var res = PS.copilot.ask(qClean);
+  PS.copilot.addExchange(qClean, res.answer, res.hits.map(function (h) { return { type: h.type, id: h.id, title: h.title }; }));
+  var chat = PS.$('#copilotChat');
+  if (!chat) return;
+  var userHtml = '<div class="copilot-msg is-user"><div class="cp-avatar" aria-hidden="true">You</div><div class="cp-bubble">' + PS.esc(qClean) + '</div></div>';
+  var aiHtml = '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' +
+    PS.esc(res.answer) + PS.copilot.citesHtml(res.hits) + '</div></div>';
+  chat.insertAdjacentHTML('beforeend', userHtml + aiHtml);
+  chat.scrollTop = chat.scrollHeight;
+  if (PS.$('#copilotInput')) PS.$('#copilotInput').value = '';
+  PS.audit('copilot-question', qClean.slice(0, 120));
+};
+
+/* Suggestion chips derived from the current library. */
+PS.copilot.suggestions = function (n) {
+  var base = [
+    { q: 'What is total cost of ownership (TCO)?', t: 'TCO' },
+    { q: 'How do I compare supplier quotes?', t: 'Compare quotes' },
+    { q: 'What is a three-way match?', t: '3-way match' },
+    { q: 'Explain incoterms and landed cost', t: 'Incoterms' },
+    { q: 'How do I negotiate a price increase?', t: 'Price increase' },
+    { q: 'What does DOA mean in procurement?', t: 'DOA' }
+  ];
+  return base.slice(0, n || 4).map(function (s) {
+    return '<button type="button" class="chip" data-act="copilot-suggest" data-q="' + PS.escAttr(s.q) + '">' + PS.esc(s.t) + '</button>';
+  }).join('');
+};
+/* ==========================================================
+   Phase 11 - Certification Exams (roadmap 11.4)
+   Timed, randomised exam banks assembled from the Academy
+   question pool, with pass/fail thresholds and retake history.
+   ========================================================== */
+
+PS.exams = PS.exams || {};
+
+PS.exams.KEY = 'ps_exams';
+PS.exams.PASS_PCT = 70;
+PS.exams.DEFAULT_COUNT = 5;
+PS.exams.SECONDS_PER_QUESTION = 60;
+
+PS.exams.all = function () {
+  var e = PS.store.get(PS.exams.KEY, {});
+  return (e && typeof e === 'object') ? e : {};
+};
+PS.exams.save = function (e) { PS.store.set(PS.exams.KEY, e); };
+PS.exams.history = function () { return PS.exams.all().attempts || []; };
+PS.exams.recordAttempt = function (rec) {
+  var e = PS.exams.all();
+  e.attempts = e.attempts || [];
+  e.attempts.unshift(rec);
+  e.attempts = e.attempts.slice(0, 30);
+  PS.exams.save(e);
+};
+PS.exams.clearHistory = function () {
+  var e = PS.exams.all();
+  e.attempts = [];
+  PS.exams.save(e);
+};
+
+/* Question pool derived from the Academy curriculum quiz banks. */
+PS.exams.pool = function () {
+  var pool = [];
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    (f.quizzes || []).forEach(function (q, idx) {
+      if (!q.options || !q.options.length) return;
+      pool.push({ func: f.id, funcTitle: f.title, module: f.module || 'Curriculum', q: q.q, options: q.options, diff: PS.academyQuiz.getDifficulty(f, q, idx) });
+    });
+  });
+  return pool;
+};
+
+/* Exam banks: full certification + one per academy module. */
+PS.exams.banks = function () {
+  var pool = PS.exams.pool();
+  var banks = [{ id: 'cert-full', title: 'Full Certification Exam', desc: 'All academy knowledge checks, sampled at random.', pool: pool }];
+  var byMod = {};
+  pool.forEach(function (p) { if (!byMod[p.module]) byMod[p.module] = []; byMod[p.module].push(p); });
+  Object.keys(byMod).forEach(function (m) {
+    var safe = 'mod-' + m.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48);
+    banks.push({ id: safe, title: 'Module Exam: ' + m, desc: m, pool: byMod[m] });
+  });
+  return banks;
+};
+
+/* Sample a random, non-repeating subset from a pool. */
+PS.exams.sample = function (pool, n) {
+  var copy = pool.slice();
+  var out = [];
+  n = Math.min(n || PS.exams.DEFAULT_COUNT, copy.length);
+  while (out.length < n) {
+    var i = Math.floor(Math.random() * copy.length);
+    out.push(copy.splice(i, 1)[0]);
+  }
+  return out;
+};
+
+/* ---------- running session state (kept on the page) ---------- */
+PS.exams.session = null;
+
+PS.acts['exam-start'] = function (el) {
+  var bankId = el.dataset.bank;
+  var bank = PS.exams.banks().filter(function (b) { return b.id === bankId; })[0];
+  if (!bank || !bank.pool.length) { PS.toast('This exam has no questions yet.', 'warn'); return; }
+  var count = PS.num(PS.$('#examCount') ? PS.$('#examCount').value : '') || PS.exams.DEFAULT_COUNT;
+  var questions = PS.exams.sample(bank.pool, count);
+  PS.exams.session = {
+    bank: bank, questions: questions,
+    answers: {}, current: 0,
+    start: Date.now(),
+    timeLimit: questions.length * PS.exams.SECONDS_PER_QUESTION,
+    done: false
+  };
+  PS.renderExamRunner();
+};
+
+PS.exams.renderExamRunner = function () {
+  var box = PS.$('#examRunner');
+  if (!box || !PS.exams.session) return;
+  var s = PS.exams.session;
+  var q = s.questions[s.current];
+  var answeredCount = Object.keys(s.answers).length;
+  var html = '<div class="exam-runner">' +
+    '<div class="card"><div class="card-head"><div><h2>' + PS.esc(s.bank.title) + '</h2>' +
+    '<p class="card-sub">Question ' + (s.current + 1) + ' of ' + s.questions.length + ' \u00B7 ' + answeredCount + ' answered \u00B7 <strong>Pass mark ' + PS.exams.PASS_PCT + '%</strong></p></div>' +
+    '<div class="spacer"></div><span class="badge exam-timer" id="examTimer">' + PS.exams.fmtTime(s.timeLimit) + '</span></div>' +
+    '<div class="exam-progress-track"><div class="exam-progress-fill" style="width:' + Math.round(((s.current + 1) / s.questions.length) * 100) + '%"></div></div></div>' +
+    '<div class="card"><h3>' + PS.esc(q.q) + '</h3>' +
+    '<div class="field"><span class="badge">' + PS.esc(q.funcTitle) + '</span> <span class="badge">' + PS.esc(PS.academyQuiz.diffMeta[q.diff] ? PS.academyQuiz.diffMeta[q.diff].label : '') + '</span></div>' +
+    '<div class="exam-options">' +
+    q.options.map(function (o, i) {
+      var sel = s.answers[s.current] === i;
+      return '<label class="exam-option"><input type="radio" name="examOpt" value="' + i + '"' + (sel ? ' checked' : '') + '> ' +
+        PS.esc(o.text) + '</label>';
+    }).join('') +
+    '</div></div>' +
+    '<div class="exam-nav">' +
+    '<button type="button" class="btn" data-act="exam-prev"' + (s.current === 0 ? ' disabled' : '') + '>&larr; Previous</button>' +
+    (s.current < s.questions.length - 1
+      ? '<button type="button" class="btn btn-primary" data-act="exam-next">Next &rarr;</button>'
+      : '<button type="button" class="btn btn-primary" data-act="exam-submit">Submit exam</button>') +
+    '</div></div>';
+  box.innerHTML = html;
+  box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  PS.wireExamOptions();
+  PS.startExamTimer();
+};
+
+PS.acts['exam-next'] = function () {
+  var s = PS.exams.session;
+  if (!s) return;
+  if (s.current < s.questions.length - 1) { s.current++; PS.renderExamRunner(); }
+};
+PS.acts['exam-prev'] = function () {
+  var s = PS.exams.session;
+  if (!s) return;
+  if (s.current > 0) { s.current--; PS.renderExamRunner(); }
+};
+
+PS.wireExamOptions = function () {
+  var opts = PS.$$('input[name="examOpt"]');
+  var s = PS.exams.session;
+  opts.forEach(function (el) {
+    el.addEventListener('change', function () {
+      if (s) s.answers[s.current] = PS.num(el.value);
+    });
+  });
+};
+
+/* ---------- timer ---------- */
+PS.exams._timer = null;
+PS.exams.fmtTime = function (sec) {
+  sec = Math.max(0, Math.round(sec));
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s;
+};
+PS.exams.startExamTimer = function () {
+  PS.exams.stopTimer();
+  var s = PS.exams.session;
+  if (!s) return;
+  var el = PS.$('#examTimer');
+  var t = new Date().getTime();
+  PS.exams._timer = setInterval(function () {
+    if (!PS.exams.session || PS.exams.session.done) { PS.exams.stopTimer(); return; }
+    var elapsed = Math.floor((new Date().getTime() - t) / 1000);
+    var remain = Math.max(0, s.timeLimit - elapsed);
+    if (el) {
+      el.textContent = PS.exams.fmtTime(remain);
+      el.classList.toggle('is-urgent', remain <= 60);
+    }
+    if (remain <= 0) { PS.exams.stopTimer(); PS.acts['exam-submit'](); }
+  }, 1000);
+};
+PS.exams.stopTimer = function () {
+  if (PS.exams._timer) { clearInterval(PS.exams._timer); PS.exams._timer = null; }
+};
+
+/* ---------- grading ---------- */
+PS.acts['exam-submit'] = function () {
+  var s = PS.exams.session;
+  if (!s) return;
+  PS.confirm({
+    title: 'Submit exam?',
+    body: '<p>You answered ' + Object.keys(s.answers).length + ' of ' + s.questions.length + ' questions. Once submitted, your score is recorded locally.</p>',
+    okLabel: 'Submit & grade',
+    onOk: function () { PS.exams.grade(); }
+  });
+};
+
+PS.exams.grade = function () {
+  var s = PS.exams.session;
+  if (!s || s.done) return;
+  s.done = true;
+  PS.exams.stopTimer();
+  var score = 0, review = [];
+  s.questions.forEach(function (q, i) {
+    var ans = s.answers[i];
+    var correct = ans !== undefined && q.options[ans] && q.options[ans].isCorrect;
+    if (correct) score++;
+    var correctOpt = q.options.filter(function (o) { return o.isCorrect; })[0];
+    review.push({ q: q, chosen: ans, correct: correct, correctText: correctOpt ? correctOpt.text : '' });
+  });
+  var total = s.questions.length;
+  var pct = total ? Math.round((score / total) * 100) : 0;
+  var passed = pct >= PS.exams.PASS_PCT;
+  PS.exams.recordAttempt({
+    bank: s.bank.id, bankTitle: s.bank.title, score: score, total: total, pct: pct,
+    passed: passed, date: new Date().toISOString(), seconds: Math.round((Date.now() - s.start) / 1000)
+  });
+  PS.audit(passed ? 'exam-passed' : 'exam-failed', s.bank.title + ' ' + score + '/' + total);
+  var box = PS.$('#examRunner');
+  if (!box) { PS.renderRoute(); return; }
+  box.innerHTML = '<div class="exam-runner"><div class="card"><div class="card-head"><div><h2>Exam complete</h2>' +
+    '<p class="card-sub">' + PS.esc(s.bank.title) + '</p></div><div class="spacer"></div>' +
+    '<span class="badge ' + (passed ? 'badge-ok' : '') + '">' + (passed ? 'PASSED' : 'NOT PASSED') + '</span></div>' +
+    '<div class="grid grid-4">' +
+    '<div class="stat"><div class="s-val">' + score + '/' + total + '</div><div class="s-lab">Correct</div></div>' +
+    '<div class="stat"><div class="s-val">' + pct + '%</div><div class="s-lab">Score</div></div>' +
+    '<div class="stat"><div class="s-val">' + PS.exams.fmtTime(Math.round((Date.now() - s.start) / 1000)) + '</div><div class="s-lab">Time</div></div>' +
+    '<div class="stat ' + (passed ? 'is-ok' : 'is-warn') + '"><div class="s-val">' + PS.exams.PASS_PCT + '%</div><div class="s-lab">Pass mark</div></div>' +
+    '</div>' +
+    (passed ? '<p class="note" style="color:var(--ok)">Congratulations - you reached the pass mark. Retake any time to improve your score.</p>'
+      : '<p class="note">You did not reach the ' + PS.exams.PASS_PCT + '% pass mark this time. Review the answers below and study the linked Academy modules before retaking.</p>') +
+    '<div class="btn-row"><button type="button" class="btn btn-primary" data-act="exam-retake" data-bank="' + PS.escAttr(s.bank.id) + '">Retake exam</button>' +
+    '<button type="button" class="btn btn-ghost" data-act="exam-toggle-review">Review answers</button></div>' +
+    '<div id="examReview" hidden>' + PS.exams.renderReview(review) + '</div>' +
+    '</div></div>';
+  box.scrollIntoView({ block: 'start', behavior: 'smooth' });
+};
+
+PS.exams.renderReview = function (review) {
+  var rows = review.map(function (r, i) {
+    var chosen = r.chosen !== undefined && r.q.options[r.chosen] ? r.q.options[r.chosen].text : '(not answered)';
+    return '<tr><td>' + (i + 1) + '</td><td>' + PS.esc(r.q.q) + '</td>' +
+      '<td>' + PS.esc(PS.typeLabel ? r.q.funcTitle : r.q.funcTitle) + '</td>' +
+      '<td>' + (r.correct ? '\u2713' : '\u2717') + ' ' + PS.esc(chosen) + '</td>' +
+      '<td>' + PS.esc(r.correctText) + '</td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Module</th><th>Your answer</th><th>Correct answer</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+};
+
+PS.acts['exam-toggle-review'] = function () {
+  var el = PS.$('#examReview');
+  if (el) el.hidden = !el.hidden;
+};
+PS.acts['exam-retake'] = function (el) {
+  PS.exams.session = null;
+  PS.exams.stopTimer();
+  var box = PS.$('#examRunner');
+  if (box) box.innerHTML = '<div class="card"><p class="note">Choose an exam below to begin.</p></div>';
+  var startBtn = PS.$('#examStart_' + el.dataset.bank);
+  if (startBtn) startBtn.click();
+};
+
+PS.exams.historyHtml = function () {
+  var h = PS.exams.history();
+  if (!h.length) return '<p class="note">No exam attempts recorded yet.</p>';
+  var rows = h.map(function (a) {
+    return '<tr><td>' + PS.esc(PS.dateTime(a.date)) + '</td><td>' + PS.esc(a.bankTitle || a.bank) + '</td>' +
+      '<td class="num">' + a.score + '/' + a.total + ' (' + a.pct + '%)</td>' +
+      '<td>' + (a.passed ? '<span style="color:var(--ok);font-weight:700">Passed</span>' : '<span style="color:var(--danger)">Not passed</span>') + '</td>' +
+      '<td class="num">' + PS.exams.fmtTime(a.seconds || 0) + '</td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Exam</th><th class="num">Score</th><th>Result</th><th class="num">Time</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+};
+
+/* Stop any running exam timer when leaving the exams route. */
+(function () {
+  var prev = PS.onRouteDone;
+  PS.onRouteDone = function (r) {
+    if (r && r.name !== 'exams') PS.exams.stopTimer();
+    if (prev) { try { prev(r); } catch (e) { } }
+  };
+})();
+/* ==========================================================
+   Phase 11 - Spend Data Model (roadmap 11.5)
+   Drag-drop category > supplier hierarchy that feeds the
+   Pareto and Kraljic visualisations from a single source.
+   ========================================================== */
+
+PS.spendModel = PS.spendModel || {};
+
+PS.spendModel.KEY = 'ps_spend';
+
+PS.spendModel.all = function () {
+  var s = PS.store.get(PS.spendModel.KEY, {});
+  return (s && typeof s === 'object') ? s : {};
+};
+PS.spendModel.save = function (s) { PS.store.set(PS.spendModel.KEY, s); };
+
+PS.spendModel.example = function () {
+  return {
+    categories: [
+      { id: 'cat-raw', name: 'Raw Materials', suppliers: [
+        { id: 'sup-steel', name: 'Steel Co', spend: 1200000 },
+        { id: 'sup-alum', name: 'Aluminium Works', spend: 640000 }
+      ], impact: 85, risk: 70 },
+      { id: 'cat-pack', name: 'Packaging', suppliers: [
+        { id: 'sup-box', name: 'Box Right', spend: 480000 }
+      ], impact: 55, risk: 25 },
+      { id: 'cat-log', name: 'Logistics', suppliers: [
+        { id: 'sup-freight', name: 'Freightline', spend: 320000 }
+      ], impact: 40, risk: 55 },
+      { id: 'cat-mro', name: 'MRO & Facilities', suppliers: [
+        { id: 'sup-maint', name: 'FacilityCare', spend: 150000 },
+        { id: 'sup-spares', name: 'SparesCo', spend: 90000 }
+      ], impact: 30, risk: 20 }
+    ]
+  };
+};
+
+PS.spendModel.load = function () {
+  var m = PS.spendModel.all();
+  if (!m.categories || !m.categories.length) return PS.spendModel.example();
+  return m;
+};
+
+/* ---------- helpers ---------- */
+PS.spendModel.suppliers = function (m) {
+  var out = [];
+  (m.categories || []).forEach(function (c) {
+    (c.suppliers || []).forEach(function (s) {
+      out.push({ cat: c.name, catId: c.id, name: s.name, spend: PS.num(s.spend) || 0 });
+    });
+  });
+  out.sort(function (a, b) { return b.spend - a.spend; });
+  return out;
+};
+PS.spendModel.total = function (m) {
+  return PS.spendModel.suppliers(m).reduce(function (a, b) { return a + b.spend; }, 0);
+};
+
+/* ---------- editor page ---------- */
+PS.acts['spend-add-cat'] = function () {
+  var m = PS.spendModel.load();
+  m.categories.push({ id: PS.uid('cat'), name: 'New category', suppliers: [], impact: 50, risk: 50 });
+  PS.spendModel.save(m);
+  PS.renderRoute();
+};
+PS.acts['spend-del-cat'] = function (el) {
+  var id = el.dataset.id;
+  var m = PS.spendModel.load();
+  m.categories = m.categories.filter(function (c) { return c.id !== id; });
+  PS.spendModel.save(m);
+  PS.renderRoute();
+};
+PS.acts['spend-add-sup'] = function (el) {
+  var catId = el.dataset.cat;
+  var m = PS.spendModel.load();
+  m.categories.forEach(function (c) {
+    if (c.id === catId) c.suppliers.push({ id: PS.uid('sup'), name: 'New supplier', spend: 0 });
+  });
+  PS.spendModel.save(m);
+  PS.renderRoute();
+};
+PS.acts['spend-del-sup'] = function (el) {
+  var supId = el.dataset.id;
+  var m = PS.spendModel.load();
+  m.categories.forEach(function (c) { c.suppliers = c.suppliers.filter(function (s) { return s.id !== supId; }); });
+  PS.spendModel.save(m);
+  PS.renderRoute();
+};
+PS.acts['spend-load-example'] = function () {
+  PS.spendModel.save(PS.spendModel.example());
+  PS.renderRoute();
+  PS.toast('Example spend model loaded.', 'ok');
+};
+
+/* Persist edits from the live editor fields back into the store. */
+PS.spendModel.collect = function () {
+  var m = PS.spendModel.load();
+  m.categories.forEach(function (c) {
+    var nameEl = PS.$('#catName_' + c.id);
+    if (nameEl) c.name = PS.clean(nameEl.value, 80) || c.name;
+    var impEl = PS.$('#catImpact_' + c.id);
+    if (impEl) c.impact = PS.clamp(PS.num(impEl.value) || 50, 0, 100);
+    var riskEl = PS.$('#catRisk_' + c.id);
+    if (riskEl) c.risk = PS.clamp(PS.num(riskEl.value) || 50, 0, 100);
+    c.suppliers.forEach(function (s) {
+      var supName = PS.$('#supName_' + s.id);
+      if (supName) s.name = PS.clean(supName.value, 80) || s.name;
+      var supSpend = PS.$('#supSpend_' + s.id);
+      if (supSpend) s.spend = Math.max(0, PS.num(supSpend.value) || 0);
+    });
+  });
+  return m;
+};
+PS.acts['spend-save'] = function () {
+  var m = PS.spendModel.collect();
+  PS.spendModel.save(m);
+  PS.toast('Spend model saved locally.', 'ok');
+  PS.audit('spend-model-saved', m.categories.length + ' categories');
+  PS.renderRoute();
+};
+
+/* ---------- drag-drop reorder ---------- */
+PS.spendModel._drag = null;
+PS.spendModel.wireDnD = function (root) {
+  if (!root || root.dataset.wired) return;
+  root.dataset.wired = '1';
+
+  function rowOf(el) { return el && el.closest ? el.closest('[data-sup-row]') : null; }
+  root.addEventListener('dragstart', function (e) {
+    var row = rowOf(e.target);
+    if (!row) return;
+    PS.spendModel._drag = { supId: row.dataset.sup, catId: row.dataset.cat };
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', row.dataset.sup); } catch (err) { }
+  });
+  root.addEventListener('dragover', function (e) {
+    if (!PS.spendModel._drag) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    var target = rowOf(e.target);
+    if (target && target.dataset.sup !== PS.spendModel._drag.supId) {
+      target.classList.add('drag-over');
+    }
+  });
+  root.addEventListener('dragleave', function (e) {
+    var target = rowOf(e.target);
+    if (target) target.classList.remove('drag-over');
+  });
+  root.addEventListener('drop', function (e) {
+    e.preventDefault();
+    PS.$$('.drag-over', root).forEach(function (el) { el.classList.remove('drag-over'); });
+    var d = PS.spendModel._drag;
+    PS.spendModel._drag = null;
+    var target = rowOf(e.target);
+    if (!d || !target || target.dataset.sup === d.supId) return;
+    var m = PS.spendModel.load();
+    var moved = null;
+    m.categories.forEach(function (c) {
+      if (c.id === d.catId) {
+        c.suppliers.forEach(function (s, i) { if (s.id === d.supId) moved = c.suppliers.splice(i, 1)[0]; });
+      }
+    });
+    if (!moved) return;
+    m.categories.forEach(function (c) {
+      if (c.id === target.dataset.cat) {
+        var idx = -1;
+        for (var i = 0; i < c.suppliers.length; i++) {
+          if (c.suppliers[i].id === target.dataset.sup) { idx = i; break; }
+        }
+        c.suppliers.splice(idx >= 0 ? idx : c.suppliers.length, 0, moved);
+      }
+    });
+    PS.spendModel.save(m);
+    PS.renderRoute();
+  });
+};
+
+/* Render a chart row from the current model (Pareto + Kraljic). */
+PS.spendModel.chartsHtml = function (m) {
+  var suppliers = PS.spendModel.suppliers(m);
+  var total = suppliers.reduce(function (a, b) { return a + b.spend; }, 0);
+  var html = '<div class="spend-chart-grid">';
+  if (suppliers.length) {
+    html += '<div class="card"><h3>Pareto spend concentration</h3>' +
+      PS.chart.pareto(suppliers.map(function (s) { return { name: s.name, spend: s.spend }; }), { width: 520, height: 260 }) +
+      '<p class="note">' + suppliers.length + ' suppliers \u00B7 total ' + PS.moneyR(total) + '</p></div>';
+  } else {
+    html += '<div class="card"><h3>Pareto spend concentration</h3><p class="note">Add suppliers to see the 80/20 curve.</p></div>';
+  }
+  var kraljic = (m.categories || []).map(function (c) {
+    var catSpend = (c.suppliers || []).reduce(function (a, s) { return a + (PS.num(s.spend) || 0); }, 0);
+    return { name: c.name, impact: c.impact || 50, risk: c.risk || 50, spend: '$' + PS.group(catSpend, 0), spendRatio: total ? Math.max(0.4, (catSpend / total) * 3) : 0.6, color: '#6366f1' };
+  });
+  html += '<div class="card"><h3>Kraljic portfolio</h3>' +
+    (kraljic.length ? PS.chart.kraljic(kraljic, { width: 460, height: 400 }) : '<p class="note">Add categories to map the 2x2 matrix.</p>') +
+    '</div></div>';
+  return html;
+};
+/* ==========================================================
+   Phase 11 - Doc Pack Builder (roadmap 11.6)
+   Assemble RFI/RFP/contract packs from templates, checklists
+   and decision guides into a single printable package with a
+   cover sheet, executive summary and table of contents.
+   ========================================================== */
+
+PS.docpack = PS.docpack || {};
+
+PS.docpack.KEY = 'ps_docpacks';
+PS.docpack.all = function () {
+  var d = PS.store.get(PS.docpack.KEY, {});
+  return (d && typeof d === 'object') ? d : {};
+};
+PS.docpack.save = function (d) { PS.store.set(PS.docpack.KEY, d); };
+PS.docpack.list = function () {
+  var d = PS.docpack.all();
+  return d.packs || [];
+};
+
+/* Candidate documents that can go into a pack. */
+PS.docpack.candidates = function () {
+  var out = [];
+  (PS.data.tpl || []).forEach(function (x) {
+    out.push({ type: 'tpl', id: x.id, title: x.title, cat: x.cat || 'Template', desc: x.purpose || '' });
+  });
+  (PS.data.cl || []).forEach(function (x) {
+    out.push({ type: 'cl', id: x.id, title: x.title, cat: x.cat || 'Checklist', desc: x.desc || '' });
+  });
+  (PS.data.dec || []).forEach(function (x) {
+    out.push({ type: 'dec', id: x.id, title: x.title, cat: x.cat || 'Decision', desc: x.intro || '' });
+  });
+  (PS.data.scen || []).forEach(function (x) {
+    out.push({ type: 'scen', id: x.id, title: x.title, cat: x.cat || 'Scenario', desc: x.summary || '' });
+  });
+  return out;
+};
+
+/* Render one document's body inside a pack. */
+PS.docpack.docBody = function (c) {
+  if (c.type === 'tpl') {
+    var tpl = PS.byId('tpl', c.id);
+    if (!tpl) return '<p class="note">Template not found.</p>';
+    return (tpl.purpose ? '<p>' + PS.esc(tpl.purpose) + '</p>' : '') +
+      (tpl.sections || []).map(function (s) {
+        return '<div class="docpack-section"><h3>' + PS.esc(s.g) + '</h3>' +
+          (s.fields || []).map(function (f) {
+            return '<div><strong>' + PS.esc(f.label) + '</strong>' + (f.req ? ' *' : '') + ' &nbsp; <span class="docpack-line"></span></div>';
+          }).join('') + '</div>';
+      }).join('');
+  }
+  if (c.type === 'cl') {
+    var cl = PS.byId('cl', c.id);
+    if (!cl) return '<p class="note">Checklist not found.</p>';
+    return (cl.desc ? '<p>' + PS.esc(cl.desc) + '</p>' : '') +
+      (cl.sections || []).map(function (s) {
+        return '<div class="docpack-section"><h3>' + PS.esc(s.g) + '</h3>' +
+          (s.items || []).map(function (it) { return '<div><label><input type="checkbox"> ' + PS.esc(it) + '</label></div>'; }).join('') +
+          '</div>';
+      }).join('');
+  }
+  if (c.type === 'dec') {
+    var dec = PS.byId('dec', c.id);
+    if (!dec) return '<p class="note">Decision guide not found.</p>';
+    return (dec.intro ? '<p>' + PS.esc(dec.intro) + '</p>' : '') +
+      (dec.question ? '<div class="alert alert-info"><strong>Decision question:</strong> ' + PS.esc(dec.question) + '</div>' : '') +
+      (dec.options || []).map(function (o) { return '<div><label><input type="radio" name="dec_' + PS.esc(dec.id) + '"> <strong>' + PS.esc(o.label) + '</strong> - ' + PS.esc(o.desc || '') + '</label></div>'; }).join('');
+  }
+  if (c.type === 'scen') {
+    var sc = PS.byId('scen', c.id);
+    if (!sc) return '<p class="note">Scenario not found.</p>';
+    return (sc.problem ? '<p>' + PS.esc(sc.problem) + '</p>' : '') +
+      (sc.steps || []).map(function (st, i) { return '<p><strong>Step ' + (i + 1) + ':</strong> ' + PS.esc(st.label) + (st.note ? ' - ' + PS.esc(st.note) : '') + '</p>'; }).join('');
+  }
+  return '';
+};
+
+/* Build a complete printable package document. */
+PS.docpack.buildPackHtml = function (title, items, opts) {
+  opts = opts || {};
+  var p = PS.prefs();
+  var css = PS.$$('style').map(function (s) { return s.textContent || ''; }).join('\n');
+  var toc = items.map(function (c, i) {
+    return '<div><a href="#packdoc' + i + '">' + (i + 1) + '. ' + PS.esc(c.title) + '</a></div>';
+  }).join('');
+  var body = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<title>' + PS.esc(title) + '</title><style>' + css + '</style></head><body>' +
+    '<div class="docpack-cover card">' +
+    '<h1>' + PS.esc(title) + '</h1>' +
+    '<p class="lead">' + PS.esc(p.orgName || 'Procurement') + (p.deptName ? ' \u00B7 ' + PS.esc(p.deptName) : '') + '</p>' +
+    '<p class="note">Prepared ' + PS.esc(PS.dateTime()) + ' \u00B7 ' + items.length + ' documents \u00B7 ' + PS.esc(PS.APP) + ' ' + PS.esc(PS.VERSION) + '</p>' +
+    '<div style="margin-top:18px;text-align:left"><h3>Contents</h3>' + toc + '</div>' +
+    '</div>';
+  items.forEach(function (c, i) {
+    body += '<div class="card docpack-section" id="packdoc' + i + '">' +
+      '<div class="card-head"><div><h2>' + PS.esc(c.title) + '</h2>' +
+      '<p class="card-sub">' + PS.esc(PS.typeLabel(c.type)) + ' \u00B7 ' + PS.esc(c.cat || '') + '</p></div></div>' +
+      PS.docpack.docBody(c) + '</div>';
+  });
+  body += '<div style="text-align:center;padding:24px;color:var(--mute);font-size:.8rem">' +
+    'Prepared with Procure Sherpa ' + PS.esc(PS.VERSION) + '. This package is a working draft - validate all values before external use.</div>' +
+    '</body></html>';
+  return body;
+};
+
+/* ---------- page actions ---------- */
+PS.acts['docpack-toggle'] = function (el) {
+  var id = el.dataset.id;
+  var sel = PS.docpack._selected = PS.docpack._selected || {};
+  if (el.checked) sel[id] = true; else delete sel[id];
+};
+PS.acts['docpack-build'] = function () {
+  var sel = PS.docpack._selected || {};
+  var ids = Object.keys(sel);
+  if (!ids.length) { PS.toast('Select at least one document to include.', 'warn'); return; }
+  var title = PS.clean(PS.$('#docpackTitle') ? PS.$('#docpackTitle').value : '', 140) || 'Procurement document pack';
+  var items = PS.docpack.candidates().filter(function (c) { return sel[c.type + '|' + c.id]; });
+  var html = PS.docpack.buildPackHtml(title, items);
+  PS.docpack._lastHtml = html;
+  PS.docpack._lastTitle = title;
+  PS.docpack._lastItems = items;
+  var win = window.open('', '_blank');
+  if (win) { win.document.write(html); win.document.close(); win.focus(); }
+  PS.docpack.addToPacks(title, items);
+  PS.toast('Pack built with ' + items.length + ' documents.', 'ok');
+  PS.audit('docpack-built', title + ' (' + items.length + ' docs)');
+};
+PS.acts['docpack-download'] = function () {
+  if (!PS.docpack._lastHtml) { PS.toast('Build a pack first.', 'warn'); return; }
+  var base = PS.clean((PS.docpack._lastTitle || 'docpack').replace(/[^\w]+/g, '_'), 60);
+  PS.download(base + '_' + PS.iso() + '.html', PS.docpack._lastHtml, 'text/html');
+};
+PS.acts['docpack-print'] = function () {
+  if (!PS.docpack._lastHtml) { PS.toast('Build a pack first.', 'warn'); return; }
+  var win = window.open('', '_blank');
+  if (win) {
+    win.document.write(PS.docpack._lastHtml);
+    win.document.close();
+    win.focus();
+    setTimeout(function () { try { win.print(); } catch (e) { } }, 250);
+  }
+};
+
+/* Persist created packs so they can be reopened from the page. */
+PS.docpack.addToPacks = function (title, items) {
+  var d = PS.docpack.all();
+  d.packs = d.packs || [];
+  d.packs.unshift({ title: title, t: new Date().toISOString(), items: items.map(function (c) { return { type: c.type, id: c.id, title: c.title, cat: c.cat }; }) });
+  d.packs = d.packs.slice(0, 20);
+  PS.docpack.save(d);
+};
+PS.docpack.packsHtml = function () {
+  var packs = PS.docpack.list();
+  if (!packs.length) return '<p class="note">No packs created yet in this browser.</p>';
+  return '<div class="table-wrap"><table><thead><tr><th>Pack</th><th class="num">Docs</th><th>Created</th><th></th></tr></thead><tbody>' +
+    packs.map(function (p) {
+      return '<tr><td>' + PS.esc(p.title) + '</td><td class="num">' + (p.items ? p.items.length : 0) + '</td>' +
+        '<td>' + PS.esc(PS.dateTime(p.t)) + '</td>' +
+        '<td><button type="button" class="btn btn-sm btn-ghost" data-act="docpack-reopen" data-idx="' + packs.indexOf(p) + '">Reopen</button></td></tr>';
+    }).join('') + '</tbody></table></div>';
+};
+PS.acts['docpack-reopen'] = function (el) {
+  var packs = PS.docpack.list();
+  var p = packs[PS.num(el.dataset.idx)];
+  if (!p) return;
+  var items = (p.items || []).map(function (x) { return PS.docpack.candidates().filter(function (c) { return c.type === x.type && c.id === x.id; })[0]; }).filter(Boolean);
+  if (!items.length) { PS.toast('None of the documents in that pack still exist.', 'warn'); return; }
+  PS.docpack._lastHtml = PS.docpack.buildPackHtml(p.title, items);
+  PS.docpack._lastTitle = p.title;
+  PS.docpack._lastItems = items;
+  var win = window.open('', '_blank');
+  if (win) { win.document.write(PS.docpack._lastHtml); win.document.close(); win.focus(); }
 };
 /* ==========================================================
    Section K: fallback page, migration, boot (Section 45, 55, 57)
@@ -7628,25 +8640,41 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 else setTimeout(PS.boot, 0);
 /* ==========================================================
    Section L: page renderers
-   Home = Executive Command Center:
+   Home = Command Center:
    - Personalized Local User Profile Welcome
    - Segregated Dual-Hub Gateway (Academy vs Operations)
    - Smart Workspace Resume
    - Featured Thinking Point
    ========================================================== */
 
-PS.HUB_FLOW = [];
-PS.HUB = [];
-
 PS.route('home', function () {
   PS.pageTitle = 'Command Center';
   return PS.homeWelcomeCard() +
     PS.homeDualHub() +
+    PS.homePhase11() +
     PS.homeSmartResume() +
     PS.homeQuickActions() +
     PS.homeThinkingPoint() +
     PS.disclaimer('policy');
 });
+
+PS.homePhase11 = function () {
+  var cards = [
+    { href: '#/copilot', ico: '🤖', title: 'Procurement Copilot', desc: 'Ask the offline assistant about concepts, processes and calculators - answers with citations.' },
+    { href: '#/exams', ico: '📝', title: 'Certification Exams', desc: 'Timed, randomised exams from the Academy question bank with pass/fail grading.' },
+    { href: '#/spend-model', ico: '📊', title: 'Spend Data Model', desc: 'One category-supplier hierarchy feeding the Pareto and Kraljic charts.' },
+    { href: '#/docpack', ico: '📦', title: 'Document Pack Builder', desc: 'Assemble RFI / RFP / contract packs with a cover sheet and contents.' }
+  ];
+  return '<div class="card no-print"><div class="card-head"><h2>Intelligence &amp; Automation</h2>' +
+    '<div class="spacer"></div><span class="badge">Phase 11</span></div>' +
+    '<div class="phase11-grid">' +
+    cards.map(function (c) {
+      return '<a class="phase11-card" href="' + c.href + '"><span class="p11-ico">' + c.ico + '</span>' +
+        '<span class="p11-title">' + PS.esc(c.title) + '</span>' +
+        '<span class="p11-desc">' + PS.esc(c.desc) + '</span></a>';
+    }).join('') +
+    '</div></div>';
+};
 
 /* ---------- quick start, favorites, recently used (Section 8, 49) ---------- */
 PS.acts['home-what'] = function (el) { };
@@ -7724,7 +8752,7 @@ PS.acts['fav-remove'] = function (el) {
 PS.route('recent', function () {
   PS.pageTitle = 'Recently Used';
   var r = PS.recent.list();
-  var html = '<div class="card"><div class="card-head"><h1>Recently used</h1><div class="spacer"></div>' +
+  var html = '<div class="card"><div class="card-head"><h1>Recently Used</h1><div class="spacer"></div>' +
     (r.length ? '<button type="button" class="btn btn-sm" data-act="recent-clear">Clear list</button>' : '') + '</div>' +
     '<p class="card-sub">The last ' + r.length + ' operational tools and learning modules accessed in your active session.</p>' +
     (r.length ? '<ul class="res-list">' + r.map(function (x) {
@@ -7741,7 +8769,7 @@ PS.route('list', function (arg, params) {
   return PS.listPage(type, cat, params);
 });
 /* ==========================================================
-   Procure Sherpa v2.0 - Home Page Components
+   Procure Sherpa v2.1 - Home Page Components
    Clean, segregated Dual-Hub Command Center
    1. Personalized Welcome Card with Local User Account
    2. Segregated Dual-Hub Gateway (Academy vs Operations)
@@ -7757,7 +8785,7 @@ PS.homeWelcomeCard = function () {
 
   return '<section class="home-welcome-card no-print">' +
     '<div class="home-user-badge-row">' +
-    '<div class="home-user-avatar" style="background:' + PS.esc(prof.avatarBg || '#4f46e5') + '">' + PS.esc(initials) + '</div>' +
+    '<div class="home-user-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' + PS.esc(initials) + '</div>' +
     '<div class="home-user-meta">' +
     '<h1>Welcome back, ' + PS.esc(prof.name) + '</h1>' +
     '<div class="flex items-center gap8 flex-wrap">' +
@@ -7766,7 +8794,7 @@ PS.homeWelcomeCard = function () {
     '<span class="home-track-pill">' + PS.esc(trackMeta.label) + '</span>' +
     '</div></div></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile &amp; Role</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile & Role</button>' +
     '</div>' +
     '</section>';
 };
@@ -7775,6 +8803,13 @@ PS.homeDualHub = function () {
   var stats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 16, pct: 0, badgesEarned: 0 };
   var allFuncs = PS.ACADEMY_FUNCTIONS || [];
   var curFunc = allFuncs.filter(function (f) { return f.id === stats.currentFunc; })[0] || allFuncs[0];
+  var d = PS.data || {};
+  var nSop = d.sop ? d.sop.length : 13;
+  var nCalc = d.calc ? d.calc.length : 19;
+  var nCl = d.cl ? d.cl.length : 27;
+  var nTpl = d.tpl ? d.tpl.length : 33;
+  var nModules = 0, seen = {};
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { if (!seen[f.module]) { seen[f.module] = 1; nModules++; } });
 
   return '<section class="dual-hub-grid no-print">' +
     /* Card 1: Procurement Academy (The Learning Hub) */
@@ -7784,11 +8819,11 @@ PS.homeDualHub = function () {
     '<span class="t-xs t-dim font-bold">' + stats.completedCount + ' of ' + stats.totalCount + ' Mastered</span>' +
     '</div>' +
     '<div class="hub-card-title">Procurement Academy</div>' +
-    '<p class="hub-card-desc">Interactive digital learning journeys for procurement newbies, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
+    '<p class="hub-card-desc">Interactive digital learning journeys for newcomers, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
     '<div class="academy-progress-track" style="margin-bottom:16px;"><div class="academy-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
     '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📚</span><span>8 Core Learning Modules</span></div>' +
-    '<div class="hub-feature-item"><span>🎯</span><span>16 Practical Functions</span></div>' +
+    '<div class="hub-feature-item"><span>📚</span><span>' + nModules + ' Core Learning Modules</span></div>' +
+    '<div class="hub-feature-item"><span>🎯</span><span>' + allFuncs.length + ' Practical Functions</span></div>' +
     '<div class="hub-feature-item"><span>💡</span><span>Real-Time Thinking Points</span></div>' +
     '<div class="hub-feature-item"><span>🏆</span><span>' + stats.badgesEarned + ' Badges Earned</span></div>' +
     '</div>' +
@@ -7799,22 +8834,22 @@ PS.homeDualHub = function () {
     '</div>' +
     '</div>' +
 
-    /* Card 2: Operations & Knowledge Hub (Execution Hub) */
+    /* Card 2: Operations Hub (Execution Hub) */
     '<div class="hub-portal-card is-operations">' +
     '<div class="hub-card-header">' +
     '<span class="hub-badge operations">Operations Hub &middot; Practitioner Tools</span>' +
-    '<span class="t-xs t-dim font-bold">13 SOPs &middot; 19 Calculators</span>' +
+    '<span class="t-xs t-dim font-bold">' + nSop + ' SOPs &middot; ' + nCalc + ' Calculators</span>' +
     '</div>' +
-    '<div class="hub-card-title">Operations &amp; Knowledge Hub</div>' +
+    '<div class="hub-card-title">Operations Hub</div>' +
     '<p class="hub-card-desc">The complete operational reference for active procurement execution. Controlled standard operating procedures, financial calculators, contract review checklists, and production RFP templates arranged by lifecycle phase.</p>' +
     '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📋</span><span>13 Controlled SOPs</span></div>' +
-    '<div class="hub-feature-item"><span>🧮</span><span>19 Financial Calculators</span></div>' +
-    '<div class="hub-feature-item"><span>☑️</span><span>27 Operational Checklists</span></div>' +
-    '<div class="hub-feature-item"><span>📝</span><span>33 Production Templates</span></div>' +
+    '<div class="hub-feature-item"><span>📋</span><span>' + nSop + ' Controlled SOPs</span></div>' +
+    '<div class="hub-feature-item"><span>🧮</span><span>' + nCalc + ' Financial Calculators</span></div>' +
+    '<div class="hub-feature-item"><span>☑️</span><span>' + nCl + ' Operational Checklists</span></div>' +
+    '<div class="hub-feature-item"><span>📝</span><span>' + nTpl + ' Production Templates</span></div>' +
     '</div>' +
     '<div class="hub-card-footer">' +
-    '<a class="btn btn-primary" href="#/operations" style="background:#0d9488; border-color:#0d9488;">Open Operations Hub &rarr;</a>' +
+    '<a class="btn btn-ops" href="#/operations">Open Operations Hub &rarr;</a>' +
     '<div class="flex gap8">' +
     '<a class="btn btn-sm" href="#/list/sop">SOPs</a>' +
     '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
@@ -7826,13 +8861,12 @@ PS.homeDualHub = function () {
 
 PS.homeSmartResume = function () {
   var savedList = (PS.saved && PS.saved.list) ? PS.saved.list() : [];
-  var recentList = (PS.recent && PS.recent.list) ? PS.recent.list() : [];
 
   if (savedList.length > 0) {
     var latest = savedList[0];
-    return '<div class="card card-tight no-print" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">' +
+    return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
       '<div class="flex items-center gap12">' +
-      '<span class="badge" style="background:var(--accent-soft); color:var(--accent); font-weight:700;">Active Workspace</span>' +
+      '<span class="badge badge-type">Active Workspace</span>' +
       '<span><strong>' + PS.esc(latest.title || latest.id) + '</strong> <span class="t-dim t-xs">(' + PS.esc(PS.dateTime(latest.savedAt)) + ')</span></span>' +
       '</div>' +
       '<div class="btn-row" style="margin:0;">' +
@@ -7841,9 +8875,9 @@ PS.homeSmartResume = function () {
       '</div></div>';
   }
 
-  return '<div class="card card-tight no-print" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">' +
+  return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
     '<div class="flex items-center gap12">' +
-    '<span class="badge" style="background:var(--ok-soft); color:var(--ok); font-weight:700;">Getting Started</span>' +
+    '<span class="badge badge-ok">Getting Started</span>' +
     '<span>New to Procure Sherpa? Follow the guided curriculum in Academy or explore the Operations Hub.</span>' +
     '</div>' +
     '<div class="btn-row" style="margin:0;">' +
@@ -7855,8 +8889,8 @@ PS.homeSmartResume = function () {
 PS.homeThinkingPoint = function () {
   return '<div class="thinking-point-card no-print" style="margin-bottom:24px;">' +
     '<div class="thinking-point-eyebrow">&#128161; Featured Procurement Thinking Point</div>' +
-    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is not necessarily the lowest-cost purchase.&rdquo;</blockquote>' +
-    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company millions in lost operating revenue.</div>' +
+    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is rarely the lowest-cost purchase.&rdquo;</blockquote>' +
+    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company far more across its operating life than the discount saves.</div>' +
     '<div class="flex items-center flex-wrap" style="gap:12px; margin-top:14px;">' +
     '<a class="btn btn-sm btn-primary" href="#/academy/func-landed-cost-tco">Study TCO in Academy &rarr;</a>' +
     '<a class="btn btn-sm" href="#/calc/calc-tco">Open TCO Calculator</a>' +
@@ -7865,8 +8899,6 @@ PS.homeThinkingPoint = function () {
 };
 
 PS.homeQuickActions = function () {
-  var favs = PS.fav ? PS.fav.list() : [];
-  var recent = PS.recent ? PS.recent.list() : [];
   var actions = [
     { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
     { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
@@ -7878,7 +8910,6 @@ PS.homeQuickActions = function () {
 
   var html = '<div class="quick-actions no-print">';
   actions.forEach(function (a) {
-    var isFav = favs.some(function (f) { return f.type === a.id.replace('new-', '').replace('what-do', 'what').replace('academy', 'academy'); });
     html += '<a class="quick-action-btn" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
       '<span class="qa-icon">' + a.icon + '</span>' + PS.esc(a.label) + '</a>';
   });
@@ -8840,12 +9871,16 @@ PS.route('dash', function () {
   return html;
 });
 /* ==========================================================
-   Procure Sherpa v2.0 - Operations & Knowledge Hub Gateway
+   Procure Sherpa v2.1 - Operations Hub Gateway
    The practitioner repository for daily professional execution
    ========================================================== */
 
 PS.route('operations', function () {
-  PS.pageTitle = 'Operations & Knowledge Hub';
+  PS.pageTitle = 'Operations Hub';
+
+  var d = PS.data || {};
+  var nSop = d.sop ? d.sop.length : 13;
+  var nCl = d.cl ? d.cl.length : 27;
 
   var phases = [
     {
@@ -8853,10 +9888,10 @@ PS.route('operations', function () {
       title: 'Intake & Demand Gating',
       desc: 'Verify business need, prevent maverick spend, confirm approved budget, and conduct contract register searches before initiating procurement.',
       tools: [
-        { label: 'SOP: Procurement Intake & Demand Gating', href: '#/sop/sop-procurement-intake', type: 'SOP' },
-        { label: 'Checklist: Requisition Verification', href: '#/cl/cl-procurement-intake', type: 'Checklist' },
+        { label: 'SOP: Procurement Intake & Triage', href: '#/sop/sop-procurement-intake', type: 'SOP' },
+        { label: 'Checklist: Procurement Intake', href: '#/cl/cl-procurement-intake', type: 'Checklist' },
         { label: 'Calculator: PO Value & Delegation of Authority', href: '#/calc/calc-po-value-check', type: 'Calculator' },
-        { label: 'Template: Single-Source Justification', href: '#/tpl/tpl-single-source-justification', type: 'Template' }
+        { label: 'Template: Single-Source Justification', href: '#/tpl/tpl-single-source', type: 'Template' }
       ],
       academyLink: { label: 'Study Intake & SOW in Academy', href: '#/academy/func-requirement-scope' }
     },
@@ -8868,7 +9903,7 @@ PS.route('operations', function () {
         { label: 'SOP: Request for Quotation (RFQ)', href: '#/sop/sop-rfq', type: 'SOP' },
         { label: 'SOP: Request for Proposal (RFP)', href: '#/sop/sop-rfp', type: 'SOP' },
         { label: 'Calculator: Multi-Supplier Quote Comparison', href: '#/calc/calc-compare-quotes', type: 'Calculator' },
-        { label: 'Template: Standard RFQ Specification Package', href: '#/tpl/tpl-rfq', type: 'Template' }
+        { label: 'Template: RFQ Specification Package', href: '#/tpl/tpl-rfq', type: 'Template' }
       ],
       academyLink: { label: 'Study RFx Strategy in Academy', href: '#/academy/func-rfx-strategy' }
     },
@@ -8904,7 +9939,7 @@ PS.route('operations', function () {
         { label: 'SOP: Contract Review & Sign-Off Convergence', href: '#/sop/sop-contract-review', type: 'SOP' },
         { label: 'SOP: Contract Expiry & Renewal Defense', href: '#/sop/sop-contract-renewal', type: 'SOP' },
         { label: 'Template: Statement of Work (SOW)', href: '#/tpl/tpl-statement-of-work', type: 'Template' },
-        { label: 'Template: Contract Amendment & Variation Notice', href: '#/tpl/tpl-contract-amendment', type: 'Template' }
+        { label: 'Template: Contract Change Request', href: '#/tpl/tpl-contract-change-request', type: 'Template' }
       ],
       academyLink: { label: 'Study Contract Structuring in Academy', href: '#/academy/func-contract-structuring' }
     },
@@ -8924,11 +9959,11 @@ PS.route('operations', function () {
 
   var html = '<div class="ops-gateway-hero no-print">' +
     '<div class="flex items-center justify-between flex-wrap gap12 mb12">' +
-    '<div><span class="hub-badge operations">Practitioner Command Center</span>' +
-    '<h1 style="margin:8px 0 4px;">Procurement Operations Hub</h1>' +
-    '<p class="t-dim" style="margin:0;">The complete operational repository for active procurement execution. 13 controlled SOPs, 19 calculators, 27 checklists, and 33 production templates arranged across 6 lifecycle phases.</p></div>' +
+    '<div><span class="hub-badge operations">Practitioner Tools</span>' +
+    '<h1 style="margin:8px 0 4px;">Operations Hub</h1>' +
+    '<p class="t-dim" style="margin:0;">The complete operational repository for active procurement execution. ' + nSop + ' controlled SOPs, 19 calculators, ' + nCl + ' checklists, and 33 production templates arranged across 6 lifecycle phases.</p></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<a class="btn btn-primary" href="#/list/sop">Browse 13 SOPs</a>' +
+    '<a class="btn btn-ops" href="#/list/sop">Browse ' + nSop + ' SOPs</a>' +
     '<a class="btn" href="#/list/calc">Open Calculators</a>' +
     '<a class="btn btn-ghost" href="#/academy">&larr; Switch to Academy</a>' +
     '</div></div></div>';
@@ -9397,6 +10432,8 @@ PS.route('academy-progress', function () {
     '<div class="stat"><span class="s-val">' + stats.pct + '%</span><span class="s-lab">Academy Completion</span></div>' +
     '<div class="stat"><span class="s-val">' + stats.badgesEarned + '/' + stats.badgesTotal + '</span><span class="s-lab">Badges Earned</span></div>' +
     '</div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-ghost" data-act="academy-mark-all">Mark all complete (testing shortcut)</button>' +
+    '<button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
     '<div class="table-wrap"><table><thead><tr>' +
     '<th>Module & Function</th><th>Lifecycle Fit</th><th>Assessment Score</th><th>Status</th><th>Action</th>' +
     '</tr></thead><tbody>' +
@@ -10472,6 +11509,34 @@ PS.acts['academy-mark-done'] = function (el) {
   PS.renderRoute();
 };
 
+PS.acts['academy-mark-all'] = function () {
+  PS.confirm({
+    title: 'Mark every function complete?',
+    body: '<p>This is a testing shortcut that marks all Academy functions as mastered and awards badges. It is not a real achievement record.</p>',
+    okLabel: 'Mark all complete', danger: false,
+    onOk: function () {
+      (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { PS.academy.markCompleted(f.id); });
+      PS.toast('All ' + (PS.ACADEMY_FUNCTIONS || []).length + ' functions marked complete for testing.', 'ok');
+      PS.audit('academy-marked-all', 'testing shortcut used');
+      PS.renderRoute();
+    }
+  });
+};
+
+PS.acts['academy-reset-all'] = function () {
+  PS.confirm({
+    title: 'Reset all Academy progress?',
+    body: '<p>This clears your completion record, scores and badges for every function. Certificates will reflect the empty transcript.</p>',
+    okLabel: 'Reset all progress', danger: true,
+    onOk: function () {
+      PS.academy.reset();
+      PS.toast('Academy progress reset.', 'ok');
+      PS.audit('academy-reset-all', 'progress cleared');
+      PS.renderRoute();
+    }
+  });
+};
+
 
 /* ==========================================================
    Procure Sherpa v2.0 - Interactive Quiz & Assessment Engine
@@ -10968,6 +12033,186 @@ PS.route('certificate', function () {
 });
 
 /* ==========================================================
+   Copilot page - local offline assistant (roadmap 11.1)
+   ========================================================== */
+PS.route('copilot', function () {
+  PS.pageTitle = 'Procurement Copilot';
+  var trans = PS.copilot.transcript();
+  var chatBody = '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div>' +
+    '<div class="cp-bubble">Hello. I am your offline procurement assistant. Ask me about concepts, processes, calculators, terms or scenarios - every answer is drawn from the bundled library on this device, with citations you can open.</div></div>';
+  if (trans.length) {
+    trans.slice().reverse().forEach(function (x) {
+      var cites = (x.hits || []).map(function (h) {
+        var t = PS.byId(h.type, h.id);
+        if (!t && h.type === 'gloss') { t = PS.glossaryById(h.id); }
+        var route = h.type === 'gloss' ? '#/glossary?term=' + encodeURIComponent(h.id) : PS.routeFor(h.type, h.id);
+        return '<a class="cp-cite" href="' + PS.esc(route) + '"><span class="tick">' + (h.type === 'gloss' ? 'G' : '') + '</span>' +
+          PS.esc(t ? (t.title || t.term) : h.title) + ' <span class="badge">' + PS.esc(PS.typeLabel(h.type)) + '</span></a>';
+      }).join('');
+      chatBody += '<div class="copilot-msg is-user"><div class="cp-avatar" aria-hidden="true">You</div><div class="cp-bubble">' + PS.esc(x.q) + '</div></div>' +
+        '<div class="copilot-msg"><div class="cp-avatar" aria-hidden="true">PS</div><div class="cp-bubble">' + PS.esc(x.a) + (cites ? '<div class="cp-cites">' + cites + '</div>' : '') + '</div></div>';
+    });
+  }
+  return PS.reportHead('Procurement Copilot', 'Offline knowledge assistant') +
+    '<div class="copilot-shell"><div class="card"><div class="card-head"><div><h1>Ask the Copilot</h1>' +
+    '<p class="card-sub">Local retrieval answers with inline citations. Nothing leaves this browser.</p></div>' +
+    '<div class="spacer"></div>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="copilot-clear">Clear transcript</button></div>' +
+    '<div class="copilot-chat" id="copilotChat" style="max-height:520px;overflow-y:auto">' + chatBody + '</div>' +
+    '<div class="copilot-input-row">' +
+    '<input type="text" id="copilotInput" placeholder="Ask e.g. What is TCO, or how do I handle a price increase?" maxlength="200">' +
+    '<button type="button" class="btn btn-primary" data-act="copilot-ask">Ask</button>' +
+    '</div>' +
+    '<div class="cp-suggest">' + PS.copilot.suggestions(4) + '</div>' +
+    '<p class="note">The Copilot matches your words against bundled content only - it is not connected to any model or server. Always validate figures before acting.</p>' +
+    '</div></div>' +
+    PS.disclaimer('data');
+  PS.pageInit = function () {
+    var input = PS.$('#copilotInput');
+    if (input) {
+      input.focus();
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); PS.acts['copilot-ask'](); }
+      });
+    }
+  };
+  return html;
+});
+/* ==========================================================
+   Certification Exams page (roadmap 11.4)
+   ========================================================== */
+PS.route('exams', function () {
+  PS.pageTitle = 'Certification Exams';
+  PS.exams.stopTimer();
+  var banks = PS.exams.banks();
+  var bankCards = banks.map(function (b) {
+    var h = PS.exams.history().filter(function (a) { return a.bank === b.id; });
+    var best = h.length ? h.reduce(function (a, x) { return x.pct > a.pct ? x : a; }) : null;
+    return '<div class="card exam-bank-card">' +
+      '<div class="card-head"><div><h2>' + PS.esc(b.title) + '</h2>' +
+      '<p class="card-sub">' + b.pool.length + ' questions in pool \u00B7 pass mark ' + PS.exams.PASS_PCT + '% \u00B7 ' + PS.exams.SECONDS_PER_QUESTION + 's per question</p></div>' +
+      '<div class="spacer"></div>' +
+      '<button type="button" class="btn btn-primary" data-act="exam-start" data-bank="' + PS.escAttr(b.id) + '" id="examStart_' + PS.escAttr(b.id) + '">Start exam</button></div>' +
+      (best ? '<p class="note">Best attempt: <strong>' + best.pct + '%</strong> (' + best.score + '/' + best.total + ') on ' + PS.esc(PS.dateStr(best.date)) + '</p>' : '<p class="note">No attempts yet.</p>') +
+      '</div>';
+  }).join('');
+  return PS.reportHead('Certification exams', 'Academy question bank') +
+    '<div class="card"><div class="card-head"><div><h1>Certification exams</h1>' +
+    '<p class="card-sub">Timed, randomised exams built from the Academy knowledge checks. Questions are sampled at random on every attempt; answers are graded locally and history is kept in this browser.</p></div>' +
+    '<div class="spacer"></div>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="exam-history">Attempt history</button></div>' +
+    '<div class="field"><label for="examCount">Questions per exam</label>' +
+    '<select id="examCount"><option value="3">3</option><option value="5" selected>5</option><option value="8">8</option><option value="12">12</option></select></div>' +
+    '</div>' +
+    bankCards +
+    '<div id="examRunner"></div>' +
+    '<div class="card"><div class="card-head"><h2>Attempt history</h2></div>' + PS.exams.historyHtml() + '</div>' +
+    PS.disclaimer('data');
+});
+PS.acts['exam-history'] = function () {
+  PS.modal({
+    title: 'Exam attempt history',
+    wide: true,
+    body: PS.exams.historyHtml() +
+      '<div class="btn-row" style="margin-top:12px"><button type="button" class="btn btn-sm btn-danger" data-act="exam-history-clear">Clear all history</button></div>',
+    okLabel: 'Close', cancelLabel: null
+  });
+};
+PS.acts['exam-history-clear'] = function () {
+  PS.confirm({
+    title: 'Clear exam history?',
+    body: '<p>All recorded exam attempts will be removed from this browser.</p>',
+    okLabel: 'Clear history', danger: true,
+    onOk: function () { PS.exams.clearHistory(); PS.closeModal(); PS.renderRoute(); PS.toast('Exam history cleared.', 'ok'); }
+  });
+};
+/* ==========================================================
+   Spend Data Model page (roadmap 11.5)
+   ========================================================== */
+PS.route('spend-model', function () {
+  PS.pageTitle = 'Spend Data Model';
+  var m = PS.spendModel.load();
+  var total = PS.spendModel.total(m);
+  var catHtml = (m.categories || []).map(function (c) {
+    var catSpend = (c.suppliers || []).reduce(function (a, s) { return a + (PS.num(s.spend) || 0); }, 0);
+    var supHtml = (c.suppliers || []).map(function (s) {
+      return '<div class="sup-row" draggable="true" data-sup-row data-sup="' + PS.escAttr(s.id) + '" data-cat="' + PS.escAttr(c.id) + '">' +
+        '<span class="drag-handle" title="Drag to reorder">&#8942;</span>' +
+        '<input type="text" id="supName_' + PS.escAttr(s.id) + '" value="' + PS.esc(s.name) + '" maxlength="80" aria-label="Supplier name">' +
+        '<input type="number" id="supSpend_' + PS.escAttr(s.id) + '" class="sup-spend" value="' + PS.esc(s.spend) + '" step="100" min="0" aria-label="Spend amount">' +
+        '<span class="badge">' + PS.esc(PS.curSymbol(PS.prefs().currency)) + '</span>' +
+        '<button type="button" class="btn btn-sm btn-ghost" data-act="spend-del-sup" data-id="' + PS.escAttr(s.id) + '" title="Remove supplier">&times;</button>' +
+        '</div>';
+    }).join('');
+    return '<div class="cat-row">' +
+      '<div class="cat-head">' +
+      '<input type="text" id="catName_' + PS.escAttr(c.id) + '" value="' + PS.esc(c.name) + '" maxlength="80" aria-label="Category name">' +
+      '<div class="range-mini"><label for="catImpact_' + PS.escAttr(c.id) + '">Impact</label><input type="range" id="catImpact_' + PS.escAttr(c.id) + '" min="0" max="100" value="' + PS.esc(c.impact || 50) + '"></div>' +
+      '<div class="range-mini"><label for="catRisk_' + PS.escAttr(c.id) + '">Risk</label><input type="range" id="catRisk_' + PS.escAttr(c.id) + '" min="0" max="100" value="' + PS.esc(c.risk || 50) + '"></div>' +
+      '<span class="badge">' + PS.moneyR(catSpend) + '</span>' +
+      '<div class="spacer"></div>' +
+      '<button type="button" class="btn btn-sm" data-act="spend-add-sup" data-cat="' + PS.escAttr(c.id) + '">+ Supplier</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="spend-del-cat" data-id="' + PS.escAttr(c.id) + '">Remove</button>' +
+      '</div>' + supHtml + '</div>';
+  }).join('');
+  return PS.reportHead('Spend data model', 'Single source for Pareto & Kraljic') +
+    '<div class="card"><div class="card-head"><div><h1>Spend data model</h1>' +
+    '<p class="card-sub">Maintain a category &gt; supplier hierarchy here. The Pareto and Kraljic charts below derive directly from this model, so updating spend once keeps every view consistent. Drag supplier rows to reorder.</p></div>' +
+    '<div class="spacer"></div>' +
+    '<span class="badge">Total ' + PS.moneyR(total) + '</span></div>' +
+    '<div class="btn-row no-print">' +
+    '<button type="button" class="btn btn-primary" data-act="spend-save">Save model</button>' +
+    '<button type="button" class="btn" data-act="spend-add-cat">+ Category</button>' +
+    '<button type="button" class="btn btn-ghost" data-act="spend-load-example">Load example</button>' +
+    '</div>' +
+    '<div class="spend-editor" id="spendEditor">' + catHtml + '</div>' +
+    '<p class="note">Changes are saved when you press <strong>Save model</strong>. Sliders set the Kraljic impact and risk for each category.</p>' +
+    '</div>' +
+    PS.spendModel.chartsHtml(m) +
+    PS.disclaimer('data');
+  PS.pageInit = function () {
+    PS.spendModel.wireDnD(PS.$('#spendEditor'));
+  };
+  return html;
+});
+/* ==========================================================
+   Doc Pack Builder page (roadmap 11.6)
+   ========================================================== */
+PS.route('docpack', function () {
+  PS.pageTitle = 'Document Pack Builder';
+  var candidates = PS.docpack.candidates();
+  var byCat = {};
+  candidates.forEach(function (c) {
+    if (!byCat[c.cat]) byCat[c.cat] = [];
+    byCat[c.cat].push(c);
+  });
+  var catNames = Object.keys(byCat).sort();
+  var pickHtml = catNames.map(function (cn) {
+    return '<div class="card"><h3>' + PS.esc(cn) + '</h3>' +
+      '<div class="docpack-pick-list">' +
+      byCat[cn].map(function (c) {
+        return '<label><input type="checkbox" data-act="docpack-toggle" data-id="' + PS.escAttr(c.type + '|' + c.id) + '">' +
+          '<span><strong>' + PS.esc(c.title) + '</strong><br><small>' + PS.esc(PS.typeLabel(c.type)) + (c.desc ? ' \u00B7 ' + PS.esc(c.desc) : '') + '</small></span></label>';
+      }).join('') +
+      '</div></div>';
+  }).join('');
+  return PS.reportHead('Document pack builder', 'RFI / RFP / contract packs') +
+    '<div class="card"><div class="card-head"><div><h1>Document pack builder</h1>' +
+    '<p class="card-sub">Assemble templates, checklists, decision guides and scenarios into a single print-ready package with a cover sheet and table of contents - ideal for RFI/RFP issuance, contract negotiation packs and audit evidence.</p></div></div>' +
+    '<div class="field"><label for="docpackTitle">Pack title</label>' +
+    '<input type="text" id="docpackTitle" value="' + PS.esc('Procurement document pack - ' + PS.dateStr()) + '" maxlength="140"></div>' +
+    '<div class="btn-row">' +
+    '<button type="button" class="btn btn-primary" data-act="docpack-build">Build pack (opens printable copy)</button>' +
+    '<button type="button" class="btn" data-act="docpack-download">Download .html</button>' +
+    '<button type="button" class="btn" data-act="docpack-print">Print / PDF</button>' +
+    '</div>' +
+    '<p class="note">Choose the documents below. The pack opens in a new window styled for printing.</p>' +
+    '</div>' +
+    pickHtml +
+    '<div class="card"><div class="card-head"><h2>Previously created packs</h2></div>' + PS.docpack.packsHtml() + '</div>' +
+    PS.disclaimer('legal');
+});
+/* ==========================================================
    Section M: content registries and data normalisation
    (Section 54: internal content structure)
    Data fragments below push plain objects into these arrays.
@@ -11038,6 +12283,11 @@ PS.Rv = function (s) {
     return i < 0 ? { role: '', resp: x } : { role: x.slice(0, i).trim(), resp: x.slice(i + 1).trim() };
   });
 };
+/* SOP flow: step names separated by '|' (not ';' like other lists) */
+PS.Flw = function (s) {
+  if (Array.isArray(s)) return s.map(function (x) { return String(x || '').trim(); }).filter(Boolean);
+  return String(s || '').split(/[;|]/).map(function (x) { return x.trim(); }).filter(Boolean);
+};
 /* SOP - a controlled document: identity, ownership, RACI, retention,
    references and revision history travel with the procedure itself */
 PS.SSOP = function (o) {
@@ -11046,7 +12296,7 @@ PS.SSOP = function (o) {
     version: o.v || '2.0', owner: o.ow || '', review: o.rv || 'Annual',
     purpose: o.p || '', scope: o.s || '', outScope: o.os || '', trigger: o.g || '',
     roles: o.ro || '', raci: PS.Rv(o.ra), frequency: o.fq || '', duration: o.du || '',
-    flow: PS.Lv(o.fl), steps: PS.Pv(o.st),
+    flow: PS.Flw(o.fl), steps: PS.Pv(o.st),
     inputs: PS.Lv(o.ip), outputs: PS.Lv(o.ot), decisions: PS.Dv(o.dc),
     control: PS.Lv(o.ct), kpis: PS.Lv(o.kp), records: PS.Lv(o.rc), retention: o.rt || '',
     risks: PS.Lv(o.rk), exceptions: PS.Lv(o.esc || o.exc), mistakes: PS.Lv(o.mt),

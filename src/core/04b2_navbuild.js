@@ -1,11 +1,12 @@
 PS.getHubContext = function (r) {
   var name = (r && r.name) || 'home';
   if (name === 'home') return 'portal';
-  if (name === 'academy' || name === 'academy-progress' || name === 'certificate') return 'academy';
+  if (name === 'academy' || name === 'academy-progress' || name === 'certificate' || name === 'exams') return 'academy';
   if (name === 'operations' || name === 'sop' || name === 'calc' || name === 'cl' ||
       name === 'tpl' || name === 'kpi' || name === 'dec' || name === 'scen' ||
       name === 'k' || name === 'glossary' || name === 'what' || name === 'lifecycle' ||
       name === 'maturity' || name === 'dash' || name === 'dash-savings' ||
+      name === 'copilot' || name === 'spend-model' || name === 'docpack' ||
       (name === 'list' && r.arg !== 'saved')) {
     return 'operations';
   }
@@ -49,6 +50,37 @@ PS.updateAcademyNavChecks = function () {
   });
 };
 
+/* Academy nav sections generated from the curriculum so the sidebar
+   always matches PS.ACADEMY_FUNCTIONS (modules, order, membership). */
+PS.buildAcademyNav = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var labels = PS.ACADEMY_NAV_LABELS || {};
+  var secShort = PS.ACADEMY_NAV_SEC_SHORT || {};
+  var sections = [], byName = {};
+  funcs.forEach(function (f) {
+    if (!f || !f.id) return;
+    var fullSec = f.module || 'Curriculum';
+    var secName = secShort[fullSec] || fullSec;
+    if (!byName[secName]) {
+      byName[secName] = { sec: secName, icon: (sections.length + 1) + '\uFE0F\u20E3', items: [] };
+      sections.push(byName[secName]);
+    }
+    var shortTitle = f.title ? String(f.title).replace(/^The /, '') : f.id;
+    byName[secName].items.push({
+      label: labels[f.id] || shortTitle,
+      href: '#/academy/' + f.id,
+      funcId: f.id
+    });
+  });
+  /* Overview section always leads */
+  var overview = { sec: 'Academy Overview', icon: '\uD83C\uDF93', items: [
+    { label: 'Academy Curriculum', href: '#/academy' },
+    { label: 'My Progress & Badges', href: '#/academy-progress' },
+    { label: 'Certificate of Mastery', href: '#/certificate' }
+  ] };
+  return [overview].concat(sections);
+};
+
 PS.buildNav = function (targetHub) {
   var hub = targetHub || PS.getHubContext(PS.routeMeta);
   PS._lastBuiltHub = hub;
@@ -68,7 +100,7 @@ PS.buildNav = function (targetHub) {
   var switcherHtml = '';
 
   if (hub === 'academy') {
-    navList = PS.NAV_ACADEMY;
+    navList = (PS.ACADEMY_FUNCTIONS && PS.ACADEMY_FUNCTIONS.length) ? PS.buildAcademyNav() : PS.NAV_ACADEMY;
     title = 'Procurement Academy';
     sub = 'Interactive Learning';
     mark = '🎓';
@@ -79,7 +111,7 @@ PS.buildNav = function (targetHub) {
   } else if (hub === 'operations') {
     navList = PS.NAV_OPERATIONS;
     title = 'Operations Hub';
-    sub = 'Execution Repository';
+    sub = 'Practitioner Tools';
     mark = '💼';
     switcherHtml = '<div class="hub-nav-pill-row">' +
       '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
@@ -91,9 +123,9 @@ PS.buildNav = function (targetHub) {
     sub = 'User Account & Tools';
     mark = '⚙';
     switcherHtml = '<div class="hub-nav-pill-row">' +
-      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Center</a>' +
-      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓 Academy</a>' +
-      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations">💼 Operations</a>' +
+      '<a href="#/home" class="hub-nav-pill" title="Return to Command Center">⌂ Command Center</a>' +
+      '<a href="#/academy" class="hub-nav-pill" title="Switch to Academy">🎓</a>' +
+      '<a href="#/operations" class="hub-nav-pill" title="Switch to Operations Hub">💼</a>' +
       '</div>';
   } else {
     navList = PS.NAV;
@@ -133,7 +165,7 @@ PS.buildNav = function (targetHub) {
       (savedCount + ' Saved Draft' + (savedCount === 1 ? '' : 's'));
 
     foot.innerHTML = '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
-      '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || '#4f46e5') + '">' +
+      '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' +
       PS.esc(PS.user.getInitials(prof.name)) + '</div>' +
       '<div class="sidebar-foot-meta">' +
       '<div class="sidebar-foot-name">' + PS.esc(prof.name) + '</div>' +
@@ -141,7 +173,7 @@ PS.buildNav = function (targetHub) {
       '</div></div>' +
       '<div class="privacy-note">' +
       '<span aria-hidden="true">&#128274;</span>' +
-      '<span>Enterprise Client Architecture &middot; Session Secured</span>' +
+      '<span>Enterprise Single-Tenant Session &middot; Zero Data Egress</span>' +
       '</div>';
   }
 
@@ -187,12 +219,10 @@ PS.applyTheme = function (theme) {
   document.documentElement.setAttribute('data-theme', t);
   try {
     var mt = document.querySelector('meta[name="theme-color"]');
-    if (mt) mt.setAttribute('content', t === 'dark' ? '#0d1421' : '#1d4ed8');
+    if (mt) mt.setAttribute('content', t === 'dark' ? '#070b16' : '#5346f5');
   } catch (e) { }
   var tb = PS.$('#themeBtn');
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';
-  var lab = PS.$('#themeLabel');
-  if (lab) lab.textContent = t === 'dark' ? 'Dark mode is on' : 'Light mode is on';
 };
 
 PS.getScheduledTheme = function () {

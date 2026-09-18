@@ -6,6 +6,8 @@ src/base/01e_forms_tables.css
 src/base/01f_ui.css
 src/base/01h_academy.css
 src/base/01i_portal_user.css
+src/base/01j_global_extras.css
+src/base/01k_new_features.css
 src/base/01g_print.css
 src/base/02_shell.html
 src/core/03a_util.js
@@ -39,6 +41,12 @@ src/core/06d2_actions_backup.js
 src/core/06d3_actions_restore.js
 src/core/06d4_actions_clear.js
 src/core/06d5_actions_settings.js
+src/core/06e1_share_static.js
+src/core/06e2_whatif.js
+src/core/06e3_copilot.js
+src/core/06e4_exams.js
+src/core/06e5_spend.js
+src/core/06e6_docpack.js
 src/core/07a1_boot_migrate.js
 src/core/07a2_boot_wire.js
 src/core/07b_boot.js
@@ -69,6 +77,10 @@ src/pages/08f2_pages_maturity.js
 src/pages/08g1_pages_academy.js
 src/pages/08g2_pages_quiz_engine.js
 src/pages/08g3_pages_certificate.js
+src/pages/08h1_pages_copilot.js
+src/pages/08h2_pages_exams.js
+src/pages/08h3_pages_spend.js
+src/pages/08h4_pages_docpack.js
 src/content/09a_data_init.js
 src/content/09b_expand.js
 src/content/10a_kb_fund1.js

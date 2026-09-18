@@ -25,6 +25,8 @@ PS.route('academy-progress', function () {
     '<div class="stat"><span class="s-val">' + stats.pct + '%</span><span class="s-lab">Academy Completion</span></div>' +
     '<div class="stat"><span class="s-val">' + stats.badgesEarned + '/' + stats.badgesTotal + '</span><span class="s-lab">Badges Earned</span></div>' +
     '</div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-ghost" data-act="academy-mark-all">Mark all complete (testing shortcut)</button>' +
+    '<button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
     '<div class="table-wrap"><table><thead><tr>' +
     '<th>Module & Function</th><th>Lifecycle Fit</th><th>Assessment Score</th><th>Status</th><th>Action</th>' +
     '</tr></thead><tbody>' +
@@ -1098,5 +1100,33 @@ PS.acts['academy-mark-done'] = function (el) {
     PS.toast('Function marked as Mastered!', 'ok');
   }
   PS.renderRoute();
+};
+
+PS.acts['academy-mark-all'] = function () {
+  PS.confirm({
+    title: 'Mark every function complete?',
+    body: '<p>This is a testing shortcut that marks all Academy functions as mastered and awards badges. It is not a real achievement record.</p>',
+    okLabel: 'Mark all complete', danger: false,
+    onOk: function () {
+      (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { PS.academy.markCompleted(f.id); });
+      PS.toast('All ' + (PS.ACADEMY_FUNCTIONS || []).length + ' functions marked complete for testing.', 'ok');
+      PS.audit('academy-marked-all', 'testing shortcut used');
+      PS.renderRoute();
+    }
+  });
+};
+
+PS.acts['academy-reset-all'] = function () {
+  PS.confirm({
+    title: 'Reset all Academy progress?',
+    body: '<p>This clears your completion record, scores and badges for every function. Certificates will reflect the empty transcript.</p>',
+    okLabel: 'Reset all progress', danger: true,
+    onOk: function () {
+      PS.academy.reset();
+      PS.toast('Academy progress reset.', 'ok');
+      PS.audit('academy-reset-all', 'progress cleared');
+      PS.renderRoute();
+    }
+  });
 };
 

@@ -277,6 +277,48 @@ Procure Sherpa v2.0 is a production-grade, offline-first procurement toolkit. Th
 
 ---
 
+## Phase 11: New Capability Expansion (Added 2026-09-18)
+
+### 11.1 Offline AI Copilot
+- **Local answer engine** - rule-based/retrieval assistant answering procurement questions from the bundled KB, SOPs, and glossary (no network)
+- **Intent router** - maps natural-language questions to calculators, checklists, or decision guides
+- **Inline citations** - every answer links back to the source competency/KB fragment
+- **Context awareness** - uses current route, open calculator inputs, and saved workspace for answers
+- **Transcript log** - session history saved to the workspace, exportable to JSON/Markdown
+
+### 11.2 Static Share Pages
+- **Any-route export** - generate a self-contained static HTML fragment for a calculation, chart, checklist, or certificate
+- **Copy-to-Clipboard** - paste directly into Confluence/SharePoint/email
+- **Read-only snapshot** - values baked in, no dependencies on the live app
+- **Branded header/footer** - org name, date, confidentiality notice
+
+### 11.3 What-If Branching
+- **Scenario branching** on any calculator - vary one input, see the delta
+- **Decision trees** - saveable multi-branch explorations with labels and timestamps
+- **Comparison table** - side-by-side scenario rows with winner highlighting
+- **Export** - scenario trees export as JSON/Markdown for audit trails
+
+### 11.4 Certification Exams
+- **Random question banks** - timed, proctored-style exams assembled from competency question pools
+- **Adaptive length** - question count scales with competency depth
+- **Pass/fail thresholds** - configurable per exam, linked to certificate issuance
+- **Answer review** - post-exam breakdown with explanations and lab links
+- **Attempt history** - retake tracking with best-score persistence
+
+### 11.5 Spend Data Model
+- **Drag-drop hierarchy editor** - build category > sub-category > supplier tree
+- **Auto-populates charts** - Pareto, Kraljic, and dashboards derive from the same model
+- **Period snapshots** - monthly spend captures with time-travel comparison
+- **Import/export** - CSV/JSON round-trip for bulk population
+
+### 11.6 Doc Pack Builder
+- **RFI/RFP/contract pack assembly** - select templates + data, compose a package
+- **Offline PDF** - print-ready paginated output (single-file, no server)
+- **Cover sheet** - auto-generated executive summary page
+- **Package manifest** - document list, version, and status check
+
+---
+
 ## Implementation Guidelines
 
 ### Technical Constraints
@@ -332,6 +374,8 @@ Score = (User Impact × 0.4) + (Strategic Alignment × 0.3) + (Effort⁻¹ × 0.
 | v2.2 | Q1 2027 | Calculator power features |
 | v2.3 | Q2 2027 | Search intelligence + Dashboard builder |
 | v3.0 | Q4 2027 | Collaboration + i18n + PWA maturity |
+| v3.1 | Q1 2028 | Phase 11: Offline AI copilot, static share pages, what-if branching |
+| v3.2 | Q2 2028 | Phase 11: Certification exams, spend data model, doc pack builder |
 
 ---
 
@@ -360,6 +404,8 @@ Score = (User Impact × 0.4) + (Strategic Alignment × 0.3) + (Effort⁻¹ × 0.
 | 2026-09-17 | Add toast container + stacking | Multiple simultaneous toasts were lost |
 | 2026-09-17 | Modal focus trap | Accessibility compliance |
 | 2026-09-17 | Command palette scores + shortcuts | Power user efficiency |
+| 2026-09-18 | Added Phase 11 (6 new capabilities) | Requested expansion beyond original 10 phases |
+| 2026-09-18 | Phase 11 shipped in v2.1 dev | Copilot, static share, what-if, exams, spend model, doc pack all implemented |
 
 ---
 

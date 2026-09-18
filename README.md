@@ -83,6 +83,18 @@ Embedded within the Academy laboratory, each competency features live financial 
 * Multi-attribute weighted scoring across Academy competencies, SOPs, checklists, templates, calculators, and system actions.
 * Keyboard navigation (`ArrowUp`, `ArrowDown`, `Enter`, `Escape`) with category filter chips.
 
+### 7. Phase 11: Intelligence & Automation (`#/copilot`, `#/exams`, `#/spend-model`, `#/docpack`)
+
+* **Offline Procurement Copilot (`#/copilot`)**: Local retrieval assistant that answers procurement questions from the bundled KB, glossary, SOPs, scenarios and calculators, with inline citations. Zero network, zero telemetry.
+* **Certification Exams (`#/exams`)**: Timed, randomised exams assembled from the Academy question bank, with pass/fail grading (70%), per-question timer, answer review and local retake history.
+* **Spend Data Model (`#/spend-model`)**: Drag-drop category &gt; supplier hierarchy that feeds the Pareto and Kraljic charts from a single editable source, with impact/risk sliders.
+* **Document Pack Builder (`#/docpack`)**: Assembles templates, checklists, decision guides and scenarios into a print-ready package with a cover sheet and table of contents, exportable to HTML or PDF.
+
+### 8. Analysis Workbench Features
+
+* **What-If Branching**: From any calculator, vary one input by a percentage and compare base vs scenario results side-by-side, saving branches as audit-ready workspace records.
+* **Static Share Pages**: Export any route as a self-contained, read-only HTML snapshot for wikis, SharePoint, Confluence or email, with a single "Static share page" button.
+
 ---
 
 ## Operating Instructions
@@ -124,7 +136,7 @@ src/
   content/                       # Controlled content libraries, SOPs, checklists, templates
   calcs/                         # Calculator definitions and implementation algorithms
 tools/
-  smoke.mjs                      # Headless route test suite covering all 59 paths
+  smoke.mjs                      # Headless route test suite covering all 63 paths
   check_rels.mjs                 # Cross-reference referential integrity validator
   test_quiz_tips.mjs             # Assessment and adaptive tip test harness
   print_ids.mjs                  # Content registration ID inspector

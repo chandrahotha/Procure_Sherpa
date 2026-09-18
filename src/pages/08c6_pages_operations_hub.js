@@ -1,10 +1,14 @@
 /* ==========================================================
-   Procure Sherpa v2.0 - Operations & Knowledge Hub Gateway
+   Procure Sherpa v2.1 - Operations Hub Gateway
    The practitioner repository for daily professional execution
    ========================================================== */
 
 PS.route('operations', function () {
-  PS.pageTitle = 'Operations & Knowledge Hub';
+  PS.pageTitle = 'Operations Hub';
+
+  var d = PS.data || {};
+  var nSop = d.sop ? d.sop.length : 13;
+  var nCl = d.cl ? d.cl.length : 27;
 
   var phases = [
     {
@@ -12,10 +16,10 @@ PS.route('operations', function () {
       title: 'Intake & Demand Gating',
       desc: 'Verify business need, prevent maverick spend, confirm approved budget, and conduct contract register searches before initiating procurement.',
       tools: [
-        { label: 'SOP: Procurement Intake & Demand Gating', href: '#/sop/sop-procurement-intake', type: 'SOP' },
-        { label: 'Checklist: Requisition Verification', href: '#/cl/cl-procurement-intake', type: 'Checklist' },
+        { label: 'SOP: Procurement Intake & Triage', href: '#/sop/sop-procurement-intake', type: 'SOP' },
+        { label: 'Checklist: Procurement Intake', href: '#/cl/cl-procurement-intake', type: 'Checklist' },
         { label: 'Calculator: PO Value & Delegation of Authority', href: '#/calc/calc-po-value-check', type: 'Calculator' },
-        { label: 'Template: Single-Source Justification', href: '#/tpl/tpl-single-source-justification', type: 'Template' }
+        { label: 'Template: Single-Source Justification', href: '#/tpl/tpl-single-source', type: 'Template' }
       ],
       academyLink: { label: 'Study Intake & SOW in Academy', href: '#/academy/func-requirement-scope' }
     },
@@ -27,7 +31,7 @@ PS.route('operations', function () {
         { label: 'SOP: Request for Quotation (RFQ)', href: '#/sop/sop-rfq', type: 'SOP' },
         { label: 'SOP: Request for Proposal (RFP)', href: '#/sop/sop-rfp', type: 'SOP' },
         { label: 'Calculator: Multi-Supplier Quote Comparison', href: '#/calc/calc-compare-quotes', type: 'Calculator' },
-        { label: 'Template: Standard RFQ Specification Package', href: '#/tpl/tpl-rfq', type: 'Template' }
+        { label: 'Template: RFQ Specification Package', href: '#/tpl/tpl-rfq', type: 'Template' }
       ],
       academyLink: { label: 'Study RFx Strategy in Academy', href: '#/academy/func-rfx-strategy' }
     },
@@ -63,7 +67,7 @@ PS.route('operations', function () {
         { label: 'SOP: Contract Review & Sign-Off Convergence', href: '#/sop/sop-contract-review', type: 'SOP' },
         { label: 'SOP: Contract Expiry & Renewal Defense', href: '#/sop/sop-contract-renewal', type: 'SOP' },
         { label: 'Template: Statement of Work (SOW)', href: '#/tpl/tpl-statement-of-work', type: 'Template' },
-        { label: 'Template: Contract Amendment & Variation Notice', href: '#/tpl/tpl-contract-amendment', type: 'Template' }
+        { label: 'Template: Contract Change Request', href: '#/tpl/tpl-contract-change-request', type: 'Template' }
       ],
       academyLink: { label: 'Study Contract Structuring in Academy', href: '#/academy/func-contract-structuring' }
     },
@@ -83,11 +87,11 @@ PS.route('operations', function () {
 
   var html = '<div class="ops-gateway-hero no-print">' +
     '<div class="flex items-center justify-between flex-wrap gap12 mb12">' +
-    '<div><span class="hub-badge operations">Practitioner Command Center</span>' +
-    '<h1 style="margin:8px 0 4px;">Procurement Operations Hub</h1>' +
-    '<p class="t-dim" style="margin:0;">The complete operational repository for active procurement execution. 13 controlled SOPs, 19 calculators, 27 checklists, and 33 production templates arranged across 6 lifecycle phases.</p></div>' +
+    '<div><span class="hub-badge operations">Practitioner Tools</span>' +
+    '<h1 style="margin:8px 0 4px;">Operations Hub</h1>' +
+    '<p class="t-dim" style="margin:0;">The complete operational repository for active procurement execution. ' + nSop + ' controlled SOPs, 19 calculators, ' + nCl + ' checklists, and 33 production templates arranged across 6 lifecycle phases.</p></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<a class="btn btn-primary" href="#/list/sop">Browse 13 SOPs</a>' +
+    '<a class="btn btn-ops" href="#/list/sop">Browse ' + nSop + ' SOPs</a>' +
     '<a class="btn" href="#/list/calc">Open Calculators</a>' +
     '<a class="btn btn-ghost" href="#/academy">&larr; Switch to Academy</a>' +
     '</div></div></div>';

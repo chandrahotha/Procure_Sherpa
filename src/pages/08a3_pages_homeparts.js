@@ -1,5 +1,5 @@
 /* ==========================================================
-   Procure Sherpa v2.0 - Home Page Components
+   Procure Sherpa v2.1 - Home Page Components
    Clean, segregated Dual-Hub Command Center
    1. Personalized Welcome Card with Local User Account
    2. Segregated Dual-Hub Gateway (Academy vs Operations)
@@ -15,7 +15,7 @@ PS.homeWelcomeCard = function () {
 
   return '<section class="home-welcome-card no-print">' +
     '<div class="home-user-badge-row">' +
-    '<div class="home-user-avatar" style="background:' + PS.esc(prof.avatarBg || '#4f46e5') + '">' + PS.esc(initials) + '</div>' +
+    '<div class="home-user-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' + PS.esc(initials) + '</div>' +
     '<div class="home-user-meta">' +
     '<h1>Welcome back, ' + PS.esc(prof.name) + '</h1>' +
     '<div class="flex items-center gap8 flex-wrap">' +
@@ -24,7 +24,7 @@ PS.homeWelcomeCard = function () {
     '<span class="home-track-pill">' + PS.esc(trackMeta.label) + '</span>' +
     '</div></div></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile &amp; Role</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile & Role</button>' +
     '</div>' +
     '</section>';
 };
@@ -33,6 +33,13 @@ PS.homeDualHub = function () {
   var stats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 16, pct: 0, badgesEarned: 0 };
   var allFuncs = PS.ACADEMY_FUNCTIONS || [];
   var curFunc = allFuncs.filter(function (f) { return f.id === stats.currentFunc; })[0] || allFuncs[0];
+  var d = PS.data || {};
+  var nSop = d.sop ? d.sop.length : 13;
+  var nCalc = d.calc ? d.calc.length : 19;
+  var nCl = d.cl ? d.cl.length : 27;
+  var nTpl = d.tpl ? d.tpl.length : 33;
+  var nModules = 0, seen = {};
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { if (!seen[f.module]) { seen[f.module] = 1; nModules++; } });
 
   return '<section class="dual-hub-grid no-print">' +
     /* Card 1: Procurement Academy (The Learning Hub) */
@@ -42,11 +49,11 @@ PS.homeDualHub = function () {
     '<span class="t-xs t-dim font-bold">' + stats.completedCount + ' of ' + stats.totalCount + ' Mastered</span>' +
     '</div>' +
     '<div class="hub-card-title">Procurement Academy</div>' +
-    '<p class="hub-card-desc">Interactive digital learning journeys for procurement newbies, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
+    '<p class="hub-card-desc">Interactive digital learning journeys for newcomers, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
     '<div class="academy-progress-track" style="margin-bottom:16px;"><div class="academy-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
     '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📚</span><span>8 Core Learning Modules</span></div>' +
-    '<div class="hub-feature-item"><span>🎯</span><span>16 Practical Functions</span></div>' +
+    '<div class="hub-feature-item"><span>📚</span><span>' + nModules + ' Core Learning Modules</span></div>' +
+    '<div class="hub-feature-item"><span>🎯</span><span>' + allFuncs.length + ' Practical Functions</span></div>' +
     '<div class="hub-feature-item"><span>💡</span><span>Real-Time Thinking Points</span></div>' +
     '<div class="hub-feature-item"><span>🏆</span><span>' + stats.badgesEarned + ' Badges Earned</span></div>' +
     '</div>' +
@@ -57,22 +64,22 @@ PS.homeDualHub = function () {
     '</div>' +
     '</div>' +
 
-    /* Card 2: Operations & Knowledge Hub (Execution Hub) */
+    /* Card 2: Operations Hub (Execution Hub) */
     '<div class="hub-portal-card is-operations">' +
     '<div class="hub-card-header">' +
     '<span class="hub-badge operations">Operations Hub &middot; Practitioner Tools</span>' +
-    '<span class="t-xs t-dim font-bold">13 SOPs &middot; 19 Calculators</span>' +
+    '<span class="t-xs t-dim font-bold">' + nSop + ' SOPs &middot; ' + nCalc + ' Calculators</span>' +
     '</div>' +
-    '<div class="hub-card-title">Operations &amp; Knowledge Hub</div>' +
+    '<div class="hub-card-title">Operations Hub</div>' +
     '<p class="hub-card-desc">The complete operational reference for active procurement execution. Controlled standard operating procedures, financial calculators, contract review checklists, and production RFP templates arranged by lifecycle phase.</p>' +
     '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📋</span><span>13 Controlled SOPs</span></div>' +
-    '<div class="hub-feature-item"><span>🧮</span><span>19 Financial Calculators</span></div>' +
-    '<div class="hub-feature-item"><span>☑️</span><span>27 Operational Checklists</span></div>' +
-    '<div class="hub-feature-item"><span>📝</span><span>33 Production Templates</span></div>' +
+    '<div class="hub-feature-item"><span>📋</span><span>' + nSop + ' Controlled SOPs</span></div>' +
+    '<div class="hub-feature-item"><span>🧮</span><span>' + nCalc + ' Financial Calculators</span></div>' +
+    '<div class="hub-feature-item"><span>☑️</span><span>' + nCl + ' Operational Checklists</span></div>' +
+    '<div class="hub-feature-item"><span>📝</span><span>' + nTpl + ' Production Templates</span></div>' +
     '</div>' +
     '<div class="hub-card-footer">' +
-    '<a class="btn btn-primary" href="#/operations" style="background:#0d9488; border-color:#0d9488;">Open Operations Hub &rarr;</a>' +
+    '<a class="btn btn-ops" href="#/operations">Open Operations Hub &rarr;</a>' +
     '<div class="flex gap8">' +
     '<a class="btn btn-sm" href="#/list/sop">SOPs</a>' +
     '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
@@ -84,13 +91,12 @@ PS.homeDualHub = function () {
 
 PS.homeSmartResume = function () {
   var savedList = (PS.saved && PS.saved.list) ? PS.saved.list() : [];
-  var recentList = (PS.recent && PS.recent.list) ? PS.recent.list() : [];
 
   if (savedList.length > 0) {
     var latest = savedList[0];
-    return '<div class="card card-tight no-print" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">' +
+    return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
       '<div class="flex items-center gap12">' +
-      '<span class="badge" style="background:var(--accent-soft); color:var(--accent); font-weight:700;">Active Workspace</span>' +
+      '<span class="badge badge-type">Active Workspace</span>' +
       '<span><strong>' + PS.esc(latest.title || latest.id) + '</strong> <span class="t-dim t-xs">(' + PS.esc(PS.dateTime(latest.savedAt)) + ')</span></span>' +
       '</div>' +
       '<div class="btn-row" style="margin:0;">' +
@@ -99,9 +105,9 @@ PS.homeSmartResume = function () {
       '</div></div>';
   }
 
-  return '<div class="card card-tight no-print" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">' +
+  return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
     '<div class="flex items-center gap12">' +
-    '<span class="badge" style="background:var(--ok-soft); color:var(--ok); font-weight:700;">Getting Started</span>' +
+    '<span class="badge badge-ok">Getting Started</span>' +
     '<span>New to Procure Sherpa? Follow the guided curriculum in Academy or explore the Operations Hub.</span>' +
     '</div>' +
     '<div class="btn-row" style="margin:0;">' +
@@ -113,8 +119,8 @@ PS.homeSmartResume = function () {
 PS.homeThinkingPoint = function () {
   return '<div class="thinking-point-card no-print" style="margin-bottom:24px;">' +
     '<div class="thinking-point-eyebrow">&#128161; Featured Procurement Thinking Point</div>' +
-    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is not necessarily the lowest-cost purchase.&rdquo;</blockquote>' +
-    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company millions in lost operating revenue.</div>' +
+    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is rarely the lowest-cost purchase.&rdquo;</blockquote>' +
+    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company far more across its operating life than the discount saves.</div>' +
     '<div class="flex items-center flex-wrap" style="gap:12px; margin-top:14px;">' +
     '<a class="btn btn-sm btn-primary" href="#/academy/func-landed-cost-tco">Study TCO in Academy &rarr;</a>' +
     '<a class="btn btn-sm" href="#/calc/calc-tco">Open TCO Calculator</a>' +
@@ -123,8 +129,6 @@ PS.homeThinkingPoint = function () {
 };
 
 PS.homeQuickActions = function () {
-  var favs = PS.fav ? PS.fav.list() : [];
-  var recent = PS.recent ? PS.recent.list() : [];
   var actions = [
     { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
     { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
@@ -136,7 +140,6 @@ PS.homeQuickActions = function () {
 
   var html = '<div class="quick-actions no-print">';
   actions.forEach(function (a) {
-    var isFav = favs.some(function (f) { return f.type === a.id.replace('new-', '').replace('what-do', 'what').replace('academy', 'academy'); });
     html += '<a class="quick-action-btn" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
       '<span class="qa-icon">' + a.icon + '</span>' + PS.esc(a.label) + '</a>';
   });

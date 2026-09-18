@@ -57,6 +57,12 @@ PS.NAV_OPERATIONS = [
     { label: 'KPIs & Value Metrics', href: '#/list/kpi' },
     { label: 'Decision Guides & Scenarios', href: '#/list/dec' },
     { label: 'Procurement Glossary', href: '#/glossary' }
+  ] },
+  { sec: 'Intelligence & Automation', icon: '🤖', items: [
+    { label: 'Procurement Copilot', href: '#/copilot' },
+    { label: 'Certification Exams', href: '#/exams' },
+    { label: 'Spend Data Model', href: '#/spend-model' },
+    { label: 'Document Pack Builder', href: '#/docpack' }
   ] }
 ];
 
@@ -64,7 +70,8 @@ PS.NAV_WORKSPACE = [
   { sec: 'My Workspace', icon: '📁', items: [
     { label: 'Saved Work & Reports', href: '#/saved', badge: 'saved' },
     { label: 'Favorites', href: '#/fav', badge: 'fav' },
-    { label: 'Recently Used', href: '#/recent' }
+    { label: 'Recently Used', href: '#/recent' },
+    { label: 'Savings Dashboard', href: '#/dash-savings' }
   ] },
   { sec: 'Guidance & Search', icon: '🔍', items: [
     { label: 'Quick Start Guide', href: '#/quickstart' },
@@ -78,3 +85,42 @@ PS.NAV_WORKSPACE = [
 ];
 
 PS.NAV = PS.NAV_ACADEMY.concat(PS.NAV_OPERATIONS).concat(PS.NAV_WORKSPACE);
+
+/* ==========================================================
+   Academy sidebar nav is generated from PS.ACADEMY_FUNCTIONS at
+   runtime so membership, ordering, and module names always match
+   the published curriculum. The maps below provide curated short
+   labels; the builder falls back to the kicker + title.
+   ========================================================== */
+PS.ACADEMY_NAV_LABELS = {
+  'func-mission-value': '1.1 Mission & Value',
+  'func-spend-analysis': '1.2 Spend Analysis',
+  'func-category-mgmt': '1.3 Category Strategy',
+  'func-requirement-scope': '2.1 Scope & SOW',
+  'func-rfx-strategy': '2.2 Sourcing & RFx',
+  'func-rfq-issuance': '2.3 Tender / RFQ Issuance',
+  'func-quote-normalization': '3.1 Quote Normalization',
+  'func-landed-cost-tco': '3.2 Landed Cost & TCO',
+  'func-should-cost': '3.3 Should-Cost Modeling',
+  'func-supplier-eval': '4.1 Supplier Evaluation',
+  'func-supplier-risk': '4.2 Supplier Risk & Vetting',
+  'func-negotiation-strategy': '5.1 Negotiation Strategy',
+  'func-commercial-terms': '5.2 Commercial Terms & MOQs',
+  'func-contract-structuring': '6.1 Contract Structuring',
+  'func-doa-controls': '6.2 DOA & Spend Controls',
+  'func-po-execution': '7.1 PO & P2P Execution',
+  'func-threeway-matching': '7.2 3-Way Matching',
+  'func-srm-scorecards': '8.1 SRM & Scorecards',
+  'func-savings-reporting': '8.2 Savings Reporting'
+};
+
+PS.ACADEMY_NAV_SEC_SHORT = {
+  'Module 1: Foundations, Strategy & Spend Intelligence': 'Module 1: Foundations & Spend',
+  'Module 2: Requirement Definition & Market Engagement': 'Module 2: Requirements & Market',
+  'Module 3: Commercial Analysis & Cost Engineering': 'Module 3: Cost Engineering',
+  'Module 4: Supplier Evaluation & Risk Management': 'Module 4: Supplier Evaluation & Risk',
+  'Module 5: Negotiation Strategy & Commercial Terms': 'Module 5: Negotiation & Terms',
+  'Module 6: Contracting & Governance': 'Module 6: Contracts & Governance',
+  'Module 7: Operational Purchasing & Order Execution (P2P)': 'Module 7: P2P Execution',
+  'Module 8: Supplier Management & Value Realization': 'Module 8: SRM & Value'
+};

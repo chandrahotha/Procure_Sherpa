@@ -13,7 +13,11 @@ PS.K = {
   schema: 'ps_schema_version',
   nav: 'ps_nav_state',
   draft: 'ps_draft',
-  maturity: 'ps_maturity'
+  maturity: 'ps_maturity',
+  exams: 'ps_exams',
+  spend: 'ps_spend_model',
+  copilot: 'ps_copilot',
+  docpacks: 'ps_docpacks'
 };
 /* legacy v1.1.0 keys inspected for migration (Section 55) */
 PS.LEGACY = ['ps_saved', 'ps_savedQuotes', 'ps_savedCalculations', 'ps_calculations',

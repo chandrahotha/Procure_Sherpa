@@ -18,7 +18,7 @@ try { new vm.Script(js, { filename: 'inline.js' }); console.log('OK   JS syntax 
 catch (e) { console.error('FAIL JS syntax: ' + e.message); fail = 1; }
 
 const need = ['<!DOCTYPE html>', '<html lang="en"', '<title>', '</style>', '<body>', 'id="navRoot"',
-  'id="main"', 'id="toast"', 'id="modalRoot"', '</script>', '</body>', '</html>'];
+  'id="main"', 'id="toastContainer"', 'id="modalRoot"', '</script>', '</body>', '</html>'];
 need.forEach(function (s) { if (src.indexOf(s) < 0) { console.error('FAIL missing document part: ' + s); fail = 1; } });
 console.log('OK   document skeleton present (' + (src.length / 1024).toFixed(1) + ' KB)');
 

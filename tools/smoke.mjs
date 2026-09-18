@@ -50,7 +50,8 @@ const ROUTES = [
   '#/cl/cl-procurement-intake', '#/tpl/tpl-rfq',
   '#/k/k-c-procurement', '#/kpi/kpi-savings', '#/dec', '#/maturity', '#/lifecycle',
   '#/help', '#/help/getting-started', '#/dash', '#/dash-savings', '#/saved', '#/fav', '#/recent',
-  '#/backup', '#/settings', '#/scen/scn-new-purchase', '#/notfound'
+  '#/backup', '#/settings', '#/scen/scn-new-purchase', '#/notfound',
+  '#/copilot', '#/exams', '#/spend-model', '#/docpack'
 ];
 const results = [];
 for (const hash of ROUTES) {

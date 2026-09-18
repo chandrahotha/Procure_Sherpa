@@ -50,6 +50,10 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-sm" data-act="calc-markdown">Copy as Markdown</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy">Copy summary</button>' +
     '</div>' +
+    '<div class="btn-row" style="margin-top:8px">' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="whatif-open">\u2696 What-if analysis</button>' +
+    '<button type="button" class="btn btn-sm" data-act="share-static">\u2197 Static share page</button>' +
+    '</div>' +
     '<div class="field" style="margin-top:12px;margin-bottom:0"><label for="calcNotes">Notes for the report</label>' +
     '<textarea id="calcNotes" rows="2" maxlength="4000" placeholder="Assumptions, alternatives, decision basis…"></textarea></div>' +
     (handoffs ? '<h4 class="mb8" style="margin-top:12px">Send to another tool</h4><div class="btn-row tight">' + handoffs + '</div>' +

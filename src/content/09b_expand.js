@@ -49,6 +49,11 @@ PS.Rv = function (s) {
     return i < 0 ? { role: '', resp: x } : { role: x.slice(0, i).trim(), resp: x.slice(i + 1).trim() };
   });
 };
+/* SOP flow: step names separated by '|' (not ';' like other lists) */
+PS.Flw = function (s) {
+  if (Array.isArray(s)) return s.map(function (x) { return String(x || '').trim(); }).filter(Boolean);
+  return String(s || '').split(/[;|]/).map(function (x) { return x.trim(); }).filter(Boolean);
+};
 /* SOP - a controlled document: identity, ownership, RACI, retention,
    references and revision history travel with the procedure itself */
 PS.SSOP = function (o) {
@@ -57,7 +62,7 @@ PS.SSOP = function (o) {
     version: o.v || '2.0', owner: o.ow || '', review: o.rv || 'Annual',
     purpose: o.p || '', scope: o.s || '', outScope: o.os || '', trigger: o.g || '',
     roles: o.ro || '', raci: PS.Rv(o.ra), frequency: o.fq || '', duration: o.du || '',
-    flow: PS.Lv(o.fl), steps: PS.Pv(o.st),
+    flow: PS.Flw(o.fl), steps: PS.Pv(o.st),
     inputs: PS.Lv(o.ip), outputs: PS.Lv(o.ot), decisions: PS.Dv(o.dc),
     control: PS.Lv(o.ct), kpis: PS.Lv(o.kp), records: PS.Lv(o.rc), retention: o.rt || '',
     risks: PS.Lv(o.rk), exceptions: PS.Lv(o.esc || o.exc), mistakes: PS.Lv(o.mt),

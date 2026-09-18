@@ -5,7 +5,7 @@
 
 /* ---------- Academy Hero & Progress Header ---------- */
 .academy-hero {
-  background: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(99,102,241,0.04) 50%, rgba(124,58,237,0.08) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, transparent) 0%, color-mix(in srgb, var(--academy) 4%, transparent) 50%, color-mix(in srgb, var(--accent-3) 8%, transparent) 100%);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 24px 28px;
@@ -19,7 +19,7 @@
   top: -40px; right: -40px;
   width: 140px; height: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
   pointer-events: none;
 }
 .academy-title-row {
@@ -80,7 +80,7 @@
 .thinking-point-card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-left: 5px solid #6366f1;
+  border-left: 5px solid var(--academy);
   border-radius: var(--r);
   padding: 22px 24px;
   margin: 18px 0;
@@ -95,7 +95,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6366f1;
+  color: var(--academy);
   margin-bottom: 10px;
 }
 .thinking-point-quote {
@@ -120,11 +120,11 @@
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--text);
-  border-left: 3px solid #0284c7;
+  border-left: 3px solid var(--info);
   margin-top: 10px;
 }
 .thinking-point-case strong {
-  color: #0284c7;
+  color: var(--info);
   display: block;
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -134,14 +134,14 @@
 .thinking-point-reflect {
   margin-top: 14px;
   padding: 10px 14px;
-  background: rgba(99,102,241,0.06);
-  border: 1px dashed rgba(99,102,241,0.3);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent) 32%, transparent);
   border-radius: var(--r-sm);
   font-size: 0.86rem;
   color: var(--dim);
 }
 .thinking-point-reflect strong {
-  color: #4f46e5;
+  color: var(--accent);
 }
 
 /* ---------- Function Learning Tabs ---------- */
@@ -319,12 +319,12 @@ html[data-theme="dark"] .func-card.is-mastered::after{
 .func-card.rfx-strategy{
   --func-gradient:var(--sop-gradient);
   --func-border:var(--sop);
-  --func-kicker:var(--sop).
+  --func-kicker:var(--sop);
 }
 .func-card.audit-compliance{
   --func-gradient:var(--gloss-gradient);
   --func-border:var(--gloss);
-  --func-kicker:var(--gloss).
+  --func-kicker:var(--gloss);
 }
 
 /* Module badge with gradient */
@@ -333,32 +333,9 @@ html[data-theme="dark"] .func-card.is-mastered::after{
   padding:4px 12px;border-radius:999px;
   font-size:.7rem;font-weight:800;
   text-transform:uppercase;letter-spacing:.06em;
-  color:#fff;background:var(--module-gradient,var(--academy-gradient));
+  color:var(--accent-ink);background:var(--module-gradient,var(--academy-gradient));
   box-shadow:0 2px 8px rgba(0,0,0,.12);
 }
-
-/* Progress ring for module completion */
-.module-progress-ring{width:48px;height:48px;transform:rotate(-90deg);flex-shrink:0}
-.module-progress-bg{fill:none;stroke:var(--border);stroke-width:4}
-.module-progress-fg{
-  fill:none;stroke:var(--module-gradient,var(--academy-gradient));stroke-width:4;stroke-linecap:round;
-  stroke-dasharray:125;stroke-dashoffset:125;
-  transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.1));
-}
-
-/* Badge grid for achievements */
-.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px}
-.badge-card{
-  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px;text-align:center;transition:transform .14s,box-shadow .14s,border-color .14s;
-}
-.badge-card:hover{transform:translateY(-2px);box-shadow:var(--sh-1);border-color:var(--accent)}
-.badge-card.is-unlocked{border-color:var(--ok);background:var(--ok-soft)}
-.badge-card.is-locked{opacity:.55;filter:grayscale(.3)}
-.badge-icon{font-size:2.5rem;margin-bottom:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
-.badge-name{font-weight:700;font-size:.9rem;margin-bottom:4px;color:var(--text)}
-.badge-desc{font-size:.75rem;color:var(--dim);line-height:1.5}
 
 /* ---------- Digital SOP Stepper ---------- */
 .sop-stepper {
@@ -474,12 +451,12 @@ html[data-theme="dark"] .func-card.is-mastered::after{
   background: var(--sunken);
   color: var(--dim);
 }
-.quiz-type-tag.scenario { background: #e0f2fe; color: #0369a1; }
-.quiz-type-tag.red-flag { background: #fee2e2; color: #b91c1c; }
-.quiz-type-tag.calc { background: #fef3c7; color: #b45309; }
-html[data-theme="dark"] .quiz-type-tag.scenario { background: #082f49; color: #7dd3fc; }
-html[data-theme="dark"] .quiz-type-tag.red-flag { background: #450a0a; color: #fca5a5; }
-html[data-theme="dark"] .quiz-type-tag.calc { background: #451a03; color: #fcd34d; }
+.quiz-type-tag.scenario { background: var(--info-soft); color: var(--info); }
+.quiz-type-tag.red-flag { background: var(--danger-soft); color: var(--danger); }
+.quiz-type-tag.calc { background: var(--warn-soft); color: var(--warn); }
+html[data-theme="dark"] .quiz-type-tag.scenario { background: var(--info-soft); color: var(--info-2); }
+html[data-theme="dark"] .quiz-type-tag.red-flag { background: var(--danger-soft); color: var(--danger-2); }
+html[data-theme="dark"] .quiz-type-tag.calc { background: var(--warn-soft); color: var(--warn-2); }
 
 .quiz-scenario-context {
   background: var(--panel-2);
@@ -692,7 +669,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 .procurement-principle-callout {
   margin-top: 10px;
   padding: 10px 14px;
-  background: rgba(79,70,229,0.08);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
   border-left: 3px solid var(--accent);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   font-size: 0.86rem;
@@ -700,66 +677,6 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 .procurement-principle-callout strong {
   color: var(--accent);
-}
-
-/* ---------- Laboratory Mission Card (Apply) ---------- */
-.lab-card {
-  background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
-  border: 2px solid var(--accent);
-  border-radius: var(--r);
-  padding: 24px;
-  margin: 20px 0;
-  box-shadow: var(--sh-1);
-}
-.lab-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--accent);
-  padding: 3px 10px;
-  border-radius: var(--r-pill);
-  margin-bottom: 10px;
-}
-.lab-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-}
-.lab-desc {
-  font-size: 0.92rem;
-  color: var(--dim);
-  line-height: 1.6;
-  margin-bottom: 18px;
-}
-.lab-task-box {
-  background: var(--sunken);
-  border-radius: var(--r-sm);
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-}
-.lab-task-box h4 {
-  font-size: 0.88rem;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-.lab-task-box ol {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--dim);
-}
-.lab-actions-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 /* ---------- Achievement Badges Grid ---------- */
@@ -778,8 +695,8 @@ html[data-theme="dark"] .quiz-tip-cta {
   transition: transform 0.14s, border-color 0.14s;
 }
 .badge-card.is-unlocked {
-  border-color: #6366f1;
-  background: linear-gradient(to bottom, var(--panel), rgba(99,102,241,0.04));
+  border-color: var(--academy);
+  background: linear-gradient(to bottom, var(--panel), color-mix(in srgb, var(--academy) 4%, transparent));
 }
 .badge-card.is-locked {
   opacity: 0.55;
@@ -800,64 +717,6 @@ html[data-theme="dark"] .quiz-tip-cta {
   font-size: 0.74rem;
   color: var(--mute);
   line-height: 1.4;
-}
-
-/* ---------- Home Quick Tracks ---------- */
-.home-tracks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin: 18px 0;
-}
-.track-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 22px 24px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-.track-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-  box-shadow: var(--sh-1);
-  text-decoration: none;
-}
-.track-card.is-primary {
-  border-color: var(--accent);
-  background: linear-gradient(135deg, var(--panel) 0%, rgba(99,102,241,0.05) 100%);
-}
-.track-kicker {
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-.track-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.track-desc {
-  font-size: 0.88rem;
-  color: var(--dim);
-  line-height: 1.5;
-  margin-bottom: 16px;
-  flex: 1;
-}
-.track-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--accent);
 }
 
 /* ==========================================================
@@ -1141,16 +1000,16 @@ html[data-theme="dark"] .quiz-tip-cta {
   gap: 6px;
   padding: 4px 10px;
   border-radius: var(--r-pill);
-  background: rgba(220, 38, 38, 0.12);
-  color: #dc2626;
+  background: var(--danger-soft);
+  color: var(--danger);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .sandbox-crisis-banner {
-  background: rgba(239, 68, 68, 0.05);
-  border-left: 4px solid #ef4444;
+  background: color-mix(in srgb, var(--danger) 5%, transparent);
+  border-left: 4px solid var(--danger-2);
   border-radius: 4px;
   padding: 14px 16px;
   margin-bottom: 20px;
@@ -1276,8 +1135,8 @@ html[data-theme="dark"] .quiz-tip-cta {
   display: inline-block;
   padding: 3px 9px;
   border-radius: var(--r-pill);
-  background: rgba(13, 148, 136, 0.12);
-  color: #0d9488;
+  background: var(--ops-soft);
+  color: var(--ops);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
