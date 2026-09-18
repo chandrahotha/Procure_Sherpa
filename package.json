@@ -10,10 +10,12 @@
     "smoke": "node tools/smoke.mjs",
     "test:calcs": "node tools/test_calcs.mjs",
     "test:calcvalues": "node tools/test_calc_values.mjs",
+    "test:interactive": "node tools/test_interactive.mjs",
+    "test:content": "node tools/test_quiz_tips.mjs",
     "audit:sec": "node tools/security_audit.mjs",
     "audit:a11y": "node tools/a11y_audit.mjs",
     "perf": "node tools/perf_check.mjs",
-    "qa": "node build.mjs && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs",
+    "qa": "node build.mjs && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs",
     "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs"
   },
   "repository": {

@@ -2,49 +2,57 @@
 
 An enterprise single-tenant procurement learning and operations platform: competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics compiled into a secure, single-file client architecture.
 
-No external servers, no cloud databases, no runtime dependencies, and zero third-party telemetry. All analysis remains strictly within your enterprise client session.
+No external servers, no cloud databases, no runtime dependencies, and zero third-party telemetry. All data stays strictly within your browser session.
 
 ---
 
 ## Architecture Overview
 
-Procure Sherpa v2.0 is built on a dual-hub operating model designed to eliminate cognitive clutter by separating strategic competency acquisition from day-to-day operational execution.
+Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day operational execution, while keeping navigation consistent everywhere through one unified sidebar.
 
 ```
                     ┌──────────────────────────────────────────────┐
                     │      Executive Command Center (#/home)       │
                     │  Clean Full-Width Portal & Account Hub       │
+                    │        (distraction-free, no sidebar)         │
                     └──────────────────────┬───────────────────────┘
                                            │
              ┌─────────────────────────────┴─────────────────────────────┐
              ▼                                                           ▼
 ┌─────────────────────────────────────────┐ ┌─────────────────────────────────────────┐
 │     Procurement Academy (#/academy)     │ │        Operations Hub (#/operations)    │
-│  16 Competencies · 5-Tab Pedagogical    │ │  19 Financial Calculators · 13 SOPs     │
-│  Digital SOPs · Crisis Sandboxes · SVG  │ │  27 Compliance Checklists · 33 Templates│
-│  Certificates with Verification Hashes  │ │  20 Decision Guides · 18 KPIs           │
+│  8 Modules · 19 Functions · 5-Tab       │ │  19 Financial Calculators · 13 SOPs     │
+│  Pedagogy · Digital SOPs · Crisis       │ │  27 Compliance Checklists · 33 Templates│
+│  Sandboxes · Progress Transcript        │ │  20 Decision Guides · 18 KPIs           │
+│  (Certificates: future feature)         │ │                                          │
 └─────────────────────────────────────────┘ └─────────────────────────────────────────┘
+             │                                                           │
+             └─────────────────────────────┬─────────────────────────────┘
+                                            ▼
+                    One persistent sidebar everywhere else:
+                    Overview · Learn · Execute · Reference · Workspace
 ```
 
 ---
 
 ## Core Capabilities
 
-### 1. Dual-Hub Workspace & Command Center
+### 1. Command Center & Unified Navigation
 
-* **Distraction-Free Command Center (`#/home`)**: A clean, full-width executive dashboard providing direct gateway access to the Academy and Operations Hub, active draft summaries, and account-level status tracking without navigation sidebars.
-* **Dedicated Context-Aware Hub Sidebars**: Entering either hub automatically configures a dedicated navigation sidebar tailored strictly to that environment, complete with instant hub-switcher controls.
-* **Unified Account Profile & Session Management**: Manages user focus tracks, organizational roles, and tracks mastery milestones across both functional domains.
+* **Distraction-Free Command Center (`#/home`)**: A clean, full-width executive dashboard providing direct gateway access to the Academy and Operations Hub, active draft summaries, and account-level status tracking, with no sidebar.
+* **One Sidebar, Five Sections, Everywhere Else**: Every other route shares a single persistent sidebar — **Overview**, **Learn** (Academy), **Execute** (SOPs/Calculators/Checklists/Templates/Copilot/Docpack), **Reference** (Knowledge Hub/KPIs/Decision Guides/Scenarios/Glossary), **Workspace** (Saved/Favorites/Settings/Backup). No hub-switching, no per-section identity changes, no per-module accordion clutter — deep Academy module/function browsing lives on the `#/academy` hub page itself.
+* **Unified Account Profile & Session Management**: Manages user focus tracks, organizational roles, and mastery milestones, with a sidebar footer that shows Academy mastery progress or saved-draft count depending on where you are.
 
 ### 2. Procurement Academy & Competency Curriculum
 
-* **16 Core Digital Competencies**: Spanning Foundations & Strategic Value, Sourcing & Market Engagement, Contracting & Risk, and Cost & Operational Excellence.
-* **Disciplined 5-Tab Learning Pedagogy**:
+* **8 Modules, 19 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), and Supplier Management & Value Realization.
+* **Disciplined 5-Tab Learning Pedagogy** per function:
   1. **Core Concept**: Theoretical foundation, commercial relevance, process walkthroughs, common failure modes, and governance rules.
   2. **Procurement Mindset**: Executive perspective, commercial thinking points, and enterprise case studies.
   3. **Digital SOP**: Controlled procedural workflows detailing step roles, mandatory controls, records generated, and common pitfalls.
   4. **Interactive Practice**: Scenario-based knowledge evaluations featuring escalating difficulty tiers and automated tactical advisor tips triggered on mistakes.
   5. **Apply in Laboratory**: Interactive commercial crisis simulation sandboxes paired with hands-on laboratory missions.
+* **Certification Exams (`#/exams`)**: Timed, randomised exams assembled from the Academy question bank (a full exam plus one per module), with a 70% pass mark, per-question timer, answer review, and local retake history.
 
 ### 3. Zero-Dependency Inline SVG Visual Analytics Engine
 
@@ -71,11 +79,9 @@ Embedded within the Academy laboratory, each competency features live financial 
 * **Monopoly Renewal Concessions**: Multi-variable commercial concession trading against sole-source vendors.
 * **Emergency Price Increase Defense**: PPI commodity index and labor wage formula counter-offer calculations.
 
-### 5. Verified Completion Certificate & Transcript (`#/certificate`)
+### 5. Credential Transcript (`#/certificate`) — disabled, future feature
 
-* **Tamper-Evident Verification Hash**: Issues cryptographic-style FNV-1a verification checksums (`PS-CERT-XXXX-XXXX-XXXX`) derived deterministically from candidate identity, organizational context, completed competencies, and assessment scores.
-* **Competency Transcript**: Tabular breakdown of all 16 digital procurement modules, lifecycle stages, score percentages, and laboratory mastery statuses.
-* **Print & PDF Optimization**: Clean print stylesheets designed for one-page executive certificate archiving.
+Procure Sherpa is not a legally authorized issuer of procurement credentials, so certificate generation is turned off; `#/certificate` shows an honest "not available yet" notice instead of a certificate. Academy progress and exam scores are still tracked and visible on `#/academy-progress` and `#/exams`. The original tiered-transcript design is preserved in `IMPROVEMENT_ROADMAP.md` ("Certificates (deferred)") as a reference for a possible future release if a real verification/accreditation path exists.
 
 ### 6. Spotlight Command Palette (Ctrl+K / Cmd+K / `/`)
 
@@ -83,10 +89,9 @@ Embedded within the Academy laboratory, each competency features live financial 
 * Multi-attribute weighted scoring across Academy competencies, SOPs, checklists, templates, calculators, and system actions.
 * Keyboard navigation (`ArrowUp`, `ArrowDown`, `Enter`, `Escape`) with category filter chips.
 
-### 7. Phase 11: Intelligence & Automation (`#/copilot`, `#/exams`, `#/spend-model`, `#/docpack`)
+### 7. Intelligence & Automation (`#/copilot`, `#/exams`, `#/spend-model`, `#/docpack`)
 
 * **Offline Procurement Copilot (`#/copilot`)**: Local retrieval assistant that answers procurement questions from the bundled KB, glossary, SOPs, scenarios and calculators, with inline citations. Zero network, zero telemetry.
-* **Certification Exams (`#/exams`)**: Timed, randomised exams assembled from the Academy question bank, with pass/fail grading (70%), per-question timer, answer review and local retake history.
 * **Spend Data Model (`#/spend-model`)**: Drag-drop category &gt; supplier hierarchy that feeds the Pareto and Kraljic charts from a single editable source, with impact/risk sliders.
 * **Document Pack Builder (`#/docpack`)**: Assembles templates, checklists, decision guides and scenarios into a print-ready package with a cover sheet and table of contents, exportable to HTML or PDF.
 
@@ -128,8 +133,9 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
 build.mjs                        # Assembly + syntax + validation + performance budget gate
 validate.mjs                     # Structural and syntax integrity validator
+LICENSE                          # ISC license
 src/
-  manifest.txt                   # Linear assembly sequence (158 fragments)
+  manifest.txt                   # Linear assembly sequence (155 fragments)
   base/                          # Design tokens, CSS stylesheets, shell markup
   core/                          # Runtime engine, state stores, charts, router, search, i18n
   pages/                         # Page view renderers and interactive controllers
@@ -140,11 +146,14 @@ tools/
   check_rels.mjs                 # Cross-reference referential integrity validator
   test_calcs.mjs                 # Calculator correctness harness (all 19 calculators)
   test_calc_values.mjs           # Expected-value fixtures: hand-computed math assertions
+  test_interactive.mjs           # Click-through checks: search, palette, backup, prefs
+  test_quiz_tips.mjs             # Content QA (missing descriptions, forward refs) + tip engine
   security_audit.mjs             # CSP / eval / inline-handler / credential scan
   a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes
   perf_check.mjs                 # Single-file payload budget checker
-  test_quiz_tips.mjs             # Assessment and adaptive tip test harness
   print_ids.mjs                  # Content registration ID inspector
+  convert_v1.mjs, debug_calc.mjs, dump_index.mjs, inventory.mjs, probe_v1.mjs, lib.mjs
+                                  # Internal dev/debug scratch scripts, not part of the QA gate
 ```
 
 ### Build & Verification Commands
@@ -153,7 +162,7 @@ tools/
 # Compile single-file HTML bundle and validate syntax + performance budget
 node build.mjs
 
-# Full production QA gate (build + all audits)
+# Full production QA gate (build + all audits, see below)
 npm run qa
 
 # Calculator correctness: asserts every calcImpl produces well-formed, finite output
@@ -175,7 +184,7 @@ node tools/a11y_audit.mjs
 node tools/perf_check.mjs
 ```
 
-The `npm run qa` gate runs build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), route smoke (63 routes), security scan, accessibility scan and the performance budget in one pass. Any failure exits non-zero so CI blocks the release.
+`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, and the performance budget. Any failure exits non-zero so CI blocks the release.
 
 ### Expected-Value Calculator Fixtures
 
@@ -193,10 +202,23 @@ Procure Sherpa v2.0 content and calculation models are aligned with internationa
 * **International Commercial Terms (Incoterms 2020)**: Total landed cost risk and obligation allocation standards.
 * **ISO 20400**: Sustainable procurement and ESG evaluation criteria.
 
+CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is written against. Procure Sherpa itself is not accredited by, registered with, or endorsed by any of these bodies — see Section 5 above on the disabled certificate feature.
+
 ---
 
 ## Data Privacy & Security Architecture
 
-* **Single-Tenant Client Session**: All data, inputs, notes, checklist progress, and certifications reside strictly within the client browser memory footprint.
+* **Single-Tenant Client Session**: All data, inputs, notes, and checklist progress reside strictly within the client browser's local storage.
 * **Zero Network Egress**: The application issues zero outbound HTTP requests, trackers, cookies, or telemetry after initial load.
 * **Audit-Compliant Archives**: Full platform state can be exported as structured, human-readable JSON archives via the Data Management center for local backup and migration across workstations.
+
+---
+
+## Known Limitations
+
+Documented here deliberately, rather than left for someone to discover:
+
+* **No CI pipeline.** `npm run qa` is not yet wired into a GitHub Actions workflow, so it must be run manually before every release. There is no `.github/workflows` in this repository.
+* **Content QA is informational, not a hard gate.** `tools/test_quiz_tips.mjs` (now part of `npm run qa`) currently reports content gaps — missing descriptions on several decision guides and forward references not yet fully populated — but it exits `0` regardless, so it will not fail a build. Treat its output as a checklist, not a pass/fail signal.
+* **Certificates are intentionally disabled** (see Section 5). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
+* **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.

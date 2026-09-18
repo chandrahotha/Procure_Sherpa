@@ -22,7 +22,7 @@ PS.crumbFor = function (r) {
   if (r.name === 'certificate') {
     return [
       { label: 'Procurement Academy', href: '#/academy' },
-      { label: 'Certificate of Mastery' }
+      { label: 'Credential Transcript (Future)' }
     ];
   }
 

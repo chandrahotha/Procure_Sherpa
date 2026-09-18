@@ -2,7 +2,117 @@
 
 **Current Version:** 2.0 (post-UX improvements)  
 **Baseline Tag:** `HUBCHANGED`  
-**Last Updated:** 2026-09-17
+**Last Updated:** 2026-09-18
+
+---
+
+## Certificates (deferred)
+
+**Status: disabled, 2026-09-18.** Procure Sherpa is not a legally authorized
+issuer of procurement credentials, so the Academy's tiered certificate/
+transcript feature (Tier 1 Learning Transcript, Tier 2 Program Completion,
+Tier 3 Exam-Verified) has been switched off. `#/certificate` now shows an
+honest "not available yet" placeholder instead. Academy progress and exam
+scores are still tracked and visible on `#/academy-progress` and `#/exams`.
+
+This is free, non-commercial software with no accreditation body behind it,
+so there was never a real verification story: the previous "tamper-evident"
+checksum was a client-side FNV hash with a hardcoded salt shipped in the same
+JS anyone can view-source — it could be reverse-engineered and forged for any
+name/tier/score. Turning the feature off is more honest than shipping a
+credential that only *looks* verifiable.
+
+**Possible future re-enable, only if a real authorization/verification path
+exists** (e.g. server-side signing with a secret key, or an actual
+partnership with an accrediting body such as CIPS/ISM). The original
+tiered-transcript implementation is preserved below as a reference — it was
+functionally correct, just not something we're allowed to represent as a
+credential today.
+
+<details>
+<summary>Reference implementation (was <code>src/pages/08g3_pages_certificate.js</code>)</summary>
+
+```js
+PS.cert = {
+  // Deterministic, tamper-evident checksum generator.
+  // Includes the tier key + exam score so a lower-tier or forged
+  // credential does not verify against a higher tier.
+  generateChecksum: function (name, role, company, completedCount, avgScore, tierKey, examScore, dateStr) {
+    var raw = (name || 'Procurement Specialist') + '|' +
+              (role || 'buyer') + '|' +
+              (company || 'Enterprise') + '|' +
+              String(completedCount || 0) + '|' +
+              String(Math.round(avgScore || 0)) + '|' +
+              (tierKey || 'transcript') + '|' +
+              String(Math.round(examScore || 0)) + '|' +
+              (dateStr || PS.dateStr());
+
+    var h1 = 0x811c9dc5;
+    for (var i = 0; i < raw.length; i++) {
+      h1 ^= raw.charCodeAt(i);
+      h1 = Math.imul(h1, 0x01000193);
+    }
+
+    var h2 = 0x5a3f129c;
+    var salted = raw + 'procure_sherpa_local_v2';
+    for (var j = 0; j < salted.length; j++) {
+      h2 ^= salted.charCodeAt(j);
+      h2 = Math.imul(h2, 0x01000193);
+    }
+
+    var hex1 = ('00000000' + (h1 >>> 0).toString(16).toUpperCase()).slice(-8);
+    var hex2 = ('00000000' + (h2 >>> 0).toString(16).toUpperCase()).slice(-8);
+
+    return 'PS-CERT-' + hex1.substring(0, 4) + '-' + hex1.substring(4, 8) + '-' + hex2.substring(0, 4);
+  },
+
+  // Resolve the current credential tier from live progress + exam history.
+  tier: function (stats, examBestPct) {
+    var allDone = stats.totalCount > 0 && stats.completedCount >= stats.totalCount;
+    if (allDone && examBestPct >= 70) {
+      return { key: 'certified', level: 3, label: 'Certified Procurement Professional', sub: 'Exam-Verified' };
+    }
+    if (allDone) {
+      return { key: 'completion', level: 2, label: 'Certificate of Program Completion', sub: 'Self-directed curriculum' };
+    }
+    return { key: 'transcript', level: 1, label: 'Procurement Learning Transcript', sub: 'Progress record' };
+  },
+
+  // Best exam score across the full certification exam, or 0.
+  bestExamScore: function () {
+    var best = 0;
+    (PS.exams ? PS.exams.history() : []).forEach(function (a) {
+      if (a.bank === 'cert-full' && a.pct > best) best = a.pct;
+    });
+    return best;
+  },
+
+  // Honest statement of exactly what was done - no invented honors.
+  statementFor: function (tier, stats, avgScore, examBest) {
+    if (tier.key === 'transcript') {
+      return 'This record shows learning activity in the Procure Sherpa Academy: functions completed, assessment scores and laboratory practice. It is a progress transcript, not a certification.';
+    }
+    if (tier.key === 'completion') {
+      return 'has completed the self-directed Procure Sherpa Academy curriculum, covering ' + stats.completedCount +
+        ' procurement functions with an average assessment score of ' + (avgScore > 0 ? avgScore + '%' : 'n/a') +
+        '. This confirms completion of the course material; it is not an independently accredited qualification.';
+    }
+    return 'has completed the Procure Sherpa Academy curriculum (' + stats.completedCount +
+      ' functions, average assessment ' + (avgScore > 0 ? avgScore + '%' : 'n/a') +
+      ') AND passed the timed certification examination with a score of ' + examBest +
+      '%. This is a platform-issued, exam-verified record; it is not an externally accredited qualification.';
+  }
+};
+
+// The full-page render (header, tier ladder, cert document, competency
+// transcript table, verification bar) previously lived in a
+// PS.route('certificate', ...) handler here, driven by PS.cert above and
+// PS.certTierStep (a small tier-ladder visual helper). Recover it from git
+// history (commit e8ac5a1 or later, before this file was replaced with the
+// disabled placeholder) if re-implementing with real verification.
+```
+
+</details>
 
 ---
 
@@ -370,7 +480,7 @@ what it does not claim*. No invented authority, no borrowed accreditation.
 1. **Create feature branch** from `main`
 2. **Modify source fragments** in `src/`
 3. **Run `node build.mjs`** to compile
-4. **Run `node tools/smoke.mjs`** - all 59 routes must pass
+4. **Run `node tools/smoke.mjs`** - all 63 routes must pass
 5. **Run `node tools/check_rels.mjs`** - zero broken cross-refs
 6. **Run `node validate.mjs`** - syntax + skeleton check
 7. **PR with screenshots** - desktop + mobile

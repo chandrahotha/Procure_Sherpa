@@ -4,7 +4,7 @@ This repository utilizes a modular multi-file architecture. The standalone `Proc
 
 ```
 src/
-  manifest.txt          Linear assembly sequence (142 fragments).
+  manifest.txt          Linear assembly sequence (155 fragments).
                         The build compiler concatenates files in this exact order.
                         To add a fragment: create the file in the designated folder,
                         then insert its path in manifest.txt.
@@ -13,8 +13,9 @@ src/
                         01a_head.html       Design tokens, CSS variables, typography
                         01b..01g_*.css      Reset, layout, components, forms, print styles
                         01h_academy.css     Academy curriculum, quiz cards, crisis sandboxes
-                        01i_portal_user.css Command Center, dual-hub switcher, user badge
-                        02_shell.html       Application topbar, sidebar, and layout shell
+                        01i_portal_user.css Command Center portal, user badge
+                        01j_global_extras   Responsive breakpoints, mobile nav, toasts
+                        02_shell.html       Application topbar, one persistent sidebar, layout shell
                         99_tail.html        Closing body and html tags
 
   core/                 Application Runtime Engine
@@ -23,25 +24,31 @@ src/
                         03i_user_profile    Account state, profile modal, role switcher
                         03j_charts          Zero-dependency inline SVG visual analytics
                                             (Waterfall, Kraljic, Pareto, Altman Z-Score)
-                        04a..04d_*          Router, navigation trees, render helpers
+                        04a_router          Hash router, active-link marking, breadcrumb dispatch
+                        04b1_navdata        PS.NAV_UNIFIED: the single 5-section sidebar data
+                        04b2_navbuild       Builds/refreshes the sidebar and its footer per route
+                        04c..04d_*          Render helpers, list pages
                         05a..05d_*          Calculator forms, validation, result formatters
-                        06a..06d_*          Action controllers, templates, backup archives
+                        06a..06e_*          Action controllers, templates, backup archives,
+                                            i18n, exams, copilot, spend model, docpack
                         07a..07b_*          Boot lifecycle and global event wiring
                         90_normalize.js     Content normalization and alias resolution
 
   pages/                Page View Controllers & Renderers
-                        08a1..08a3_*        Command Center landing page and dual-hub portal
-                        08b1..08b6_*        SOP, checklist, template, decision, and KPI pages
-                        08c1..08c6_*        Dashboards, lifecycle map, Operations Hub gateway
+                        08a1..08a3_*        Command Center landing page
+                        08b1..08b7_*        KB, SOP, checklist, template, decision, KPI, scenario pages
+                        08c1..08c6_*        Search, dashboards, lifecycle map, Operations Hub gateway
                         08e1_pages_backup   Workspace Data Footprint and JSON archive manager
                         08f1_pages_help     Architecture, IT compliance, and user guides
                         08g1_pages_academy  Academy curriculum, 5-tab pedagogy, sandboxes
                         08g2_pages_quiz_engine Adaptive assessments and tactical advisor tips
-                        08g3_pages_certificate Tamper-evident completion certificates
+                        08g3_pages_certificate Certificate feature - disabled, honest placeholder
+                                            (not a legally authorized credential issuer; see root README)
+                        08h1..08h4_*        Copilot, exams, spend model, doc pack builder
 
   content/              Controlled Knowledge Libraries
                         09*..18*            Concepts, SOPs, checklists, templates, KPIs
-                        19a..19c_*          16 Academy digital procurement competency modules
+                        19a..19c_*          8 modules / 19 Academy digital procurement functions
 
   calcs/                Financial & Operational Calculators
                         20*..38*            19 paired calculator definitions and math algorithms
@@ -53,7 +60,8 @@ src/
 1. **Strict Execution Order**: Fragments execute in a shared single-script scope (`PS.*`). An individual fragment can only consume abstractions defined in preceding files. The sequence defined in `src/manifest.txt` governs the compilation order.
 2. **Single-Purpose Fragments**: Maintain small, focused files corresponding to distinct components, libraries, or action controllers.
 3. **Zero Dash Compliance**: Never introduce em dashes or en dashes into copy or source code. Use standard hyphens, colons, or commas.
-4. **Validation Protocol**: After editing source fragments, run:
+4. **One sidebar, one nav data source**: The sidebar is defined once in `PS.NAV_UNIFIED` (`04b1_navdata.js`) and rendered by `PS.buildNav` (`04b2_navbuild.js`) for every route except `#/home`. Do not reintroduce per-hub sidebars or a hub-switcher - that pattern was replaced deliberately because it made the Academy sidebar's module accordion overflow with no scroll affordance, and a CSS specificity bug (`.icon-btn` overriding `.sidebar-close`/`.menu-btn`) leaked mobile-only nav toggle buttons onto desktop.
+5. **Validation Protocol**: After editing source fragments, run:
    * `node build.mjs` to assemble and perform AST syntax validation.
-   * `node tools/smoke.mjs` to execute headless DOM tests across all 59 application routes.
-   * `node tools/check_rels.mjs` to verify cross-reference relational integrity.
+   * `npm run qa` for the full gate: rels, calculators, interactive checks, content QA, smoke (63 routes), security, a11y, and perf.
+   * `node tools/check_rels.mjs` on its own to verify cross-reference relational integrity quickly.

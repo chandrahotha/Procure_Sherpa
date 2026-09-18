@@ -20,18 +20,7 @@ PS.i18n = PS.i18n || {};
 PS.i18n.CATALOG = {
   en: {
     'app.name': 'Procure Sherpa',
-    'app.tagline': 'Learning Platform',
-
-    'hub.home': 'Command Center',
-    'hub.academy': 'Academy',
-    'hub.operations': 'Operations',
-    'hub.workspace': 'Workspace & Settings',
-    'hub.academyTitle': 'Procurement Academy',
-    'hub.academySub': 'Interactive Learning',
-    'hub.opsTitle': 'Operations Hub',
-    'hub.opsSub': 'Practitioner Tools',
-    'hub.workspaceTitle': 'Workspace & Settings',
-    'hub.workspaceSub': 'User Account & Tools',
+    'app.tagline': 'Navigation',
 
     'nav.filter': 'Filter menu\u2026',
     'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',

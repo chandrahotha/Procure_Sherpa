@@ -83,7 +83,7 @@ PS.acts['exam-start'] = function (el) {
     timeLimit: questions.length * PS.exams.SECONDS_PER_QUESTION,
     done: false
   };
-  PS.renderExamRunner();
+  PS.exams.renderExamRunner();
 };
 
 PS.exams.renderExamRunner = function () {
@@ -115,18 +115,18 @@ PS.exams.renderExamRunner = function () {
   box.innerHTML = html;
   box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   PS.wireExamOptions();
-  PS.startExamTimer();
+  PS.exams.startExamTimer();
 };
 
 PS.acts['exam-next'] = function () {
   var s = PS.exams.session;
   if (!s) return;
-  if (s.current < s.questions.length - 1) { s.current++; PS.renderExamRunner(); }
+  if (s.current < s.questions.length - 1) { s.current++; PS.exams.renderExamRunner(); }
 };
 PS.acts['exam-prev'] = function () {
   var s = PS.exams.session;
   if (!s) return;
-  if (s.current > 0) { s.current--; PS.renderExamRunner(); }
+  if (s.current > 0) { s.current--; PS.exams.renderExamRunner(); }
 };
 
 PS.wireExamOptions = function () {
