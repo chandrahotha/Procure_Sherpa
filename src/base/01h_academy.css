@@ -957,6 +957,60 @@ html[data-theme="dark"] .quiz-tip-cta {
 .cert-transcript-card {
   margin-top: 8px;
 }
+
+.cert-page-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 4px 0 14px;
+}
+
+/* Tier strip on the credential explanation card */
+.tier-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+@media (max-width: 700px) {
+  .tier-strip { grid-template-columns: 1fr; }
+}
+.tier-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+  opacity: 0.65;
+}
+.tier-step.is-achieved {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+  background: var(--ok-soft);
+}
+.tier-step-num {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: .8rem;
+  font-weight: 800;
+  background: var(--sunken);
+  color: var(--mute);
+}
+.tier-step.is-achieved .tier-step-num {
+  background: var(--ok);
+  color: #fff;
+}
+.tier-step-body { flex: 1; min-width: 0; }
+.tier-step-label { font-size: .84rem; font-weight: 700; color: var(--text); }
+.tier-step-desc { font-size: .72rem; color: var(--mute); line-height: 1.35; }
+.tier-step-check { font-size: 1rem; font-weight: 800; color: var(--ok); }
+
 @media print {
   body {
     background: #ffffff !important;

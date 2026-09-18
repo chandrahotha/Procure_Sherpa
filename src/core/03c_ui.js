@@ -169,7 +169,7 @@ PS.kbdHelp = {
       '.footer { margin-top: 24pt; font-size: 8pt; color: #666; text-align: center; }' +
       '@media print { .no-print { display: none !important; } }' +
       '</style></head><body>' +
-      '<h1>Procure Sherpa v2.0 — Keyboard Shortcuts Cheat Sheet</h1>' +
+      '<h1>Procure Sherpa — Keyboard Shortcuts Cheat Sheet</h1>' +
       '<p style="margin: 4pt 0 16pt; color: #666;">Offline-first procurement toolkit | <span id="printDate"></span></p>';
 
     self.sections.forEach(function (sec) {
@@ -180,7 +180,7 @@ PS.kbdHelp = {
       html += '</tbody></table>';
     });
 
-    html += '<div class="footer">Generated from Procure Sherpa ' + PS.VERSION + ' | ' +
+    html += '<div class="footer">Generated from Procure Sherpa | ' +
       'Press Ctrl+P to print/save as PDF | All shortcuts work offline</div>' +
       '<scr' + 'ipt>document.getElementById("printDate").textContent = new Date().toLocaleString();</scr' + 'ipt>' +
       '</body></html>';

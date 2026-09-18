@@ -89,7 +89,7 @@ PS.docpack.buildPackHtml = function (title, items, opts) {
     '<div class="docpack-cover card">' +
     '<h1>' + PS.esc(title) + '</h1>' +
     '<p class="lead">' + PS.esc(p.orgName || 'Procurement') + (p.deptName ? ' \u00B7 ' + PS.esc(p.deptName) : '') + '</p>' +
-    '<p class="note">Prepared ' + PS.esc(PS.dateTime()) + ' \u00B7 ' + items.length + ' documents \u00B7 ' + PS.esc(PS.APP) + ' ' + PS.esc(PS.VERSION) + '</p>' +
+    '<p class="note">Prepared ' + PS.esc(PS.dateTime()) + ' \u00B7 ' + items.length + ' documents \u00B7 ' + PS.esc(PS.APP) + '</p>' +
     '<div style="margin-top:18px;text-align:left"><h3>Contents</h3>' + toc + '</div>' +
     '</div>';
   items.forEach(function (c, i) {
@@ -99,7 +99,7 @@ PS.docpack.buildPackHtml = function (title, items, opts) {
       PS.docpack.docBody(c) + '</div>';
   });
   body += '<div style="text-align:center;padding:24px;color:var(--mute);font-size:.8rem">' +
-    'Prepared with Procure Sherpa ' + PS.esc(PS.VERSION) + '. This package is a working draft - validate all values before external use.</div>' +
+    'Prepared with Procure Sherpa. This package is a working draft - validate all values before external use.</div>' +
     '</body></html>';
   return body;
 };

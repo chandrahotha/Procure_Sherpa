@@ -59,7 +59,7 @@ PS.renderRoute = function () {
   PS.markNav(r);
   PS.updateFavBtn(r);
   PS.closeNav();
-  document.title = (PS.pageTitle ? PS.pageTitle + ' | ' : '') + 'Procure Sherpa v2.0';
+  document.title = (PS.pageTitle ? PS.pageTitle + ' | ' : '') + 'Procure Sherpa';
   PS.pageTitle = '';
   if (PS.pageInit) { try { PS.pageInit(); } catch (e) { PS.errPanel('initialise'); } }
   try { window.scrollTo(0, 0); } catch (e) { }

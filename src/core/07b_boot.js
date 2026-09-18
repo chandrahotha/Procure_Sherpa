@@ -4,7 +4,7 @@ PS.pwa = function () {
     if (location.protocol === 'file:') return; /* standalone HTML mode: no service worker, no manifest fetch */
     if (!document.querySelector('link[rel="manifest"]')) {
       var manifest = {
-        name: 'Procure Sherpa v2.0', short_name: 'Procure Sherpa',
+        name: 'Procure Sherpa', short_name: 'Procure Sherpa',
         start_url: '.', scope: '.', display: 'standalone',
         background_color: '#f2f5fa', theme_color: '#1d4ed8',
         description: 'Procurement digital learning platform: interactive modules, SOPs, decision guides, checklists, templates, calculators, KPIs and reports.'

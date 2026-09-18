@@ -23,7 +23,7 @@ PS.staticShare = {
       '<title>' + PS.esc(title || document.title || 'Procure Sherpa') + '</title>' +
       '<style>' + css + '</style></head><body>' +
       '<div class="share-static-note">Static snapshot of "' + PS.esc(title || '') + '" - generated ' +
-      PS.esc(PS.dateTime()) + ' from Procure Sherpa ' + PS.esc(PS.VERSION) + '. Interactive controls were removed; figures are as shown.</div>' +
+      PS.esc(PS.dateTime()) + ' from Procure Sherpa. Interactive controls were removed; figures are as shown.</div>' +
       '<main class="main">' + clone.innerHTML + '</main>' +
       '<div class="footer" style="text-align:center;padding:20px;color:var(--mute);font-size:.8rem">Prepared with Procure Sherpa - ' +
       PS.esc(PS.dateTime()) + '</div></body></html>';

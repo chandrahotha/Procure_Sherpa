@@ -321,6 +321,41 @@ Procure Sherpa v2.0 is a production-grade, offline-first procurement toolkit. Th
 
 ## Implementation Guidelines
 
+### Certification Credibility Plan (added 2026-09-19)
+
+**Problem:** The v2.0 certificate printed invented honors ("Executive Certificate",
+"accredited transcript", "Examination Board", "Master of Strategic Procurement").
+As a new LMS we have no accreditation authority, so those titles read as fake to
+recruiters and HR and damage the product's credibility.
+
+**Principle:** A credential must state *exactly what happened, who issued it, and
+what it does not claim*. No invented authority, no borrowed accreditation.
+
+**Three-tier model:**
+
+| Tier | Earned by | Issued title | Claims |
+|------|-----------|-------------|--------|
+| 1 · Transcript | Always available | Procurement Learning Transcript | "Records learning activity only — not a certification" |
+| 2 · Completion | All curriculum functions completed | Certificate of Program Completion | "Completed the self-directed Academy curriculum (N functions)" |
+| 3 · Exam-verified | Completion + pass timed certification exam ≥ 70% | Certified Procurement Professional (Exam-Verified) | "Completed the curriculum AND passed a timed certification exam at X%" |
+
+**Honesty rules enforced in code:**
+1. Never use "accredited", "Executive Certificate", "Board", "Master of" or
+   "certifies" — replace with exact, verifiable statements.
+2. Issuer is always "Procure Sherpa Academy" (the platform), never an invented body.
+3. "Aligned with CIPS/ISM frameworks" is allowed as a *content reference* note,
+   never as "accredited by CIPS/ISM".
+4. The verification hash includes the tier key + exam score, so a forged or
+   older-tier certificate does not verify against a higher tier.
+5. A "How to verify" note explains the hash is self-generated on-device and that
+   the credential is not an externally accredited qualification.
+6. Tier-3 requires the exam module (roadmap 11.4) — completion alone can never
+   mint the top tier.
+
+---
+
+## Implementation Guidelines
+
 ### Technical Constraints
 | Constraint | Requirement |
 |------------|-------------|
