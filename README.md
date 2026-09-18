@@ -1,8 +1,28 @@
 # Procure Sherpa v2.0
 
-An enterprise single-tenant procurement learning and operations platform: competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics compiled into a secure, single-file client architecture.
+**An enterprise procurement learning and operations platform, compiled into a single offline HTML file.**
 
-No external servers, no cloud databases, no runtime dependencies, and zero third-party telemetry. All data stays strictly within your browser session.
+Competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics — no server, no database, no build step for end users, no telemetry.
+
+[![License: ISC](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
+[![Dependencies: zero runtime](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](#repository-structure--source-code)
+[![Offline-first](https://img.shields.io/badge/offline-first-informational.svg)](#data-privacy--security-architecture)
+[![Single file](https://img.shields.io/badge/deploy-single%20HTML%20file-lightgrey.svg)](#operating-instructions)
+
+> These badges describe static, verifiable facts about this repository (license file present, zero runtime `dependencies` in `package.json`, no network calls at runtime). There is no CI badge here on purpose — see [Known Limitations](#known-limitations): there is no CI pipeline yet, and a badge implying otherwise would be exactly the kind of false signal this project deliberately removed from its certificate feature (Section 5).
+
+---
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Core Capabilities](#core-capabilities)
+- [Operating Instructions](#operating-instructions)
+- [Repository Structure & Source Code](#repository-structure--source-code)
+- [Build & Verification Commands](#build--verification-commands)
+- [Governance & Standards Alignment](#governance--standards-alignment)
+- [Data Privacy & Security Architecture](#data-privacy--security-architecture)
+- [Known Limitations](#known-limitations)
 
 ---
 
@@ -13,7 +33,7 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 ```
                     ┌──────────────────────────────────────────────┐
                     │      Executive Command Center (#/home)       │
-                    │  Clean Full-Width Portal & Account Hub       │
+                    │  Clean Full-Width Portal & Account Hub        │
                     │        (distraction-free, no sidebar)         │
                     └──────────────────────┬───────────────────────┘
                                            │
@@ -36,6 +56,17 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 ---
 
 ## Core Capabilities
+
+| # | Capability | Summary |
+|---|---|---|
+| 1 | Command Center & Unified Navigation | Distraction-free home, one 5-section sidebar everywhere else |
+| 2 | Procurement Academy | 8 modules, 19 functions, 5-tab pedagogy, certification exams |
+| 3 | Visual Analytics Engine | Waterfall, Kraljic matrix, Pareto curve, Altman Z-Score, all inline SVG |
+| 4 | Crisis Simulation Sandboxes | 10 hands-on commercial scenarios with live calculation models |
+| 5 | Credential Transcript | Deliberately disabled — see below |
+| 6 | Spotlight Command Palette | `Ctrl+K` search across the whole platform |
+| 7 | Intelligence & Automation | Offline copilot, spend data model, doc pack builder |
+| 8 | Analysis Workbench | What-if branching, static share pages |
 
 ### 1. Command Center & Unified Navigation
 
@@ -127,7 +158,7 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
 ## Repository Structure & Source Code
 
-`ProcureSherpa-v2.0.html` is a compiled release artifact generated from modular fragments in `src/`. Source modifications must be made within `src/` and recompiled.
+`ProcureSherpa-v2.0.html` is a compiled release artifact generated from modular fragments in `src/`. Source modifications must be made within `src/` and recompiled — **never edit the root HTML file directly.**
 
 ```
 ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
@@ -156,7 +187,9 @@ tools/
                                   # Internal dev/debug scratch scripts, not part of the QA gate
 ```
 
-### Build & Verification Commands
+See [`src/README.md`](src/README.md) for the fragment-level architecture and execution-order rules.
+
+## Build & Verification Commands
 
 ```powershell
 # Compile single-file HTML bundle and validate syntax + performance budget
@@ -184,7 +217,7 @@ node tools/a11y_audit.mjs
 node tools/perf_check.mjs
 ```
 
-`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, and the performance budget. Any failure exits non-zero so CI blocks the release.
+`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, and the performance budget. Any failure exits non-zero. **There is no CI workflow running this automatically yet** — see [Known Limitations](#known-limitations) — so run it by hand before every release.
 
 ### Expected-Value Calculator Fixtures
 
@@ -202,7 +235,7 @@ Procure Sherpa v2.0 content and calculation models are aligned with internationa
 * **International Commercial Terms (Incoterms 2020)**: Total landed cost risk and obligation allocation standards.
 * **ISO 20400**: Sustainable procurement and ESG evaluation criteria.
 
-CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is written against. Procure Sherpa itself is not accredited by, registered with, or endorsed by any of these bodies — see Section 5 above on the disabled certificate feature.
+CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is written against. Procure Sherpa itself is not accredited by, registered with, or endorsed by any of these bodies — see [Section 5](#5-credential-transcript-certificate--disabled-future-feature) on the disabled certificate feature.
 
 ---
 
@@ -218,7 +251,7 @@ CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is writt
 
 Documented here deliberately, rather than left for someone to discover:
 
-* **No CI pipeline.** `npm run qa` is not yet wired into a GitHub Actions workflow, so it must be run manually before every release. There is no `.github/workflows` in this repository.
+* **No CI pipeline.** `npm run qa` is not yet wired into a GitHub Actions workflow, so it must be run manually before every release. There is no `.github/workflows` in this repository. This is also why there is no "build passing" badge above — it would not be true.
 * **Content QA is informational, not a hard gate.** `tools/test_quiz_tips.mjs` (now part of `npm run qa`) currently reports content gaps — missing descriptions on several decision guides and forward references not yet fully populated — but it exits `0` regardless, so it will not fail a build. Treat its output as a checklist, not a pass/fail signal.
-* **Certificates are intentionally disabled** (see Section 5). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
+* **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
