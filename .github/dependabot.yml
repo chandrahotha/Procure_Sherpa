@@ -1,0 +1,34 @@
+version: 2
+
+# SECURITY.md previously listed "no automated dependency vulnerability
+# scanning" as a known limitation. This closes it.
+#
+# Nothing here reaches a user's browser - `dependencies` in package.json is
+# empty and jsdom/eslint/terser are dev-only - so this is not about runtime
+# CVEs. It is about the build machine: terser produces the artifact that is
+# actually deployed, and jsdom runs the suite that decides whether a change
+# ships. A compromised dev dependency is a supply-chain risk to the release,
+# even on a zero-runtime-dependency project.
+#
+# Monthly, not weekly: three dev dependencies do not justify more noise, and
+# every update still has to pass the full QA gate before it can merge.
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: deps
+    groups:
+      dev-tooling:
+        patterns: ['*']
+
+  # The workflow pins actions by major version (actions/checkout@v4). Keep
+  # those current too - a stale action is the other half of the same risk.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

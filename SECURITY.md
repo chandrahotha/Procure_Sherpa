@@ -58,11 +58,13 @@ should hold as a hard rule for any new code.
   a full static analysis tool or a third-party pen test. It catches the
   specific classes of bug listed above; it does not guarantee the
   absence of all XSS vectors.
-* There is no automated dependency vulnerability scanning configured
-  yet. `dependencies` in `package.json` is empty, so nothing reaches a
-  user's browser: `jsdom` (tests), `eslint` (lint) and `terser` (the
-  minified deploy build) are all dev-only and run on a build machine.
-  A compromised dev dependency could still affect the deploy build,
-  which is why `npm run verify:min` re-runs the route, calculator and
-  accessibility suites against the minified output rather than trusting
-  the minifier.
+* Dependency updates are automated but not audited by a scanner.
+  `dependencies` in `package.json` is empty, so nothing reaches a user's
+  browser: `jsdom` (tests), `eslint` (lint) and `terser` (the minified
+  deploy build) are all dev-only and run on a build machine.
+  `.github/dependabot.yml` raises monthly PRs for those and for the
+  pinned GitHub Actions, and every one has to pass the full QA gate
+  before it can merge. A compromised dev dependency could still affect
+  the deploy build, which is why `npm run verify:min` re-runs the route,
+  calculator and accessibility suites against the minified output rather
+  than trusting the minifier.
