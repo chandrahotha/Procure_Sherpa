@@ -22,13 +22,28 @@ const manifest = fs.readFileSync(path.join(SRC, 'manifest.txt'), 'utf8')
   .map((s) => s.trim())
   .filter((s) => s && !s.startsWith('#'));
 
+/* Fragments are normalised to CRLF before joining.
+
+   Without this the artifact is not reproducible across machines. Source
+   fragments are committed with LF (git normalises them on `git add`) but
+   check out as CRLF on Windows and LF on Linux, so a build on a developer
+   laptop and a build in CI produced byte-different files from identical
+   source - and tools/check_drift.mjs, which byte-compares the two, would
+   fail on every CI run for a reason that has nothing to do with the code.
+
+   Normalising here makes the output depend only on fragment content, on
+   any platform and under any core.autocrlf setting. CRLF specifically,
+   because the committed artifact is marked -text in .gitattributes and is
+   already stored with CRLF. */
+const toCRLF = (s) => s.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+
 const parts = manifest.map((rel) => {
   const p = path.join(ROOT, rel);
   if (!fs.existsSync(p)) {
     console.error('FAIL manifest entry not found: ' + rel);
     process.exit(1);
   }
-  return fs.readFileSync(p, 'utf8');
+  return toCRLF(fs.readFileSync(p, 'utf8'));
 });
 fs.writeFileSync(OUT, parts.join('\r\n') + '\r\n');
 console.log('assembled ' + parts.length + ' fragments -> ' + path.basename(OUT));

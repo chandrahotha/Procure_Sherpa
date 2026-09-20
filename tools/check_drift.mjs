@@ -34,8 +34,16 @@ if (!fs.existsSync(OUT)) {
   process.exit(1);
 }
 
-/* Same manifest read and same join as build.mjs. If build.mjs ever changes
-   how it assembles, this must change with it - that coupling is the point. */
+/* Same manifest read, same CRLF normalisation and same join as build.mjs.
+   If build.mjs ever changes how it assembles, this must change with it -
+   that coupling is the point.
+
+   The normalisation is what makes this check usable in CI at all. Source
+   fragments are stored with LF and check out as CRLF on Windows and LF on
+   Linux, so without normalising, a Linux checkout could never reproduce an
+   artifact built on Windows and this would fail on every CI run for a
+   reason unrelated to the code. */
+const toCRLF = (s) => s.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
 const manifest = fs.readFileSync(path.join(ROOT, 'src', 'manifest.txt'), 'utf8')
   .split(/\r?\n/)
   .map((s) => s.trim())
@@ -47,7 +55,7 @@ if (missing.length) {
   process.exit(1);
 }
 
-const fresh = manifest.map((rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8')).join('\r\n') + '\r\n';
+const fresh = manifest.map((rel) => toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8'))).join('\r\n') + '\r\n';
 const committed = fs.readFileSync(OUT, 'utf8');
 
 const sha = (s) => crypto.createHash('sha256').update(s, 'utf8').digest('hex').slice(0, 12);
@@ -68,7 +76,7 @@ while (firstDiff < max && fresh[firstDiff] === committed[firstDiff]) firstDiff++
 
 let offset = 0, culprit = null;
 for (const rel of manifest) {
-  const len = fs.readFileSync(path.join(ROOT, rel), 'utf8').length + 2; /* + the \r\n join */
+  const len = toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8')).length + 2; /* + the \r\n join */
   if (firstDiff < offset + len) { culprit = rel; break; }
   offset += len;
 }
