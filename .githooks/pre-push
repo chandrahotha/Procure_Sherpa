@@ -1,0 +1,25 @@
+#!/bin/sh
+# Local pre-push safety net. Runs the fast test subset (build + calculator
+# assertions + smoke test) before code leaves this machine, since CI here
+# is intentionally weekly-only (see README "Known Limitations") rather
+# than a per-push gate. Wired automatically by `npm install` via the
+# "prepare" script (tools/setup_hooks.mjs), which sets:
+#   git config core.hooksPath .githooks
+#
+# Skip deliberately with: git push --no-verify
+
+echo "pre-push: running 'npm run test' (fast gate - build + calc tests + smoke)"
+npm run test
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "pre-push: FAILED. Push aborted so a broken commit doesn't sit on the"
+  echo "remote until the next weekly CI run. Run 'npm run qa' for the full"
+  echo "picture (security/a11y/perf audits too), fix, and try again."
+  echo "To push anyway (not recommended): git push --no-verify"
+  exit 1
+fi
+
+echo "pre-push: OK"
+exit 0

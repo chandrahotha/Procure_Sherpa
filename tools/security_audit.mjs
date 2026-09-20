@@ -16,7 +16,18 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const HTML = path.join(ROOT, 'ProcureSherpa-v2.0.html');
 const html = fs.readFileSync(HTML, 'utf8');
-const script = html.replace(/<\/script>[\s\S]*$/, '');
+/* Extract the real inline application script the same way build.mjs does:
+   the one bare <script> (no attributes) tag, not "everything before the
+   first </script> anywhere in the document". The document also carries
+   a <script type="application/ld+json"> block (SEO structured data) -
+   cutting at the first </script> would truncate the scan to that tiny
+   JSON block and silently stop checking the actual 1MB+ of app code. */
+const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
+if (!scriptMatch) {
+  console.error('FAIL: no bare <script> application block found to scan');
+  process.exit(1);
+}
+const script = scriptMatch[1];
 
 const findings = [];
 let checks = 0;

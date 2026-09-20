@@ -14,8 +14,24 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 
 ---
 
+## Quick Start
+
+**Just want to use it?** Download [`ProcureSherpa-v2.0.html`](ProcureSherpa-v2.0.html) and double-click it. That's the whole install — see [Operating Instructions](#operating-instructions) for a couple of other ways to open it.
+
+**Want to change it?**
+```bash
+git clone https://github.com/chandrahotha/Procure_Sherpa.git
+cd Procure_Sherpa
+npm install        # only dev dependency: jsdom, for running tests. Also wires a pre-push safety hook.
+npm run qa         # build + the full test/audit suite - run this before every PR
+```
+Then see [Repository Structure & Source Code](#repository-structure--source-code) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Screenshots](#screenshots)
 - [Architecture Overview](#architecture-overview)
 - [Core Capabilities](#core-capabilities)
@@ -25,6 +41,7 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 - [Governance & Standards Alignment](#governance--standards-alignment)
 - [Data Privacy & Security Architecture](#data-privacy--security-architecture)
 - [Known Limitations](#known-limitations)
+- [Contributing & Security](#contributing--security)
 
 ---
 
@@ -184,7 +201,12 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
 build.mjs                        # Assembly + syntax + validation + performance budget gate
 validate.mjs                     # Structural and syntax integrity validator
+robots.txt                       # Crawl policy (see SEO note below)
 LICENSE                          # ISC license
+CONTRIBUTING.md                  # Dev setup, PR checklist, the rules that exist for a reason
+SECURITY.md                      # Threat model, what's audited, how to report an issue
+.github/workflows/qa.yml         # Weekly (+ manual) CI run of the full npm run qa gate
+.githooks/pre-push                # Local safety net: fast test subset before every git push
 src/
   manifest.txt                   # Linear assembly sequence (155 fragments)
   base/                          # Design tokens, CSS stylesheets, shell markup
@@ -201,7 +223,9 @@ tools/
   test_quiz_tips.mjs             # Content QA (missing descriptions, forward refs) + tip engine
   security_audit.mjs             # CSP / eval / inline-handler / credential scan
   a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes
-  perf_check.mjs                 # Single-file payload budget checker
+  perf_check.mjs                 # Single-file payload budget checker (hard + soft thresholds)
+  i18n_audit.mjs                 # Catalog-keys-vs-DOM-usage coverage count (informational)
+  setup_hooks.mjs                # Wires .githooks/ on `npm install` via the "prepare" script
   print_ids.mjs                  # Content registration ID inspector
   convert_v1.mjs, debug_calc.mjs, dump_index.mjs, inventory.mjs, probe_v1.mjs, lib.mjs
                                   # Internal dev/debug scratch scripts, not part of the QA gate
@@ -237,7 +261,7 @@ node tools/a11y_audit.mjs
 node tools/perf_check.mjs
 ```
 
-`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, and the performance budget. Any failure exits non-zero. **There is no CI workflow running this automatically yet** — see [Known Limitations](#known-limitations) — so run it by hand before every release.
+`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, performance budget, and i18n coverage audit. Any failure exits non-zero except the content and i18n audits, which are informational by design. **A GitHub Actions workflow runs this weekly** (`.github/workflows/qa.yml`) plus a **local pre-push git hook** runs the fast subset on every `git push` — see [Known Limitations](#known-limitations) for exactly what that does and does not cover, and run `npm run qa` by hand before any non-trivial merge.
 
 ### Expected-Value Calculator Fixtures
 
@@ -273,5 +297,15 @@ Documented here deliberately, rather than left for someone to discover:
 
 * **CI runs weekly, not per-commit.** `.github/workflows/qa.yml` runs the full `npm run qa` gate (build, cross-ref checks, calculator/content/smoke tests, security/a11y/perf audits) on a weekly schedule plus manual dispatch — it is not wired to `push`/`pull_request`. This catches drift between releases, but a broken commit can still land on `main` between runs; run `npm run qa` locally before merging anything non-trivial.
 * **Content QA is informational, not a hard gate.** `tools/test_quiz_tips.mjs` (now part of `npm run qa`) currently reports content gaps — missing descriptions on several decision guides and forward references not yet fully populated — but it exits `0` regardless, so it will not fail a build. Treat its output as a checklist, not a pass/fail signal.
+* **i18n is scaffolding, not a shipped feature.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence, a working Settings locale switcher) is real infrastructure, but only 1 locale (`en`) is registered and only the persistent shell chrome — nav filter, topbar search, footer, account label — is actually wired to it (~20% of catalog keys; run `npm run audit:i18n` for the live count). All route/page content (calculators, Academy, SOPs, checklists, templates, KB) is hardcoded English. Do not describe this as "multi-language" or "i18n-ready" until that changes.
 * **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
+* **No SEO-final metadata yet.** `src/base/01a_head.html` ships title/description/Open Graph/Twitter/JSON-LD tags, but there is intentionally no `og:image`, `<link rel="canonical">`, or `sitemap.xml` — this file has no fixed hosted URL yet. Fill those in once it has a deployed domain (see `robots.txt` for the exact TODO).
+
+---
+
+## Contributing & Security
+
+* **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) — dev setup, the PR checklist (`npm run qa`), the local pre-push hook, and the small set of rules (no invented accreditation claims, no new runtime dependencies, stay inside the performance budget) that exist for reasons documented elsewhere in this README.
+* **Security:** see [SECURITY.md](SECURITY.md) — threat model for a client-only offline app, what `npm run qa`'s security audit actually checks, and how to report an issue.
+* **Original product spec:** [`Procure_Sherpa_v2_Master_Requirements.md`](Procure_Sherpa_v2_Master_Requirements.md) is the founding requirements document this build was implemented against.

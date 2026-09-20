@@ -1,3 +1,10 @@
 # Generated release artifact — do not edit, excluded from language stats.
 ProcureSherpa-v2.0.html linguist-generated=true -diff
 _check.js linguist-generated=true -diff
+
+# Shell scripts must keep LF endings regardless of the checking-out
+# platform's core.autocrlf - a CRLF shebang line is unreliable to
+# execute even under Git Bash on Windows. This matters for
+# .githooks/pre-push specifically, which git executes directly.
+.githooks/* text eol=lf
+*.sh text eol=lf

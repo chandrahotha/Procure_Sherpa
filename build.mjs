@@ -44,11 +44,23 @@ execFileSync(process.execPath, ['--check', CHECK], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 'inherit' });
 
 /* Hard performance budget gate: fail the build if the single-file
-   bundle exceeds the ceiling. The bundle is the entire load cost. */
+   bundle exceeds the ceiling. The bundle is the entire load cost.
+   A soft warning fires earlier (85% of budget) so growth toward the
+   wall is visible for several releases before it becomes a build
+   failure, rather than the first sign being a blocked build. This
+   is also the earliest, cheapest point to start a real conversation
+   about code-splitting / lazy-loading if the single-file constraint
+   is going to be outgrown. */
 const BUDGET_KB = 1600;
+const WARN_AT_KB = Math.round(BUDGET_KB * 0.85);
 const sizeKB = fs.statSync(OUT).size / 1024;
 if (sizeKB > BUDGET_KB) {
   console.error('FAIL: bundle size ' + sizeKB.toFixed(0) + ' KB exceeds budget ' + BUDGET_KB + ' KB');
   process.exit(1);
 }
-console.log('perf budget: ' + sizeKB.toFixed(0) + ' KB (budget ' + BUDGET_KB + ' KB) - ok');
+if (sizeKB > WARN_AT_KB) {
+  console.warn('WARN: bundle size ' + sizeKB.toFixed(0) + ' KB is past the ' + WARN_AT_KB +
+    ' KB soft threshold (85% of the ' + BUDGET_KB + ' KB budget). Still passing, but worth' +
+    ' planning ahead for what happens when this hits the hard limit.');
+}
+console.log('perf budget: ' + sizeKB.toFixed(0) + ' KB (budget ' + BUDGET_KB + ' KB, warn at ' + WARN_AT_KB + ' KB) - ok');

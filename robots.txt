@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# No sitemap.xml yet: this ships as a portable single-file HTML app with
+# no fixed hosted URL. Once deployed (e.g. to Vercel), add a sitemap.xml
+# alongside this file and reference it here, and fill in the og:url /
+# <link rel="canonical"> placeholders noted in src/base/01a_head.html.

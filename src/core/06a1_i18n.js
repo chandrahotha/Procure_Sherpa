@@ -1,10 +1,26 @@
 /* ==========================================================
-   Internationalization architecture (roadmap 6.2)
-   PS.i18n provides the t() pattern, locale resolution and a
-   string catalog. The app currently ships EN-only content, but
-   the chrome (shell, nav, topbar, common actions) routes through
-   t() so additional locale catalogs can drop in without touching
-   feature code.
+   Internationalization architecture (roadmap 6.2) - SCAFFOLDING,
+   NOT FEATURE-COMPLETE. Read this before citing "i18n support"
+   anywhere in docs or marketing copy.
+
+   Status (accurate as of the last audit - see tools/i18n_audit.mjs):
+     - 1 locale registered (en). The Settings locale switcher renders,
+       but there is nothing else to switch to yet.
+     - ~40 keys defined in the catalog below.
+     - Only the handful wired to data-i18n/-placeholder/-title
+       attributes in src/base/02_shell.html actually render through
+       t() today (persistent shell chrome: nav filter, topbar search,
+       footer, account label). Route/page content (calculators,
+       Academy, SOPs, checklists, templates, KB) is still hardcoded
+       English throughout src/pages and src/content - t() is not
+       called there at all.
+     - Run `npm run audit:i18n` for a live count of catalog keys vs.
+       DOM usages so this comment can't silently go stale again.
+
+   What exists is real infrastructure (t(), plural-safe {n}
+   substitution, locale persistence via prefs, live DOM re-apply on
+   switch) that a second locale + broader t() adoption can build on
+   without touching the mechanism - it is just not there yet.
 
    Usage:
      PS.i18n.t('nav.calculators')            -> 'Calculators'

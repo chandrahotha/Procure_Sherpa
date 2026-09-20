@@ -122,6 +122,39 @@ Procure Sherpa v2.0 is a production-grade, offline-first procurement toolkit. Th
 
 **Philosophy:** Every enhancement must preserve the core constraints: single-file HTML, zero dependencies, offline-first, no telemetry, enterprise-grade security.
 
+### Status legend (read this before Phases 1-10 below)
+
+**Phases 1-10 are a proposal, not a commitment or a progress log.** They
+describe a large surface of *possible* future work and were written in
+one pass; almost none of it has been started. Only what's explicitly
+marked is actually shipped:
+
+| Status | Meaning |
+|---|---|
+| ✅ Shipped | In the current build, exercised by `npm run qa` |
+| 🚧 Partial / scaffolding | Real infrastructure exists but coverage is narrow (see the item's note) |
+| 📋 Proposed | Not started — an idea, not a plan with a date |
+
+Everything in **Phase 11** is ✅ shipped (it was added after the original
+10 phases and built out immediately — see the Decision Log). Everything
+in **Phases 1-10** is 📋 proposed unless called out otherwise inline.
+Two items already have partial infrastructure worth knowing about:
+
+* 🚧 **i18n architecture** (Phase 6.2) — `PS.i18n` (`t()`, plural-safe
+  substitution, locale persistence, live DOM re-apply) is real and
+  working, but only 1 locale (`en`) is registered and only the
+  persistent shell chrome (~20% of catalog keys) is actually wired to
+  it — run `npm run audit:i18n` for the live count. Route/page content
+  (calculators, Academy, SOPs, checklists, templates, KB) is still
+  hardcoded English throughout.
+* 🚧 **CI** (not in the original 10 phases, added later) — a weekly
+  GitHub Actions run of the full `npm run qa` gate exists
+  (`.github/workflows/qa.yml`) plus a local pre-push hook for the fast
+  test subset. It is not a per-commit/per-PR gate.
+
+If you're deciding what to build next, treat this document as a menu,
+not a schedule.
+
 ---
 
 ## Phase 1: Academy & Learning Enhancements (High Priority)
@@ -528,15 +561,15 @@ Score = (User Impact × 0.4) + (Strategic Alignment × 0.3) + (Effort⁻¹ × 0.
 
 | Metric | Current | Target (v3.0) |
 |--------|---------|---------------|
-| Routes passing smoke test | 59/59 | 80+/80+ |
+| Routes passing smoke test | 63/63 | 80+/80+ |
 | Cross-ref integrity | 0 broken | 0 broken |
-| HTML size | 1.15 MB | <2 MB |
+| HTML size | 1.23 MB (1261 KB, 79% of the 1600 KB build budget) | <2 MB |
 | Load time (offline) | ~800ms | <500ms |
-| Accessibility score (Lighthouse) | ~92 | 100 |
-| PWA score (Lighthouse) | ~70 | 100 |
-| Supported languages | 1 (EN) | 7+ |
+| Accessibility score (`npm run audit:a11y`) | 0 issues / 38 routes | 0 issues, all routes |
+| PWA score (Lighthouse) | not yet measured | 100 |
+| Supported languages | 1 (EN); i18n scaffolding covers ~20% of catalog keys - see status legend above | 7+ |
 | Calculator count | 19 | 25+ |
-| Academy functions | 16 | 24+ |
+| Academy functions | 19 | 24+ |
 
 ---
 
@@ -551,6 +584,9 @@ Score = (User Impact × 0.4) + (Strategic Alignment × 0.3) + (Effort⁻¹ × 0.
 | 2026-09-17 | Command palette scores + shortcuts | Power user efficiency |
 | 2026-09-18 | Added Phase 11 (6 new capabilities) | Requested expansion beyond original 10 phases |
 | 2026-09-18 | Phase 11 shipped in v2.1 dev | Copilot, static share, what-if, exams, spend model, doc pack all implemented |
+| 2026-09-20 | Added weekly-only GitHub Actions QA workflow + local pre-push hook | Repo had zero CI; weekly keeps the full audit suite honest without gating every commit, pre-push hook catches most regressions before they leave a contributor's machine |
+| 2026-09-20 | Fixed exam auto-submit-on-timeout bug | Timer expiry routed through a confirmation modal the candidate could miss entirely, leaving the attempt ungraded |
+| 2026-09-20 | Tracked `package-lock.json`; added i18n/perf soft-budget audits; added CONTRIBUTING.md + SECURITY.md; added this status legend; removed dead/duplicate screenshots and a stale disabled-feature screenshot | Repo hygiene and honesty pass - see git log for full detail |
 
 ---
 
