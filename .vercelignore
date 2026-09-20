@@ -1,0 +1,10 @@
+# This deployment must only ever serve the compiled artifact - never the
+# source. outputDirectory is "." in vercel.json (there's nothing to
+# build; ProcureSherpa-v2.0.html is already the committed release
+# artifact), which means anything NOT excluded here becomes a directly
+# fetchable static file. Whitelist by exclusion: everything is ignored
+# except the handful of files actually meant to be served.
+*
+!ProcureSherpa-v2.0.html
+!robots.txt
+!vercel.json
