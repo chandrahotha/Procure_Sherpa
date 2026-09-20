@@ -290,24 +290,6 @@ PS.SDEC({
   rel: { templates: ['tpl-single-source-justification'], sops: ['sop-single-source'] }
 });
 PS.SDEC({
-  i: 'framework-agreement', t: 'Framework agreement or direct award?', c: 'Sourcing',
-  n: 'Decide whether to set up a multi-supplier framework (enabling future direct awards) or just buy now.',
-  q: 'Set up a framework agreement, or award once now?',
-  x: 'A framework is worth the upfront effort when you expect repeat spend from multiple buyers. A direct award suits a single, well-defined transaction.',
-  f: [
-    { q: 'Do multiple teams expect to buy this category in the next 1-3 years?', hint: 'Repeat demand justifies framework setup cost.', w: { framework: 3, direct: -3 } },
-    { q: 'Is the category value over your threshold for mandated competition?', w: { framework: 2, direct: -2 } },
-    { q: 'Are the requirements stable enough to write reusable terms?', hint: 'Volatile requirements make frameworks hard to maintain.', w: { framework: -2, direct: 2 } },
-    { q: 'Is the total setup effort worth the expected repeat savings?', w: { framework: 2, direct: -1 } }
-  ],
-  o: [
-    { k: 'framework', label: 'Framework agreement', desc: 'Run one competition to create a multi-supplier agreement for future call-offs.' },
-    { k: 'direct', label: 'Award once now', desc: 'Single transaction. Keep records in case future volume needs a framework.' }
-  ],
-  ft: ['If framework, use the Award Recommendation template to record the winner and reserves.'],
-    rel: { sops: ['sop-contract-award'], templates: ['tpl-award-recommendation'] }
-});
-PS.SDEC({
   i: 'consolidate-suppliers', t: 'Consolidate suppliers?', c: 'Sourcing',
   n: 'Decide whether to reduce the number of suppliers in a category for leverage and simplicity.',
   q: 'Should you consolidate your supplier base?',
@@ -325,44 +307,6 @@ PS.SDEC({
   ],
   ft: ['If consolidating, run a Supplier Scorecard first to validate retained suppliers.', 'Document expected savings baseline before the move.'],
   rel: { sops: ['sop-supplier-segmentation', 'sop-commercial-evaluation'], calcs: ['calc-supplier-scorecard', 'calc-savings-analysis'] }
-});
-PS.SDEC({
-  i: 'supplier-concentration', t: 'Too much spend with one supplier?', c: 'Risk',
-  n: 'Assess whether your concentration of spend with a supplier is a risk worth actively reducing.',
-  q: 'Is this supplier too big a share of your spend?',
-  x: 'Concentration gives the supplier leverage, creates a single point of failure, and weakens your BATNA. Above ~40% of relevant spend usually warrants mitigation.',
-  f: [
-    { q: 'Does this supplier account for more than 20% of your relevant category spend?', hint: '20-40% starts to concentrate risk.', w: { reduce: 2, ok: -2 } },
-    { q: 'Is a single supplier above 40% of this category spend?', hint: 'Above 40% is high concentration.', w: { reduce: 3, ok: -3 } },
-    { q: 'Does the supplier have few or no real alternatives in the market?', hint: 'No alternatives raise the risk sharply.', w: { reduce: 3, ok: -3 } },
-    { q: 'Is this a mission-critical item with no workaround?', hint: 'Criticality plus concentration is a high-risk mix.', w: { reduce: 2, ok: -2 } },
-    { q: 'Has the supplier been acquired or shown financial stress recently?', hint: 'Financial stress on a concentrated supplier multiplies risk.', w: { reduce: 3, ok: -2 } }
-  ],
-  o: [
-    { k: 'ok', label: 'Concentration is acceptable', desc: 'Monitor quarterly and document the justification.' },
-    { k: 'reduce', label: 'Reduce concentration', desc: 'Plan to bring in an alternative supplier and shift volume gradually.' }
-  ],
-  ft: ['Run the Supplier Scorecard to document why an alternative is not yet viable.', 'If reducing, build it into the next sourcing strategy.'],
-    rel: { calcs: ['calc-supplier-concentration', 'calc-supplier-scorecard'], sops: ['sop-supplier-segmentation', 'sop-supplier-due-diligence'] }
-});
-PS.SDEC({
-  i: 'supplier-financial-risk', t: 'Is the supplier financially at risk?', c: 'Risk',
-  n: 'When a supplier shows financial stress, decide whether to act now (mitigate) or continue monitoring.',
-  q: 'Should you act on this supplier\'s financial condition?',
-  x: 'Financial difficulty is a leading indicator of supply disruption. Act when probability and impact are both meaningful; monitor when impact is low.',
-  f: [
-    { q: 'Has the supplier missed payments or breached financial covenants?', hint: 'Hard signals strongly favour acting.', w: { act: 3, monitor: -3 } },
-    { q: 'Is the item mission-critical with no close substitute?', hint: 'Criticality plus stress raises the stakes.', w: { act: 3, monitor: -2 } },
-    { q: 'Have you allocated significant spend or multi-year value to this supplier?', w: { act: 2, monitor: -1 } },
-    { q: 'Does the supplier have viable financial backing (parent, insurance, bonds)?', hint: 'Backing can buy time to secure alternatives.', w: { act: -2, monitor: 2 } },
-    { q: 'Can you absorb a disruption or source an alternative within your lead time?', hint: 'Low impact may justify monitoring only.', w: { act: -2, monitor: 2 } }
-  ],
-  o: [
-    { k: 'act', label: 'Act now', desc: 'Trigger a contingency: expedite an alternative, reduce dependency, or accelerate re-sourcing.' },
-    { k: 'monitor', label: 'Monitor and plan', desc: 'Watch financial indicators closely and prepare an exit plan.' }
-  ],
-  ft: ['If acting, document the decision and the alternative plan; update the risk register.'],
-  rel: { sops: ['sop-supplier-due-diligence'], checklists: ['cl-supplier-due-diligence'] }
 });
 PS.SDEC({
   i: 'dual-source', t: 'Dual source or single source?', c: 'Risk',

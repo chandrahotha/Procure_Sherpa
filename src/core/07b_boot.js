@@ -1,26 +1,24 @@
-/* ---------- optional PWA enhancement (Section 44) ---------- */
-PS.pwa = function () {
-  try {
-    if (location.protocol === 'file:') return; /* standalone HTML mode: no service worker, no manifest fetch */
-    if (!document.querySelector('link[rel="manifest"]')) {
-      var manifest = {
-        name: 'Procure Sherpa', short_name: 'Procure Sherpa',
-        start_url: '.', scope: '.', display: 'standalone',
-        background_color: '#f2f5fa', theme_color: '#1d4ed8',
-        description: 'Procurement digital learning platform: interactive modules, SOPs, decision guides, checklists, templates, calculators, KPIs and reports.'
-      };
-      var url = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
-      var link = document.createElement('link');
-      link.rel = 'manifest'; link.href = url;
-      document.head.appendChild(link);
-    }
-    if ('serviceWorker' in navigator) {
-      fetch('sw.js', { method: 'HEAD' }).then(function (r) {
-        if (r && r.ok) return navigator.serviceWorker.register('sw.js');
-      }).catch(function () { /* standalone mode: no sw.js beside the file, which is expected */ });
-    }
-  } catch (e) { /* optional enhancement only - the app never depends on it */ }
-};
+/* ---------- PWA: intentionally not implemented ----------
+   An earlier build registered a service worker and injected a web app
+   manifest here. Both were dead code, and are removed rather than left
+   in place looking like a feature:
+
+     * The Content-Security-Policy in src/base/01a_head.html sets
+       default-src 'none' and connect-src 'none', so the fetch('sw.js')
+       probe and the blob: manifest link were blocked by our own policy
+       on every hosted load. A catch swallowed the failures, so nothing
+       ever surfaced.
+     * No sw.js has ever existed in this repository, so even without the
+       CSP the probe could only 404.
+     * It contradicted the "no network calls at runtime" claim in the
+       README - the one property this project most needs to be literally
+       true, and the reason connect-src is 'none' in the first place.
+
+   Installability is not worth loosening the CSP or shipping a second
+   file that breaks the single-file premise: the app is already fully
+   offline because it IS one file. If a PWA is ever genuinely wanted it
+   needs a real sw.js, an explicit manifest-src and connect-src 'self',
+   and a README change - not a silent probe. */
 
 /* ---------- boot ---------- */
 PS.boot = function () {
@@ -35,7 +33,6 @@ PS.boot = function () {
     PS.updateNavCounts();
     PS.bindGlobalKeys();
     PS.renderRoute();
-    PS.pwa();
     if (!PS.storageOK) PS.audit('storage-unavailable', 'Browser storage is blocked; running in session-only mode');
     PS.audit('app-opened', 'Procure Sherpa v' + PS.VERSION + (PS.storageOK ? '' : ' (session-only)'));
   } catch (e) {

@@ -27,7 +27,7 @@ PS.route('spend-model', function () {
       '<button type="button" class="btn btn-sm btn-danger" data-act="spend-del-cat" data-id="' + PS.escAttr(c.id) + '">Remove</button>' +
       '</div>' + supHtml + '</div>';
   }).join('');
-  return PS.reportHead('Spend data model', 'Single source for Pareto & Kraljic') +
+  var html = PS.reportHead('Spend data model', 'Single source for Pareto & Kraljic') +
     '<div class="card"><div class="card-head"><div><h1>Spend data model</h1>' +
     '<p class="card-sub">Maintain a category &gt; supplier hierarchy here. The Pareto and Kraljic charts below derive directly from this model, so updating spend once keeps every view consistent. Drag supplier rows to reorder.</p></div>' +
     '<div class="spacer"></div>' +

@@ -9,3 +9,11 @@ Desktop.ini
 .DS_Store
 .vercel
 .env*
+
+# Generated deploy build (npm run build:min). The readable artifact at the
+# repo root is the committed one; this minified variant is produced at
+# deploy time and must never be committed.
+dist/
+
+# Local agent worktrees
+.kilo/

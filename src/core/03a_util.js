@@ -22,6 +22,9 @@ PS.esc = function (v) {
 };
 PS.clean = function (v, max) {
   if (v === null || v === undefined) return '';
+  /* eslint-disable-next-line no-control-regex --
+     matching control characters is the entire point of this function
+     (Section 34: input security), not an accidental range. */
   var s = String(v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
   if (max && s.length > max) s = s.slice(0, max);
   return s;
@@ -86,9 +89,6 @@ PS.dateStr = function (d) {
   if (isNaN(d.getTime())) return '\u2014';
   var p = PS.prefs(), m = String(d.getMonth() + 1), day = String(d.getDate()), y = d.getFullYear();
   m = m.length < 2 ? '0' + m : m; day = day.length < 2 ? '0' + day : day;
-  var h = d.getHours(), mi = String(d.getMinutes());
-  if (mi.length < 2) mi = '0' + mi;
-  var t = (h % 12 === 0 ? 12 : h % 12) + ':' + mi + ' ' + (h < 12 ? 'am' : 'pm');
   if (p.dateFormat === 'us') return m + '/' + day + '/' + y;
   if (p.dateFormat === 'eu') return day + '/' + m + '/' + y;
   return y + '-' + m + '-' + day;

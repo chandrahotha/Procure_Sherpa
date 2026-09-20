@@ -108,13 +108,49 @@ PS.contentReport = function () {
   });
   return { text: lines.join(' \u00B7 '), total: total };
 };
+/* Which field actually carries the human-readable description, per type.
+   Each content type is expanded by its own helper in 09b_expand.js and
+   they do not agree on a name: a decision guide's description lives in
+   `intro`, a scenario's in `problem`, a KPI's in `def`. An earlier version
+   of this check only looked at desc/def/purpose, so it reported all 20
+   decision guides and all 6 scenarios as "missing description" when every
+   one of them had a perfectly good description under a name it did not
+   know about - 26 false positives that made the whole check ignorable.
+   Any new content type must be added here, or it will not be checked. */
+PS.DESC_FIELDS = {
+  kb: ['def', 'full'],
+  sop: ['desc', 'purpose'],
+  cl: ['desc'],
+  tpl: ['purpose'],
+  dec: ['intro', 'question'],
+  kpi: ['def'],
+  gloss: ['def'],
+  scen: ['problem', 'summary'],
+  calc: ['desc', 'purpose']
+};
 /* content integrity check used by the built-in quality report (Section 77) */
 PS.contentQA = function () {
   var problems = [];
+  /* PS.register records every id collision in PS.dupIds. That list was
+     collected and then never read by anything, so two items sharing an id
+     was invisible: both get pushed into the registry, PS.byId always
+     returns the first, and the second becomes unreachable content that
+     still passes every test. Surfacing it here makes it a build failure. */
+  (PS.dupIds || []).forEach(function (d) {
+    problems.push('Duplicate id (second copy is unreachable): ' + d);
+  });
   Object.keys(PS.data).forEach(function (type) {
+    var fields = PS.DESC_FIELDS[type];
     (PS.data[type] || []).forEach(function (item) {
       if (!item.title && !item.term) problems.push('Missing title: ' + type + ' ' + item.id);
-      if (!item.desc && !item.def && !item.purpose) problems.push('Missing description: ' + type + ' ' + item.id);
+      if (!fields) {
+        problems.push('Unchecked content type (add it to PS.DESC_FIELDS): ' + type);
+      } else {
+        var described = fields.some(function (f) {
+          return typeof item[f] === 'string' && item[f].trim().length > 0;
+        });
+        if (!described) problems.push('Missing description (' + fields.join('/') + '): ' + type + ' ' + item.id);
+      }
       Object.keys(item.rel || {}).forEach(function (key) {
         var target = PS.REL_TYPE[key];
         (item.rel[key] || []).forEach(function (id) {
@@ -130,9 +166,13 @@ PS.contentQA = function () {
 PS.normalizeContent();
 PS.pruneRels();
 PS.CONTENT_STATUS = PS.contentReport();
-if (window.console && console.log) {
+/* IIFE, not bare statements: every fragment in this build shares one
+   global scope, so a top-level `var qa` here would be an application-wide
+   global named `qa`. */
+(function () {
+  if (!window.console || !console.log) return;
   console.log('Procure Sherpa v' + PS.VERSION + ' content loaded - ' + PS.CONTENT_STATUS.text);
   var qa = PS.contentQA();
   if (qa.length) console.warn('Content QA: ' + qa.length + ' issues', qa.slice(0, 12));
   if (PS.PRUNED_REFS) console.info('Link hygiene: ' + PS.PRUNED_REFS + ' forward reference(s) hidden from view until that content ships.');
-}
+}());

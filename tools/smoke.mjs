@@ -1,10 +1,14 @@
 /* Headless smoke test: load the built app in jsdom, visit every major route,
-   collect runtime errors, and flag empty renders. */
-import fs from 'node:fs';
+   collect runtime errors, and flag empty renders.
+
+   Takes an optional path so the same suite can be run against the
+   minified deploy build:  node tools/smoke.mjs dist/index.html
+   Minification is only safe if the minified artifact passes the same
+   checks as the readable one, so the build runs both. */
 import path from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const HTML = path.resolve('ProcureSherpa-v2.0.html');
+const HTML = path.resolve(process.argv[2] || 'ProcureSherpa-v2.0.html');
 const errors = [];
 const vc = new VirtualConsole();
 vc.on('jsdomError', (e) => errors.push('jsdom: ' + (e.detail?.message || e.message)));

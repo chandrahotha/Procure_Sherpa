@@ -29,7 +29,7 @@ const counts = {};
   });
 console.log('INFO content registrations: ' + JSON.stringify(counts));
 
-const routes = js.match(/PS\.route\('([a-z0-9\-]+)'/g) || [];
+const routes = js.match(/PS\.route\('([a-z0-9-]+)'/g) || [];
 const seen = {}, dupes = [];
 routes.forEach(function (r) {
   const name = r.replace(/PS\.route\('/, '').replace(/'$/, '');
@@ -39,7 +39,7 @@ routes.forEach(function (r) {
 console.log('INFO routes defined: ' + Object.keys(seen).sort().join(', '));
 if (dupes.length) { console.error('FAIL duplicate route definitions: ' + dupes.join(', ')); fail = 1; }
 
-const acts = js.match(/PS\.acts\['([a-zA-Z0-9\-]+)'\]/g) || [];
+const acts = js.match(/PS\.acts\['([a-zA-Z0-9-]+)'\]/g) || [];
 console.log('INFO action handlers: ' + acts.length);
 
 ['localStorage', 'document.createElement', 'JSON.parse', 'navigator.clipboard'].forEach(function (api) {

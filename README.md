@@ -8,9 +8,9 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 [![Dependencies: zero runtime](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](#repository-structure--source-code)
 [![Offline-first](https://img.shields.io/badge/offline-first-informational.svg)](#data-privacy--security-architecture)
 [![Single file](https://img.shields.io/badge/deploy-single%20HTML%20file-lightgrey.svg)](#operating-instructions)
-[![QA (weekly)](https://github.com/chandrahotha/Procure_Sherpa/actions/workflows/qa.yml/badge.svg)](.github/workflows/qa.yml)
+[![QA](https://github.com/chandrahotha/Procure_Sherpa/actions/workflows/qa.yml/badge.svg)](.github/workflows/qa.yml)
 
-> These badges describe static, verifiable facts about this repository (license file present, zero runtime `dependencies` in `package.json`, no network calls at runtime). The QA badge reflects a workflow that runs `npm run qa` **weekly plus on manual dispatch, not on every commit** — see [Known Limitations](#known-limitations). It is a real, verifiable signal, but not a per-commit "build passing" guarantee; a badge implying otherwise would be exactly the kind of false signal this project deliberately removed from its certificate feature (Section 5).
+> These badges describe static, verifiable facts about this repository (license file present, an empty `dependencies` block in `package.json`, no network calls at runtime). The QA badge reflects `.github/workflows/qa.yml`, which runs the full `npm run qa` gate **on every push and pull request to `main`**, plus a weekly scheduled run to catch environment drift. Earlier releases ran it weekly only and this note said so; that gap is now closed.
 
 ---
 
@@ -22,8 +22,10 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 ```bash
 git clone https://github.com/chandrahotha/Procure_Sherpa.git
 cd Procure_Sherpa
-npm install        # only dev dependency: jsdom, for running tests. Also wires a pre-push safety hook.
-npm run qa         # build + the full test/audit suite - run this before every PR
+npm install        # dev-only: jsdom (tests), eslint (lint), terser (deploy build).
+                   # `dependencies` is empty - nothing ships to a user.
+                   # Also wires the pre-push safety hook.
+npm run qa         # build + lint + the full test/audit suite - run this before every PR
 ```
 Then see [Repository Structure & Source Code](#repository-structure--source-code) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -198,15 +200,19 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 `ProcureSherpa-v2.0.html` is a compiled release artifact generated from modular fragments in `src/`. Source modifications must be made within `src/` and recompiled — **never edit the root HTML file directly.**
 
 ```
-ProcureSherpa-v2.0.html          # Compiled production artifact (single file)
+ProcureSherpa-v2.0.html          # Compiled release artifact - readable, committed, downloadable
+dist/                            # Minified deploy build (generated, gitignored, never committed)
 build.mjs                        # Assembly + syntax + validation + performance budget gate
 validate.mjs                     # Structural and syntax integrity validator
+eslint.config.mjs                # Two lint configs: ES5 browser fragments, modern Node tooling
 robots.txt                       # Crawl policy (see SEO note below)
 LICENSE                          # ISC license
 CONTRIBUTING.md                  # Dev setup, PR checklist, the rules that exist for a reason
 SECURITY.md                      # Threat model, what's audited, how to report an issue
-.github/workflows/qa.yml         # Weekly (+ manual) CI run of the full npm run qa gate
-.githooks/pre-push                # Local safety net: fast test subset before every git push
+docs/adr/                        # Architecture decision records
+  0001-single-file-architecture.md   # Why one file, and the triggers for revisiting it
+.github/workflows/qa.yml         # CI: full gate on every push and PR, plus weekly
+.githooks/pre-push               # Local safety net: drift check + fast tests before every push
 src/
   manifest.txt                   # Linear assembly sequence (155 fragments)
   base/                          # Design tokens, CSS stylesheets, shell markup
@@ -215,14 +221,16 @@ src/
   content/                       # Controlled content libraries, SOPs, checklists, templates
   calcs/                         # Calculator definitions and implementation algorithms
 tools/
+  build_min.mjs                  # Minified deploy build -> dist/ (see ADR 0001)
+  check_drift.mjs                # Asserts the committed artifact still matches src/
   smoke.mjs                      # Headless route test suite covering all 63 paths
   check_rels.mjs                 # Cross-reference referential integrity validator
   test_calcs.mjs                 # Calculator correctness harness (all 19 calculators)
   test_calc_values.mjs           # Expected-value fixtures: hand-computed math assertions
   test_interactive.mjs           # Click-through checks: search, palette, backup, prefs
-  test_quiz_tips.mjs             # Content QA (missing descriptions, forward refs) + tip engine
+  test_quiz_tips.mjs             # Content integrity gate + Academy quiz engine assertions
   security_audit.mjs             # CSP / eval / inline-handler / credential scan
-  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes
+  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes (visibility-aware)
   perf_check.mjs                 # Single-file payload budget checker (hard + soft thresholds)
   i18n_audit.mjs                 # Catalog-keys-vs-DOM-usage coverage count (informational)
   setup_hooks.mjs                # Wires .githooks/ on `npm install` via the "prepare" script
@@ -239,8 +247,21 @@ See [`src/README.md`](src/README.md) for the fragment-level architecture and exe
 # Compile single-file HTML bundle and validate syntax + performance budget
 node build.mjs
 
-# Full production QA gate (build + all audits, see below)
+# Full production QA gate (build + lint + all tests and audits, see below)
 npm run qa
+
+# What CI runs: the drift gate first, then the full suite
+npm run qa:ci
+
+# Lint. src/ is checked as ES5 browser script sharing one global scope;
+# tools/ as modern Node ESM. Both configs live in eslint.config.mjs.
+npm run lint
+
+# Assert the committed artifact still matches src/ (no rebuild, no writes)
+npm run check:drift
+
+# Minified deploy build -> dist/, then the same tests against it
+npm run verify:min
 
 # Calculator correctness: asserts every calcImpl produces well-formed, finite output
 node tools/test_calcs.mjs
@@ -261,7 +282,17 @@ node tools/a11y_audit.mjs
 node tools/perf_check.mjs
 ```
 
-`npm run qa` runs, in order: build, referential integrity, calculator correctness (1013+ structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, content QA (missing descriptions / forward references), route smoke (63 routes), security scan, accessibility scan, performance budget, and i18n coverage audit. Any failure exits non-zero except the content and i18n audits, which are informational by design. **A GitHub Actions workflow runs this weekly** (`.github/workflows/qa.yml`) plus a **local pre-push git hook** runs the fast subset on every `git push` — see [Known Limitations](#known-limitations) for exactly what that does and does not cover, and run `npm run qa` by hand before any non-trivial merge.
+`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1013 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (63 routes), security scan, accessibility scan, performance budget, the i18n coverage audit, and finally the minified deploy build re-verified with the smoke, calculator and accessibility suites. **Every one of these is a hard gate except the i18n audit**, which reports coverage and exits `0` because there is no threshold to enforce against a single locale.
+
+`npm run qa:ci` is what CI actually runs. It prefixes the suite with `npm run check:drift`, which must happen *before* anything rebuilds: `npm run qa` starts with `node build.mjs`, so running the drift check after it would regenerate the artifact and erase the very mismatch the check exists to find.
+
+**A GitHub Actions workflow runs `qa:ci` on every push and pull request to `main`** (`.github/workflows/qa.yml`), plus weekly to catch environment drift. A **local pre-push git hook** runs the drift check and the fast test subset first, so the common mistakes fail in seconds on your machine rather than minutes later in Actions.
+
+### Why the generated artifact is committed, and how it stays honest
+
+`ProcureSherpa-v2.0.html` is both a build output *and* the product — "download one file and double-click it" only works if the file is in the tree. That creates exactly one failure mode: editing `src/` and committing without rebuilding, which would leave every test in this repo asserting against an artifact that is no longer the source of truth, and passing.
+
+`tools/check_drift.mjs` closes it. It re-assembles the fragments in memory exactly as `build.mjs` does, byte-compares the result with the committed file, and on a mismatch names the first fragment that diverged. It writes nothing. It runs first in CI and in the pre-push hook.
 
 ### Expected-Value Calculator Fixtures
 
@@ -295,12 +326,14 @@ CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is writt
 
 Documented here deliberately, rather than left for someone to discover:
 
-* **CI runs weekly, not per-commit.** `.github/workflows/qa.yml` runs the full `npm run qa` gate (build, cross-ref checks, calculator/content/smoke tests, security/a11y/perf audits) on a weekly schedule plus manual dispatch — it is not wired to `push`/`pull_request`. This catches drift between releases, but a broken commit can still land on `main` between runs; run `npm run qa` locally before merging anything non-trivial.
-* **Content QA is informational, not a hard gate.** `tools/test_quiz_tips.mjs` (now part of `npm run qa`) currently reports content gaps — missing descriptions on several decision guides and forward references not yet fully populated — but it exits `0` regardless, so it will not fail a build. Treat its output as a checklist, not a pass/fail signal.
-* **i18n is scaffolding, not a shipped feature.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence, a working Settings locale switcher) is real infrastructure, but only 1 locale (`en`) is registered and only the persistent shell chrome — nav filter, topbar search, footer, account label — is actually wired to it (~20% of catalog keys; run `npm run audit:i18n` for the live count). All route/page content (calculators, Academy, SOPs, checklists, templates, KB) is hardcoded English. Do not describe this as "multi-language" or "i18n-ready" until that changes.
+* **i18n is scaffolding, not a shipped feature.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence, a working Settings locale switcher) is real infrastructure, but only 1 locale (`en`) is registered and only the persistent shell chrome — nav filter, topbar search, footer, account label — is actually wired to it (~20% of catalog keys; run `npm run audit:i18n` for the live count). All route/page content (calculators, Academy, SOPs, checklists, templates, KB) is hardcoded English. Do not describe this as "multi-language" or "i18n-ready" until that changes. The audit prints this verdict itself so the README cannot quietly drift away from it.
+* **The i18n audit is the one advisory check.** It reports coverage and exits `0` by design — there is no threshold to enforce until a second locale exists. Every other check in `npm run qa` is a hard gate: lint, build drift, referential integrity, calculator correctness, content integrity, the quiz engine, route smoke, security, accessibility and the performance budget all exit non-zero on failure.
+* **Search engines see almost nothing.** The served markup is ~8 KB of shell; every page is rendered client-side behind a hash route (`#/academy`, `#/calc/...`), and fragments are never sent to the server, so there are no distinct indexable URLs. `sitemap.xml` therefore lists exactly one entry, and the canonical/Open Graph/JSON-LD tags describe the app as a whole rather than its pages. This is a straightforward consequence of the single-file architecture; making the content indexable would mean prerendering each route as a real URL, which is a different product. A `<noscript>` block gives crawlers and JS-disabled visitors a real description instead of a blank page, but it is a floor, not an SEO strategy.
+* **No `og:image`.** Facebook, LinkedIn and Twitter require a real raster asset for a large link preview. Generating a 1200×630 PNG honestly would mean adding a rasterizer dependency for one image, which is not a trade this project wants to make. The exact tags to add, once such an asset exists, are written out in a comment in `src/base/01a_head.html`.
 * **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
+* **This is a single-user tool, not an enterprise system.** There is no server, no database, no account, no authentication and no multi-user state. Everything you enter lives in one browser's `localStorage` and disappears if that storage is cleared — use `#/backup` to export. The audit trail is a local convenience log, not a tamper-evident record, and nothing here is a system of record.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
-* **No SEO-final metadata yet.** `src/base/01a_head.html` ships title/description/Open Graph/Twitter/JSON-LD tags, but there is intentionally no `og:image`, `<link rel="canonical">`, or `sitemap.xml` — this file has no fixed hosted URL yet. Fill those in once it has a deployed domain (see `robots.txt` for the exact TODO).
+* **The single-file design has a ceiling, and it is visible.** The readable artifact is ~1.26 MB against a hard 1.6 MB build budget, all parsed before first paint, with no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.05 MB) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the decision, the trigger conditions for revisiting it, and what the alternatives would actually cost.
 
 ---
 

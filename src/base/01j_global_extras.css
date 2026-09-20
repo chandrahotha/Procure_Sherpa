@@ -148,3 +148,15 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
+
+/* ---------- noscript fallback ----------
+   The app shell (#app) is rendered by script, so with scripting off the
+   page is otherwise blank. This panel is the only thing a visitor - or a
+   crawler that does not execute script - ever sees, so it is styled to be
+   readable on its own rather than inheriting a layout that never runs. */
+.noscript-panel{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem;
+  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#18212f}
+.noscript-panel h1{font-size:1.6rem;margin:0 0 .75rem;color:#1d4ed8}
+.noscript-panel p{margin:0 0 1rem}
+.noscript-panel ul{margin:0 0 1rem;padding-left:1.25rem}
+.noscript-panel li{margin:0 0 .4rem}

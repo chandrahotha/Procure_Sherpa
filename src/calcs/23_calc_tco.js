@@ -5,7 +5,7 @@ PS_CALC.push({
   desc: 'Discounted total cost of ownership over the asset life, with annualised and per-unit figures.',
   disclaimerKind: 'finance',
   assumptions: ['The discount rate is your organization&rsquo;s cost of capital or hurdle rate, not a market rate - set it in Settings or override it here.',
-    'Operating costs are assumed to be incurred at the end of each year and inflated only if you enter a rate.',
+    'Operating costs are assumed to be incurred at the end of each year. There is no inflation input: enter operating costs in the money of the day you expect to pay them, or build your own escalation into the annual figures before entering them.',
     'Residual value reduces TCO at the end of the life; disposal costs are added at the end.'],
   formula: ['Acquisition = (unit price x quantity) + installation and commissioning',
     'Annual operating cost = energy + maintenance + consumables + downtime + other',

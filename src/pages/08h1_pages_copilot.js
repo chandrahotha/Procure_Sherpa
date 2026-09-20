@@ -20,7 +20,7 @@ PS.route('copilot', function () {
         PS.copilot.confidenceTag(x.confidence) + ' ' + PS.esc(x.a) + (cites ? '<div class="cp-cites">' + cites + '</div>' : '') + '</div></div>';
     });
   }
-  return PS.reportHead('Procurement Copilot', 'Local knowledge assistant') +
+  var html = PS.reportHead('Procurement Copilot', 'Local knowledge assistant') +
     '<div class="copilot-shell"><div class="card"><div class="card-head"><div><h1>Ask the Copilot</h1>' +
     '<p class="card-sub">Local retrieval answers with inline citations and an honest confidence signal. Nothing leaves this browser.</p></div>' +
     '<div class="spacer"></div>' +

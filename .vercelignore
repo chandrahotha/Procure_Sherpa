@@ -1,11 +1,24 @@
-# This deployment must only ever serve the compiled artifact - never the
-# source. outputDirectory is "." in vercel.json (there's nothing to
-# build; ProcureSherpa-v2.0.html is already the committed release
-# artifact), which means anything NOT excluded here becomes a directly
-# fetchable static file. Whitelist by exclusion: everything is ignored
-# except the handful of files actually meant to be served.
-*
-!ProcureSherpa-v2.0.html
-!robots.txt
-!sitemap.xml
-!vercel.json
+# What gets uploaded to Vercel as BUILD INPUT.
+#
+# This is not what gets served. vercel.json sets outputDirectory to "dist",
+# so the only things ever fetchable are the files build_min.mjs writes there
+# (index.html, robots.txt, sitemap.xml). Source is never served.
+#
+# The build now actually builds - `npm ci` then `node build.mjs && node
+# tools/build_min.mjs` - so unlike the previous whitelist-everything-out
+# setup, the build inputs have to be present. Exclude only what the build
+# does not need.
+
+node_modules/
+dist/
+.git/
+.github/
+.githooks/
+.kilo/
+.vercel/
+
+# Screenshots, docs and local scratch: large, and irrelevant to the build.
+_shot/
+_check.js
+*.md
+!README.md

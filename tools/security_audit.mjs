@@ -81,7 +81,7 @@ verdicts.push('inline handlers:  ' + (hasInline ? 'FOUND - FAIL' : 'none - ok'))
 const hard = findings.filter((f) => f.startsWith('[eval]') || f.startsWith('[newFunction]') || f.startsWith('[jsUrl]') || f.startsWith('[inlineHandler]'));
 const info = findings.filter((f) => !hard.includes(f));
 
-console.log('--- security audit: ' + HTML + ' (' + (html.length / 1024).toFixed(0) + ' KB) ---');
+console.log('--- security audit: ' + HTML + ' (' + (html.length / 1024).toFixed(0) + ' KB, ' + checks + ' checks) ---');
 console.log(verdicts.join('\n'));
 console.log('\nINFORMATIONAL (review, not blocking):');
 info.slice(0, 30).forEach((f) => console.log('  ' + f));

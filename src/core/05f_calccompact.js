@@ -18,13 +18,15 @@ PS.F = function (spec, label, unit, flags, def) {
   }
   var p = String(spec).split('|');
   var f = { k: p[0], label: p[1] || p[0] };
-  var unit = p[2] || '';
-  if (unit === 'curr') unit = 'currency';
-  if (unit === 'pct') unit = 'percent';
-  if (unit === 'bool') { f.type = 'check'; unit = ''; }
-  if (unit && unit !== 'text') f.unit = unit;
+  /* named 'un', not 'unit': 'unit' is already this function's parameter,
+     and shadowing it here only happened to be safe because the multi-arg
+     branch above returns before reaching this point. */
+  var un = p[2] || '';
+  if (un === 'curr') un = 'currency';
+  if (un === 'pct') un = 'percent';
+  if (un === 'bool') { f.type = 'check'; un = ''; }
+  if (un && un !== 'text') f.unit = un;
   (p[3] || '').split(',').forEach(function (fl) {
-    var v;
     if (fl === 'req') f.req = true;
     else if (fl === 'pos') f.positive = true;
     else if (fl === 'nn') f.nonNegative = true;

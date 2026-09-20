@@ -1,13 +1,24 @@
 {
-  "name": "sherpa",
-  "version": "1.0.0",
-  "description": "An enterprise single-tenant procurement learning and operations platform: competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics compiled into a secure, single-file client architecture.",
-  "main": "_check.js",
+  "name": "procure-sherpa",
+  "version": "2.0.0",
+  "description": "A single-file, offline-first procurement learning and decision-support tool: competency curriculum, digital SOPs, checklists, templates, 19 financial calculators, decision guides and inline analytics. Runs from one HTML file with no server, no database, no accounts and no telemetry; all state is per-browser localStorage.",
+  "main": "ProcureSherpa-v2.0.html",
+  "files": [
+    "ProcureSherpa-v2.0.html",
+    "src",
+    "tools",
+    "build.mjs",
+    "validate.mjs"
+  ],
   "scripts": {
     "prepare": "node tools/setup_hooks.mjs",
     "build": "node build.mjs",
+    "build:min": "node tools/build_min.mjs",
     "validate": "node validate.mjs ProcureSherpa-v2.0.html",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "check:rels": "node tools/check_rels.mjs",
+    "check:drift": "node tools/check_drift.mjs",
     "smoke": "node tools/smoke.mjs",
     "test:calcs": "node tools/test_calcs.mjs",
     "test:calcvalues": "node tools/test_calc_values.mjs",
@@ -17,22 +28,34 @@
     "audit:a11y": "node tools/a11y_audit.mjs",
     "audit:i18n": "node tools/i18n_audit.mjs",
     "perf": "node tools/perf_check.mjs",
-    "qa": "node build.mjs && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs",
-    "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs"
+    "qa": "node build.mjs && eslint . && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs && npm run verify:min",
+    "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs",
+    "qa:ci": "node tools/check_drift.mjs && npm run qa",
+    "verify:min": "node tools/build_min.mjs && node tools/smoke.mjs dist/index.html && node tools/test_calcs.mjs dist/index.html && node tools/test_calc_values.mjs dist/index.html && node tools/a11y_audit.mjs dist/index.html"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chandrahotha/Procure_Sherpa.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "procurement",
+    "sourcing",
+    "supplier-management",
+    "tco",
+    "offline-first",
+    "single-file",
+    "no-dependencies"
+  ],
+  "author": "Digi Tracks",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/chandrahotha/Procure_Sherpa/issues"
   },
   "homepage": "https://github.com/chandrahotha/Procure_Sherpa#readme",
-  "dependencies": {
-    "jsdom": "^30.0.1"
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "jsdom": "^30.1.0",
+    "terser": "^5.51.2"
   }
 }

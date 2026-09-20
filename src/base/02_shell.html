@@ -1,6 +1,41 @@
 <body>
 <a class="skip" href="#main">Skip to main content</a>
 
+<!-- With scripting disabled the entire application is a blank white page:
+     every route, every page and the whole navigation are rendered by the
+     bundled script. That is inherent to the single-file design and is not
+     going to change, but a blank page tells the visitor nothing and gives
+     a crawler nothing at all. This block is the honest floor: what this is,
+     what it needs, and that nothing is sent anywhere. -->
+<noscript>
+  <!-- The app shell below is rendered empty without script; hide it so the
+       visitor sees this panel rather than a bare frame around nothing. -->
+  <style>#app{display:none}</style>
+  <div class="noscript-panel">
+    <h1>Procure Sherpa</h1>
+    <p><strong>This page needs JavaScript to run.</strong> Procure Sherpa is a
+      self-contained procurement learning and decision-support tool: the whole
+      application - curriculum, standard operating procedures, checklists,
+      templates, financial calculators, decision guides and KPI definitions -
+      is built into this single HTML file and rendered in your browser.</p>
+    <p>Enable JavaScript and reload the page. Nothing is sent anywhere either
+      way: there is no server, no database, no account and no telemetry, and
+      anything you enter stays in this browser's local storage.</p>
+    <p>What is inside, once it loads:</p>
+    <ul>
+      <li><strong>Academy</strong> - a procurement competency curriculum with
+        practice questions and exams.</li>
+      <li><strong>Operations</strong> - digital SOPs, compliance checklists and
+        operational templates.</li>
+      <li><strong>Calculators</strong> - 19 costed tools including total cost of
+        ownership, landed cost, should-cost, quote comparison, payment terms and
+        price-increase analysis.</li>
+      <li><strong>Decision guides and KPIs</strong> - weighted guidance for
+        common sourcing calls, and definitions for the measures behind them.</li>
+    </ul>
+  </div>
+</noscript>
+
 <div class="app" id="app">
   <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
     <div class="brand">

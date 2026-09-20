@@ -1,25 +1,36 @@
 #!/bin/sh
-# Local pre-push safety net. Runs the fast test subset (build + calculator
-# assertions + smoke test) before code leaves this machine, since CI here
-# is intentionally weekly-only (see README "Known Limitations") rather
-# than a per-push gate. Wired automatically by `npm install` via the
+# Local pre-push gate. Wired automatically by `npm install` via the
 # "prepare" script (tools/setup_hooks.mjs), which sets:
 #   git config core.hooksPath .githooks
 #
+# CI now runs the full suite on every push and pull request, so this hook is
+# no longer the only thing standing between a broken commit and main. It is
+# kept because it fails in seconds on your machine instead of minutes later
+# in Actions, and because the drift check below is cheap and catches the one
+# mistake that is easy to make and annoying to discover remotely: editing
+# src/ and pushing without rebuilding the artifact.
+#
 # Skip deliberately with: git push --no-verify
 
-echo "pre-push: running 'npm run test' (fast gate - build + calc tests + smoke)"
-npm run test
-status=$?
-
-if [ $status -ne 0 ]; then
+echo "pre-push: checking the committed artifact matches src/"
+node tools/check_drift.mjs || {
   echo ""
-  echo "pre-push: FAILED. Push aborted so a broken commit doesn't sit on the"
-  echo "remote until the next weekly CI run. Run 'npm run qa' for the full"
-  echo "picture (security/a11y/perf audits too), fix, and try again."
+  echo "pre-push: FAILED - ProcureSherpa-v2.0.html is out of date."
+  echo "Run 'npm run build' and commit the regenerated artifact with your"
+  echo "src/ changes, then push again."
   echo "To push anyway (not recommended): git push --no-verify"
   exit 1
-fi
+}
+
+echo "pre-push: running 'npm run test' (fast gate - build + calc tests + smoke)"
+npm run test || {
+  echo ""
+  echo "pre-push: FAILED. Push aborted. Run 'npm run qa' for the full picture"
+  echo "(lint, content/quiz gates, security/a11y/perf audits, minified build),"
+  echo "fix, and try again."
+  echo "To push anyway (not recommended): git push --no-verify"
+  exit 1
+}
 
 echo "pre-push: OK"
 exit 0

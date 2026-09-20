@@ -1,11 +1,17 @@
-/* Static check: every rel id must resolve to a registered item of the right type. */
-import fs from 'node:fs';
-import path from 'node:path';
-import { SRC, listFiles, baseName, readSrc } from './lib.mjs';
+/* Static check: every rel id must resolve to a registered item of the
+   right type.
+
+   NOTE ON KEY QUOTING: content converted from v1 is written with
+   JSON-style quoted keys ({ "sops": [...] }) while hand-authored
+   content uses bare keys ({ sops: [...] }). The extraction patterns
+   below previously required a bare word, so the relations - and some
+   ids - in every converted file were silently skipped: the checker
+   reported "broken refs: 0" without having looked at most of the
+   content. Each pattern now accepts an optional quote. */
+import { listFiles, baseName, readSrc } from './lib.mjs';
 const files = listFiles().filter((f) => f.endsWith('.js'));
 const ids = { kb: new Set(), sop: new Set(), cl: new Set(), tpl: new Set(), dec: new Set(), kpi: new Set(), gloss: new Set(), calc: new Set(), scen: new Set() };
 const rels = [];
-const slug = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 /* find balanced {..} starting at index of '{' */
 function balanced(t, start) {
   let depth = 0;
@@ -20,16 +26,16 @@ for (const f of files) {
      for (const m of t.matchAll(/PS\.S(?:KB|SOP|DEC|CL|TPL|KPI|GLS|SCN)\(\s*\{/g)) {
     const obj = balanced(t, m.index + m[0].length - 1);
     if (!obj) continue;
-    const im = obj.match(/\bi:\s*["']([^"']+)["']/);
+    const im = obj.match(/["']?\bi["']?:\s*["']([^"']+)["']/);
     const ty = m[0].match(/KB|SOP|CL|TPL|DEC|KPI|GLS|SCN/)[0];
     const key = { KB: 'kb', SOP: 'sop', CL: 'cl', TPL: 'tpl', DEC: 'dec', KPI: 'kpi', GLS: 'gloss', SCN: 'scen' }[ty];
     if (im) ids[key].add(im[1]);
-    const rm = obj.match(/,\s*rel:\s*\{/);
+    const rm = obj.match(/,\s*["']?rel["']?:\s*\{/);
     if (rm) {
       const rtxt = balanced(obj, obj.indexOf('{', rm.index + rm[0].length - 1));
       if (rtxt) {
         const rel = {};
-        for (const pm of rtxt.matchAll(/(\w+)\s*:\s*\[([^\]]*)\]/g)) {
+        for (const pm of rtxt.matchAll(/["']?(\w+)["']?\s*:\s*\[([^\]]*)\]/g)) {
           rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
         }
         rels.push({ f, rel });
@@ -38,15 +44,15 @@ for (const f of files) {
   }
   for (const m of t.matchAll(/PS_CALC\.push\(\s*\{/g)) {
     const obj = balanced(t, m.index + m[0].length - 1);
-    const im = obj && obj.match(/\bid:\s*["']([^"']+)["']/);
+    const im = obj && obj.match(/["']?\bid["']?:\s*["']([^"']+)["']/);
     if (im) ids.calc.add(im[1]);
     if (obj) {
-      const rm = obj.match(/,\s*rel:\s*\{/);
+      const rm = obj.match(/,\s*["']?rel["']?:\s*\{/);
       if (rm) {
         const rtxt = balanced(obj, obj.indexOf('{', rm.index + rm[0].length - 1));
         if (rtxt) {
           const rel = {};
-          for (const pm of rtxt.matchAll(/(\w+)\s*:\s*\[([^\]]*)\]/g)) {
+          for (const pm of rtxt.matchAll(/["']?(\w+)["']?\s*:\s*\[([^\]]*)\]/g)) {
             rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
           }
           rels.push({ f, rel });
@@ -65,15 +71,6 @@ const CALC_MAP = {
   'supplier-scorecard': 'calc-supplier-scorecard', 'supplier-concentration': 'calc-supplier-concentration',
   'make-vs-buy': 'calc-make-vs-buy', 'moq': 'calc-moq', 'multi-year-contract': 'calc-multi-year-contract-cost',
   'gst': 'calc-gst-tax', 'currency': 'calc-fx-currency', 'kpi-calculator': 'calc-kpi-calculator'
-};
-const T = {
-  calc: (x) => { const m = CALC_LEGACY.exec(x); return m ? (CALC_MAP[m[2].toLowerCase()] || x) : x; },
-  sop: (x) => x,
-  cl: (x) => x,
-  tpl: (x) => x,
-  kpi: (x) => x,
-  dec: (x) => x,
-  kb: (x) => x
 };
 const SOP_MAP = {
   'sop-quote-comparison': 'sop-rfq', 'sop-bid-normalization': 'sop-rfq',

@@ -1,5 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { listFiles, baseName, readSrc } from './lib.mjs';
 const groups = { kb: [], sop: [], cl: [], tpl: [], dec: [], kpi: [], scen: [], gloss: [], calc: [] };
 for (const f of listFiles()) {

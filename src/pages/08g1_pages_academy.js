@@ -629,6 +629,12 @@ PS.renderAcademySandbox = function (type, f) {
 };
 
 PS.executeAcademySandbox = function (type) {
+  /* `html`, `chartSvg` and `vol` are declared once here rather than in
+     each branch below. The branches are an if/else chain inside one
+     function, and `var` is function-scoped, so a `var html` per branch
+     was ten declarations of the same binding - legal, but it read as if
+     each branch had its own variable when it did not. */
+  var html, chartSvg, vol;
   var resBox = document.getElementById('academySandboxResult');
   if (!resBox) return;
 
@@ -670,9 +676,9 @@ PS.executeAcademySandbox = function (type) {
     var apAdminSavings = Math.round((tailCount * 0.75) * 350);
     var totalRecovery = rebateSavings + apAdminSavings;
 
-    var chartSvg = PS.chart.pareto(vendors, { width: 680, height: 280 });
+    chartSvg = PS.chart.pareto(vendors, { width: 680, height: 280 });
 
-    var html = '<span class="sandbox-verdict-tag verdict-strong">Pareto Audit Result : High Spend Concentration &amp; Actionable Tail Opportunity</span>' +
+    html = '<span class="sandbox-verdict-tag verdict-strong">Pareto Audit Result : High Spend Concentration &amp; Actionable Tail Opportunity</span>' +
       chartSvg +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile"><div class="m-lab">Total Addressable Spend</div><div class="m-val">$' + (totalSpend / 1000000).toFixed(2) + 'M</div></div>' +
@@ -706,9 +712,9 @@ PS.executeAcademySandbox = function (type) {
       { name: 'Office Supplies', impact: nImp, risk: nRisk, spend: '$250k Spend', spendRatio: 0.5, color: '#64748b' }
     ];
 
-    var chartSvg = PS.chart.kraljic(items, { width: 640, height: 420 });
+    chartSvg = PS.chart.kraljic(items, { width: 640, height: 420 });
 
-    var html = '<span class="sandbox-verdict-tag verdict-strong">Portfolio Alignment : 4 Categories Mapped to Strategic Playbooks</span>' +
+    html = '<span class="sandbox-verdict-tag verdict-strong">Portfolio Alignment : 4 Categories Mapped to Strategic Playbooks</span>' +
       chartSvg +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile is-info"><div class="m-lab">Strategic Playbook</div><div class="m-val">Long-Term Alliance</div></div>' +
@@ -739,7 +745,7 @@ PS.executeAcademySandbox = function (type) {
     var margin = cogs * marginPct;
     var shouldCost = cogs + margin;
     var quote = getNum('sb_sc_quote', 89.00);
-    var vol = getNum('sb_sc_vol', 20000);
+    vol = getNum('sb_sc_vol', 20000);
     var unitVariance = quote - shouldCost;
     var annualPadding = unitVariance * vol;
     var paddingPct = quote > 0 ? (unitVariance / quote) * 100 : 0;
@@ -752,9 +758,9 @@ PS.executeAcademySandbox = function (type) {
       { label: 'Supplier Margin', val: margin }
     ];
 
-    var chartSvg = PS.chart.waterfall(costElements, { width: 680, height: 260, currency: '$' });
+    chartSvg = PS.chart.waterfall(costElements, { width: 680, height: 260, currency: '$' });
 
-    var html = '<span class="sandbox-verdict-tag ' + (unitVariance > 0 ? 'verdict-danger' : 'verdict-strong') + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (unitVariance > 0 ? 'verdict-danger' : 'verdict-strong') + '">' +
       (unitVariance > 0 ? 'Audit Result : Hidden Margin Padding of $' + unitVariance.toFixed(2) + '/unit Exposed' : 'Audit Result : Quoted Price Aligned with Bottom-Up Model') + '</span>' +
       chartSvg +
       '<div class="sandbox-metric-row">' +
@@ -788,13 +794,13 @@ PS.executeAcademySandbox = function (type) {
     var x5 = assets > 0 ? (sales / assets) : 0;
 
     var z = (1.2 * x1) + (1.4 * x2) + (3.3 * x3) + (0.6 * x4) + (0.999 * x5);
-    var chartSvg = PS.chart.zscoreGauge(z, { width: 380, height: 220 });
+    chartSvg = PS.chart.zscoreGauge(z, { width: 380, height: 220 });
 
     var zoneName = z < 1.23 ? 'Distress Zone' : (z < 2.90 ? 'Grey Zone' : 'Safe Zone');
     var defaultProb = z < 1.23 ? '72% - 85% within 24 Months' : (z < 2.90 ? '25% - 35% within 24 Months' : '< 5% Insolvency Risk');
     var safeguard = z < 1.23 ? 'Enforce Letter of Credit & Immediate Dual Sourcing' : (z < 2.90 ? 'Parent Guarantee & Escrow Inventory' : 'Standard Commercial Credit Terms');
 
-    var html = '<span class="sandbox-verdict-tag ' + (z < 1.23 ? 'verdict-danger' : (z < 2.90 ? 'verdict-warn' : 'verdict-strong')) + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (z < 1.23 ? 'verdict-danger' : (z < 2.90 ? 'verdict-warn' : 'verdict-strong')) + '">' +
       'Solvency Audit : Altman Z-Score of ' + z.toFixed(2) + ' (' + zoneName + ')</span>' +
       chartSvg +
       '<div class="sandbox-metric-row">' +
@@ -832,7 +838,7 @@ PS.executeAcademySandbox = function (type) {
     var badgeClass = riskScore <= 16 ? 'verdict-strong' : (riskScore <= 40 ? 'verdict-warn' : 'verdict-danger');
     var meterColor = riskScore <= 16 ? '#10b981' : (riskScore <= 40 ? '#f59e0b' : '#ef4444');
 
-    var html = '<span class="sandbox-verdict-tag ' + badgeClass + '">' +
+    html = '<span class="sandbox-verdict-tag ' + badgeClass + '">' +
       'Contract Redline Audit : Legal Risk Exposure Score ' + riskScore + ' / 100 (' + ratingText + ')</span>' +
       '<div style="margin: 16px 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">' +
       '<div style="display:flex; justify-content:space-between; margin-bottom:6px; font-weight:700; font-size:13px;">' +
@@ -879,7 +885,7 @@ PS.executeAcademySandbox = function (type) {
     var aWins = scoreA >= scoreB;
     var delta = Math.abs(scoreA - scoreB);
 
-    var html = '<span class="sandbox-verdict-tag ' + (delta > 0.4 ? 'verdict-strong' : 'verdict-warn') + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (delta > 0.4 ? 'verdict-strong' : 'verdict-warn') + '">' +
       'MCDA Sourcing Award : ' + (aWins ? 'Supplier A (Quality Leader)' : 'Supplier B (Challenger Value)') + ' Recommended</span>' +
       '<div style="margin: 16px 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow:hidden;">' +
       '<table style="width:100%; border-collapse:collapse; font-size:12.5px;">' +
@@ -921,7 +927,7 @@ PS.executeAcademySandbox = function (type) {
     var port = getNum('sb_port_cost', 5.5);
     var demurrage = getNum('sb_demurrage', 3.5);
     var ddp = getNum('sb_ddp_price', 112);
-    var vol = getNum('sb_volume', 5000);
+    vol = getNum('sb_volume', 5000);
 
     var dutyVal = exw * (dutyPct / 100);
     var totalLandedExw = exw + ocean + dutyVal + port + demurrage;
@@ -929,7 +935,7 @@ PS.executeAcademySandbox = function (type) {
     var totalAnnualDelta = deltaPerUnit * vol;
     var domesticWins = totalLandedExw > ddp;
 
-    var html = '<span class="sandbox-verdict-tag ' + (domesticWins ? 'verdict-strong' : 'verdict-warn') + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (domesticWins ? 'verdict-strong' : 'verdict-warn') + '">' +
       (domesticWins ? 'Verdict : Domestic DDP Sourcing Delivers Greater Net Value' : 'Verdict : Overseas Sourcing Delivers Cost Advantage') + '</span>' +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile"><div class="m-lab">Supplier A True Landed Cost</div><div class="m-val">$' + totalLandedExw.toFixed(2) + '</div></div>' +
@@ -964,7 +970,7 @@ PS.executeAcademySandbox = function (type) {
     var annualOpexSavings = (caEnergy + caMaint) - (cbEnergy + cbMaint);
     var paybackYears = annualOpexSavings > 0 ? (capexDelta / annualOpexSavings) : 0;
 
-    var html = '<span class="sandbox-verdict-tag ' + (netSavings > 0 ? 'verdict-strong' : 'verdict-warn') + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (netSavings > 0 ? 'verdict-strong' : 'verdict-warn') + '">' +
       (netSavings > 0 ? 'Verdict : Premium Asset Delivers Superior 5-Year Enterprise Value' : 'Verdict : Low Capex Model Is Economical') + '</span>' +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile"><div class="m-lab">Model A 5-Year TCO</div><div class="m-val">$' + Math.round(tcoA).toLocaleString() + '</div></div>' +
@@ -983,7 +989,6 @@ PS.executeAcademySandbox = function (type) {
 
   } else if (type === 'matching') {
     var poRate = getNum('sb_po_rate', 85);
-    var poQty = getNum('sb_po_qty', 600);
     var grnQty = getNum('sb_grn_qty', 480);
     var invRate = getNum('sb_inv_rate', 92);
     var invQty = getNum('sb_inv_qty', 600);
@@ -995,7 +1000,7 @@ PS.executeAcademySandbox = function (type) {
     var unreceivedBilled = (invQty - grnQty) * invRate;
     var totalHold = billedTotal - approvedPayable;
 
-    var html = '<span class="sandbox-verdict-tag verdict-danger">Audit Alert : SOX 404 Variance Detected &middot; Payment Hold Enforced</span>' +
+    html = '<span class="sandbox-verdict-tag verdict-danger">Audit Alert : SOX 404 Variance Detected &middot; Payment Hold Enforced</span>' +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile is-success"><div class="m-lab">Approved Payable Amount</div><div class="m-val">$' + Math.round(approvedPayable).toLocaleString() + '</div></div>' +
       '<div class="sandbox-metric-tile is-danger"><div class="m-lab">Invoice Overcharge Hold</div><div class="m-val">$' + Math.round(totalHold).toLocaleString() + '</div></div>' +
@@ -1028,7 +1033,7 @@ PS.executeAcademySandbox = function (type) {
     var totalValue = spend * (totalPct / 100);
     var finalSpend = spend - totalValue;
 
-    var html = '<span class="sandbox-verdict-tag verdict-strong">Verdict : Concession Strategy Recaptured High Enterprise Value</span>' +
+    html = '<span class="sandbox-verdict-tag verdict-strong">Verdict : Concession Strategy Recaptured High Enterprise Value</span>' +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile"><div class="m-lab">Baseline Spend</div><div class="m-val">$' + Math.round(spend).toLocaleString() + '</div></div>' +
       '<div class="sandbox-metric-tile is-success"><div class="m-lab">Negotiated Agreement Value</div><div class="m-val">$' + Math.round(finalSpend).toLocaleString() + '</div></div>' +
@@ -1052,7 +1057,7 @@ PS.executeAcademySandbox = function (type) {
     var matPpi = getNum('sb_mat_ppi', 8.0) / 100;
     var labShare = getNum('sb_lab_share', 25) / 100;
     var labWage = getNum('sb_lab_wage', 3.0) / 100;
-    var vol = getNum('sb_volume', 10000);
+    vol = getNum('sb_volume', 10000);
 
     var justifiedPct = (matShare * matPpi) + (labShare * labWage);
     var justifiedUnit = base * (1 + justifiedPct);
@@ -1060,7 +1065,7 @@ PS.executeAcademySandbox = function (type) {
     var unjustifiedUnit = dem - justifiedUnit;
     var unjustifiedTotal = unjustifiedUnit * vol;
 
-    var html = '<span class="sandbox-verdict-tag ' + (unjustifiedUnit > 0 ? 'verdict-warn' : 'verdict-strong') + '">' +
+    html = '<span class="sandbox-verdict-tag ' + (unjustifiedUnit > 0 ? 'verdict-warn' : 'verdict-strong') + '">' +
       (unjustifiedUnit > 0 ? 'Audit Result : Unjustified Margin Expansion Detected' : 'Audit Result : Price Increase Within Justified Index') + '</span>' +
       '<div class="sandbox-metric-row">' +
       '<div class="sandbox-metric-tile"><div class="m-lab">Demanded Increase</div><div class="m-val">+' + demandedPct.toFixed(1) + '% ($' + dem.toFixed(2) + ')</div></div>' +

@@ -6,13 +6,18 @@
 
 PS._index = null;
 
-function flat(v, out) {
+/* Flatten any nested content value into a list of searchable strings.
+   This hangs off PS rather than standing in the shared global scope:
+   every fragment in this build shares a single <script>, so a bare
+   `function flat` here would define a global named `flat` for the
+   whole application. The inner name is kept for the recursive calls. */
+PS._flattenSearchable = function flat(v, out) {
   if (v === null || v === undefined) return out;
   if (typeof v === 'string' || typeof v === 'number') { out.push(String(v)); return out; }
   if (Array.isArray(v)) { v.forEach(function (x) { flat(x, out); }); return out; }
   if (typeof v === 'object') { Object.keys(v).forEach(function (k) { flat(v[k], out); }); return out; }
   return out;
-}
+};
 
 PS.buildIndex = function () {
   if (PS._index) return PS._index;
@@ -20,7 +25,7 @@ PS.buildIndex = function () {
 
   function add(type, item, extra, customRoute) {
     if (!item) return;
-    var parts = flat(extra || [], []);
+    var parts = PS._flattenSearchable(extra || [], []);
     var title = item.title || item.term || item.label || '';
     var desc = item.desc || item.summary || item.def || item.purpose || item.question || item.tagline || '';
     idx.push({
@@ -203,11 +208,11 @@ PS.highlight = function (text, q) {
 PS.levenshtein = function (a, b) {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
-  var matrix = [];
-  for (var i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-  for (var j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-  for (var i = 1; i <= b.length; i++) {
-    for (var j = 1; j <= a.length; j++) {
+  var matrix = [], i, j;
+  for (i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+  for (j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+  for (i = 1; i <= b.length; i++) {
+    for (j = 1; j <= a.length; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
@@ -559,7 +564,6 @@ PS.cmdPalette = {
   },
 
   scrollActiveIntoView: function () {
-    var self = this;
     var list = document.getElementById('cmdPaletteResultsList');
     if (!list) return;
     var activeEl = list.querySelector('.cmd-item.is-selected');

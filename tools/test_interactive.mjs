@@ -26,10 +26,14 @@ await new Promise((r) => setTimeout(r, 1200));
 const doc = window.document;
 
 let bad = 0;
-function check(name, fn) {
+/* Several checks below are asynchronous. This used to be a synchronous
+   function that compared the returned Promise object against `false` -
+   never equal - so every asynchronous check passed no matter what it
+   resolved to. It is now async, and every call site awaits it. */
+async function check(name, fn) {
   const before = errors.length;
   try {
-    const ok = fn();
+    const ok = await fn();
     const newErrors = errors.slice(before);
     if (ok === false || newErrors.length) { bad++; console.log('FAIL', name, newErrors.length ? '| ' + newErrors.slice(0, 2).join(' | ').slice(0, 200) : ''); }
     else console.log('ok  ', name);
@@ -39,25 +43,25 @@ function check(name, fn) {
 }
 
 /* 1. PS.search with real queries (was TypeError: self.getShortcut) */
-check('search: PS.search("TCO") returns results', () => {
+await check('search: PS.search("TCO") returns results', () => {
   const r = window.PS.search('TCO');
   return r.results.length > 0;
 });
-check('search: PS.search("supplier risk") returns results', () => {
+await check('search: PS.search("supplier risk") returns results', () => {
   const r = window.PS.search('supplier risk');
   return r.results.length > 0;
 });
-check('search: every result has shortcut string (no undefined)', () => {
+await check('search: every result has shortcut string (no undefined)', () => {
   const r = window.PS.search('cost');
   return r.results.every((x) => typeof x.shortcut === 'string');
 });
-check('search: suggestions for misspelled query', () => {
+await check('search: suggestions for misspelled query', () => {
   const r = window.PS.search('suplier risk');
   return Array.isArray(r.suggestions);
 });
 
 /* 2. Search page with a query (route render) */
-check('route: #/search renders results for q=TCO', () => {
+await check('route: #/search renders results for q=TCO', () => {
   window.location.hash = '#/search';
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -71,7 +75,7 @@ check('route: #/search renders results for q=TCO', () => {
 });
 
 /* 3. Command palette open + render with query */
-check('palette: open with query renders results', () => {
+await check('palette: open with query renders results', () => {
   window.PS.cmdPalette.open('tco');
   const modal = doc.getElementById('cmdPaletteModal');
   const items = modal ? doc.querySelectorAll('#cmdPaletteModal .cmd-item, #cmdPaletteModal [data-route]') : [];
@@ -81,7 +85,7 @@ check('palette: open with query renders results', () => {
 });
 
 /* 4. Calculator: open TCO, load example, calculate */
-check('calc: TCO example + calculate produces output', () => {
+await check('calc: TCO example + calculate produces output', () => {
   window.location.hash = '#/calc/calc-tco';
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -100,7 +104,7 @@ check('calc: TCO example + calculate produces output', () => {
 });
 
 /* 5. SOP flow chips: verify pipe-separated flow renders as separate chips */
-check('sop: flow renders >= 5 separate chips', () => {
+await check('sop: flow renders >= 5 separate chips', () => {
   window.location.hash = '#/sop/sop-procurement-lifecycle';
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -114,12 +118,12 @@ check('sop: flow renders >= 5 separate chips', () => {
 });
 
 /* 6. All SOPs: flow expansion sane */
-check('sop: all 13 flows have >= 3 steps, none contain "|"', () => {
+await check('sop: all 13 flows have >= 3 steps, none contain "|"', () => {
   return window.PS.data.sop.every((s) => s.flow.length >= 3 && s.flow.every((f) => !f.includes('|')));
 });
 
 /* 7. Academy route render + quiz option navigation */
-check('academy: function page renders learn tab', () => {
+await check('academy: function page renders learn tab', () => {
   window.location.hash = '#/academy/func-mission-value';
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -132,7 +136,7 @@ check('academy: function page renders learn tab', () => {
 });
 
 /* 8. Settings round-trip */
-check('prefs: savePrefs + read back', () => {
+await check('prefs: savePrefs + read back', () => {
   window.PS.savePrefs({ currency: 'EUR' }, true);
   const ok = window.PS.prefs().currency === 'EUR';
   window.PS.savePrefs({ currency: 'USD' }, true);
@@ -140,10 +144,30 @@ check('prefs: savePrefs + read back', () => {
 });
 
 /* 9. Backup export content */
-check('backup: export produces JSON with schema', () => {
+await check('backup: export produces JSON with schema', () => {
   const r = window.PS.buildBackup ? window.PS.buildBackup() : null;
   if (!r) return true; /* builder may live behind UI; skip */
   return typeof r === 'object';
+});
+
+/* 10. Regression: routes that assign PS.pageInit must actually reach it.
+   A PS.route() handler builds a string and returns it; the router resets
+   PS.pageInit to null before each render and calls it afterwards. On the
+   Copilot and Spend model pages the assignment sat AFTER the `return`, so
+   it was unreachable: PS.pageInit stayed null, the Copilot input never
+   bound its Enter-to-ask handler, and the Spend model's drag-to-reorder -
+   which its own on-screen text promises - was never wired. Both are one
+   stray `return` away from regressing silently, so assert them. */
+await check('copilot: page wires pageInit (Enter-to-ask handler)', async () => {
+  window.location.hash = '#/copilot';
+  await new Promise((r) => setTimeout(r, 200));
+  return typeof window.PS.pageInit === 'function' && !!doc.querySelector('#copilotInput');
+});
+
+await check('spend-model: page wires pageInit (drag-to-reorder)', async () => {
+  window.location.hash = '#/spend-model';
+  await new Promise((r) => setTimeout(r, 200));
+  return typeof window.PS.pageInit === 'function' && !!doc.querySelector('#spendEditor');
 });
 
 await new Promise((r) => setTimeout(r, 300));
@@ -151,4 +175,11 @@ console.log('--- summary ---');
 console.log('checks failed:', bad);
 console.log('total runtime errors captured:', errors.length);
 if (errors.length) console.log('first errors:\n' + errors.slice(0, 8).join('\n'));
+/* This used to exit 0 unconditionally: it printed "checks failed: 3" and
+   still passed the QA gate. */
+if (bad) {
+  console.log('INTERACTIVE TESTS: FAIL');
+  process.exit(1);
+}
+console.log('INTERACTIVE TESTS: PASS');
 process.exit(0);

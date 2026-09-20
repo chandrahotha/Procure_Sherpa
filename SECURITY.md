@@ -59,5 +59,10 @@ should hold as a hard rule for any new code.
   specific classes of bug listed above; it does not guarantee the
   absence of all XSS vectors.
 * There is no automated dependency vulnerability scanning configured
-  yet (the only dependency, `jsdom`, is dev-only and never ships to
-  users — it exists purely to run the test suite in Node).
+  yet. `dependencies` in `package.json` is empty, so nothing reaches a
+  user's browser: `jsdom` (tests), `eslint` (lint) and `terser` (the
+  minified deploy build) are all dev-only and run on a build machine.
+  A compromised dev dependency could still affect the deploy build,
+  which is why `npm run verify:min` re-runs the route, calculator and
+  accessibility suites against the minified output rather than trusting
+  the minifier.

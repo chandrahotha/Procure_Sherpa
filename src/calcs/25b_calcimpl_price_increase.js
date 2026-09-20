@@ -11,7 +11,6 @@ PS.calcImpl.priceIncrease = function (v) {
   var newSpend = v.newPrice * v.annualVolume;
   var currentSpend = v.currentPrice * v.annualVolume;
   var target = v.currentPrice + justified;
-  var targetSaving = unjustified * v.annualVolume;
   var w = [];
   if (perUnit <= 0) w.push('The new price is not higher than the current price. This is a reduction or an unchanged price - use the Negotiation Savings tool instead.');
   if (!v.contractAllows && perUnit > 0) w.push('Your contract is marked as not permitting a price change. Check the price, escalation and variation clauses before responding: an increase may be a contractual matter, not a commercial negotiation.');

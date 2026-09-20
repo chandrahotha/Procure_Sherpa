@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 const HTML = path.resolve('ProcureSherpa-v2.0.html');

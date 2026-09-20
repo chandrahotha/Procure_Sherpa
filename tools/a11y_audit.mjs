@@ -15,8 +15,7 @@
    ========================================================== */
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const HTML = 'ProcureSherpa-v2.0.html';
-const errors = [];
+const HTML = process.argv[2] || 'ProcureSherpa-v2.0.html';
 const vc = new VirtualConsole();
 vc.on('jsdomError', () => {});
 vc.on('error', () => {});
@@ -48,14 +47,31 @@ const ROUTES = [
   '#/copilot', '#/exams', '#/spend-model', '#/docpack'
 ];
 
+/* Findings are deduplicated by message so one systemic problem does not
+   print 38 times. Earlier this silently discarded the repeats, so a
+   single printed line could mean one route or every route. Repeats are
+   now counted and the affected routes reported at the end. */
 let issues = 0;
-const seen = new Set();
+const seen = new Map();
+const order = [];
 function report(route, type, detail) {
   const key = type + '|' + detail;
-  if (seen.has(key)) return;
-  seen.add(key);
+  if (seen.has(key)) { seen.get(key).routes.push(route); return; }
+  seen.set(key, { type, detail, routes: [route] });
+  order.push(key);
   issues++;
-  console.log('  [' + type + '] ' + detail + (route ? '   (' + route + ')' : ''));
+}
+
+/* Only elements the assistive technology can actually reach count. The
+   print-only report header (.report-head) is display:none on screen, so
+   its <h1> is not a second heading for a screen reader - counting it
+   would fail almost every route for a problem that does not exist. */
+function visible(win, el) {
+  for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+    const st = win.getComputedStyle(n);
+    if (st.display === 'none' || st.visibility === 'hidden') return false;
+  }
+  return true;
 }
 
 for (const hash of ROUTES) {
@@ -101,9 +117,15 @@ for (const hash of ROUTES) {
     if (el.hasAttribute('alt') === false) report(hash, 'img', 'img missing alt');
   });
 
-  /* heading hierarchy: h1 must exist and be first heading */
-  const h1s = doc.querySelectorAll('h1');
-  const firstHeading = doc.querySelector('h1, h2, h3');
+  /* heading hierarchy: an h1 must exist, be the first heading, and be
+     the only one. Only the "first heading" half of this was previously
+     implemented - the h1 count was collected and then never looked at,
+     so a route with no h1 at all, or with three of them, passed. */
+  const h1s = [...doc.querySelectorAll('h1')].filter((el) => visible(window, el));
+  const headings = [...doc.querySelectorAll('h1, h2, h3')].filter((el) => visible(window, el));
+  const firstHeading = headings[0];
+  if (!h1s.length) report(hash, 'heading', 'route renders no visible h1');
+  else if (h1s.length > 1) report(hash, 'heading', h1s.length + ' visible h1 elements on one route, expected exactly 1');
   if (firstHeading && firstHeading.tagName !== 'H1') report(hash, 'heading', 'page starts with ' + firstHeading.tagName + ', expected h1');
 
   /* links need discernible text */
@@ -118,6 +140,19 @@ const lang = d.documentElement.getAttribute('lang');
 console.log('--- accessibility audit: ' + HTML + ' ---');
 console.log('document lang: ' + (lang || 'MISSING'));
 console.log('routes scanned: ' + ROUTES.length);
-console.log('issues found: ' + issues);
-if (issues) console.log('\nFirst issues:');
+console.log('distinct issues: ' + issues);
+
+if (issues) {
+  console.log('');
+  for (const key of order) {
+    const f = seen.get(key);
+    const n = f.routes.length;
+    const where = n === 1 ? f.routes[0] : n + ' routes, first ' + f.routes[0];
+    console.log('  [' + f.type + '] ' + f.detail + '   (' + where + ')');
+  }
+  console.log('');
+  console.log('ACCESSIBILITY AUDIT: FAIL');
+} else {
+  console.log('ACCESSIBILITY AUDIT: PASS');
+}
 process.exit(issues ? 1 : 0);

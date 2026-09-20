@@ -8,7 +8,8 @@ your changes will be overwritten by the next build.
 ## Setup
 
 ```bash
-npm install     # installs jsdom (the only dependency, dev-only, used to run tests in Node)
+npm install     # dev-only tooling: jsdom (tests in Node), eslint (lint), terser (deploy build).
+                # `dependencies` is empty; none of this ships to a user.
                 # also wires a local pre-push git hook - see "Local safety net" below
 ```
 
@@ -31,26 +32,41 @@ suggestion:
 npm run qa
 ```
 
-This runs, in order: build → cross-reference integrity → 19 calculators
-(1000+ assertions) → calculator expected-value fixtures → interactive
-route/UI smoke checks → content QA → 63-route smoke test → security
-audit (no `eval`/`new Function`/inline handlers/`javascript:` URLs) →
+This runs, in order: build → lint → cross-reference integrity → 19
+calculators (1013 assertions) → calculator expected-value fixtures (51
+hand-computed) → interactive route/UI checks → content integrity and
+quiz-engine gate → 63-route smoke test → security audit (no
+`eval`/`new Function`/inline handlers/`javascript:` URLs) →
 accessibility audit (38 routes) → performance budget (bundle size
-ceiling) → i18n coverage audit. All of it must pass except the content
-and i18n audits, which are informational by design (see
-[README § Known Limitations](README.md#known-limitations)) — read their
-output anyway.
+ceiling) → i18n coverage audit → minified deploy build, re-verified with
+the smoke, calculator and accessibility suites.
+
+**All of it must pass except the i18n audit**, which reports coverage and
+exits `0` because there is nothing to enforce against a single locale
+(see [README § Known Limitations](README.md#known-limitations)) — read
+its output anyway.
+
+The content gate used to print what it found and exit `0` regardless,
+which meant it could never fail a build. It now asserts, and it caught
+five duplicate content ids and eight broken cross-references that had
+been invisible. If you add a content type, add its description field to
+`PS.DESC_FIELDS` in `src/core/90_normalize.js` or items of that type will
+never be checked — the gate fails if a registered type is missing there.
 
 ## Local safety net (pre-push hook)
 
-CI (`.github/workflows/qa.yml`) runs the same `npm run qa` gate, but
-**weekly**, not on every push — see the README for why. To catch
-problems before they ever leave your machine, `npm install` runs
-`tools/setup_hooks.mjs`, which points git at `.githooks/` so `git push`
-runs the fast subset (`npm run test`: build + calculator tests + smoke)
-automatically. If it fails, the push is aborted with a message telling
-you to run `npm run qa` for the full picture. Skip deliberately (not
-recommended) with `git push --no-verify`.
+CI (`.github/workflows/qa.yml`) runs `npm run qa:ci` — the drift check
+followed by the full gate — on **every push and pull request to `main`**,
+plus weekly to catch environment drift.
+
+The hook is still worth having: it fails in seconds locally instead of
+minutes later in Actions. `npm install` runs `tools/setup_hooks.mjs`,
+which points git at `.githooks/` so `git push` first runs
+`node tools/check_drift.mjs` (did you rebuild the artifact after editing
+`src/`?) and then the fast subset (`npm run test`: build + calculator
+tests + smoke). If either fails the push is aborted with a message
+telling you what to run. Skip deliberately (not recommended) with
+`git push --no-verify`.
 
 ## Rules that exist for a reason
 
@@ -63,8 +79,17 @@ recommended) with `git push --no-verify`.
   [README § Credential Transcript](README.md#5-credential-transcript-certificate--disabled-future-feature)
   for why the certificate feature was disabled — this project states
   exactly what happened and who issued it, never more.
-* **No new runtime dependencies.** Zero-dependency, offline-first, and
-  no telemetry are the whole point. `jsdom` is dev-only and never ships.
+* **No new runtime dependencies.** Zero-dependency, offline-first and
+  no telemetry are the whole point. `dependencies` in `package.json` must
+  stay empty; `jsdom`, `eslint` and `terser` are dev-only and never ship.
+* **`src/` is ES5, and the linter enforces it.** The fragments are
+  concatenated into one `<script>` and must run in any browser that can
+  open a local file, with no transpiler in the chain. `eslint.config.mjs`
+  pins `ecmaVersion: 5` for `src/`, so an arrow function, `const` or
+  template literal there is a build failure, not a review comment.
+  `tools/` is modern Node ESM and has no such restriction.
+* **Nothing new in the global scope.** Every fragment shares one scope;
+  hang exports off `PS`. `no-implicit-globals` enforces this.
 * **Stay inside the performance budget.** `build.mjs` fails the build
   past 1600 KB and warns past 1360 KB (85%). If a change pushes the
   bundle toward that ceiling, say so in the PR description rather than

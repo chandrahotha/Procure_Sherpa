@@ -12,7 +12,7 @@
    ========================================================== */
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const HTML = 'ProcureSherpa-v2.0.html';
+const HTML = process.argv[2] || 'ProcureSherpa-v2.0.html';
 const errors = [];
 const vc = new VirtualConsole();
 vc.on('jsdomError', () => {});
@@ -221,7 +221,7 @@ function byId(id) { return PS.byId('calc', id); }
   approx(d.poValue, c.example.poValue) ? pass++ : (lines.push('FAIL poValue.poValue'), fail++);
   if (d.approvalLevel) {
     const thr = PS.prefs().thresholds || [];
-    const buyer = (thr[0] || {}).label, mgr = (thr[1] || {}).label, head = (thr[2] || {}).label;
+    const head = (thr[2] || {}).label;
     /* default prefs have no competitive threshold -> competitiveExpected null */
     (d.approvalLevel === head) ? pass++ : (lines.push('FAIL poValue.approvalLevel: got "' + d.approvalLevel + '" expected "' + head + '"'), fail++);
     (d.competitiveExpected === null) ? pass++ : (lines.push('FAIL poValue.competitiveExpected: got ' + d.competitiveExpected + ' expected null'), fail++);

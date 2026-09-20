@@ -11,7 +11,7 @@
    ========================================================== */
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const HTML = 'ProcureSherpa-v2.0.html';
+const HTML = process.argv[2] || 'ProcureSherpa-v2.0.html';
 const errors = [];
 const vc = new VirtualConsole();
 vc.on('jsdomError', (e) => errors.push('jsdom: ' + (e.detail?.message || e.message)));

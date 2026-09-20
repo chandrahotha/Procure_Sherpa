@@ -1,23 +1,62 @@
 name: QA
 
-# Runs once a week (Monday 06:00 UTC), plus on-demand via the Actions tab.
-# Intentionally not wired to push/pull_request - this repo ships a single
-# generated HTML file and the full qa suite (build + rel-checks + calc
-# tests + smoke + security/a11y/perf audits) is the release gate; a weekly
-# run catches drift/regressions without gating every commit.
+# Runs on every push and pull request to main, plus a weekly scheduled run
+# and on-demand dispatch.
+#
+# This used to be weekly-only, on the reasoning that the repo ships a single
+# generated HTML file and the full gate is a release concern. That reasoning
+# did not survive contact with the failure mode it allowed: a broken commit
+# could sit on main for up to seven days, and the badge said "passing" the
+# whole time. The suite takes a couple of minutes; a week of unverified main
+# is not worth saving them.
+#
+# The weekly run is kept for a different purpose: it catches environment
+# drift (a new Node minor, a transitive dev-dependency change) on a
+# codebase that may not have been touched in a while.
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch: {}
+
+# A newer push to the same branch makes an in-flight run obsolete.
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   qa:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npm run qa
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Must run before anything rebuilds the artifact. `npm run qa` starts
+      # with `node build.mjs`, which would regenerate ProcureSherpa-v2.0.html
+      # and silently erase exactly the mismatch this step exists to catch.
+      - name: Check the committed artifact matches src/
+        run: npm run check:drift
+
+      # Lint, cross-reference integrity, 1000+ calculator assertions, content
+      # and quiz gates, route smoke tests, security/a11y/perf/i18n audits, and
+      # the minified deploy build verified with the same suite.
+      - name: Full QA suite
+        run: npm run qa
+
+      - name: Upload deploy build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: procure-sherpa-dist
+          path: dist/
+          retention-days: 14
