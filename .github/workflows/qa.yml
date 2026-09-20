@@ -1,0 +1,23 @@
+name: QA
+
+# Runs once a week (Monday 06:00 UTC), plus on-demand via the Actions tab.
+# Intentionally not wired to push/pull_request - this repo ships a single
+# generated HTML file and the full qa suite (build + rel-checks + calc
+# tests + smoke + security/a11y/perf audits) is the release gate; a weekly
+# run catches drift/regressions without gating every commit.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run qa

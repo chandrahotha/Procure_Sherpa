@@ -160,7 +160,7 @@ PS.exams.startExamTimer = function () {
       el.textContent = PS.exams.fmtTime(remain);
       el.classList.toggle('is-urgent', remain <= 60);
     }
-    if (remain <= 0) { PS.exams.stopTimer(); PS.acts['exam-submit'](); }
+    if (remain <= 0) { PS.exams.stopTimer(); PS.toast('Time is up - exam submitted automatically.', 'warn'); PS.exams.grade(); }
   }, 1000);
 };
 PS.exams.stopTimer = function () {
