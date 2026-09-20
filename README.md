@@ -8,13 +8,15 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 [![Dependencies: zero runtime](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](#repository-structure--source-code)
 [![Offline-first](https://img.shields.io/badge/offline-first-informational.svg)](#data-privacy--security-architecture)
 [![Single file](https://img.shields.io/badge/deploy-single%20HTML%20file-lightgrey.svg)](#operating-instructions)
+[![QA (weekly)](https://github.com/chandrahotha/Procure_Sherpa/actions/workflows/qa.yml/badge.svg)](.github/workflows/qa.yml)
 
-> These badges describe static, verifiable facts about this repository (license file present, zero runtime `dependencies` in `package.json`, no network calls at runtime). There is no CI badge here on purpose — see [Known Limitations](#known-limitations): there is no CI pipeline yet, and a badge implying otherwise would be exactly the kind of false signal this project deliberately removed from its certificate feature (Section 5).
+> These badges describe static, verifiable facts about this repository (license file present, zero runtime `dependencies` in `package.json`, no network calls at runtime). The QA badge reflects a workflow that runs `npm run qa` **weekly plus on manual dispatch, not on every commit** — see [Known Limitations](#known-limitations). It is a real, verifiable signal, but not a per-commit "build passing" guarantee; a badge implying otherwise would be exactly the kind of false signal this project deliberately removed from its certificate feature (Section 5).
 
 ---
 
 ## Table of Contents
 
+- [Screenshots](#screenshots)
 - [Architecture Overview](#architecture-overview)
 - [Core Capabilities](#core-capabilities)
 - [Operating Instructions](#operating-instructions)
@@ -23,6 +25,24 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 - [Governance & Standards Alignment](#governance--standards-alignment)
 - [Data Privacy & Security Architecture](#data-privacy--security-architecture)
 - [Known Limitations](#known-limitations)
+
+---
+
+## Screenshots
+
+| Command Center | Operations Hub |
+|---|---|
+| ![Command Center home](_shot/home_new.png) | ![Operations Hub](_shot/operations.png) |
+
+| Academy | Calculator |
+|---|---|
+| ![Procurement Academy](_shot/academy.png) | ![Financial calculator](_shot/calc_fixed.png) |
+
+| SOP detail | Mobile home |
+|---|---|
+| ![Procurement Lifecycle SOP](_shot/sop_fixed.png) | ![Command Center on mobile](_shot/home_mobile.png) |
+
+![Academy function walkthrough](_shot/function.png)
 
 ---
 
@@ -251,7 +271,7 @@ CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is writt
 
 Documented here deliberately, rather than left for someone to discover:
 
-* **No CI pipeline.** `npm run qa` is not yet wired into a GitHub Actions workflow, so it must be run manually before every release. There is no `.github/workflows` in this repository. This is also why there is no "build passing" badge above — it would not be true.
+* **CI runs weekly, not per-commit.** `.github/workflows/qa.yml` runs the full `npm run qa` gate (build, cross-ref checks, calculator/content/smoke tests, security/a11y/perf audits) on a weekly schedule plus manual dispatch — it is not wired to `push`/`pull_request`. This catches drift between releases, but a broken commit can still land on `main` between runs; run `npm run qa` locally before merging anything non-trivial.
 * **Content QA is informational, not a hard gate.** `tools/test_quiz_tips.mjs` (now part of `npm run qa`) currently reports content gaps — missing descriptions on several decision guides and forward references not yet fully populated — but it exits `0` regardless, so it will not fail a build. Treat its output as a checklist, not a pass/fail signal.
 * **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
