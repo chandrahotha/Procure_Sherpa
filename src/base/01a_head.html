@@ -10,13 +10,22 @@
 <meta name="robots" content="index, follow">
 <meta name="keywords" content="procurement, procurement training, procurement calculators, sourcing, supplier management, TCO calculator, RFQ, RFP, SOP, procurement academy, category management, negotiation, contract governance">
 <meta name="author" content="Digi Tracks">
-<!-- Open Graph / Twitter Card: no og:image or canonical yet - this ships
-     as a single portable HTML file with no fixed hosted URL. Once
-     deployed (e.g. to Vercel), add: a static /og-image.png, an
-     og:url + <link rel="canonical"> pointing at the deployed domain,
-     and a matching entry in robots.txt / sitemap.xml. -->
+<!-- Open Graph / Twitter Card. Deployed at https://procuresherpa.vercel.app -
+     og:image is intentionally still missing: Facebook/Twitter/LinkedIn
+     crawlers require a real raster (PNG/JPG/WEBP) asset, which this
+     build environment has no way to generate honestly (no
+     canvas/rasterizer, and adding one just for a single image would be
+     a disproportionate new dependency). Add a real 1200x630 PNG at
+     /og-image.png, then add:
+       <meta property="og:image" content="https://procuresherpa.vercel.app/og-image.png">
+       <meta property="og:image:width" content="1200">
+       <meta property="og:image:height" content="630">
+       <meta name="twitter:image" content="https://procuresherpa.vercel.app/og-image.png">
+     and change twitter:card below to "summary_large_image". -->
+<link rel="canonical" href="https://procuresherpa.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Procure Sherpa">
+<meta property="og:url" content="https://procuresherpa.vercel.app/">
 <meta property="og:title" content="Procure Sherpa | Procurement Digital Learning Platform">
 <meta property="og:description" content="Interactive procurement learning and decision-support platform: Academy curriculum, controlled SOPs, checklists, templates, 19 financial calculators, and KPI dashboards. Offline-first, zero telemetry, single HTML file.">
 <meta name="twitter:card" content="summary">
@@ -30,6 +39,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Procure Sherpa",
+  "url": "https://procuresherpa.vercel.app/",
   "description": "Enterprise digital learning platform and operational execution system for procurement professionals: interactive learning journeys, controlled SOPs, decision guides, compliance checklists, production templates, financial calculators, and value KPIs.",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Any modern web browser",

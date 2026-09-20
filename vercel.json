@@ -1,6 +1,6 @@
 {
   "installCommand": "echo 'no dependencies needed to serve a static file'",
-  "buildCommand": "mkdir -p vercel_public && cp ProcureSherpa-v2.0.html vercel_public/index.html && cp robots.txt vercel_public/robots.txt",
+  "buildCommand": "mkdir -p vercel_public && cp ProcureSherpa-v2.0.html vercel_public/index.html && cp robots.txt vercel_public/robots.txt && cp sitemap.xml vercel_public/sitemap.xml",
   "outputDirectory": "vercel_public",
   "cleanUrls": false,
   "trailingSlash": false

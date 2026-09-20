@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Single entry by design: this is a client-side, hash-routed single-page
+     app (#/academy, #/calc/..., etc.). The fragment after # is never sent
+     to the server and search engines do not index hash routes as distinct
+     pages, so listing them here would be misleading, not helpful. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://procuresherpa.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
