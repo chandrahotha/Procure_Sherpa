@@ -189,9 +189,42 @@ python -m http.server 8080
 ```
 Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
-### Option 3: GitHub Pages Hosting
-1. In repository settings: **Settings -> Pages -> Branch: main -> Save**.
-2. Platform serves directly via GitHub Pages over HTTPS.
+### Option 3: Use the hosted deployment
+
+<https://procuresherpa.vercel.app> runs the current `main`. It behaves
+identically to the downloaded file - still no server-side state, no accounts
+and no telemetry - but it serves the **minified** build (~1.05 MB instead of
+~1.26 MB) and adds transport-level hardening: HSTS, `X-Frame-Options: DENY`,
+`X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and a
+restrictive `Permissions-Policy`.
+
+Only the build output is served. `vercel.json` sets `outputDirectory` to
+`dist`, so `src/`, `package.json` and everything else in the repository
+return 404 - the deployment cannot serve source even by accident.
+
+### Option 4: Host it yourself
+
+`ProcureSherpa-v2.0.html` is a static file with no build step and no server
+requirement, so any static host works - GitHub Pages (**Settings -> Pages ->
+Branch: main**), S3, nginx, or a network share. Rename it to `index.html` if
+the host expects one. For a smaller payload, run `npm run build:min` and
+serve `dist/` instead.
+
+### How the deployment is built
+
+The hosted site is not the committed artifact copied into place. Vercel runs:
+
+```bash
+npm ci --include=dev                        # terser lives in devDependencies
+node build.mjs && node tools/build_min.mjs  # readable artifact, then dist/
+```
+
+`--include=dev` is explicit because a build agent may set
+`NODE_ENV=production`, under which a bare `npm ci` would omit the dev
+dependencies the build needs. Minification is verified rather than trusted:
+`npm run verify:min` re-runs the route smoke, both calculator suites and the
+accessibility audit against `dist/index.html` before it is considered
+shippable.
 
 ---
 
