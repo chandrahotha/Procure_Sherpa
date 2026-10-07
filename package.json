@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "prepare": "node tools/setup_hooks.mjs",
+    "dev": "node tools/dev_server.mjs",
     "build": "node build.mjs",
     "build:min": "node tools/build_min.mjs",
     "validate": "node validate.mjs ProcureSherpa-v2.0.html",
