@@ -54,6 +54,9 @@
     "url": "https://github.com/chandrahotha/Procure_Sherpa/issues"
   },
   "homepage": "https://github.com/chandrahotha/Procure_Sherpa#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "devDependencies": {
     "eslint": "^9.39.5",
     "jsdom": "^30.1.0",
