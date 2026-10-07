@@ -29,7 +29,7 @@ PS.route('dec', function (id) {
             '> ' + PS.esc(v === 'yes' ? 'Yes' : (v === 'no' ? 'No' : 'Not sure')) + '</label>';
         }).join('') + '</div></div>';
     }).join('') + '</form></div>' +
-    '<div><div id="decResult" class="results"><div class="results-empty">Answer the questions, then choose <strong>Show guidance</strong>.</div></div>' +
+    '<div><div id="decResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Answer the questions, then choose <strong>Show guidance</strong>.</div></div>' +
     '<div class="card"><h2>Reasoning</h2><p>' + PS.esc(it.explain) + '</p>' +
     (it.consider ? PS.ul(it.consider) : '') +
     '<div class="alert alert-warn"><strong>Not a policy decision</strong>This guidance reflects general procurement practice and the factors you entered. It does not know your organization&rsquo;s rules, thresholds, contracts or risk appetite. Confirm against your own policy before acting.</div>' +

@@ -15,7 +15,7 @@ PS.route('what', function (arg, params) {
       return '<button type="button" class="chip" data-act="prefill-what" data-q="' + PS.esc(p) + '">' + PS.esc(p) + '</button>';
     }).join('') + '</div>' +
     '<p class="note">Guidance reflects general procurement practice. It does not know your organization&rsquo;s thresholds, contracts or delegated authority - configure Settings and confirm local policy before acting.</p>' +
-    '</div><div id="whatResult"></div>';
+    '</div><div id="whatResult" aria-live="polite" aria-atomic="true"></div>';
   PS.pageInit = function () {
     var inp = PS.$('#whatQ');
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); PS.acts['what-run'](); } });

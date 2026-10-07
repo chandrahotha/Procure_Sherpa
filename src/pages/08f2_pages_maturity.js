@@ -27,7 +27,7 @@ PS.route('maturity', function () {
           return '<option value="' + v + '"' + (v === 3 ? ' selected' : '') + '>' + v + ' - ' + PS.esc(a.labels[v - 1]) + '</option>';
         }).join('') + '</select></div>';
     }).join('') + '</form>' +
-    '<div id="matResult" class="results"><div class="results-empty">Set your ratings and choose <strong>Assess maturity</strong> to see the profile, the weakest areas and the corresponding actions.</div></div>' +
+    '<div id="matResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Set your ratings and choose <strong>Assess maturity</strong> to see the profile, the weakest areas and the corresponding actions.</div></div>' +
     PS.disclaimer('policy');
   PS.pageInit = function () {
     // no live recompute: assessment is deliberate so users read each level definition

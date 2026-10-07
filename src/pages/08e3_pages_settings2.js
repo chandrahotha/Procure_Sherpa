@@ -5,9 +5,9 @@ PS.settingsThresholdCard = function (p) {
     (p.thresholds || []).map(function (t) {
       return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></td>' +
         '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></td>' +
-        '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td></tr>';
+        '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></td></tr>';
     }).join('') + '</tbody></table></div>' +
-    '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add">Add approval level</button></div>' +
+    '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add" data-i18n="common.add">+ ' + (PS.i18n ? PS.i18n.t('common.add') : 'Add') + ' approval level</button></div>' +
     '<div class="field" style="margin-top:12px"><label for="setBidThreshold">Competitive bidding threshold (optional)</label>' +
     '<input type="number" step="any" min="0" id="setBidThreshold" value="' + PS.esc(p.competitiveBidThreshold) + '">' +
     '<span class="hint">If you record your organization&rsquo;s threshold here, decision guidance and checklists can reference it. Enter 0 to leave it unset - Procure Sherpa assumes no universal figure.</span></div></div>';

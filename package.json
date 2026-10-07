@@ -1,6 +1,6 @@
 {
   "name": "procure-sherpa",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "A single-file, offline-first procurement learning and decision-support tool: competency curriculum, digital SOPs, checklists, templates, 19 financial calculators, decision guides and inline analytics. Runs from one HTML file with no server, no database, no accounts and no telemetry; all state is per-browser localStorage.",
   "main": "ProcureSherpa-v2.0.html",
   "files": [
@@ -24,14 +24,15 @@
     "test:calcvalues": "node tools/test_calc_values.mjs",
     "test:interactive": "node tools/test_interactive.mjs",
     "test:content": "node tools/test_quiz_tips.mjs",
+    "test:layout": "node tools/test_layout.mjs",
     "audit:sec": "node tools/security_audit.mjs",
     "audit:a11y": "node tools/a11y_audit.mjs",
     "audit:i18n": "node tools/i18n_audit.mjs",
     "perf": "node tools/perf_check.mjs",
-    "qa": "node build.mjs && eslint . && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs && npm run verify:min",
-    "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs",
+    "qa": "node build.mjs && eslint . && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs && npm run verify:min",
+    "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/test_layout.mjs",
     "qa:ci": "node tools/check_drift.mjs && npm run qa",
-    "verify:min": "node tools/build_min.mjs && node tools/smoke.mjs dist/index.html && node tools/test_calcs.mjs dist/index.html && node tools/test_calc_values.mjs dist/index.html && node tools/a11y_audit.mjs dist/index.html"
+    "verify:min": "node tools/build_min.mjs && node tools/smoke.mjs dist/index.html && node tools/test_calcs.mjs dist/index.html && node tools/test_calc_values.mjs dist/index.html && node tools/a11y_audit.mjs dist/index.html && node tools/test_layout.mjs dist/index.html"
   },
   "repository": {
     "type": "git",

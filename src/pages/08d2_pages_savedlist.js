@@ -62,7 +62,7 @@ PS.renderSavedList = function () {
       '<button type="button" class="btn btn-sm" data-act="saved-duplicate" data-id="' + PS.esc(r.id) + '">Duplicate</button>' +
       '<button type="button" class="btn btn-sm" data-act="saved-export" data-id="' + PS.esc(r.id) + '">Export JSON</button>' +
       '<button type="button" class="btn btn-sm" data-act="saved-copy" data-id="' + PS.esc(r.id) + '">Copy summary</button>' +
-      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-delete" data-id="' + PS.esc(r.id) + '">Delete</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-delete" data-id="' + PS.esc(r.id) + '" data-i18n="common.delete">' + (PS.i18n ? PS.i18n.t('common.delete') : 'Delete') + '</button>' +
       '</div></div>' +
       (summary ? '<div class="res-sub">' + summary + '</div>' : '') +
       '<div class="field no-print"><label for="notes_' + PS.esc(r.id) + '">Notes</label>' +

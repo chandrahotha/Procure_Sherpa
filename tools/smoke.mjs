@@ -84,4 +84,9 @@ console.log('total runtime errors captured:', errors.length);
 if (errors.length) console.log('first errors:\n' + errors.slice(0, 8).join('\n'));
 const fails = results.filter((r) => r.empty).map((r) => r.hash);
 if (fails.length) console.log('EMPTY/THIN PAGES:', fails.join(', '));
+if (bad > 0 || errors.length > 0) {
+  console.error('\nSMOKE TESTS FAILED: ' + bad + ' failing routes, ' + errors.length + ' runtime errors');
+  process.exit(1);
+}
+console.log('\nSMOKE TESTS PASSED');
 process.exit(0);

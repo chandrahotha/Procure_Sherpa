@@ -44,7 +44,7 @@ PS.buildNav = function () {
       '<ul class="nav-list">' + g.items.map(function (it) {
         var itLabel = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
         return '<li data-label="' + PS.esc((itLabel + ' ' + secLabel).toLowerCase()) + '">' +
-          '<a href="' + PS.esc(it.href) + '">' + PS.esc(itLabel) +
+          '<a href="' + PS.esc(it.href) + '"' + (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(itLabel) +
           (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') +
           '</a></li>';
       }).join('') + '</ul></div>';
@@ -213,6 +213,9 @@ PS.wireNavFilter = function () {
     });
     var old = PS.$('.nav-empty', root);
     if (old) old.remove();
-    if (!anyVisible) root.insertAdjacentHTML('beforeend', '<div class="nav-empty">No menu items match “' + PS.esc(box.value) + '”. Try “quotes”, “SOP” or “savings”.</div>');
+    if (!anyVisible) {
+      var noMatchTxt = (PS.i18n && PS.i18n.t) ? PS.i18n.t('nav.noMatch', { 0: box.value }) : ('No menu items match \u201c' + box.value + '\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.');
+      root.insertAdjacentHTML('beforeend', '<div class="nav-empty">' + PS.esc(noMatchTxt) + '</div>');
+    }
   }, 120));
 };

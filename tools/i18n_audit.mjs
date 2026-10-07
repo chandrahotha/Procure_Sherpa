@@ -33,12 +33,14 @@ const localeCount = localeMatch ? (localeMatch[1].match(/^\s*[a-z]{2}:\s*\{/gm) 
 const usedKeys = new Set();
 const tCallPattern = /PS\.i18n\.t\(\s*['"]([a-zA-Z0-9.]+)['"]/g;
 const dataAttrPattern = /data-i18n(?:-placeholder|-title)?="([a-zA-Z0-9.]+)"/g;
+const navPropPattern = /\bi18n:\s*['"]([a-zA-Z0-9.]+)['"]/g;
 
 for (const f of files) {
   const text = fs.readFileSync(f, 'utf8');
   let m;
   while ((m = tCallPattern.exec(text))) usedKeys.add(m[1]);
   while ((m = dataAttrPattern.exec(text))) usedKeys.add(m[1]);
+  while ((m = navPropPattern.exec(text))) usedKeys.add(m[1]);
 }
 
 const wiredCatalogKeys = [...catalogKeys].filter((k) => usedKeys.has(k));

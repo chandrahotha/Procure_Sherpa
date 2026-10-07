@@ -45,7 +45,7 @@ PS.acts['threshold-add'] = function () {
   var tr = document.createElement('tr');
   tr.innerHTML = '<td><input type="text" data-th="label" value="" maxlength="80" placeholder="Approval level, for example Category manager"></td>' +
     '<td class="num"><input type="number" data-th="max" value="" step="any" min="0" style="max-width:160px" placeholder="0 = no limit"></td>' +
-    '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td>';
+    '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></td>';
   tb.appendChild(tr);
 };
 PS.acts['threshold-del'] = function (el) {

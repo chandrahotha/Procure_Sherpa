@@ -107,9 +107,9 @@ PS.exams.renderExamRunner = function () {
     }).join('') +
     '</div></div>' +
     '<div class="exam-nav">' +
-    '<button type="button" class="btn" data-act="exam-prev"' + (s.current === 0 ? ' disabled' : '') + '>&larr; Previous</button>' +
+    '<button type="button" class="btn" data-act="exam-prev"' + (s.current === 0 ? ' disabled' : '') + ' data-i18n="common.back">&larr; ' + (PS.i18n ? PS.i18n.t('common.back') : 'Previous') + '</button>' +
     (s.current < s.questions.length - 1
-      ? '<button type="button" class="btn btn-primary" data-act="exam-next">Next &rarr;</button>'
+      ? '<button type="button" class="btn btn-primary" data-act="exam-next" data-i18n="common.next">' + (PS.i18n ? PS.i18n.t('common.next') : 'Next') + ' &rarr;</button>'
       : '<button type="button" class="btn btn-primary" data-act="exam-submit">Submit exam</button>') +
     '</div></div>';
   box.innerHTML = html;

@@ -1,0 +1,41 @@
+name: Feature Request
+description: Propose an enhancement, new calculator, SOP, template, or curriculum module
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Procure Sherpa has strict design constraints: single-file HTML, zero runtime dependencies,
+        offline-first, and zero network telemetry. Every proposed feature must respect these bounds.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What procurement challenge or workflow does this feature address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution or new capability you would like to see added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: standards
+    attributes:
+      label: Standards & Framework Alignment
+      description: Does this align with CIPS, ISM, SOX 404, Incoterms 2020, or ISO 20400?
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Approaches Considered
+      description: Any alternative solutions or workarounds you have considered.
+    validations:
+      required: false

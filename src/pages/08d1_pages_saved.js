@@ -34,7 +34,7 @@ PS.route('saved', function (arg, params) {
     '<button type="button" class="btn" data-act="saved-clear">Delete all saved work</button>' +
     '<button type="button" class="btn btn-ghost" data-act="print">Print list</button>' +
     '</div>' +
-    '<p class="note">' + PS.saved.count() + ' items stored &middot; maximum ' + PS.MAX_SAVED + ' items, of which up to ' + PS.MAX_QUOTE_SAVED + ' can be quote comparisons.</p>' +
+    '<p class="note">' + (PS.i18n ? PS.i18n.t('saved.items', { n: PS.saved.count() }) : (PS.saved.count() + ' items stored')) + ' &middot; maximum ' + PS.MAX_SAVED + ' items, of which up to ' + PS.MAX_QUOTE_SAVED + ' can be quote comparisons.</p>' +
     '</div><div id="savedList">' + PS.renderSavedList() + '</div>';
   PS.pageInit = function () {
     var qEl = PS.$('#savedQ');

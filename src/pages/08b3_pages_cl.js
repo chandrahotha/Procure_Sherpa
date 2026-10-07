@@ -19,7 +19,7 @@ PS.route('cl', function (id) {
       '<button type="button" class="btn" data-act="cl-print">Print / PDF</button>',
       '<button type="button" class="btn" data-act="cl-export">Export CSV</button>',
       '<button type="button" class="btn btn-ghost" data-act="cl-complete-all">Mark all complete</button>',
-      '<button type="button" class="btn btn-danger" data-act="cl-reset">Reset</button>'
+      '<button type="button" class="btn btn-danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
     ]) +
     '<div class="progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
     '<div class="progress"><span id="clBar" style="width:' + pctv + '%"></span></div>' +

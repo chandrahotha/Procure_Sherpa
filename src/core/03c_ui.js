@@ -98,7 +98,7 @@ PS.kbdHelp = {
       '<h2 id="kbdHelpTitle">Keyboard Shortcuts</h2>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd">Print Cheat Sheet</button>' +
-      '<button type="button" class="kbd-help-close" aria-label="Close">&times;</button>' +
+      '<button type="button" class="kbd-help-close" aria-label="' + (PS.i18n ? PS.i18n.t('common.close') : 'Close') + '" title="' + (PS.i18n ? PS.i18n.t('common.close') : 'Close') + '" data-i18n-title="common.close">&times;</button>' +
       '</div>' +
       '</div><div class="kbd-help-body">';
 
@@ -272,8 +272,8 @@ PS.modal = function (opts) {
     '<h2 id="modalTitle">' + PS.esc(opts.title || 'Confirm') + '</h2>' +
     '<div class="modal-body" id="modalBody">' + (opts.body || '') + '</div>' +
     '<div class="modal-actions">' +
-    (opts.cancelLabel === null ? '' : '<button type="button" class="btn" data-modal="cancel">' + PS.esc(opts.cancelLabel || 'Cancel') + '</button>') +
-    '<button type="button" class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-modal="ok">' + PS.esc(opts.okLabel || 'Confirm') + '</button>' +
+    (opts.cancelLabel === null ? '' : '<button type="button" class="btn" data-modal="cancel" data-i18n="common.cancel">' + PS.esc(opts.cancelLabel || (PS.i18n ? PS.i18n.t('common.cancel') : 'Cancel')) + '</button>') +
+    '<button type="button" class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-modal="ok" data-i18n="common.confirm">' + PS.esc(opts.okLabel || (PS.i18n ? PS.i18n.t('common.confirm') : 'Confirm')) + '</button>' +
     '</div></div></div>';
   var back = PS.$('.modal-backdrop', root);
   var modal = PS.$('.modal', root);
@@ -337,7 +337,7 @@ PS.promptText = function (o) {
     body: '<div class="field"><label for="promptVal">' + PS.esc(o.label || 'Value') + '</label>' +
       '<input type="text" id="promptVal" value="' + PS.esc(o.value || '') + '" maxlength="160"></div>' +
       (o.hint ? '<p class="note">' + PS.esc(o.hint) + '</p>' : ''),
-    okLabel: o.okLabel || 'Save',
+    okLabel: o.okLabel || (PS.i18n ? PS.i18n.t('common.save') : 'Save'),
     onOk: function (root) {
       var v = PS.clean(PS.$('#promptVal', root).value, 160);
       if (!v) { PS.toast('A value is required.', 'danger'); return false; }

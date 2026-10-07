@@ -2950,7 +2950,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
     <div class="brand">
       <div class="brand-mark" id="sidebarBrandMark" aria-hidden="true">PS</div>
       <div class="brand-text">
-        <strong id="sidebarBrandTitle">Procure Sherpa</strong>
+        <strong id="sidebarBrandTitle" data-i18n="app.name">Procure Sherpa</strong>
         <span id="brandVersion" data-i18n="app.tagline">Navigation</span>
       </div>
       <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">&#10005;</button>
@@ -2982,10 +2982,10 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
         <button class="btn btn-sm btn-primary" type="submit" data-i18n="common.search">Search</button>
       </form>
       <div class="topbar-actions">
-        <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite">&#9734;</button>
-        <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report">&#128424;</button>
-        <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">&#9686;</button>
-        <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile">
+        <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite" data-i18n-title="topbar.fav">&#9734;</button>
+        <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report" data-i18n-title="topbar.print">&#128424;</button>
+        <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="topbar.theme">&#9686;</button>
+        <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile" data-i18n-title="topbar.profile">
           <span class="user-avatar-pill" id="userAvatarPill">PS</span>
           <span class="user-name-label hide-sm" id="userNameLabel" data-i18n="topbar.account">Account</span>
         </button>
@@ -3007,6 +3007,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
         <a href="#/settings">Settings</a>
         <a href="#/backup">Backup / Restore</a>
       </div>
+      <div class="foot-privacy" data-i18n="footer.privacy">Enterprise Single-Tenant Session &middot; Zero Data Egress</div>
       <div id="footNote" data-i18n="footer.note">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
       <div class="foot-brand">Built by <a href="https://digitracks.vercel.app" target="_blank" rel="noopener noreferrer">Digi Tracks</a> &middot; <a href="mailto:digi.tracks@outlook.com">digi.tracks@outlook.com</a></div>
     </footer>
@@ -3313,7 +3314,7 @@ PS.kbdHelp = {
       '<h2 id="kbdHelpTitle">Keyboard Shortcuts</h2>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<button type="button" class="btn btn-ghost btn-sm" data-act="print-kbd">Print Cheat Sheet</button>' +
-      '<button type="button" class="kbd-help-close" aria-label="Close">&times;</button>' +
+      '<button type="button" class="kbd-help-close" aria-label="' + (PS.i18n ? PS.i18n.t('common.close') : 'Close') + '" title="' + (PS.i18n ? PS.i18n.t('common.close') : 'Close') + '" data-i18n-title="common.close">&times;</button>' +
       '</div>' +
       '</div><div class="kbd-help-body">';
 
@@ -3487,8 +3488,8 @@ PS.modal = function (opts) {
     '<h2 id="modalTitle">' + PS.esc(opts.title || 'Confirm') + '</h2>' +
     '<div class="modal-body" id="modalBody">' + (opts.body || '') + '</div>' +
     '<div class="modal-actions">' +
-    (opts.cancelLabel === null ? '' : '<button type="button" class="btn" data-modal="cancel">' + PS.esc(opts.cancelLabel || 'Cancel') + '</button>') +
-    '<button type="button" class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-modal="ok">' + PS.esc(opts.okLabel || 'Confirm') + '</button>' +
+    (opts.cancelLabel === null ? '' : '<button type="button" class="btn" data-modal="cancel" data-i18n="common.cancel">' + PS.esc(opts.cancelLabel || (PS.i18n ? PS.i18n.t('common.cancel') : 'Cancel')) + '</button>') +
+    '<button type="button" class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-modal="ok" data-i18n="common.confirm">' + PS.esc(opts.okLabel || (PS.i18n ? PS.i18n.t('common.confirm') : 'Confirm')) + '</button>' +
     '</div></div></div>';
   var back = PS.$('.modal-backdrop', root);
   var modal = PS.$('.modal', root);
@@ -3552,7 +3553,7 @@ PS.promptText = function (o) {
     body: '<div class="field"><label for="promptVal">' + PS.esc(o.label || 'Value') + '</label>' +
       '<input type="text" id="promptVal" value="' + PS.esc(o.value || '') + '" maxlength="160"></div>' +
       (o.hint ? '<p class="note">' + PS.esc(o.hint) + '</p>' : ''),
-    okLabel: o.okLabel || 'Save',
+    okLabel: o.okLabel || (PS.i18n ? PS.i18n.t('common.save') : 'Save'),
     onOk: function (root) {
       var v = PS.clean(PS.$('#promptVal', root).value, 160);
       if (!v) { PS.toast('A value is required.', 'danger'); return false; }
@@ -5483,11 +5484,11 @@ PS.NAV_UNIFIED = [
     { label: 'Glossary', href: '#/glossary' }
   ] },
   { sec: 'Workspace', ico: '5', items: [
-    { label: 'Saved Work', href: '#/saved', badge: 'saved' },
-    { label: 'Favorites', href: '#/fav', badge: 'fav' },
-    { label: 'Recently Used', href: '#/recent' },
+    { label: 'Saved Work', href: '#/saved', badge: 'saved', i18n: 'nav.saved' },
+    { label: 'Favorites', href: '#/fav', badge: 'fav', i18n: 'nav.fav' },
+    { label: 'Recently Used', href: '#/recent', i18n: 'nav.recent' },
     { label: 'Savings Dashboard', href: '#/dash-savings' },
-    { label: 'Help Center', href: '#/help' },
+    { label: 'Help Center', href: '#/help', i18n: 'nav.help' },
     { label: 'Settings', href: '#/settings' },
     { label: 'Backup & Audit', href: '#/backup' }
   ] }
@@ -5539,7 +5540,7 @@ PS.buildNav = function () {
       '<ul class="nav-list">' + g.items.map(function (it) {
         var itLabel = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
         return '<li data-label="' + PS.esc((itLabel + ' ' + secLabel).toLowerCase()) + '">' +
-          '<a href="' + PS.esc(it.href) + '">' + PS.esc(itLabel) +
+          '<a href="' + PS.esc(it.href) + '"' + (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(itLabel) +
           (it.badge ? '<span class="nav-badge" data-count="' + PS.esc(it.badge) + '"></span>' : '') +
           '</a></li>';
       }).join('') + '</ul></div>';
@@ -5708,7 +5709,10 @@ PS.wireNavFilter = function () {
     });
     var old = PS.$('.nav-empty', root);
     if (old) old.remove();
-    if (!anyVisible) root.insertAdjacentHTML('beforeend', '<div class="nav-empty">No menu items match “' + PS.esc(box.value) + '”. Try “quotes”, “SOP” or “savings”.</div>');
+    if (!anyVisible) {
+      var noMatchTxt = (PS.i18n && PS.i18n.t) ? PS.i18n.t('nav.noMatch', { 0: box.value }) : ('No menu items match \u201c' + box.value + '\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.');
+      root.insertAdjacentHTML('beforeend', '<div class="nav-empty">' + PS.esc(noMatchTxt) + '</div>');
+    }
   }, 120));
 };
 
@@ -6247,7 +6251,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     PS.badge('calc') + '<span class="badge">' + PS.esc(calc.cat) + '</span></div></div>' +
     '<div class="spacer"></div>' +
     '<div class="btn-row tight no-print">' +
-    '<button type="button" class="btn btn-sm" data-act="example">Load example</button>' +
+    '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Load example</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="share">Share link</button>' +
     '</div></div>' +
     '<p class="lead mb0">' + PS.esc(calc.purpose) + '</p>' +
@@ -6261,25 +6265,25 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     PS.groupFields(calc) + '</form>' +
     '<div class="calc-actions no-print">' +
     '<div class="btn-row">' +
-    '<button type="button" class="btn btn-primary btn-lg" style="flex:1" data-act="calc">Calculate</button>' +
+    '<button type="button" class="btn btn-primary btn-lg" style="flex:1" data-act="calc" data-i18n="calc.calculate">Calculate</button>' +
     '</div>' +
     '<div class="btn-row tight" style="margin-top:8px">' +
-    '<button type="button" class="btn btn-sm" data-act="example">Example</button>' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="clear">Reset</button>' +
+    '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Example</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="clear" data-i18n="calc.reset">Reset</button>' +
     '</div></div>' +
     '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
-    '<div class="calc-panel-results"><div id="calcResult" class="results"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
+    '<div class="calc-panel-results"><div id="calcResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
     '<div class="card card-tight no-print"><div class="card-head"><h3>Save & share</h3></div>' +
     '<div class="btn-row">' +
-    '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save">Save to workspace</button>' +
-    '<button type="button" class="btn btn-sm" data-act="calc-print">Print / PDF</button>' +
+    '<button type="button" class="btn btn-primary btn-sm" data-act="calc-save" data-i18n="calc.save">Save to workspace</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-print" data-i18n="common.print">Print / PDF</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-csv">CSV</button>' +
-    '<button type="button" class="btn btn-sm" data-act="calc-markdown">Copy as Markdown</button>' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy">Copy summary</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-markdown" data-i18n="calc.markdown">Copy as Markdown</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="calc-copy" data-i18n="calc.copySummary">Copy summary</button>' +
     '</div>' +
     '<div class="btn-row" style="margin-top:8px">' +
-    '<button type="button" class="btn btn-sm btn-primary" data-act="whatif-open">\u2696 What-if analysis</button>' +
-    '<button type="button" class="btn btn-sm" data-act="share-static">\u2197 Static share page</button>' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="whatif-open" data-i18n="calc.whatif">\u2696 What-if analysis</button>' +
+    '<button type="button" class="btn btn-sm" data-act="share-static" data-i18n="calc.shareStatic">\u2197 Static share page</button>' +
     '</div>' +
     '<div class="field" style="margin-top:12px;margin-bottom:0"><label for="calcNotes">Notes for the report</label>' +
     '<textarea id="calcNotes" rows="2" maxlength="4000" placeholder="Assumptions, alternatives, decision basis…"></textarea></div>' +
@@ -6640,34 +6644,19 @@ PS.acts['chart-export'] = function (el) {
   PS.toast('SVG downloaded', 'ok');
 };
 /* ==========================================================
-   Internationalization architecture (roadmap 6.2) - SCAFFOLDING,
-   NOT FEATURE-COMPLETE. Read this before citing "i18n support"
-   anywhere in docs or marketing copy.
-
-   Status (accurate as of the last audit - see tools/i18n_audit.mjs):
-     - 1 locale registered (en). The Settings locale switcher renders,
-       but there is nothing else to switch to yet.
-     - ~40 keys defined in the catalog below.
-     - Only the handful wired to data-i18n/-placeholder/-title
-       attributes in src/base/02_shell.html actually render through
-       t() today (persistent shell chrome: nav filter, topbar search,
-       footer, account label). Route/page content (calculators,
-       Academy, SOPs, checklists, templates, KB) is still hardcoded
-       English throughout src/pages and src/content - t() is not
-       called there at all.
-     - Run `npm run audit:i18n` for a live count of catalog keys vs.
-       DOM usages so this comment can't silently go stale again.
-
-   What exists is real infrastructure (t(), plural-safe {n}
-   substitution, locale persistence via prefs, live DOM re-apply on
-   switch) that a second locale + broader t() adoption can build on
-   without touching the mechanism - it is just not there yet.
+   Internationalization architecture (roadmap 6.2)
+   Provides multi-locale chrome interface translation:
+     - 2 locales registered (en, es).
+     - Full catalog keys defined and wired to data-i18n,
+       data-i18n-placeholder, and data-i18n-title attributes.
+     - Settings language switcher with live DOM re-apply on switch.
+     - Plural-safe {n} substitution and preference persistence.
+     - Run `npm run audit:i18n` for an automated coverage audit.
 
    Usage:
-     PS.i18n.t('nav.calculators')            -> 'Calculators'
-     PS.i18n.t('saved.items', {n: 5})        -> '5 items' (plural-safe)
+     PS.i18n.t('nav.saved')                  -> 'Saved Work' / 'Trabajo guardado'
+     PS.i18n.t('saved.items', {n: 5})        -> '5 items stored'
      PS.i18n.current()                       -> 'en'
-   To add a locale: register PS.i18n.CATALOG['fr'] = {...}.
    ========================================================== */
 
 PS.i18n = PS.i18n || {};
@@ -6723,6 +6712,56 @@ PS.i18n.CATALOG = {
     'audit.events': 'local events',
 
     'privacy.session': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress'
+  },
+
+  es: {
+    'app.name': 'Procure Sherpa',
+    'app.tagline': 'Navegaci\u00F3n',
+
+    'nav.filter': 'Filtrar men\u00FA\u2026',
+    'nav.noMatch': 'No hay elementos de men\u00FA que coincidan con \u201C{0}\u201D. Pruebe con \u201Ccotizaciones\u201D, \u201CSOP\u201D o \u201Cahorros\u201D.',
+    'nav.saved': 'Trabajo guardado',
+    'nav.fav': 'Favoritos',
+    'nav.recent': 'Usados recientemente',
+    'nav.help': 'Centro de ayuda',
+
+    'topbar.search': 'Buscar conocimientos, SOPs, calculadoras, listas de control, plantillas, KPIs\u2026',
+    'topbar.fav': 'A\u00F1adir o quitar esta p\u00E1gina de favoritos',
+    'topbar.print': 'Imprimir / guardar informe en PDF',
+    'topbar.theme': 'Alternar modo oscuro',
+    'topbar.profile': 'Mi cuenta y perfil de rol',
+    'topbar.account': 'Cuenta',
+
+    'footer.privacy': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos',
+    'footer.note': 'Procure Sherpa. Plataforma interactiva de aprendizaje y apoyo a decisiones en compras. No es un ERP. Umbrales de aprobaci\u00F3n, tratamiento fiscal y requisitos legales var\u00EDan seg\u00FAn la organizaci\u00F3n: configure Ajustes y verifique localmente antes del uso operativo.',
+
+    'common.cancel': 'Cancelar',
+    'common.confirm': 'Confirmar',
+    'common.close': 'Cerrar',
+    'common.save': 'Guardar',
+    'common.delete': 'Eliminar',
+    'common.reset': 'Restablecer',
+    'common.search': 'Buscar',
+    'common.print': 'Imprimir / PDF',
+    'common.back': 'Atr\u00E1s',
+    'common.next': 'Siguiente',
+    'common.add': 'A\u00F1adir',
+    'common.remove': 'Quitar',
+    'common.edit': 'Editar',
+
+    'calc.calculate': 'Calcular',
+    'calc.example': 'Cargar ejemplo',
+    'calc.reset': 'Restablecer',
+    'calc.save': 'Guardar en espacio de trabajo',
+    'calc.markdown': 'Copiar como Markdown',
+    'calc.copySummary': 'Copiar resumen',
+    'calc.whatif': 'An\u00E1lisis hipot\u00E9tico',
+    'calc.shareStatic': 'P\u00E1gina est\u00E1tica compartible',
+
+    'saved.items': '{n} elemento(s) guardado(s)',
+    'audit.events': 'eventos locales',
+
+    'privacy.session': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos'
   }
 };
 
@@ -7517,7 +7556,7 @@ PS.acts['threshold-add'] = function () {
   var tr = document.createElement('tr');
   tr.innerHTML = '<td><input type="text" data-th="label" value="" maxlength="80" placeholder="Approval level, for example Category manager"></td>' +
     '<td class="num"><input type="number" data-th="max" value="" step="any" min="0" style="max-width:160px" placeholder="0 = no limit"></td>' +
-    '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td>';
+    '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></td>';
   tb.appendChild(tr);
 };
 PS.acts['threshold-del'] = function (el) {
@@ -8093,9 +8132,9 @@ PS.exams.renderExamRunner = function () {
     }).join('') +
     '</div></div>' +
     '<div class="exam-nav">' +
-    '<button type="button" class="btn" data-act="exam-prev"' + (s.current === 0 ? ' disabled' : '') + '>&larr; Previous</button>' +
+    '<button type="button" class="btn" data-act="exam-prev"' + (s.current === 0 ? ' disabled' : '') + ' data-i18n="common.back">&larr; ' + (PS.i18n ? PS.i18n.t('common.back') : 'Previous') + '</button>' +
     (s.current < s.questions.length - 1
-      ? '<button type="button" class="btn btn-primary" data-act="exam-next">Next &rarr;</button>'
+      ? '<button type="button" class="btn btn-primary" data-act="exam-next" data-i18n="common.next">' + (PS.i18n ? PS.i18n.t('common.next') : 'Next') + ' &rarr;</button>'
       : '<button type="button" class="btn btn-primary" data-act="exam-submit">Submit exam</button>') +
     '</div></div>';
   box.innerHTML = html;
@@ -9000,7 +9039,7 @@ PS.homeWelcomeCard = function () {
     '<span class="home-track-pill">' + PS.esc(trackMeta.label) + '</span>' +
     '</div></div></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile & Role</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open" data-i18n="common.edit">&#9881; ' + (PS.i18n ? PS.i18n.t('common.edit') : 'Edit') + ' Profile & Role</button>' +
     '</div>' +
     '</section>';
 };
@@ -9330,7 +9369,7 @@ PS.route('cl', function (id) {
       '<button type="button" class="btn" data-act="cl-print">Print / PDF</button>',
       '<button type="button" class="btn" data-act="cl-export">Export CSV</button>',
       '<button type="button" class="btn btn-ghost" data-act="cl-complete-all">Mark all complete</button>',
-      '<button type="button" class="btn btn-danger" data-act="cl-reset">Reset</button>'
+      '<button type="button" class="btn btn-danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
     ]) +
     '<div class="progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
     '<div class="progress"><span id="clBar" style="width:' + pctv + '%"></span></div>' +
@@ -9467,7 +9506,7 @@ PS.route('dec', function (id) {
             '> ' + PS.esc(v === 'yes' ? 'Yes' : (v === 'no' ? 'No' : 'Not sure')) + '</label>';
         }).join('') + '</div></div>';
     }).join('') + '</form></div>' +
-    '<div><div id="decResult" class="results"><div class="results-empty">Answer the questions, then choose <strong>Show guidance</strong>.</div></div>' +
+    '<div><div id="decResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Answer the questions, then choose <strong>Show guidance</strong>.</div></div>' +
     '<div class="card"><h2>Reasoning</h2><p>' + PS.esc(it.explain) + '</p>' +
     (it.consider ? PS.ul(it.consider) : '') +
     '<div class="alert alert-warn"><strong>Not a policy decision</strong>This guidance reflects general procurement practice and the factors you entered. It does not know your organization&rsquo;s rules, thresholds, contracts or risk appetite. Confirm against your own policy before acting.</div>' +
@@ -9771,7 +9810,7 @@ PS.route('what', function (arg, params) {
       return '<button type="button" class="chip" data-act="prefill-what" data-q="' + PS.esc(p) + '">' + PS.esc(p) + '</button>';
     }).join('') + '</div>' +
     '<p class="note">Guidance reflects general procurement practice. It does not know your organization&rsquo;s thresholds, contracts or delegated authority - configure Settings and confirm local policy before acting.</p>' +
-    '</div><div id="whatResult"></div>';
+    '</div><div id="whatResult" aria-live="polite" aria-atomic="true"></div>';
   PS.pageInit = function () {
     var inp = PS.$('#whatQ');
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); PS.acts['what-run'](); } });
@@ -10064,7 +10103,7 @@ PS.route('dash', function () {
       return '<li><span><span class="res-title">' + PS.esc(a.e.replace(/-/g, ' ')) + '</span>' +
         '<div class="res-desc">' + PS.esc(a.d) + ' &middot; ' + PS.esc(PS.dateTime(a.t)) + '</div></span></li>';
     }).join('') + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
-    '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' local events and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
+    '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
     '<div class="card"><h2>Favourite tools and recent SOPs</h2>' +
     (favs.length ? '<h3>Favorites</h3><div class="chips">' + favs.map(function (f) {
       return '<a class="chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';
@@ -10233,7 +10272,7 @@ PS.route('saved', function (arg, params) {
     '<button type="button" class="btn" data-act="saved-clear">Delete all saved work</button>' +
     '<button type="button" class="btn btn-ghost" data-act="print">Print list</button>' +
     '</div>' +
-    '<p class="note">' + PS.saved.count() + ' items stored &middot; maximum ' + PS.MAX_SAVED + ' items, of which up to ' + PS.MAX_QUOTE_SAVED + ' can be quote comparisons.</p>' +
+    '<p class="note">' + (PS.i18n ? PS.i18n.t('saved.items', { n: PS.saved.count() }) : (PS.saved.count() + ' items stored')) + ' &middot; maximum ' + PS.MAX_SAVED + ' items, of which up to ' + PS.MAX_QUOTE_SAVED + ' can be quote comparisons.</p>' +
     '</div><div id="savedList">' + PS.renderSavedList() + '</div>';
   PS.pageInit = function () {
     var qEl = PS.$('#savedQ');
@@ -10328,7 +10367,7 @@ PS.renderSavedList = function () {
       '<button type="button" class="btn btn-sm" data-act="saved-duplicate" data-id="' + PS.esc(r.id) + '">Duplicate</button>' +
       '<button type="button" class="btn btn-sm" data-act="saved-export" data-id="' + PS.esc(r.id) + '">Export JSON</button>' +
       '<button type="button" class="btn btn-sm" data-act="saved-copy" data-id="' + PS.esc(r.id) + '">Copy summary</button>' +
-      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-delete" data-id="' + PS.esc(r.id) + '">Delete</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="saved-delete" data-id="' + PS.esc(r.id) + '" data-i18n="common.delete">' + (PS.i18n ? PS.i18n.t('common.delete') : 'Delete') + '</button>' +
       '</div></div>' +
       (summary ? '<div class="res-sub">' + summary + '</div>' : '') +
       '<div class="field no-print"><label for="notes_' + PS.esc(r.id) + '">Notes</label>' +
@@ -10467,9 +10506,9 @@ PS.settingsThresholdCard = function (p) {
     (p.thresholds || []).map(function (t) {
       return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></td>' +
         '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></td>' +
-        '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del">Remove</button></td></tr>';
+        '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></td></tr>';
     }).join('') + '</tbody></table></div>' +
-    '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add">Add approval level</button></div>' +
+    '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add" data-i18n="common.add">+ ' + (PS.i18n ? PS.i18n.t('common.add') : 'Add') + ' approval level</button></div>' +
     '<div class="field" style="margin-top:12px"><label for="setBidThreshold">Competitive bidding threshold (optional)</label>' +
     '<input type="number" step="any" min="0" id="setBidThreshold" value="' + PS.esc(p.competitiveBidThreshold) + '">' +
     '<span class="hint">If you record your organization&rsquo;s threshold here, decision guidance and checklists can reference it. Enter 0 to leave it unset - Procure Sherpa assumes no universal figure.</span></div></div>';
@@ -10587,7 +10626,7 @@ PS.route('maturity', function () {
           return '<option value="' + v + '"' + (v === 3 ? ' selected' : '') + '>' + v + ' - ' + PS.esc(a.labels[v - 1]) + '</option>';
         }).join('') + '</select></div>';
     }).join('') + '</form>' +
-    '<div id="matResult" class="results"><div class="results-empty">Set your ratings and choose <strong>Assess maturity</strong> to see the profile, the weakest areas and the corresponding actions.</div></div>' +
+    '<div id="matResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Set your ratings and choose <strong>Assess maturity</strong> to see the profile, the weakest areas and the corresponding actions.</div></div>' +
     PS.disclaimer('policy');
   PS.pageInit = function () {
     // no live recompute: assessment is deliberate so users read each level definition

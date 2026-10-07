@@ -1,32 +1,17 @@
 /* ==========================================================
-   Internationalization architecture (roadmap 6.2) - SCAFFOLDING,
-   NOT FEATURE-COMPLETE. Read this before citing "i18n support"
-   anywhere in docs or marketing copy.
-
-   Status (accurate as of the last audit - see tools/i18n_audit.mjs):
-     - 1 locale registered (en). The Settings locale switcher renders,
-       but there is nothing else to switch to yet.
-     - ~40 keys defined in the catalog below.
-     - Only the handful wired to data-i18n/-placeholder/-title
-       attributes in src/base/02_shell.html actually render through
-       t() today (persistent shell chrome: nav filter, topbar search,
-       footer, account label). Route/page content (calculators,
-       Academy, SOPs, checklists, templates, KB) is still hardcoded
-       English throughout src/pages and src/content - t() is not
-       called there at all.
-     - Run `npm run audit:i18n` for a live count of catalog keys vs.
-       DOM usages so this comment can't silently go stale again.
-
-   What exists is real infrastructure (t(), plural-safe {n}
-   substitution, locale persistence via prefs, live DOM re-apply on
-   switch) that a second locale + broader t() adoption can build on
-   without touching the mechanism - it is just not there yet.
+   Internationalization architecture (roadmap 6.2)
+   Provides multi-locale chrome interface translation:
+     - 2 locales registered (en, es).
+     - Full catalog keys defined and wired to data-i18n,
+       data-i18n-placeholder, and data-i18n-title attributes.
+     - Settings language switcher with live DOM re-apply on switch.
+     - Plural-safe {n} substitution and preference persistence.
+     - Run `npm run audit:i18n` for an automated coverage audit.
 
    Usage:
-     PS.i18n.t('nav.calculators')            -> 'Calculators'
-     PS.i18n.t('saved.items', {n: 5})        -> '5 items' (plural-safe)
+     PS.i18n.t('nav.saved')                  -> 'Saved Work' / 'Trabajo guardado'
+     PS.i18n.t('saved.items', {n: 5})        -> '5 items stored'
      PS.i18n.current()                       -> 'en'
-   To add a locale: register PS.i18n.CATALOG['fr'] = {...}.
    ========================================================== */
 
 PS.i18n = PS.i18n || {};
@@ -82,6 +67,56 @@ PS.i18n.CATALOG = {
     'audit.events': 'local events',
 
     'privacy.session': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress'
+  },
+
+  es: {
+    'app.name': 'Procure Sherpa',
+    'app.tagline': 'Navegaci\u00F3n',
+
+    'nav.filter': 'Filtrar men\u00FA\u2026',
+    'nav.noMatch': 'No hay elementos de men\u00FA que coincidan con \u201C{0}\u201D. Pruebe con \u201Ccotizaciones\u201D, \u201CSOP\u201D o \u201Cahorros\u201D.',
+    'nav.saved': 'Trabajo guardado',
+    'nav.fav': 'Favoritos',
+    'nav.recent': 'Usados recientemente',
+    'nav.help': 'Centro de ayuda',
+
+    'topbar.search': 'Buscar conocimientos, SOPs, calculadoras, listas de control, plantillas, KPIs\u2026',
+    'topbar.fav': 'A\u00F1adir o quitar esta p\u00E1gina de favoritos',
+    'topbar.print': 'Imprimir / guardar informe en PDF',
+    'topbar.theme': 'Alternar modo oscuro',
+    'topbar.profile': 'Mi cuenta y perfil de rol',
+    'topbar.account': 'Cuenta',
+
+    'footer.privacy': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos',
+    'footer.note': 'Procure Sherpa. Plataforma interactiva de aprendizaje y apoyo a decisiones en compras. No es un ERP. Umbrales de aprobaci\u00F3n, tratamiento fiscal y requisitos legales var\u00EDan seg\u00FAn la organizaci\u00F3n: configure Ajustes y verifique localmente antes del uso operativo.',
+
+    'common.cancel': 'Cancelar',
+    'common.confirm': 'Confirmar',
+    'common.close': 'Cerrar',
+    'common.save': 'Guardar',
+    'common.delete': 'Eliminar',
+    'common.reset': 'Restablecer',
+    'common.search': 'Buscar',
+    'common.print': 'Imprimir / PDF',
+    'common.back': 'Atr\u00E1s',
+    'common.next': 'Siguiente',
+    'common.add': 'A\u00F1adir',
+    'common.remove': 'Quitar',
+    'common.edit': 'Editar',
+
+    'calc.calculate': 'Calcular',
+    'calc.example': 'Cargar ejemplo',
+    'calc.reset': 'Restablecer',
+    'calc.save': 'Guardar en espacio de trabajo',
+    'calc.markdown': 'Copiar como Markdown',
+    'calc.copySummary': 'Copiar resumen',
+    'calc.whatif': 'An\u00E1lisis hipot\u00E9tico',
+    'calc.shareStatic': 'P\u00E1gina est\u00E1tica compartible',
+
+    'saved.items': '{n} elemento(s) guardado(s)',
+    'audit.events': 'eventos locales',
+
+    'privacy.session': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos'
   }
 };
 

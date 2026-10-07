@@ -24,7 +24,7 @@ PS.homeWelcomeCard = function () {
     '<span class="home-track-pill">' + PS.esc(trackMeta.label) + '</span>' +
     '</div></div></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open">&#9881; Edit Profile & Role</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open" data-i18n="common.edit">&#9881; ' + (PS.i18n ? PS.i18n.t('common.edit') : 'Edit') + ' Profile & Role</button>' +
     '</div>' +
     '</section>';
 };

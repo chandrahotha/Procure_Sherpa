@@ -59,7 +59,7 @@ PS.route('dash', function () {
       return '<li><span><span class="res-title">' + PS.esc(a.e.replace(/-/g, ' ')) + '</span>' +
         '<div class="res-desc">' + PS.esc(a.d) + ' &middot; ' + PS.esc(PS.dateTime(a.t)) + '</div></span></li>';
     }).join('') + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
-    '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' local events and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
+    '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
     '<div class="card"><h2>Favourite tools and recent SOPs</h2>' +
     (favs.length ? '<h3>Favorites</h3><div class="chips">' + favs.map(function (f) {
       return '<a class="chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';

@@ -41,7 +41,7 @@
     <div class="brand">
       <div class="brand-mark" id="sidebarBrandMark" aria-hidden="true">PS</div>
       <div class="brand-text">
-        <strong id="sidebarBrandTitle">Procure Sherpa</strong>
+        <strong id="sidebarBrandTitle" data-i18n="app.name">Procure Sherpa</strong>
         <span id="brandVersion" data-i18n="app.tagline">Navigation</span>
       </div>
       <button class="icon-btn sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">&#10005;</button>
@@ -73,10 +73,10 @@
         <button class="btn btn-sm btn-primary" type="submit" data-i18n="common.search">Search</button>
       </form>
       <div class="topbar-actions">
-        <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite">&#9734;</button>
-        <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report">&#128424;</button>
-        <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">&#9686;</button>
-        <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile">
+        <button class="icon-btn" id="favBtn" type="button" title="Add or remove this page from favorites" aria-label="Toggle favorite" data-i18n-title="topbar.fav">&#9734;</button>
+        <button class="icon-btn" id="printBtn" type="button" title="Print / save report as PDF" aria-label="Print report" data-i18n-title="topbar.print">&#128424;</button>
+        <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="topbar.theme">&#9686;</button>
+        <button class="user-btn" id="userProfileBtn" type="button" title="My Account & Role Profile" aria-label="User Profile" data-i18n-title="topbar.profile">
           <span class="user-avatar-pill" id="userAvatarPill">PS</span>
           <span class="user-name-label hide-sm" id="userNameLabel" data-i18n="topbar.account">Account</span>
         </button>
@@ -98,6 +98,7 @@
         <a href="#/settings">Settings</a>
         <a href="#/backup">Backup / Restore</a>
       </div>
+      <div class="foot-privacy" data-i18n="footer.privacy">Enterprise Single-Tenant Session &middot; Zero Data Egress</div>
       <div id="footNote" data-i18n="footer.note">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
       <div class="foot-brand">Built by <a href="https://digitracks.vercel.app" target="_blank" rel="noopener noreferrer">Digi Tracks</a> &middot; <a href="mailto:digi.tracks@outlook.com">digi.tracks@outlook.com</a></div>
     </footer>

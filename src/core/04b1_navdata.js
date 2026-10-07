@@ -38,11 +38,11 @@ PS.NAV_UNIFIED = [
     { label: 'Glossary', href: '#/glossary' }
   ] },
   { sec: 'Workspace', ico: '5', items: [
-    { label: 'Saved Work', href: '#/saved', badge: 'saved' },
-    { label: 'Favorites', href: '#/fav', badge: 'fav' },
-    { label: 'Recently Used', href: '#/recent' },
+    { label: 'Saved Work', href: '#/saved', badge: 'saved', i18n: 'nav.saved' },
+    { label: 'Favorites', href: '#/fav', badge: 'fav', i18n: 'nav.fav' },
+    { label: 'Recently Used', href: '#/recent', i18n: 'nav.recent' },
     { label: 'Savings Dashboard', href: '#/dash-savings' },
-    { label: 'Help Center', href: '#/help' },
+    { label: 'Help Center', href: '#/help', i18n: 'nav.help' },
     { label: 'Settings', href: '#/settings' },
     { label: 'Backup & Audit', href: '#/backup' }
   ] }
