@@ -8,6 +8,29 @@ PS.normalizeContent = function () {
     (map[type] || []).forEach(function (item) { PS.register(type, item); });
   });
   PS.HELP = PS_HELP;
+  PS.validateCalculators();
+};
+
+PS.validateCalculators = function () {
+  var calcs = PS.data.calc || [];
+  var problems = [];
+  calcs.forEach(function (calc) {
+    if (!calc.id) problems.push('Calculator missing id');
+    if (!calc.title) problems.push('Calculator ' + calc.id + ' missing title');
+    if (!calc.run || typeof calc.run !== 'function') problems.push('Calculator ' + calc.id + ' missing run function');
+    if (!calc.fields || !calc.fields.length) problems.push('Calculator ' + calc.id + ' has no fields');
+    if (calc.example) {
+      var errs = PS.validateCalc(calc, calc.example);
+      if (errs && Object.keys(errs).length) {
+        problems.push('Calculator ' + calc.id + ' example fails validation: ' + Object.keys(errs).join(', '));
+      }
+    }
+  });
+  if (problems.length && window.console && console.warn) {
+    console.warn('Calculator validation: ' + problems.length + ' issue(s) found');
+    problems.forEach(function (p) { console.warn('  - ' + p); });
+  }
+  return problems;
 };
 /* ---------- hardening: prune dead relationship links at boot ----------
    Content authors may reference items planned for future releases.

@@ -14,7 +14,8 @@ PS.route('sop', function (id) {
     PS.badge('sop') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
     (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
     PS.sopDocControl(it) +
-    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>']) +
+    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>',
+      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>']) +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<div class="grid grid-2">' +

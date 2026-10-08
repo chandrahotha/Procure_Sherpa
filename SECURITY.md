@@ -33,6 +33,14 @@ run through `PS.esc()`/`PS.escAttr()` first — this was hand-verified
 across the profile, copilot, spend-model, doc-pack, and exam modules and
 should hold as a hard rule for any new code.
 
+## Browser compatibility floor
+
+The source is written in ES5 syntax for auditability, but the runtime
+uses ES2015+ built-ins (`Set`, `Map`, `Promise`, `Object.keys`,
+`Array.isArray`, `Number.EPSILON`). The supported browser floor is
+**evergreen browsers** (Chrome, Edge, Firefox, Safari — latest 2
+versions). Internet Explorer is not supported.
+
 ## Data handling
 
 * **No network calls at runtime.** The Content-Security-Policy in

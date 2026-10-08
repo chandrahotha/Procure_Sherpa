@@ -11,12 +11,37 @@ PS.route('home', function () {
   PS.pageTitle = 'Command Center';
   return PS.homeWelcomeCard() +
     PS.homeDualHub() +
+    PS.homeQuickCalc() +
     PS.homePhase11() +
     PS.homeSmartResume() +
     PS.homeQuickActions() +
     PS.homeThinkingPoint() +
     PS.disclaimer('policy');
 });
+
+PS.homeQuickCalc = function () {
+  var recent = PS.recent.list().filter(function (r) { return r.type === 'calc'; }).slice(0, 3);
+  var popular = [
+    { id: 'calc-tco', title: 'TCO' },
+    { id: 'calc-compare-quotes', title: 'Compare Quotes' },
+    { id: 'calc-landed-cost', title: 'Landed Cost' },
+    { id: 'calc-negotiation-savings', title: 'Negotiation Savings' }
+  ];
+  var seen = {};
+  recent.forEach(function (r) { seen[r.id] = 1; });
+  var chips = popular.filter(function (c) { return !seen[c.id]; }).map(function (c) {
+    return '<a class="btn btn-sm" href="#/calc/' + PS.esc(c.id) + '">' + PS.esc(c.title) + '</a>';
+  }).join('');
+  var recentChips = recent.map(function (r) {
+    return '<a class="btn btn-sm btn-ghost" href="#/calc/' + PS.esc(r.id) + '">' + PS.esc(r.title || r.id) + '</a>';
+  }).join('');
+  if (!chips && !recentChips) return '';
+  return '<div class="card no-print"><div class="card-head"><h2>Quick Calculator</h2>' +
+    '<div class="spacer"></div><a class="btn btn-sm btn-ghost" href="#/list/calc">All 19 tools</a></div>' +
+    '<div class="btn-row tight">' + recentChips + chips + '</div>' +
+    '<p class="note mb0" style="margin-top:8px">Jump straight into the tools you use most. Results stay local.</p>' +
+    '</div>';
+};
 
 PS.homePhase11 = function () {
   var cards = [

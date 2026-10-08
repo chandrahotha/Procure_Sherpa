@@ -2866,6 +2866,55 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .phase11-card .p11-ico { font-size: 1.5rem; }
 .phase11-card .p11-title { font-weight: 700; font-size: 1rem; }
 .phase11-card .p11-desc { font-size: .85rem; color: var(--dim); line-height: 1.45; }
+/* ---------- brand logo (embedded emblem) ----------
+   The emblem itself is embedded once in src/core/03a2_logo.js as a
+   base64 data URI and mounted by PS.applyLogo(). These rules present
+   it: the sidebar brand mark becomes a white tile (the emblem's own
+   background is near-white, so a white chip keeps the blue mountain
+   readable in both light and dark themes), and the Academy hero shows
+   the emblem beside the title. */
+.brand-mark{
+  background:#ffffff;color:transparent;overflow:hidden;padding:2px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.25);
+}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block;border-radius:9px}
+.ps-logo-chip{
+  display:flex;align-items:center;justify-content:center;
+  background:#ffffff;border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--sh);overflow:hidden;
+}
+.ps-logo-chip img{width:100%;height:100%;object-fit:contain;display:block}
+/* print header: emblem beside the report title (report-head is print-only) */
+@media print{
+  .report-head{display:flex!important;align-items:center;gap:12px}
+  .report-head .rh-text{display:block}
+  .report-head .rh-text h1{display:block}
+  .report-head .rh-logo{width:46px;height:46px;flex:0 0 46px;padding:4px;background:#fff;border:1px solid #ccc;border-radius:10px;overflow:hidden;display:inline-block}
+  .report-head .rh-logo img{width:100%;height:100%;object-fit:contain;display:block}
+}
+
+/* ---------- learning hub pages: shared widgets ----------
+   Option cards for quiz-style choices, thin progress bars, and
+   colored level pills. Uses the existing design tokens so these
+   adapt to dark mode and print like the rest of the UI. */
+.opt-card{
+  display:block;padding:11px 14px;border:1px solid var(--border);border-radius:10px;
+  margin-bottom:8px;cursor:pointer;transition:border-color .13s,background .13s;
+}
+.opt-card:hover{border-color:var(--border-2);background:var(--panel-2)}
+.opt-card input{margin-right:9px;accent-color:var(--accent);cursor:pointer}
+.bar-track{background:var(--sunken);border-radius:4px;height:8px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:4px}
+.level-pill{
+  display:inline-block;font-size:.72rem;font-weight:700;line-height:1.6;
+  padding:0 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);
+}
+.hub-note{
+  background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;font-size:.84rem;color:var(--dim);line-height:1.55;
+}
+
 /* ==========================================================
    Procure Sherpa v2.1 - Print & Report Styles
    Section 7: print media + report header
@@ -2945,6 +2994,14 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
   </div>
 </noscript>
 
+<div id="bootLoader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.3s ease">
+  <div style="font-size:2em;font-weight:700;color:var(--accent,#0d6efd);margin-bottom:8px">Procure Sherpa</div>
+  <div style="color:var(--muted,#6b7280);margin-bottom:16px">Loading your procurement workspace...</div>
+  <div style="width:200px;height:4px;background:var(--border,#e5e7eb);border-radius:2px;overflow:hidden">
+    <div id="bootLoaderBar" style="height:100%;width:30%;background:var(--accent,#0d6efd);border-radius:2px;animation:bootLoad 1.2s ease-in-out infinite"></div>
+  </div>
+  <style>@keyframes bootLoad{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}</style>
+</div>
 <div class="app" id="app">
   <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
     <div class="brand">
@@ -3035,16 +3092,41 @@ PS.MAX_QUOTE_SAVED = 50;
 PS.AUDIT_MAX = 100;
 
 /* ---------- tiny DOM helpers ---------- */
+
+/**
+ * @param {string} s - CSS selector
+ * @param {Element} [r] - Root element (defaults to document)
+ * @returns {Element|null}
+ */
 PS.$ = function (s, r) { return (r || document).querySelector(s); };
+
+/**
+ * @param {string} s - CSS selector
+ * @param {Element} [r] - Root element (defaults to document)
+ * @returns {Element[]}
+ */
 PS.$$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
 /* ---------- text safety (Section 34: input security) ---------- */
+
+/**
+ * Escape HTML entities to prevent XSS
+ * @param {*} v - Value to escape
+ * @returns {string} Escaped string safe for innerHTML
+ */
 PS.esc = function (v) {
   if (v === null || v === undefined) return '';
   return String(v)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
+
+/**
+ * Clean user input: strip control characters, trim, optionally truncate
+ * @param {*} v - Value to clean
+ * @param {number} [max] - Maximum length
+ * @returns {string}
+ */
 PS.clean = function (v, max) {
   if (v === null || v === undefined) return '';
   /* eslint-disable-next-line no-control-regex --
@@ -3057,6 +3139,12 @@ PS.clean = function (v, max) {
 PS.escAttr = PS.esc;
 
 /* ---------- numbers ---------- */
+
+/**
+ * Parse a number from various input formats (currency symbols, commas, parentheses for negatives, percents)
+ * @param {*} v - Value to parse
+ * @returns {number} Parsed number or NaN
+ */
 PS.num = function (v) {
   if (v === null || v === undefined || v === '') return NaN;
   if (typeof v === 'number') return isFinite(v) ? v : NaN;
@@ -3066,14 +3154,34 @@ PS.num = function (v) {
   var n = Number(s);
   return isFinite(n) ? n : NaN;
 };
+
+/**
+ * @param {*} v - Value to check
+ * @returns {boolean} True if value parses to a finite number
+ */
 PS.isNum = function (v) { return isFinite(PS.num(v)); };
+
+/**
+ * @param {number} n - Value to clamp
+ * @param {number} lo - Minimum
+ * @param {number} hi - Maximum
+ * @returns {number}
+ */
 PS.clamp = function (n, lo, hi) { return Math.min(hi, Math.max(lo, n)); };
+
+/**
+ * @param {number} n - Value to round
+ * @param {number} [d=2] - Decimal places
+ * @returns {number} Rounded number or NaN
+ */
 PS.round = function (n, d) {
   var f = Math.pow(10, d === undefined ? 2 : d);
   return isFinite(n) ? Math.round((n + Number.EPSILON) * f) / f : NaN;
 };
 
 /* ---------- formatting (Section 60: no false precision) ---------- */
+
+/** @type {Array<{c: string, s: string}>} */
 PS.CURRENCIES = [
   { c: 'USD', s: '$' }, { c: 'EUR', s: '\u20AC' }, { c: 'GBP', s: '\u00A3' },
   { c: 'INR', s: '\u20B9' }, { c: 'AED', s: 'AED ' }, { c: 'AUD', s: 'A$' },
@@ -3083,10 +3191,23 @@ PS.CURRENCIES = [
   { c: 'NZD', s: 'NZ$' }, { c: 'HKD', s: 'HK$' }, { c: 'SAR', s: 'SAR ' },
   { c: 'MYR', s: 'RM' }, { c: 'PLN', s: 'z\u0142 ' }, { c: 'NONE', s: '' }
 ];
+
+/**
+ * Get currency symbol for a currency code
+ * @param {string} code - ISO currency code (e.g. 'USD', 'EUR')
+ * @returns {string} Currency symbol or code with space if not found
+ */
 PS.curSymbol = function (code) {
   var f = PS.CURRENCIES.filter(function (x) { return x.c === code; })[0];
   return f ? f.s : (code ? code + ' ' : '');
 };
+
+/**
+ * Format number with thousands separators
+ * @param {number} n - Number to format
+ * @param {number} [d] - Decimal places
+ * @returns {string} Formatted number or em-dash for non-finite
+ */
 PS.group = function (n, d) {
   if (!isFinite(n)) return '\u2014';
   var neg = n < 0; n = Math.abs(n);
@@ -3094,21 +3215,61 @@ PS.group = function (n, d) {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return (neg ? '-' : '') + parts.join('.');
 };
+
+/**
+ * @param {number} n - Number to format
+ * @param {number} [d] - Decimal places
+ * @returns {string}
+ */
 PS.fmt = function (n, d) { return PS.group(n, d === undefined ? 2 : d); };
+
+/**
+ * Format as money with user's currency symbol
+ * @param {number} n - Amount
+ * @param {number} [d] - Decimal places (defaults to user pref)
+ * @returns {string}
+ */
 PS.money = function (n, d) {
   if (!isFinite(n)) return '\u2014';
   var p = PS.prefs();
   return PS.curSymbol(p.currency) + PS.group(n, d === undefined ? p.decimals : d);
 };
-/* headline money: no false precision on large numbers */
+
+/**
+ * Headline money: no false precision on large numbers
+ * @param {number} n - Amount
+ * @returns {string}
+ */
 PS.moneyR = function (n) {
   if (!isFinite(n)) return '\u2014';
   var a = Math.abs(n);
   return PS.money(n, a >= 10000 ? 0 : (a >= 100 ? 0 : 2));
 };
+
+/**
+ * @param {number} n - Percentage value
+ * @param {number} [d] - Decimal places
+ * @returns {string}
+ */
 PS.pct = function (n, d) { return isFinite(n) ? PS.group(n, d === undefined ? 1 : d) + '%' : '\u2014'; };
+
+/**
+ * @param {number} n - Quantity
+ * @returns {string}
+ */
 PS.qty = function (n) { return isFinite(n) ? PS.group(n, Math.abs(n) < 1000 ? 2 : 0) : '\u2014'; };
+
+/**
+ * @param {number} n - Ratio value
+ * @returns {string}
+ */
 PS.ratio = function (n) { return isFinite(n) ? PS.group(n, 2) : '\u2014'; };
+
+/**
+ * Format date according to user preference
+ * @param {Date|string|number} [d] - Date (defaults to now)
+ * @returns {string} Formatted date or em-dash for invalid
+ */
 PS.dateStr = function (d) {
   d = d ? new Date(d) : new Date();
   if (isNaN(d.getTime())) return '\u2014';
@@ -3118,39 +3279,104 @@ PS.dateStr = function (d) {
   if (p.dateFormat === 'eu') return day + '/' + m + '/' + y;
   return y + '-' + m + '-' + day;
 };
+
+/**
+ * @param {Date|string|number} [d] - Date
+ * @returns {string}
+ */
 PS.dateTime = function (d) { return PS.dateStr(d) + ' ' + PS.timeStr(d); };
+
+/**
+ * @param {Date|string|number} [d] - Date
+ * @returns {string}
+ */
 PS.timeStr = function (d) {
   d = d ? new Date(d) : new Date();
   var h = d.getHours(), mi = String(d.getMinutes());
   if (mi.length < 2) mi = '0' + mi;
   return (h % 12 === 0 ? 12 : h % 12) + ':' + mi + ' ' + (h < 12 ? 'am' : 'pm');
 };
+
+/**
+ * @param {Date|string|number} [d] - Date
+ * @returns {string} ISO date (YYYY-MM-DD)
+ */
 PS.iso = function (d) {
   d = d ? new Date(d) : new Date();
   var m = String(d.getMonth() + 1), day = String(d.getDate());
   if (m.length < 2) m = '0' + m; if (day.length < 2) day = '0' + day;
   return d.getFullYear() + '-' + m + '-' + day;
 };
+
+/**
+ * Generate unique ID
+ * @param {string} [p] - Prefix
+ * @returns {string}
+ */
 PS.uid = function (p) {
   return (p || 'id') + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
 };
+
+/**
+ * @param {Function} fn - Function to debounce
+ * @param {number} [ms] - Delay in milliseconds
+ * @returns {Function}
+ */
 PS.debounce = function (fn, ms) {
   var t;
   return function () { var a = arguments, s = this; clearTimeout(t); t = setTimeout(function () { fn.apply(s, a); }, ms || 150); };
 };
 
+﻿/* ---------- brand logo (embedded emblem, single copy) ----------
+   The product logo is embedded ONCE as a base64 data URI and applied
+   dynamically by PS.applyLogo(): the favicon link in <head> keeps its
+   tiny inline-SVG fallback for the no-JS case, and this swaps in the
+   PNG and mounts the emblem in the sidebar brand mark. One copy instead
+   of duplicating it across CSS, head and body keeps the payload on the
+   size budget; the CSP already allows img-src data:. The source image
+   is icon.png at the repo root (resized to 128px for the bundle). */
+PS.LOGO_DATA = 'data:image/png;base64,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';
+PS.applyLogo = function () {
+  var link = document.querySelector('link[rel="icon"]');
+  if (link) link.href = PS.LOGO_DATA;
+  var mark = document.getElementById('sidebarBrandMark');
+  if (mark && !mark.querySelector('img')) {
+    mark.innerHTML = '<img src="' + PS.LOGO_DATA + '" alt="">';
+  }
+};
 /* ---------- CSV safety (Section 34: CSV injection protection) ---------- */
+
+/**
+ * Sanitize a cell for CSV output (prevents formula injection)
+ * @param {*} v - Cell value
+ * @returns {string} Sanitized cell
+ */
 PS.csvCell = function (v) {
   var s = v === null || v === undefined ? '' : String(v);
   if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
   if (/[",\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
   return s;
 };
+
+/**
+ * Build CSV string from headers and rows
+ * @param {string[]} headers - Column headers
+ * @param {Array<Array<*>>} rows - Data rows
+ * @returns {string} CSV content with CRLF line endings
+ */
 PS.toCSV = function (headers, rows) {
   var out = [headers.map(PS.csvCell).join(',')];
   (rows || []).forEach(function (r) { out.push(r.map(PS.csvCell).join(',')); });
   return out.join('\r\n');
 };
+
+/**
+ * Trigger file download in browser
+ * @param {string} filename - Suggested filename
+ * @param {string} text - File content
+ * @param {string} [mime] - MIME type
+ * @returns {boolean} True if download was triggered
+ */
 PS.download = function (filename, text, mime) {
   try {
     var blob = new Blob([text], { type: (mime || 'text/plain') + ';charset=utf-8' });
@@ -3165,6 +3391,12 @@ PS.download = function (filename, text, mime) {
     return false;
   }
 };
+
+/**
+ * Copy text to clipboard (modern API with legacy fallback)
+ * @param {string} text - Text to copy
+ * @param {string} [label] - Context label for toast message
+ */
 PS.copy = function (text, label) {
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3176,6 +3408,12 @@ PS.copy = function (text, label) {
   } catch (e) { /* fall through to legacy path */ }
   PS.legacyCopy(text, label);
 };
+
+/**
+ * Legacy copy fallback using execCommand
+ * @param {string} text
+ * @param {string} [label]
+ */
 PS.legacyCopy = function (text, label) {
   try {
     var ta = document.createElement('textarea');
@@ -3189,6 +3427,13 @@ PS.legacyCopy = function (text, label) {
 };
 
 /* ---------- safe JSON parsing for imports (Section 57) ---------- */
+
+/**
+ * Parse JSON with size and type validation
+ * @param {string} text - JSON string to parse
+ * @param {number} [maxBytes] - Maximum allowed size
+ * @returns {{ok: boolean, value?: *, error?: string}}
+ */
 PS.safeJSON = function (text, maxBytes) {
   if (typeof text !== 'string' || !/\S/.test(text)) return { ok: false, error: 'The file is empty.' };
   if (maxBytes && text.length > maxBytes) return { ok: false, error: 'The file is too large to import safely.' };
@@ -3200,11 +3445,23 @@ PS.safeJSON = function (text, maxBytes) {
     return { ok: false, error: 'This is not valid JSON. Nothing was imported and your data is unchanged.' };
   }
 };
+
+/**
+ * Encode object for safe URL hash transport
+ * @param {*} obj - Object to encode
+ * @returns {string} URL-safe base64 string
+ */
 PS.encodeHashPayload = function (obj) {
   try {
     return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(obj)))));
   } catch (e) { return ''; }
 };
+
+/**
+ * Decode URL hash payload back to object
+ * @param {string} raw - Encoded string
+ * @returns {Object|null} Decoded object or null on failure
+ */
 PS.decodeHashPayload = function (raw) {
   try {
     var bin = atob(decodeURIComponent(raw));
@@ -3608,6 +3865,12 @@ PS.storageOK = (function () {
 })();
 
 PS.store = {
+  /**
+   * Get a value from storage (localStorage or in-memory fallback)
+   * @param {string} key - Storage key
+   * @param {*} [fallback] - Default value if key not found or parse fails
+   * @returns {*} Stored value or fallback
+   */
   get: function (key, fallback) {
     try {
       var raw = PS.storageOK ? window.localStorage.getItem(key) : PS._mem[key];
@@ -3619,6 +3882,13 @@ PS.store = {
       return fallback;
     }
   },
+
+  /**
+   * Set a value in storage
+   * @param {string} key - Storage key
+   * @param {*} value - Value to store
+   * @returns {boolean} True if stored successfully
+   */
   set: function (key, value) {
     var raw;
     try { raw = JSON.stringify(value); }
@@ -3636,10 +3906,20 @@ PS.store = {
       return false;
     }
   },
+
+  /**
+   * Remove a key from storage
+   * @param {string} key
+   */
   remove: function (key) {
     try { if (PS.storageOK) window.localStorage.removeItem(key); } catch (e) { }
     delete PS._mem[key];
   },
+
+  /**
+   * List all Procure Sherpa keys in localStorage
+   * @returns {string[]}
+   */
   rawKeys: function () {
     var out = [];
     try {
@@ -3650,12 +3930,23 @@ PS.store = {
     } catch (e) { }
     return out;
   },
+
+  /**
+   * Calculate total bytes used by Procure Sherpa in localStorage
+   * @returns {number} Approximate bytes used
+   */
   bytes: function () {
     var n = 0;
     PS.store.rawKeys().forEach(function (k) { try { n += (window.localStorage.getItem(k) || '').length; } catch (e) { } });
     return n;
   }
 };
+
+/**
+ * Show a toast warning only once per unique tag
+ * @param {string} tag - Unique identifier for this warning type
+ * @param {string} msg - Warning message
+ */
 PS.warnOnce = function (tag, msg) {
   PS._warned = PS._warned || {};
   if (PS._warned[tag]) return;
@@ -4973,12 +5264,12 @@ PS.acts['user-profile-close'] = function () {
    2. PS.chart.kraljic (2x2 Portfolio Matrix)
    3. PS.chart.pareto (80/20 Spend Concentration)
    4. PS.chart.zscoreGauge (Altman Z-Score Solvency Gauge)
+   5. PS.chart.radar (two-series comparison across criteria)
    ========================================================== */
 
 PS.chart = {
   /* Export SVG as file */
-  exportSVG: function (svgElement, filename) {
-    var serializer = new XMLSerializer();
+  exportSVG: function (svgElement, filename) {    var serializer = new XMLSerializer();
     var source = serializer.serializeToString(svgElement);
     if (!source.match(/^<svg[^>]*xmlns/)) {
       source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
@@ -5318,6 +5609,62 @@ PS.chart = {
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:380px; margin:0 auto;" role="img" aria-label="Altman Z-Score Gauge">' +
       svg.join('') +
       '</svg></div></div>';
+  },
+
+  /* Radar: two series compared across criteria (0-5 scale).
+     axes: [{key, label}], series: [{name, color, values: {key: score}}] */
+  radar: function (axes, series, opts) {
+    opts = opts || {};
+    var w = opts.width || 460;
+    var h = opts.height || 380;
+    if (!axes || !axes.length) return '<div class="chart-empty">No criteria to chart.</div>';
+    var n = axes.length;
+    var cx = w / 2;
+    var cy = h / 2 + 4;
+    var R = Math.min(w, h) / 2 - 54;
+
+    function pt(i, val) {
+      var ang = -Math.PI / 2 + (i / n) * 2 * Math.PI;
+      var r = R * (Math.max(0, Math.min(5, Number(val) || 0)) / 5);
+      return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) };
+    }
+
+    var svg = [];
+    [1, 2, 3, 4, 5].forEach(function (ring) {
+      var pts = [];
+      for (var i = 0; i < n; i++) { var p = pt(i, ring); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); }
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="none" stroke="var(--border)" stroke-width="1" />');
+    });
+
+    axes.forEach(function (a, i) {
+      var v5 = pt(i, 5);
+      var lab = pt(i, 5.9);
+      var anchor = Math.abs(lab.x - cx) < 14 ? 'middle' : (lab.x > cx ? 'start' : 'end');
+      svg.push('<line x1="' + cx + '" y1="' + cy + '" x2="' + v5.x.toFixed(1) + '" y2="' + v5.y.toFixed(1) + '" stroke="var(--border)" stroke-width="1" />');
+      svg.push('<text x="' + lab.x.toFixed(1) + '" y="' + (lab.y + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="700" fill="var(--dim)">' + PS.esc(a.label) + '</text>');
+    });
+
+    (series || []).forEach(function (s) {
+      var pts = [];
+      axes.forEach(function (a, i) { var p = pt(i, s.values[a.key]); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); });
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + s.color + '" stroke="' + s.color + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
+    });
+
+    var legend = (series || []).map(function (s) {
+      return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--dim)">' +
+        '<span style="width:10px;height:10px;border-radius:2px;background:' + s.color + '"></span>' + PS.esc(s.name) + '</span>';
+    }).join(' <span style="color:var(--mute);font-size:.8rem">vs</span> ');
+
+    return '<div class="chart-container">' +
+      '<div class="chart-title"><span>Scorecard profile</span> <span class="chart-badge">Weighted out of 5</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px;justify-content:center">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="radar" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:6px">' + legend + '</div>' +
+      '<div class="chart-svg-wrap" style="text-align:center;">' +
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:420px;margin:0 auto;" role="img" aria-label="Radar chart comparing supplier scores across criteria">' +
+      svg.join('') +
+      '</svg></div></div>';
   }
 };
 
@@ -5455,17 +5802,25 @@ PS.updateNavCounts = function () {
 PS.NAV_UNIFIED = [
   { sec: 'Overview', ico: '1', items: [
     { label: 'Command Center', href: '#/home' },
+    { label: 'What to Learn Next', href: '#/next-up' },
     { label: 'What Should I Do?', href: '#/what' },
     { label: 'Procurement Lifecycle', href: '#/lifecycle' },
     { label: 'Maturity Assessment', href: '#/maturity' },
     { label: 'Global Search', href: '#/search' },
-    { label: 'Quick Start', href: '#/quickstart' }
+    { label: 'Quick Start', href: '#/quickstart' },
+    { label: "What's New", href: '#/whats-new' }
   ] },
   { sec: 'Learn', ico: '2', items: [
     { label: 'Academy Curriculum', href: '#/academy' },
+    { label: 'Skill Assessment', href: '#/assessment' },
+    { label: 'Learning Paths', href: '#/learning-paths' },
+    { label: 'Practice Labs', href: '#/labs' },
+    { label: 'Skill Portfolio', href: '#/portfolio' },
+    { label: 'Daily Tip & Career', href: '#/daily-tip' },
     { label: 'My Progress & Badges', href: '#/academy-progress' },
     { label: 'Certification Exams', href: '#/exams' },
-    { label: 'Credential Transcript (Future)', href: '#/certificate' }
+    { label: 'Credential Transcript (Future)', href: '#/certificate' },
+    { label: 'Community Forum', href: '#/community' }
   ] },
   { sec: 'Execute', ico: '3', items: [
     { label: 'SOPs & Procedures', href: '#/list/sop' },
@@ -5523,7 +5878,15 @@ PS.buildNav = function () {
   var bMark = PS.$('#sidebarBrandMark');
   var bTitle = PS.$('#sidebarBrandTitle');
   var bVer = PS.$('#brandVersion');
-  if (bMark) bMark.textContent = 'PS';
+  if (bMark) {
+    /* the embedded emblem is mounted here (and by PS.applyLogo on boot);
+       re-check rather than overwrite so a nav refresh never wipes it */
+    if (PS.LOGO_DATA && !bMark.querySelector('img')) {
+      bMark.innerHTML = '<img src="' + PS.LOGO_DATA + '" alt="">';
+    } else if (!PS.LOGO_DATA) {
+      bMark.textContent = 'PS';
+    }
+  }
   if (bTitle) bTitle.textContent = 'Procure Sherpa';
   if (bVer) bVer.textContent = 'Navigation';
 
@@ -5792,9 +6155,10 @@ PS.disclaimer = function (kind) { return PS.withDisclaimer(kind); };
 PS.reportHead = function (title, subtitle) {
   var p = PS.prefs();
   return '<div class="report-head">' +
-    '<h1>' + PS.esc(PS.APP) + ' : ' + PS.esc(title) + '</h1>' +
-    '<div class="rh-meta">' + (p.orgName ? PS.esc(p.orgName) + ' \u00B7 ' : '') +
-    PS.esc(subtitle || '') + ' \u00B7 Generated ' + PS.esc(PS.dateStr()) + ' ' + PS.esc(PS.timeStr()) + '</div></div>';
+    (PS.LOGO_DATA ? '<span class="rh-logo" aria-hidden="true"><img src="' + PS.LOGO_DATA + '" alt=""></span>' : '') +
+    '<span class="rh-text"><h1>' + PS.esc(PS.APP) + ' : ' + PS.esc(title) + '</h1>' +
+    '<span class="rh-meta">' + (p.orgName ? PS.esc(p.orgName) + ' \u00B7 ' : '') +
+    PS.esc(subtitle || '') + ' \u00B7 Generated ' + PS.esc(PS.dateStr()) + ' ' + PS.esc(PS.timeStr()) + '</span></span></div>';
 };
 PS.reportFooter = function (note) {
   var p = PS.prefs();
@@ -6106,6 +6470,7 @@ PS.renderCalcResult = function (calc, values, out) {
   });
   if (out.analysis) html += '<div class="res-sub"><h3>Interpretation</h3>' + out.analysis + '</div>';
   if (out.table) html += PS.renderTable(out.table);
+  if (out.chartHtml) html += '<div class="res-sub">' + out.chartHtml + '</div>';
   if (out.formula) {
     html += '<details class="acc" open><summary>Formula and method</summary><div class="acc-body">' +
       (Array.isArray(out.formula) ? out.formula.map(function (x) { return '<p><code>' + PS.esc(x) + '</code></p>'; }).join('') : '<p><code>' + PS.esc(out.formula) + '</code></p>') +
@@ -6632,13 +6997,17 @@ PS.acts.handoff = function (el) {
 };
 PS.acts['chart-export'] = function (el) {
   var type = el.dataset.chartType;
-  var svg = document.querySelector('.chart-container .svg-responsive svg');
+  /* the svg element itself carries .svg-responsive; selecting a descendant
+     wrapper never matched, which made every export button report "no chart" */
+  var scope = el.closest ? el.closest('.chart-container') : document;
+  var svg = (scope || document).querySelector('svg.svg-responsive');
   if (!svg) { PS.toast('No chart found on this page.', 'danger'); return; }
   var filenames = {
     waterfall: 'should-cost-waterfall.svg',
     kraljic: 'kraljic-matrix.svg',
     pareto: 'pareto-spend.svg',
-    zscore: 'altman-zscore-gauge.svg'
+    zscore: 'altman-zscore-gauge.svg',
+    radar: 'supplier-radar.svg'
   };
   PS.chart.exportSVG(svg, filenames[type] || 'chart.svg');
   PS.toast('SVG downloaded', 'ok');
@@ -6828,6 +7197,39 @@ PS.i18n.applyDom = function () {
 PS.acts.theme = function () { PS.toggleTheme(); };
 PS.acts.print = function () { try { window.print(); } catch (e) { PS.toast('Printing is not available in this browser.', 'danger'); } };
 PS.acts['print-kbd'] = function () { PS.kbdHelp.printCheatSheet(); };
+PS.acts['content-markdown'] = function () {
+  var c = PS.currentItem;
+  if (!c || !c.item) { PS.toast('Open a page before copying it as Markdown.'); return; }
+  var it = c.item;
+  var md = ['# ' + (it.title || it.term || 'Untitled'), ''];
+  if (it.desc) md.push(it.desc, '');
+  if (it.purpose) md.push('**Purpose:** ' + it.purpose, '');
+  if (it.scope) md.push('**Scope:** ' + it.scope, '');
+  if (it.trigger) md.push('**Trigger:** ' + it.trigger, '');
+  if (it.def) md.push(it.def, '');
+  if (it.steps && it.steps.length) {
+    md.push('## Steps', '');
+    it.steps.forEach(function (s, i) {
+      md.push((i + 1) + '. ' + (s.s || s.title || s.label || ''));
+      if (s.d || s.desc || s.note) md.push('   ' + (s.d || s.desc || s.note));
+    });
+    md.push('');
+  }
+  if (it.sections && it.sections.length) {
+    it.sections.forEach(function (sec) {
+      md.push('## ' + (sec.g || sec.title || ''), '');
+      (sec.items || []).forEach(function (item) { md.push('- [ ] ' + item); });
+      md.push('');
+    });
+  }
+  if (it.why) md.push('**Why it matters:** ' + (Array.isArray(it.why) ? it.why.join('; ') : it.why), '');
+  if (it.when) md.push('**When to use:** ' + (Array.isArray(it.when) ? it.when.join('; ') : it.when), '');
+  if (it.how) md.push('**How:** ' + (Array.isArray(it.how) ? it.how.join('; ') : it.how), '');
+  md.push('---');
+  md.push('From Procure Sherpa v' + PS.VERSION + ' - ' + PS.dateTime());
+  PS.copy(md.join('\n'), (it.title || 'Content') + ' Markdown');
+  PS.audit('markdown-exported', it.title || it.id);
+};
 PS.acts.fav = function () {
   var c = PS.currentItem;
   if (!c) { PS.toast('Open a page before adding it to favorites.'); return; }
@@ -6860,6 +7262,11 @@ PS.acts['recent-clear'] = function () {
     okLabel: 'Clear list',
     onOk: function () { PS.recent.clear(); PS.renderRoute(); PS.toast('Recently used list cleared.', 'ok'); }
   });
+};
+PS.acts['search-history-clear'] = function () {
+  PS.store.set('search_history', []);
+  if (PS.$('#searchQ') && !PS.clean(PS.$('#searchQ').value)) PS.renderSearch();
+  else PS.renderRoute();
 };
 PS.acts['save-notes'] = function (el) {
   var id = el.dataset.id;
@@ -8665,14 +9072,29 @@ PS.acts['docpack-reopen'] = function (el) {
    Section K: fallback page, migration, boot (Section 45, 55, 57)
    ========================================================== */
 PS.notFound = function (kind, id) {
-  var route = PS.TYPE_ROUTE[kind] || kind;
+  /* Recovery links must go somewhere real. The kind words callers pass
+     ('SOP', 'decision guide', 'library'...) do not match TYPE_ROUTE keys
+     ('sop', 'dec'...), so echoing the kind into a /list/ link used to
+     dead-end in a second not-found page. Resolve to a known destination
+     instead, falling back to the Knowledge Hub. */
+  var k = String(kind || '');
+  var href = '#/list/kb';
+  if (/academy/i.test(k)) href = '#/academy';
+  else if (/calc/i.test(k)) href = '#/list/calc';
+  else if (/sop/i.test(k)) href = '#/list/sop';
+  else if (/checklist/i.test(k)) href = '#/list/cl';
+  else if (/template/i.test(k)) href = '#/list/tpl';
+  else if (/decision/i.test(k)) href = '#/list/dec';
+  else if (/kpi/i.test(k)) href = '#/list/kpi';
+  else if (/glossary|term/i.test(k)) href = '#/glossary';
+  else if (/scenario/i.test(k)) href = '#/scenarios';
   return '<div class="card"><h1>Not found</h1>' +
     '<p>Procure Sherpa has no ' + PS.esc(kind || 'page') + ' with the reference <strong>' + PS.esc(PS.clean(id, 60)) + '</strong>.</p>' +
     '<p>The reference may have changed, or the link may have been typed with a small difference.</p>' +
     PS.actionsBar([
       '<a class="btn btn-primary" href="#/home">Go to Home</a>',
       '<a class="btn" href="#/search?q=' + encodeURIComponent(id || '') + '">Search instead</a>',
-      '<a class="btn btn-ghost" href="#/list/' + PS.esc(route) + '">Browse the library</a>'
+      '<a class="btn btn-ghost" href="' + href + '">Browse the library</a>'
     ]) + '</div>';
 };
 PS.route('notfound', function () {
@@ -8856,6 +9278,14 @@ PS.wireEvents = function () {
    needs a real sw.js, an explicit manifest-src and connect-src 'self',
    and a README change - not a silent probe. */
 
+/* ---------- global error handlers ---------- */
+window.addEventListener('error', function (e) {
+  if (window.console && console.error) console.error('Global error:', e.message, e.filename, e.lineno);
+});
+window.addEventListener('unhandledrejection', function (e) {
+  if (window.console && console.error) console.error('Unhandled rejection:', e.reason);
+});
+
 /* ---------- boot ---------- */
 PS.boot = function () {
   try {
@@ -8865,12 +9295,18 @@ PS.boot = function () {
     if (PS.i18n && PS.i18n.applyDom) PS.i18n.applyDom();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
+    if (PS.applyLogo) PS.applyLogo();
     PS.wireEvents();
     PS.updateNavCounts();
     PS.bindGlobalKeys();
     PS.renderRoute();
     if (!PS.storageOK) PS.audit('storage-unavailable', 'Browser storage is blocked; running in session-only mode');
     PS.audit('app-opened', 'Procure Sherpa v' + PS.VERSION + (PS.storageOK ? '' : ' (session-only)'));
+    var loader = document.getElementById('bootLoader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(function () { loader.style.display = 'none'; }, 300);
+    }
   } catch (e) {
     if (window.console && console.error) console.error(e);
     var main = PS.$('#main');
@@ -8896,12 +9332,37 @@ PS.route('home', function () {
   PS.pageTitle = 'Command Center';
   return PS.homeWelcomeCard() +
     PS.homeDualHub() +
+    PS.homeQuickCalc() +
     PS.homePhase11() +
     PS.homeSmartResume() +
     PS.homeQuickActions() +
     PS.homeThinkingPoint() +
     PS.disclaimer('policy');
 });
+
+PS.homeQuickCalc = function () {
+  var recent = PS.recent.list().filter(function (r) { return r.type === 'calc'; }).slice(0, 3);
+  var popular = [
+    { id: 'calc-tco', title: 'TCO' },
+    { id: 'calc-compare-quotes', title: 'Compare Quotes' },
+    { id: 'calc-landed-cost', title: 'Landed Cost' },
+    { id: 'calc-negotiation-savings', title: 'Negotiation Savings' }
+  ];
+  var seen = {};
+  recent.forEach(function (r) { seen[r.id] = 1; });
+  var chips = popular.filter(function (c) { return !seen[c.id]; }).map(function (c) {
+    return '<a class="btn btn-sm" href="#/calc/' + PS.esc(c.id) + '">' + PS.esc(c.title) + '</a>';
+  }).join('');
+  var recentChips = recent.map(function (r) {
+    return '<a class="btn btn-sm btn-ghost" href="#/calc/' + PS.esc(r.id) + '">' + PS.esc(r.title || r.id) + '</a>';
+  }).join('');
+  if (!chips && !recentChips) return '';
+  return '<div class="card no-print"><div class="card-head"><h2>Quick Calculator</h2>' +
+    '<div class="spacer"></div><a class="btn btn-sm btn-ghost" href="#/list/calc">All 19 tools</a></div>' +
+    '<div class="btn-row tight">' + recentChips + chips + '</div>' +
+    '<p class="note mb0" style="margin-top:8px">Jump straight into the tools you use most. Results stay local.</p>' +
+    '</div>';
+};
 
 PS.homePhase11 = function () {
   var cards = [
@@ -9008,6 +9469,9 @@ PS.route('recent', function () {
 });
 PS.route('list', function (arg, params) {
   var type = arg || 'kb';
+  /* 'library' was a link target in earlier releases; treat it as the
+     Knowledge Hub so old bookmarks and stale links still resolve */
+  if (type === 'library') type = 'kb';
   var segs = PS.routeMeta.args;
   var cat = segs.slice(1).join('/') || '';
   if (!PS.LIST_META[type] && !PS.data[type]) return PS.notFound('library', type);
@@ -9176,6 +9640,7 @@ PS.route('k', function (id) {
     '<div class="alert alert-info"><strong>Definition</strong>' + PS.esc(it.def) + '</div>' +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
+    PS.actionsBar(['<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>']) +
     '<div class="grid grid-2">' +
     '<div class="card"><h2>Why procurement cares</h2>' + PS.ul(it.why) + '</div>' +
     '<div class="card"><h2>When it is used</h2>' + PS.ul(it.when) + '</div>' +
@@ -9243,7 +9708,8 @@ PS.route('sop', function (id) {
     PS.badge('sop') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
     (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
     PS.sopDocControl(it) +
-    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>']) +
+    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>',
+      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>']) +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<div class="grid grid-2">' +
@@ -9368,6 +9834,7 @@ PS.route('cl', function (id) {
       '<button type="button" class="btn btn-primary" data-act="cl-save">Save to workspace</button>',
       '<button type="button" class="btn" data-act="cl-print">Print / PDF</button>',
       '<button type="button" class="btn" data-act="cl-export">Export CSV</button>',
+      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>',
       '<button type="button" class="btn btn-ghost" data-act="cl-complete-all">Mark all complete</button>',
       '<button type="button" class="btn btn-danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
     ]) +
@@ -9750,20 +10217,36 @@ PS.route('search', function (arg, params) {
   };
   return html;
 });
+PS.recordSearch = function (q) {
+  var c = PS.clean(q, 120);
+  if (!c) return;
+  var list = PS.store.get('search_history', []);
+  list = list.filter(function (x) { return x !== c; });
+  list.unshift(c);
+  if (list.length > 12) list = list.slice(0, 12);
+  PS.store.set('search_history', list);
+};
 PS.renderSearch = function () {
   var box = PS.$('#searchResults');
   if (!box) return;
   var q = PS.$('#searchQ') ? PS.$('#searchQ').value : '';
   var type = PS.$('#searchType') ? PS.$('#searchType').value : '';
   if (!PS.clean(q)) {
+    var hist = PS.store.get('search_history', []);
     box.innerHTML = '<div class="card"><h2>Search tips</h2>' + PS.ul([
       'Search by the problem in your own words: "supplier increased price by 12%", "compare three quotes", "contract expiring".',
       'Search by document: RFQ, RFP, award recommendation, negotiation plan, single source justification.',
       'Search by measure: TCO, landed cost, HHI, PPV, OTIF, spend under management.',
       'Search by process: intake, prequalification, bid normalization, change control, closeout.'
-    ]) + '</div>';
+    ]) +
+      (hist.length ? '<h3 style="margin-top:14px">Recent searches <button type="button" class="btn btn-sm btn-ghost" data-act="search-history-clear">Clear</button></h3>' +
+        '<div class="chips">' + hist.map(function (t) {
+          return '<button type="button" class="chip" data-act="search-chip" data-q="' + PS.esc(t) + '">' + PS.esc(t) + '</button>';
+        }).join('') + '</div>' : '') +
+      '</div>';
     return;
   }
+  PS.recordSearch(q);
   var res = PS.search(q, { type: type || undefined, limit: 80 });
   if (!res.results.length) {
     box.innerHTML = '<div class="card"><h2>No matches for &ldquo;' + PS.esc(q) + '&rdquo;</h2>' +
@@ -10455,15 +10938,38 @@ PS.route('settings', function () {
     '</div>' +
     '<div class="grid grid-2">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
     PS.settingsThresholdCard(p) + PS.settingsAssumptionCard(p) + '</div>' +
-    '<div class="card"><div class="btn-row no-print">' +
+    '<div class="card"><h2>Storage usage</h2>' +
+    '<div id="storageUsageBar" style="margin-bottom:8px">' +
+    '<div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden">' +
+    '<div id="storageUsageFill" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s ease"></div>' +
+    '</div>' +
+    '<div class="note" id="storageUsageText">Calculating...</div>' +
+    '</div>' +
+    '<div class="btn-row no-print">' +
     '<button type="button" class="btn btn-primary btn-lg" data-act="settings-save">Save settings</button>' +
     '<button type="button" class="btn" data-act="settings-reset">Restore defaults</button>' +
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
     '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
     '</div></div>' + PS.disclaimer('policy');
-  PS.pageInit = function () { PS.initThemeScheduleOptions(); };
+  PS.pageInit = function () { PS.initThemeScheduleOptions(); PS.updateStorageUsage(); };
   return html;
 });
+PS.updateStorageUsage = function () {
+  var fill = PS.$('#storageUsageFill');
+  var text = PS.$('#storageUsageText');
+  if (!fill || !text) return;
+  var bytes = PS.store.bytes();
+  var quota = 5 * 1024 * 1024;
+  var pct = Math.min(100, Math.round((bytes / quota) * 100));
+  fill.style.width = pct + '%';
+  if (pct > 80) fill.style.background = 'var(--danger, #dc3545)';
+  else if (pct > 60) fill.style.background = 'var(--warning, #ffc107)';
+  else fill.style.background = 'var(--accent, #0d6efd)';
+  var kb = (bytes / 1024).toFixed(1);
+  var qmb = (quota / 1024 / 1024).toFixed(0);
+  text.textContent = kb + ' KB used of ~' + qmb + ' MB typical browser quota (' + pct + '%)';
+  if (pct > 80) text.innerHTML = ' <strong style="color:var(--danger,#dc3545)">Storage nearly full. Consider exporting a backup and clearing old saved items.</strong>';
+};
 PS.settingsOrgCard = function (p) {
   return '<div class="card"><h2>Organisation and currency</h2>' +
     '<div class="field"><label for="setOrg">Organisation name (used in reports)</label><input type="text" id="setOrg" maxlength="120" value="' + PS.esc(p.orgName) + '" placeholder="Example: Northwind Manufacturing"></div>' +
@@ -10723,6 +11229,7 @@ PS.renderAcademyHub = function () {
 
   var html = '<div class="academy-hero">' +
     '<div class="academy-title-row">' +
+    '<div class="ps-logo-chip" style="width:76px;height:76px;flex:0 0 76px;padding:6px" aria-hidden="true"><img src="' + PS.LOGO_DATA + '" alt="" loading="lazy"></div>' +
     '<div><span class="academy-badge-tag">Procure Sherpa Academy</span>' +
     '<h1 style="margin:6px 0 2px">The Digital Procurement Academy</h1>' +
     '<p class="lead mb0">Master end-to-end procurement from first principles to executive decision-making. Learn, reflect, practice with scenarios, and execute in the laboratory.</p>' +
@@ -12302,6 +12809,1495 @@ PS.route('docpack', function () {
     '<div class="card"><div class="card-head"><h2>Previously created packs</h2></div>' + PS.docpack.packsHtml() + '</div>' +
     PS.disclaimer('legal');
 });
+/* ==========================================================
+   Procure Sherpa - Skill Level Assessment
+   Ten-question diagnostic that places the user on a 1-5 level
+   and feeds the recommendations on Learning Paths and Next Up.
+   ========================================================== */
+
+PS.skillAssessment = PS.skillAssessment || {};
+
+PS.skillAssessment.QUESTIONS = [
+  {
+    id: 'q1',
+    category: 'sourcing',
+    question: 'What is the primary purpose of a Request for Proposal (RFP)?',
+    options: [
+      'To collect price quotes from suppliers',
+      'To invite detailed proposals for complex requirements with evaluation criteria',
+      'To confirm a supplier\'s interest in bidding',
+      'To request samples from potential suppliers'
+    ],
+    correct: 1,
+    explanation: 'An RFP is used for complex requirements where price alone is not sufficient. It invites detailed proposals including technical approach, methodology, and pricing.'
+  },
+  {
+    id: 'q2',
+    category: 'negotiation',
+    question: 'What does BATNA stand for in negotiation terminology?',
+    options: [
+      'Best Alternative To a Negotiated Agreement',
+      'Basic Agreement Terms and Negotiation Articles',
+      'Bargaining Agreement for Trade and Negotiated Assets',
+      'Best Approach To Negotiate Agreements'
+    ],
+    correct: 0,
+    explanation: 'BATNA (Best Alternative To a Negotiated Agreement) is your walk-away option. The stronger your BATNA, the more power you have in negotiations.'
+  },
+  {
+    id: 'q3',
+    category: 'contracts',
+    question: 'What is the main purpose of a Service Level Agreement (SLA)?',
+    options: [
+      'To define payment terms',
+      'To establish measurable performance metrics and consequences',
+      'To outline the contract duration',
+      'To specify warranty terms'
+    ],
+    correct: 1,
+    explanation: 'An SLA defines measurable service metrics (e.g., uptime, response time) and consequences for not meeting them, providing accountability.'
+  },
+  {
+    id: 'q4',
+    category: 'risk',
+    question: 'Which of the following is a key benefit of dual sourcing?',
+    options: [
+      'Lower unit prices due to volume',
+      'Reduced supply disruption risk',
+      'Simplified supplier management',
+      'Faster contract negotiation'
+    ],
+    correct: 1,
+    explanation: 'Dual sourcing reduces dependency on a single supplier, mitigating the risk of supply disruption if one supplier fails.'
+  },
+  {
+    id: 'q5',
+    category: 'sourcing',
+    question: 'What is the Kraljic Matrix used for?',
+    options: [
+      'Calculating total cost of ownership',
+      'Segmenting suppliers based on profit impact and supply risk',
+      'Evaluating supplier financial stability',
+      'Measuring procurement savings'
+    ],
+    correct: 1,
+    explanation: 'The Kraljic Matrix segments purchases into four quadrants (strategic, leverage, bottleneck, routine) based on profit impact and supply risk.'
+  },
+  {
+    id: 'q6',
+    category: 'negotiation',
+    question: 'What is ZOPA in negotiation theory?',
+    options: [
+      'Zone of Possible Agreement',
+      'Zero-sum Outcome Position Analysis',
+      'Zone of Price Advantage',
+      'Zonal Optimization of Purchase Agreements'
+    ],
+    correct: 0,
+    explanation: 'ZOPA (Zone of Possible Agreement) is the range between each party\'s walk-away point where a mutually acceptable agreement can be reached.'
+  },
+  {
+    id: 'q7',
+    category: 'contracts',
+    question: 'What is a "force majeure" clause?',
+    options: [
+      'A clause requiring immediate payment',
+      'A clause excusing performance due to unforeseeable events',
+      'A clause allowing unilateral contract changes',
+      'A clause defining intellectual property rights'
+    ],
+    correct: 1,
+    explanation: 'A force majeure clause excuses a party from performing contractual obligations when circumstances beyond their control prevent performance.'
+  },
+  {
+    id: 'q8',
+    category: 'risk',
+    question: 'What is the primary goal of a supplier risk assessment?',
+    options: [
+      'To negotiate lower prices',
+      'To identify and evaluate potential threats from suppliers',
+      'To compare supplier capabilities',
+      'To establish long-term partnerships'
+    ],
+    correct: 1,
+    explanation: 'Supplier risk assessment identifies potential threats (financial, operational, compliance) and evaluates their likelihood and impact.'
+  },
+  {
+    id: 'q9',
+    category: 'sourcing',
+    question: 'What is the difference between RFQ and RFP?',
+    options: [
+      'RFQ is for complex requirements, RFP for simple',
+      'RFQ requests price quotes, RFP requests detailed proposals',
+      'RFQ is binding, RFP is not',
+      'RFQ is used for services, RFP for goods'
+    ],
+    correct: 1,
+    explanation: 'An RFQ requests price quotes for well-defined requirements. An RFP requests detailed proposals including approach and methodology for complex needs.'
+  },
+  {
+    id: 'q10',
+    category: 'negotiation',
+    question: 'What is "anchoring" in negotiation?',
+    options: [
+      'Setting a fixed price',
+      'The first offer that influences the negotiation range',
+      'Agreeing to a midpoint',
+      'Using a third-party mediator'
+    ],
+    correct: 1,
+    explanation: 'Anchoring is the cognitive bias where the first number mentioned in a negotiation heavily influences the final outcome. Set your anchor strategically.'
+  }
+];
+
+PS.skillAssessment.getLevel = function (score) {
+  if (score >= 90) return { level: 5, label: 'Strategic Leader', desc: 'You have mastery-level procurement expertise. Focus on mentoring others and driving organizational strategy.' };
+  if (score >= 75) return { level: 4, label: 'Advanced Practitioner', desc: 'You have strong procurement skills. Deepen expertise in specialized areas like strategic sourcing and risk management.' };
+  if (score >= 60) return { level: 3, label: 'Competent Professional', desc: 'You have solid fundamentals. Focus on practical application and intermediate concepts.' };
+  if (score >= 40) return { level: 2, label: 'Developing Enthusiast', desc: 'You have some procurement knowledge. Build foundations in sourcing, negotiation, and contracts.' };
+  return { level: 1, label: 'Curious Beginner', desc: 'You are at the start of your procurement journey. Begin with foundational concepts and work your way up.' };
+};
+
+PS.skillAssessment.getRecommendations = function (score, categories) {
+  var recs = [];
+  var weakest = categories.slice().sort(function (a, b) { return a.pct - b.pct; })[0];
+  if (weakest && weakest.pct < 60) {
+    recs.push({ type: 'priority', text: 'Priority: Strengthen your ' + weakest.category + ' skills (scored ' + weakest.pct + '%)', module: weakest.category });
+  }
+  if (score >= 75) {
+    recs.push({ type: 'advanced', text: 'Explore advanced modules: Strategic Sourcing, Contract Structuring, Supplier Risk Management' });
+  } else if (score >= 60) {
+    recs.push({ type: 'intermediate', text: 'Continue with: TCO Analysis, Negotiation Preparation, Category Management' });
+  } else {
+    recs.push({ type: 'beginner', text: 'Start with: Mission & Value, Landed Cost & TCO, Should Cost Analysis' });
+  }
+  recs.push({ type: 'practice', text: 'Apply your knowledge in Practice Labs and real-world scenarios' });
+  return recs;
+};
+
+PS.skillAssessment.getCategoryScores = function (answers) {
+  var categories = {};
+  PS.skillAssessment.QUESTIONS.forEach(function (q) {
+    if (!categories[q.category]) categories[q.category] = { category: q.category, correct: 0, total: 0, pct: 0 };
+    categories[q.category].total++;
+    if (answers[q.id] === q.correct) categories[q.category].correct++;
+  });
+  Object.keys(categories).forEach(function (k) {
+    var c = categories[k];
+    c.pct = Math.round((c.correct / c.total) * 100);
+  });
+  return Object.keys(categories).map(function (k) { return categories[k]; });
+};
+
+PS.skillAssessment.storeResult = function (score, level, categoryScores) {
+  var data = PS.store.get('skill_assessment', {});
+  data.lastScore = score;
+  data.level = level;
+  data.categoryScores = categoryScores;
+  data.date = new Date().toISOString();
+  data.history = data.history || [];
+  data.history.push({ score: score, level: level, date: data.date });
+  if (data.history.length > 10) data.history = data.history.slice(-10);
+  PS.store.set('skill_assessment', data);
+};
+
+PS.skillAssessment.getLastResult = function () {
+  return PS.store.get('skill_assessment', null);
+};
+
+PS.route('assessment', function () {
+  PS.pageTitle = 'Skill Assessment';
+  var lastResult = PS.skillAssessment.getLastResult();
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Skill assessment</h1></div>' +
+    '<p class="lead">Ten questions on sourcing, negotiation, contracts and risk. About three minutes.</p>' +
+    '<p class="note">Your results stay in this browser. They set the recommendations on Learning Paths and What to Learn Next.</p>' +
+    '</div>';
+
+  if (lastResult) {
+    var lastLevel = PS.skillAssessment.getLevel(lastResult.score);
+    html += '<div class="card mb16">' +
+      '<h2>Your last result</h2>' +
+      '<div class="grid grid-3 mb16">' +
+      '<div class="stat"><span class="s-val">' + lastResult.score + '%</span><span class="s-lab">Score</span></div>' +
+      '<div class="stat"><span class="s-val">Level ' + lastLevel.level + '</span><span class="s-lab">' + PS.esc(lastLevel.label) + '</span></div>' +
+      '<div class="stat"><span class="s-val">' + (lastResult.date ? PS.dateStr(lastResult.date) : '\u2014') + '</span><span class="s-lab">Date</span></div>' +
+      '</div>' +
+      '<div class="btn-row"><button type="button" class="btn btn-primary" data-act="assessment-start">Retake</button>' +
+      '<a class="btn" href="#/learning-paths">My learning path</a></div>' +
+      '</div>';
+  }
+
+  html += '<div class="card" id="assessmentContainer">' +
+    '<div id="assessmentQuiz">' +
+    '<div style="text-align:center;padding:36px 20px">' +
+    '<h2>Ready when you are</h2>' +
+    '<p class="lead">Ten questions across sourcing, negotiation, contracts and risk.</p>' +
+    '<button type="button" class="btn btn-primary btn-lg" data-act="assessment-start">Start the assessment</button>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
+
+  PS.pageInit = function () {
+    PS.bindAssessmentEvents();
+  };
+
+  return html;
+});
+
+PS.renderAssessmentQuestion = function (qIndex) {
+  var q = PS.skillAssessment.QUESTIONS[qIndex];
+  var total = PS.skillAssessment.QUESTIONS.length;
+  var progress = Math.round((qIndex / total) * 100);
+
+  return '<div style="margin-bottom:14px">' +
+    '<div class="bar-track"><div class="bar-fill" style="width:' + progress + '%"></div></div>' +
+    '<div class="note">Question ' + (qIndex + 1) + ' of ' + total + '</div>' +
+    '</div>' +
+    '<h3 style="margin-bottom:14px">' + PS.esc(q.question) + '</h3>' +
+    '<div id="assessmentOptions">' +
+    q.options.map(function (opt) {
+      return '<label class="opt-card">' +
+        '<input type="radio" name="assessment-q' + qIndex + '" value="' + q.options.indexOf(opt) + '">' +
+        PS.esc(opt) +
+        '</label>';
+    }).join('') +
+    '</div>' +
+    '<div class="btn-row" style="margin-top:14px">' +
+    (qIndex > 0 ? '<button type="button" class="btn" data-act="assessment-prev">Previous</button>' : '') +
+    '<button type="button" class="btn btn-primary" data-act="assessment-next">Next</button>' +
+    '</div>';
+};
+
+PS.renderAssessmentResults = function (answers) {
+  var score = 0;
+  var categories = PS.skillAssessment.getCategoryScores(answers);
+  PS.skillAssessment.QUESTIONS.forEach(function (q) {
+    if (answers[q.id] === q.correct) score++;
+  });
+  var pct = Math.round((score / PS.skillAssessment.QUESTIONS.length) * 100);
+  var level = PS.skillAssessment.getLevel(pct);
+  var recs = PS.skillAssessment.getRecommendations(pct, categories);
+  PS.skillAssessment.storeResult(pct, level.level, categories);
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h2>Your results</h2></div>' +
+    '<div class="grid grid-3 mb16">' +
+    '<div class="stat"><span class="s-val">' + pct + '%</span><span class="s-lab">Overall score</span></div>' +
+    '<div class="stat"><span class="s-val">Level ' + level.level + '</span><span class="s-lab">' + PS.esc(level.label) + '</span></div>' +
+    '<div class="stat"><span class="s-val">' + score + '/' + PS.skillAssessment.QUESTIONS.length + '</span><span class="s-lab">Correct</span></div>' +
+    '</div>' +
+    '<p>' + PS.esc(level.desc) + '</p>' +
+    '</div>' +
+    '<div class="card">' +
+    '<h2>By category</h2>' +
+    '<div style="margin-top:12px">' +
+    categories.map(function (c) {
+      var color = c.pct >= 70 ? 'var(--ok)' : (c.pct >= 50 ? 'var(--warn-2)' : 'var(--danger)');
+      return '<div style="margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+        '<span style="text-transform:capitalize">' + PS.esc(c.category) + '</span>' +
+        '<span style="color:' + color + ';font-weight:600">' + c.pct + '%</span>' +
+        '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="background:' + color + ';width:' + c.pct + '%"></div></div>' +
+        '</div>';
+    }).join('') +
+    '</div>' +
+    '</div>' +
+    '<div class="card">' +
+    '<h2>Where to go next</h2>' +
+    '<ul style="margin-top:12px;padding-left:20px">' +
+    recs.map(function (r) { return '<li style="margin-bottom:8px">' + PS.esc(r.text) + '</li>'; }).join('') +
+    '</ul>' +
+    '<div class="btn-row" style="margin-top:14px">' +
+    '<a class="btn btn-primary" href="#/learning-paths">My learning path</a>' +
+    '<a class="btn" href="#/academy">Academy modules</a>' +
+    '<button type="button" class="btn btn-ghost" data-act="assessment-start">Retake</button>' +
+    '</div>' +
+    '</div>';
+
+  return html;
+};
+
+PS.bindAssessmentEvents = function () {
+  var answers = {};
+  var currentQ = 0;
+  var total = PS.skillAssessment.QUESTIONS.length;
+
+  PS.acts['assessment-start'] = function () {
+    currentQ = 0;
+    answers = {};
+    PS.$('#assessmentQuiz').innerHTML = PS.renderAssessmentQuestion(0);
+    PS.bindAssessmentNav();
+  };
+
+  PS.bindAssessmentNav = function () {
+    PS.acts['assessment-next'] = function () {
+      var q = PS.skillAssessment.QUESTIONS[currentQ];
+      var selected = document.querySelector('input[name="assessment-q' + currentQ + '"]:checked');
+      if (!selected) {
+        PS.toast('Choose an answer first.', 'warning');
+        return;
+      }
+      answers[q.id] = parseInt(selected.value, 10);
+      currentQ++;
+      if (currentQ >= total) {
+        PS.$('#assessmentQuiz').innerHTML = PS.renderAssessmentResults(answers);
+        PS.audit('assessment-completed', 'Score recorded');
+      } else {
+        PS.$('#assessmentQuiz').innerHTML = PS.renderAssessmentQuestion(currentQ);
+        PS.bindAssessmentNav();
+      }
+    };
+    PS.acts['assessment-prev'] = function () {
+      if (currentQ > 0) {
+        currentQ--;
+        PS.$('#assessmentQuiz').innerHTML = PS.renderAssessmentQuestion(currentQ);
+        PS.bindAssessmentNav();
+      }
+    };
+  };
+};
+
+/* ==========================================================
+   Procure Sherpa - Learning Paths
+   Three tracks from foundations to strategic leadership, with
+   progress drawn from Academy module completion.
+   ========================================================== */
+
+PS.learningPaths = PS.learningPaths || {};
+
+PS.learningPaths.PATHS = [
+  {
+    id: 'beginner',
+    title: 'Procurement Foundations',
+    level: 1,
+    desc: 'Start from zero: what procurement is, why it matters, and the concepts every professional relies on.',
+    modules: ['func-mission-value', 'func-landed-cost-tco', 'func-should-cost', 'func-spend-analysis'],
+    skills: ['Basic concepts', 'Cost analysis', 'Spend visibility'],
+    duration: '2-3 weeks',
+    color: 'var(--ok)'
+  },
+  {
+    id: 'intermediate',
+    title: 'Operational Excellence',
+    level: 2,
+    desc: 'The day-to-day skills: sourcing, negotiation, and contract management.',
+    modules: ['func-supplier-eval', 'func-category-mgmt', 'func-contract-structuring', 'func-supplier-risk'],
+    skills: ['Supplier evaluation', 'Negotiation', 'Contract basics', 'Risk awareness'],
+    duration: '4-6 weeks',
+    color: 'var(--warn-2)'
+  },
+  {
+    id: 'advanced',
+    title: 'Strategic Leadership',
+    level: 3,
+    desc: 'Category strategy, complex supplier relationships, and the work of driving organizational value.',
+    modules: ['func-supplier-risk', 'func-contract-structuring', 'func-category-mgmt', 'func-spend-analysis'],
+    skills: ['Strategic sourcing', 'Stakeholder leadership', 'Value creation', 'Risk management'],
+    duration: '6-8 weeks',
+    color: 'var(--scen)'
+  }
+];
+
+PS.learningPaths.getUserProgress = function (pathId) {
+  var path = PS.learningPaths.PATHS.filter(function (p) { return p.id === pathId; })[0];
+  if (!path) return null;
+  var completed = 0;
+  path.modules.forEach(function (modId) {
+    if (PS.academy.isCompleted(modId)) completed++;
+  });
+  return {
+    path: path,
+    completed: completed,
+    total: path.modules.length,
+    pct: path.modules.length > 0 ? Math.round((completed / path.modules.length) * 100) : 0
+  };
+};
+
+PS.learningPaths.getNextModule = function (pathId) {
+  var progress = PS.learningPaths.getUserProgress(pathId);
+  if (!progress) return null;
+  for (var i = 0; i < progress.path.modules.length; i++) {
+    if (!PS.academy.isCompleted(progress.path.modules[i])) {
+      return progress.path.modules[i];
+    }
+  }
+  return null;
+};
+
+PS.route('learning-paths', function () {
+  PS.pageTitle = 'Learning paths';
+  var assessment = PS.skillAssessment ? PS.skillAssessment.getLastResult() : null;
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Learning paths</h1></div>' +
+    '<p class="lead">Three tracks. Start where you are; each path builds on the one before it.</p>';
+
+  if (assessment) {
+    var level = PS.skillAssessment.getLevel(assessment.score);
+    html += '<div class="hub-note" style="margin-top:12px">Your assessment placed you at <strong>Level ' + level.level + ', ' + PS.esc(level.label) + '</strong> (' + assessment.score + '%). ' +
+      '<a href="#/assessment">Retake</a></div>';
+  } else {
+    html += '<div class="hub-note" style="margin-top:12px">Not sure where to start? <a href="#/assessment">Take the skill assessment</a> and the recommendation below becomes specific.</div>';
+  }
+
+  html += '</div>';
+
+  html += '<div class="grid grid-3 mb16">';
+
+  PS.learningPaths.PATHS.forEach(function (path) {
+    var progress = PS.learningPaths.getUserProgress(path.id);
+    var nextMod = PS.learningPaths.getNextModule(path.id);
+    var nextFunc = nextMod ? PS.byId('academy', nextMod) : null;
+    var isComplete = progress && progress.pct === 100;
+
+    html += '<div class="card" style="border-top:3px solid ' + path.color + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+      '<div><span class="level-pill">' + path.level + '</span>' +
+      '<h2 style="margin:8px 0 4px;font-size:1.05em">' + PS.esc(path.title) + '</h2></div>' +
+      (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
+      '</div>' +
+      '<p class="note" style="margin:8px 0">' + PS.esc(path.desc) + '</p>' +
+      '<div style="margin:12px 0">' +
+      '<div style="display:flex;justify-content:space-between;font-size:.82em;margin-bottom:4px">' +
+      '<span>' + (progress ? progress.completed + '/' + progress.total : '0/' + path.modules.length) + ' modules</span>' +
+      '<span>' + (progress ? progress.pct : 0) + '%</span>' +
+      '</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="background:' + path.color + ';width:' + (progress ? progress.pct : 0) + '%"></div></div>' +
+      '</div>' +
+      '<div class="note" style="margin-bottom:8px"><strong>Skills:</strong> ' + PS.esc(path.skills.join(', ')) + '</div>' +
+      '<div class="note" style="margin-bottom:12px"><strong>Time:</strong> ' + PS.esc(path.duration) + '</div>' +
+      (nextFunc ? '<a class="btn btn-sm btn-primary" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">Next: ' + PS.esc(nextFunc.title) + '</a>' : '') +
+      '</div>';
+  });
+
+  html += '</div>';
+
+  html += '<div class="card">' +
+    '<h2>All modules</h2>' +
+    '<div class="table-wrap"><table><thead><tr><th>Module</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
+
+  PS.learningPaths.PATHS.forEach(function (path) {
+    path.modules.forEach(function (modId, idx) {
+      var func = PS.byId('academy', modId);
+      if (!func) return;
+      var isComp = PS.academy.isCompleted(modId);
+      html += '<tr>' +
+        '<td><strong>' + PS.esc(func.title) + '</strong>' +
+        (idx === 0 ? ' <span class="level-pill" style="background:' + path.color + ';color:#fff">Start</span>' : '') +
+        '<br><small class="muted">' + PS.esc(func.module || '') + '</small></td>' +
+        '<td>' + PS.esc(path.title) + '</td>' +
+        '<td>' + (isComp ? '<span style="color:var(--ok);font-weight:600">Complete</span>' : '<span class="muted">Not started</span>') + '</td>' +
+        '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(func.id) + '">Open</a></td>' +
+        '</tr>';
+    });
+  });
+
+  html += '</tbody></table></div></div>';
+
+  return html;
+});
+
+/* ==========================================================
+   Procure Sherpa - Practice Labs
+   Hands-on exercises: supplier evaluation, negotiation practice,
+   contract review and spend analysis, each with feedback.
+   ========================================================== */
+
+PS.practiceLabs = PS.practiceLabs || {};
+
+PS.practiceLabs.LABS = [
+  {
+    id: 'supplier-eval',
+    title: 'Supplier evaluation',
+    category: 'sourcing',
+    desc: 'Rate three fictional supplier profiles and make a sourcing call from the scorecard, risk and strategic fit.',
+    difficulty: 'Intermediate',
+    duration: '15 min',
+    skills: ['Scorecard design', 'Risk assessment', 'Decision making']
+  },
+  {
+    id: 'negotiation-sim',
+    title: 'Negotiation practice',
+    category: 'negotiation',
+    desc: 'Work through a negotiation step by step: anchoring, concessions, and knowing when to hold firm.',
+    difficulty: 'Advanced',
+    duration: '20 min',
+    skills: ['BATNA', 'Concession strategy', 'Value creation']
+  },
+  {
+    id: 'contract-review',
+    title: 'Contract review',
+    category: 'contracts',
+    desc: 'Read five contract clauses and flag the risky ones before checking your answer against the notes.',
+    difficulty: 'Intermediate',
+    duration: '15 min',
+    skills: ['Clause analysis', 'Risk identification']
+  },
+  {
+    id: 'spend-analysis',
+    title: 'Spend analysis',
+    category: 'analytics',
+    desc: 'Read a sample spend table and find the consolidation opportunities hiding in it.',
+    difficulty: 'Beginner',
+    duration: '10 min',
+    skills: ['Data analysis', 'Pareto thinking']
+  }
+];
+
+PS.practiceLabs.getUserProgress = function (labId) {
+  return PS.store.get('practice_labs', {})[labId] || null;
+};
+
+PS.practiceLabs.storeProgress = function (labId, data) {
+  var all = PS.store.get('practice_labs', {});
+  all[labId] = data;
+  PS.store.set('practice_labs', all);
+};
+
+PS.route('labs', function () {
+  PS.pageTitle = 'Practice labs';
+  var allProgress = PS.store.get('practice_labs', {});
+  var completedCount = Object.keys(allProgress).length;
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Practice labs</h1></div>' +
+    '<p class="lead">Short exercises with feedback on your decisions. Reading builds knowledge; these build judgment.</p>' +
+    '<div class="grid grid-3 mb16">' +
+    '<div class="stat"><span class="s-val">' + PS.practiceLabs.LABS.length + '</span><span class="s-lab">Labs</span></div>' +
+    '<div class="stat"><span class="s-val">' + completedCount + '</span><span class="s-lab">Completed</span></div>' +
+    '<div class="stat"><span class="s-val">' + (PS.practiceLabs.LABS.length - completedCount) + '</span><span class="s-lab">Remaining</span></div>' +
+    '</div>' +
+    '</div>';
+
+  html += '<div class="grid grid-2 mb16">';
+
+  PS.practiceLabs.LABS.forEach(function (lab) {
+    var progress = PS.practiceLabs.getUserProgress(lab.id);
+    var isComplete = progress && progress.completed;
+
+    html += '<div class="card" style="border-left:4px solid var(--calc)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+      '<div><span class="badge">' + PS.esc(lab.category) + '</span> ' +
+      '<span class="badge" style="background:' + (lab.difficulty === 'Beginner' ? 'var(--ok-soft);color:var(--ok)' : lab.difficulty === 'Intermediate' ? 'var(--warn-soft);color:var(--warn)' : 'var(--danger-soft);color:var(--danger)') + '">' + PS.esc(lab.difficulty) + '</span>' +
+      '<h2 style="margin:8px 0 4px;font-size:1.05em">' + PS.esc(lab.title) + '</h2></div>' +
+      (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
+      '</div>' +
+      '<p class="note" style="margin:8px 0">' + PS.esc(lab.desc) + '</p>' +
+      '<div class="note" style="margin-bottom:8px"><strong>Time:</strong> ' + PS.esc(lab.duration) + ' &middot; <strong>Skills:</strong> ' + PS.esc(lab.skills.join(', ')) + '</div>' +
+      '<button type="button" class="btn btn-sm btn-primary" data-act="lab-start" data-lab="' + PS.esc(lab.id) + '">' +
+      (isComplete ? 'Review' : (progress ? 'Continue' : 'Start')) +
+      '</button>' +
+      '</div>';
+  });
+
+  html += '</div>';
+
+  html += '<div class="card">' +
+    '<h2 id="labTitleAnchor">Exercise area</h2>' +
+    '<div id="labContainer">' +
+    '<div class="empty">Pick a lab above. Each one gives feedback on your decisions as you go.</div>' +
+    '</div>' +
+    '</div>';
+
+  PS.pageInit = function () {
+    PS.bindLabEvents();
+  };
+
+  return html;
+});
+
+PS.bindLabEvents = function () {
+  PS.acts['lab-start'] = function (el) {
+    var labId = el.dataset.lab;
+    var lab = PS.practiceLabs.LABS.filter(function (l) { return l.id === labId; })[0];
+    if (!lab) return;
+
+    if (labId === 'supplier-eval') {
+      PS.renderSupplierEvalLab();
+    } else if (labId === 'negotiation-sim') {
+      PS.renderNegotiationLab();
+    } else if (labId === 'contract-review') {
+      PS.renderContractReviewLab();
+    } else if (labId === 'spend-analysis') {
+      PS.renderSpendAnalysisLab();
+    }
+    var anchor = PS.$('#labTitleAnchor');
+    if (anchor) {
+      anchor.textContent = lab.title;
+      try { anchor.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { }
+    }
+  };
+};
+
+PS.renderSupplierEvalLab = function () {
+  var suppliers = [
+    { id: 'A', name: 'TechParts Global', quality: 85, delivery: 70, price: 60, risk: 40, sustainability: 55 },
+    { id: 'B', name: 'Local Components Ltd', quality: 75, delivery: 90, price: 75, risk: 80, sustainability: 70 },
+    { id: 'C', name: 'Premium Manufacturing Co', quality: 95, delivery: 85, price: 35, risk: 60, sustainability: 45 }
+  ];
+
+  var html = '<h3>The call to make</h3>' +
+    '<p>You are sourcing a critical component for your flagship product. Three suppliers have responded. ' +
+    'Your priorities, in order: quality, delivery reliability, price, risk, sustainability.</p>' +
+    '<div class="table-wrap"><table style="margin-top:12px"><thead><tr><th>Supplier</th><th>Quality</th><th>Delivery</th><th>Price</th><th>Risk</th><th>Sustainability</th><th>Weighted</th></tr></thead><tbody>';
+
+  suppliers.forEach(function (s) {
+    var total = Math.round(s.quality * 0.3 + s.delivery * 0.25 + (100 - s.price) * 0.2 + s.risk * 0.15 + s.sustainability * 0.1);
+    html += '<tr style="cursor:pointer" data-supplier="' + s.id + '">' +
+      '<td><strong>' + PS.esc(s.name) + '</strong></td>' +
+      '<td>' + s.quality + '</td><td>' + s.delivery + '</td><td>' + s.price + '</td><td>' + s.risk + '</td><td>' + s.sustainability + '</td>' +
+      '<td><strong>' + total + '</strong></td></tr>';
+  });
+
+  html += '</tbody></table></div>' +
+    '<p class="note">Select a row to make your call. The weighted column is a hint, not the answer.</p>' +
+    '<div id="supplierFeedback" style="margin-top:16px"></div>';
+
+  PS.$('#labContainer').innerHTML = html;
+
+  var table = PS.$('#labContainer table');
+  if (table) {
+    table.addEventListener('click', function (e) {
+      var tr = e.target.closest ? e.target.closest('tr[data-supplier]') : null;
+      if (tr) PS.selectSupplier(tr.dataset.supplier);
+    });
+  }
+};
+
+PS.selectSupplier = function (supplierId) {
+  var feedback = {
+    'A': '<div class="alert alert-info"><strong>Defensible.</strong> TechParts Global scores best on quality, your top priority, but carries delivery risk. ' +
+      'In practice you would negotiate delivery penalties or line up a second source before award.</div>',
+    'B': '<div class="alert alert-warn"><strong>Reasonable.</strong> Local Components balances delivery and risk well, though quality sits below your stated priority. ' +
+      'If you go this way, an incoming inspection or quality improvement plan belongs in the contract.</div>',
+    'C': '<div class="alert alert-danger"><strong>Hard to defend.</strong> Premium Manufacturing has the best quality and the worst price, and the sustainability score is weak. ' +
+      'For a critical component the total cost over its life, not the sticker price, is what matters.</div>'
+  };
+
+  PS.$('#supplierFeedback').innerHTML = feedback[supplierId] || '';
+  PS.practiceLabs.storeProgress('supplier-eval', { completed: true, choice: supplierId, date: new Date().toISOString() });
+  PS.toast('Recorded. Review the feedback above.', 'ok');
+};
+
+PS.renderNegotiationLab = function () {
+  var html = '<h3>The scenario</h3>' +
+    '<p>A 12-month IT services contract. The supplier opened at $500,000. Your target is $450,000; your walk-away point is $475,000.</p>' +
+    '<div id="negotiationSteps"></div>';
+
+  PS.$('#labContainer').innerHTML = html;
+  PS.renderNegotiationStep(0);
+};
+
+PS.renderNegotiationStep = function (step) {
+  var steps = [
+    {
+      question: 'The supplier opens at $500,000. Your response?',
+      options: [
+        { text: 'Accept the $500,000 offer', score: 0, feedback: 'That leaves value unclaimed. An opening offer is an anchor, not a price.' },
+        { text: 'Counter at $420,000', score: 10, feedback: 'Good anchoring. A lower counter gives you room to concede and still land near your target.' },
+        { text: 'Counter at $470,000', score: 5, feedback: 'A modest counter. Workable, but you may give away the gap between $470,000 and your $450,000 target.' },
+        { text: 'Walk away immediately', score: 0, feedback: 'Your alternative is worth $475,000. Walking away from $500,000 over that needs a better reason than the opening number.' }
+      ]
+    },
+    {
+      question: 'The supplier now offers $460,000 with Net 60 payment terms instead of Net 30. What do you do?',
+      options: [
+        { text: 'Accept the $460,000 offer', score: 5, feedback: 'Close to target, but payment terms carry cash-flow cost. Price the difference before accepting.' },
+        { text: 'Counter: $450,000 with Net 30 terms', score: 10, feedback: 'Strong. You hold your target and separate the two issues instead of trading them blindly.' },
+        { text: 'Reject and find another supplier', score: 0, feedback: 'Your walk-away was $475,000. $460,000 beats it. Walking away now costs you real value.' },
+        { text: 'Accept Net 60 but ask for $455,000', score: 8, feedback: 'A fair trade: you are selling the payment terms for price, which is how concessions should work.' }
+      ]
+    },
+    {
+      question: 'You land at $455,000 with Net 45. The supplier asks for a 2-year extension at the same rate. You want pricing reviewed annually. What do you do?',
+      options: [
+        { text: 'Accept the 2-year extension', score: 3, feedback: 'You lose the annual price review, and market conditions will move over two years.' },
+        { text: 'Propose 1 year with an option to extend, price review included', score: 10, feedback: 'The professional answer. Flexibility for you, a fair commitment for them.' },
+        { text: 'Demand a 6-month contract only', score: 5, feedback: 'Too short for the supplier to commit resources. Short terms often cost more, not less.' },
+        { text: 'Accept 2 years with a 10% increase cap', score: 7, feedback: 'Reasonable: certainty now, capped exposure later. Check the cap against realistic index movements.' }
+      ]
+    }
+  ];
+
+  if (step >= steps.length) {
+    PS.$('#negotiationSteps').innerHTML = '<div class="alert alert-ok"><strong>Done.</strong> The pattern across all three steps: know your walk-away point, anchor deliberately, trade concessions rather than giving them, and write the agreement down.</div>';
+    PS.practiceLabs.storeProgress('negotiation-sim', { completed: true, date: new Date().toISOString() });
+    return;
+  }
+
+  var s = steps[step];
+  var html = '<div style="margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:10px">' +
+    '<p><strong>Step ' + (step + 1) + ' of ' + steps.length + ':</strong> ' + PS.esc(s.question) + '</p>' +
+    '<div style="margin-top:12px">';
+
+  s.options.forEach(function (opt, i) {
+    html += '<label class="opt-card">' +
+      '<input type="radio" name="nego-step' + step + '" value="' + i + '">' +
+      PS.esc(opt.text) + '</label>';
+  });
+
+  html += '</div><button type="button" class="btn btn-primary" data-act="nego-next" data-step="' + step + '" style="margin-top:12px">Submit</button></div>';
+
+  PS.$('#negotiationSteps').innerHTML = html;
+
+  PS.acts['nego-next'] = function (el) {
+    var currentStep = parseInt(el.dataset.step, 10);
+    var selected = document.querySelector('input[name="nego-step' + currentStep + '"]:checked');
+    if (!selected) { PS.toast('Choose an answer first.', 'warning'); return; }
+    var opt = steps[currentStep].options[parseInt(selected.value, 10)];
+    PS.$('#negotiationSteps').innerHTML += '<div class="alert alert-info" style="margin-top:8px"><strong>Why:</strong> ' + PS.esc(opt.feedback) + '</div>';
+    setTimeout(function () { PS.renderNegotiationStep(currentStep + 1); }, 1500);
+  };
+};
+
+PS.renderContractReviewLab = function () {
+  var clauses = [
+    { text: 'Payment Terms: Net 90 days from invoice date', risk: 'High', issue: 'Ninety days favors the supplier\'s cash position, not yours. Net 30 is the norm; the gap has a real cost in working capital.' },
+    { text: 'Liability: Supplier liability limited to contract value', risk: 'Medium', issue: 'May be thin for a critical component. Consider higher limits or carve-outs for gross negligence.' },
+    { text: 'Termination: Either party may terminate with 90 days notice', risk: 'Low', issue: 'Reasonable. Confirm you keep access to data, source code or inventory through the transition.' },
+    { text: 'Force Majeure: Includes pandemics and government actions', risk: 'Low', issue: 'Standard since 2020. Acceptable as long as the triggering events are defined, not open-ended.' },
+    { text: 'Price Escalation: Annual increase based on CPI + 3%', risk: 'Medium', issue: 'CPI plus a flat 3% will outrun most markets. Consider a fixed percentage or a cap over the contract term.' }
+  ];
+
+  var html = '<h3>Red-line these clauses</h3>' +
+    '<p>Flag the ones you would push back on, then submit to see how your read compares with the notes.</p>' +
+    '<div id="contractClauses">';
+
+  clauses.forEach(function (c, i) {
+    html += '<div style="margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:10px">' +
+      '<p><strong>Clause ' + (i + 1) + ':</strong> ' + PS.esc(c.text) + '</p>' +
+      '<label class="opt-card" style="margin-top:8px"><input type="checkbox" data-clause="' + i + '"> Flag as risky</label>' +
+      '</div>';
+  });
+
+  html += '</div><button type="button" class="btn btn-primary" data-act="contract-submit" style="margin-top:12px">Submit review</button>' +
+    '<div id="contractFeedback"></div>';
+
+  PS.$('#labContainer').innerHTML = html;
+
+  PS.acts['contract-submit'] = function () {
+    var flagged = [];
+    PS.$$('#contractClauses input[data-clause]:checked').forEach(function (cb) {
+      flagged.push(parseInt(cb.dataset.clause, 10));
+    });
+
+    var out = '<div style="margin-top:16px"><h3>How your read compares</h3>';
+    clauses.forEach(function (c, i) {
+      var isFlagged = flagged.indexOf(i) >= 0;
+      out += '<div style="margin-top:8px;padding:10px;border-radius:10px;background:' + (isFlagged ? 'var(--ok-soft)' : 'var(--danger-soft)') + '">' +
+        '<strong>Clause ' + (i + 1) + ':</strong> ' + (isFlagged ? 'flagged' : 'not flagged') +
+        '<br><span class="note"><strong>Risk:</strong> ' + PS.esc(c.risk) + '. ' + PS.esc(c.issue) + '</span></div>';
+    });
+    out += '</div>';
+
+    PS.$('#contractFeedback').innerHTML = out;
+    PS.practiceLabs.storeProgress('contract-review', { completed: true, flagged: flagged.length, date: new Date().toISOString() });
+  };
+};
+
+PS.renderSpendAnalysisLab = function () {
+  var data = [
+    { category: 'IT Services', spend: 450000, suppliers: 8 },
+    { category: 'Office Supplies', spend: 120000, suppliers: 15 },
+    { category: 'Raw Materials', spend: 890000, suppliers: 4 },
+    { category: 'Logistics', spend: 340000, suppliers: 12 },
+    { category: 'Marketing', spend: 280000, suppliers: 20 },
+    { category: 'Facilities', spend: 190000, suppliers: 6 }
+  ];
+
+  var html = '<h3>Find the opportunities</h3>' +
+    '<p>Six categories. Where is the fragmentation, and what would consolidating it buy you?</p>' +
+    '<div class="table-wrap"><table style="margin-top:12px"><thead><tr><th>Category</th><th>Spend</th><th>Suppliers</th><th>Spend per supplier</th><th>Opportunity</th></tr></thead><tbody>';
+
+  data.forEach(function (d) {
+    var sps = d.spend / d.suppliers;
+    var opp = d.suppliers > 10 ? 'High' : (d.suppliers > 5 ? 'Moderate' : 'Low');
+    var color = d.suppliers > 10 ? 'var(--danger)' : 'inherit';
+    html += '<tr><td><strong>' + PS.esc(d.category) + '</strong></td>' +
+      '<td>' + PS.money(d.spend) + '</td><td>' + d.suppliers + '</td>' +
+      '<td>' + PS.money(sps) + '</td>' +
+      '<td' + (color !== 'inherit' ? ' style="color:' + color + ';font-weight:600"' : '') + '>' + opp + '</td></tr>';
+  });
+
+  html += '</tbody></table></div>' +
+    '<div class="hub-note" style="margin-top:14px"><strong>What stands out:</strong> Office Supplies and Marketing carry many suppliers per dollar of spend. ' +
+    'Cutting the supplier count roughly in half in those categories is where a consolidation round would start, and 15-20% savings from volume is a realistic first estimate.</div>' +
+    '</div>';
+
+  PS.$('#labContainer').innerHTML = html;
+  PS.practiceLabs.storeProgress('spend-analysis', { completed: true, date: new Date().toISOString() });
+};
+
+/* ==========================================================
+   Procure Sherpa - Skill Portfolio
+   Skill levels across six competency areas, drawn from Academy
+   module completion, with an exportable summary.
+   ========================================================== */
+
+PS.skillPortfolio = PS.skillPortfolio || {};
+
+PS.skillPortfolio.SKILL_TREE = [
+  {
+    id: 'sourcing',
+    name: 'Sourcing & supplier selection',
+    modules: ['func-mission-value', 'func-should-cost', 'func-supplier-eval', 'func-category-mgmt'],
+    description: 'Identify, evaluate and select suppliers through a structured process.'
+  },
+  {
+    id: 'cost',
+    name: 'Cost analysis & TCO',
+    modules: ['func-landed-cost-tco', 'func-should-cost', 'func-spend-analysis'],
+    description: 'True cost beyond the unit price, including hidden and lifecycle cost.'
+  },
+  {
+    id: 'negotiation',
+    name: 'Negotiation & commercial',
+    modules: ['func-landed-cost-tco', 'func-category-mgmt', 'func-contract-structuring'],
+    description: 'Preparation, anchoring and value creation at the table.'
+  },
+  {
+    id: 'contracts',
+    name: 'Contract management',
+    modules: ['func-contract-structuring', 'func-supplier-risk'],
+    description: 'Structure, negotiate and manage contracts that protect the organization.'
+  },
+  {
+    id: 'risk',
+    name: 'Risk management',
+    modules: ['func-supplier-risk', 'func-category-mgmt'],
+    description: 'Spot, assess and mitigate supplier and supply chain risk.'
+  },
+  {
+    id: 'analytics',
+    name: 'Spend analytics',
+    modules: ['func-spend-analysis', 'func-should-cost'],
+    description: 'Turn spend data into savings opportunities and decisions.'
+  }
+];
+
+PS.skillPortfolio.getSkillLevel = function (skillId) {
+  var skill = PS.skillPortfolio.SKILL_TREE.filter(function (s) { return s.id === skillId; })[0];
+  if (!skill) return 0;
+  var completed = 0;
+  skill.modules.forEach(function (modId) {
+    if (PS.academy.isCompleted(modId)) completed++;
+  });
+  return Math.round((completed / skill.modules.length) * 5);
+};
+
+PS.skillPortfolio.getOverallLevel = function () {
+  var total = 0;
+  PS.skillPortfolio.SKILL_TREE.forEach(function (skill) {
+    total += PS.skillPortfolio.getSkillLevel(skill.id);
+  });
+  return Math.round(total / PS.skillPortfolio.SKILL_TREE.length);
+};
+
+PS.skillPortfolio.getLevelLabel = function (level) {
+  if (level >= 5) return 'Master';
+  if (level >= 4) return 'Expert';
+  if (level >= 3) return 'Practitioner';
+  if (level >= 2) return 'Apprentice';
+  if (level >= 1) return 'Beginner';
+  return 'New';
+};
+
+PS.route('portfolio', function () {
+  PS.pageTitle = 'Skill portfolio';
+  var overallLevel = PS.skillPortfolio.getOverallLevel();
+  var levelLabel = PS.skillPortfolio.getLevelLabel(overallLevel);
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Skill portfolio</h1></div>' +
+    '<p class="lead">Your level across six competency areas, drawn from the modules you have completed.</p>' +
+    '<div style="display:flex;align-items:center;gap:16px;margin-top:14px">' +
+    '<div style="font-size:2.6em;font-weight:700;color:var(--accent)">' + overallLevel + '/5</div>' +
+    '<div><div style="font-size:1.2em;font-weight:600">' + PS.esc(levelLabel) + '</div>' +
+    '<div class="note">Overall competency</div></div>' +
+    '</div>' +
+    '</div>';
+
+  html += '<div class="card">' +
+    '<h2>Skill tree</h2>' +
+    '<div class="grid grid-3" style="margin-top:14px">';
+
+  PS.skillPortfolio.SKILL_TREE.forEach(function (skill) {
+    var level = PS.skillPortfolio.getSkillLevel(skill.id);
+    var pct = (level / 5) * 100;
+    var color = level >= 4 ? 'var(--ok)' : (level >= 2 ? 'var(--warn-2)' : 'var(--mute)');
+
+    html += '<div class="card" style="text-align:center;padding:18px">' +
+      '<h3 style="margin:0 0 4px;font-size:.95em">' + PS.esc(skill.name) + '</h3>' +
+      '<div style="font-size:.82em;color:var(--mute);margin-bottom:12px">' + PS.esc(skill.description) + '</div>' +
+      '<div class="bar-track" style="margin-bottom:8px"><div class="bar-fill" style="background:' + color + ';width:' + pct + '%"></div></div>' +
+      '<div style="font-weight:600;color:' + color + '">' + level + '/5 &middot; ' + PS.esc(PS.skillPortfolio.getLevelLabel(level)) + '</div>' +
+      '</div>';
+  });
+
+  html += '</div></div>';
+
+  html += '<div class="card">' +
+    '<h2>Completed modules</h2>';
+
+  var completedModules = 0;
+  var totalModules = 0;
+
+  PS.skillPortfolio.SKILL_TREE.forEach(function (skill) {
+    html += '<h3 style="margin-top:14px">' + PS.esc(skill.name) + '</h3><ul style="margin-top:8px;padding-left:20px">';
+    skill.modules.forEach(function (modId) {
+      var func = PS.byId('academy', modId);
+      if (!func) return;
+      totalModules++;
+      var isComp = PS.academy.isCompleted(modId);
+      if (isComp) completedModules++;
+      html += '<li style="margin-bottom:4px">' + PS.esc(func.title) + (isComp ? ' <span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Complete</span>' : '') + '</li>';
+    });
+    html += '</ul>';
+  });
+
+  html += '<div class="hub-note" style="margin-top:14px"><strong>' + completedModules + '</strong> of <strong>' + totalModules + '</strong> modules completed across the six areas.</div>' +
+    '</div>';
+
+  html += '<div class="card">' +
+    '<h2>Export</h2>' +
+    '<p class="note">A plain-text summary you can paste into a review or a CV.</p>' +
+    '<button type="button" class="btn btn-primary" data-act="portfolio-export">Copy summary</button>' +
+    '<div id="portfolioExportResult" style="margin-top:12px"></div>' +
+    '</div>';
+
+  PS.pageInit = function () {
+    PS.acts['portfolio-export'] = function () {
+      var summary = PS.generatePortfolioSummary();
+      PS.$('#portfolioExportResult').innerHTML = '<div class="alert alert-info"><pre style="white-space:pre-wrap;font-size:.85em">' + PS.esc(summary) + '</pre></div>';
+      PS.copy(summary, 'Portfolio summary');
+    };
+  };
+
+  return html;
+});
+
+PS.generatePortfolioSummary = function () {
+  var overallLevel = PS.skillPortfolio.getOverallLevel();
+  var levelLabel = PS.skillPortfolio.getLevelLabel(overallLevel);
+  var lines = [
+    'PROCUREMENT SKILL PORTFOLIO',
+    'Level: ' + overallLevel + '/5 (' + levelLabel + ')',
+    'Generated: ' + PS.dateStr(),
+    '',
+    'COMPETENCIES:'
+  ];
+
+  PS.skillPortfolio.SKILL_TREE.forEach(function (skill) {
+    var level = PS.skillPortfolio.getSkillLevel(skill.id);
+    lines.push('  ' + skill.name + ': ' + level + '/5 ' + PS.skillPortfolio.getLevelLabel(level));
+  });
+
+  lines.push('', 'COMPLETED MODULES:');
+  PS.skillPortfolio.SKILL_TREE.forEach(function (skill) {
+    skill.modules.forEach(function (modId) {
+      if (PS.academy.isCompleted(modId)) {
+        var func = PS.byId('academy', modId);
+        if (func) lines.push('  ' + func.title);
+      }
+    });
+  });
+
+  lines.push('', 'Generated by Procure Sherpa');
+  return lines.join('\n');
+};
+
+/* ==========================================================
+   Procure Sherpa - Daily Tips, Career Paths, Community
+   A daily procurement tip, a weekly challenge, a career
+   progression explorer and an offline discussion board.
+   ========================================================== */
+
+PS.dailyTips = PS.dailyTips || {};
+
+PS.dailyTips.TIPS = [
+  { id: 1, category: 'Sourcing', tip: 'Negotiate payment terms alongside price. Moving from Net 30 to Net 60 is often worth 2-3% of contract value on its own.', source: 'Commercial practice' },
+  { id: 2, category: 'Negotiation', tip: 'Never sit down without knowing your walk-away point. The stronger your alternative, the less the opening number matters.', source: 'Negotiation practice' },
+  { id: 3, category: 'Cost', tip: 'Total cost of ownership covers acquisition, operation, maintenance and disposal. Purchase price is one line of four.', source: 'Cost analysis' },
+  { id: 4, category: 'Risk', tip: 'Dual sourcing a critical component costs more on paper and removes the single point of failure. Price the premium against the downtime scenario.', source: 'Supply resilience' },
+  { id: 5, category: 'Contracts', tip: 'A most-favored-customer clause protects you if the supplier offers better terms to a comparable buyer later.', source: 'Contract practice' },
+  { id: 6, category: 'Analytics', tip: 'In most spend portfolios, 80% of the money goes to 20% of the suppliers. Start every analysis there.', source: 'Spend analysis' },
+  { id: 7, category: 'Sourcing', tip: 'Ask for references from work similar to yours in size and complexity. A great small-project reference says little about your project.', source: 'Supplier evaluation' },
+  { id: 8, category: 'Negotiation', tip: 'After you make an offer, stop talking. Silence does more work than a second argument.', source: 'Negotiation practice' },
+  { id: 9, category: 'Cost', tip: 'Should-cost analysis estimates what a product ought to cost from materials, labor and overhead. It is how you challenge a quote with facts.', source: 'Should-cost modeling' },
+  { id: 10, category: 'Risk', tip: 'Review key supplier financials once a year. A supplier in trouble is a disruption risk even while quality holds.', source: 'Supplier risk' },
+  { id: 11, category: 'Contracts', tip: 'Write service levels as measurable metrics with a consequence attached. "Best efforts" is not measurable; "99.5% uptime, credited at 2% per point below" is.', source: 'Contract practice' },
+  { id: 12, category: 'Analytics', tip: 'Classify spend against one standard taxonomy so categories mean the same thing across reports and years.', source: 'Spend classification' },
+  { id: 13, category: 'Sourcing', tip: 'Use a formal RFP when requirements are complex and price alone cannot separate the bids. Use an RFQ when they are not.', source: 'Strategic sourcing' },
+  { id: 14, category: 'Negotiation', tip: 'Trade concessions, never give them. Every concession should be conditional on getting something back.', source: 'Negotiation practice' },
+  { id: 15, category: 'Cost', tip: 'A 2/10 Net 30 discount (2% off for paying in 10 days) is worth about 36% annualized. Cheaper than most financing.', source: 'Working capital' },
+  { id: 16, category: 'Risk', tip: 'Map your tier-2 and tier-3 suppliers. Disruptions usually arrive from a sub-tier nobody was watching.', source: 'Supply chain mapping' },
+  { id: 17, category: 'Contracts', tip: 'Termination for convenience gives flexibility but usually requires compensation. Model the exit cost before you rely on it.', source: 'Contract practice' },
+  { id: 18, category: 'Analytics', tip: 'Four numbers tell most of the procurement story: savings realized, supplier OTIF, contract compliance and cycle time.', source: 'Procurement metrics' },
+  { id: 19, category: 'Sourcing', tip: 'Score suppliers on quality, delivery, cost and service together. A supplier that wins on price alone rarely wins overall.', source: 'Supplier scorecards' },
+  { id: 20, category: 'Negotiation', tip: 'Prepare three walk-away scenarios before a negotiation: the best, the likely and the worst case.', source: 'Negotiation practice' },
+  { id: 21, category: 'Cost', tip: 'Lifecycle cost includes maintenance, energy, training and disposal. A cheap machine with expensive upkeep is not cheap.', source: 'Life cycle costing' },
+  { id: 22, category: 'Risk', tip: 'Keep a risk register for your key categories and review it quarterly. Risks age faster than people expect.', source: 'Risk management' },
+  { id: 23, category: 'Contracts', tip: 'Standard clause playbooks cut negotiation time and legal review. Start from the playbook, deviate only where you must.', source: 'Contract practice' },
+  { id: 24, category: 'Analytics', tip: 'Cut spend by category, supplier and business unit together. Consolidation opportunities hide at the intersections.', source: 'Spend analysis' },
+  { id: 25, category: 'Sourcing', tip: 'Strategic suppliers reward loyalty with priority in shortages and early access to innovation. Treat the top quadrant differently from the rest.', source: 'Supplier relationships' },
+  { id: 26, category: 'Negotiation', tip: 'Anchor first when you know the market. When you do not, let the other side anchor first and test their number.', source: 'Negotiation practice' },
+  { id: 27, category: 'Cost', tip: 'Challenge price increases with market data. Accept the ones backed by verifiable cost drivers; push back on the rest.', source: 'Price management' },
+  { id: 28, category: 'Risk', tip: 'Spread critical supply across regions. One region\'s disaster should not stop your production line.', source: 'Supply resilience' },
+  { id: 29, category: 'Contracts', tip: 'Audit rights in the contract are what make compliance and cost verification possible later. Negotiate them in while you have leverage.', source: 'Contract practice' },
+  { id: 30, category: 'Analytics', tip: 'Benchmark your procurement performance against comparable organizations once a year, with the same definitions each time.', source: 'Procurement metrics' }
+];
+
+PS.dailyTips.CHALLENGES = [
+  { id: 'c1', title: 'Supplier evaluation', desc: 'Rank three supplier profiles using a weighted scorecard in the Practice Labs.', category: 'Sourcing', difficulty: 'Intermediate' },
+  { id: 'c2', title: 'Negotiation practice', desc: 'Work the IT services scenario in the Practice Labs and compare your calls with the feedback.', category: 'Negotiation', difficulty: 'Advanced' },
+  { id: 'c3', title: 'Contract review', desc: 'Red-line five contract clauses in the Practice Labs and check your read.', category: 'Contracts', difficulty: 'Intermediate' },
+  { id: 'c4', title: 'Spend analysis', desc: 'Find the consolidation opportunities in the sample spend table.', category: 'Analytics', difficulty: 'Beginner' }
+];
+
+PS.dailyTips.getTipOfDay = function () {
+  var day = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+  var offset = PS.store.get('daily_tip_offset', 0);
+  var index = (day + offset) % PS.dailyTips.TIPS.length;
+  return PS.dailyTips.TIPS[index];
+};
+
+PS.dailyTips.getChallengeOfWeek = function () {
+  var week = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
+  var index = week % PS.dailyTips.CHALLENGES.length;
+  return PS.dailyTips.CHALLENGES[index];
+};
+
+PS.route('daily-tip', function () {
+  PS.pageTitle = 'Daily tip';
+  var tip = PS.dailyTips.getTipOfDay();
+  var challenge = PS.dailyTips.getChallengeOfWeek();
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Today\'s tip</h1><div class="spacer"></div>' +
+    '<span class="badge" style="background:var(--kpi-soft);color:var(--kpi)">' + PS.esc(tip.category) + '</span></div>' +
+    '<div class="hub-note" style="margin-top:14px;font-size:.95rem">' + PS.esc(tip.tip) + '</div>' +
+    '<p class="note" style="margin-top:8px">Source: ' + PS.esc(tip.source) + '</p>' +
+    '<div class="btn-row" style="margin-top:12px">' +
+    '<button type="button" class="btn" data-act="next-tip">Another one</button>' +
+    '<button type="button" class="btn btn-ghost" data-act="copy-tip">Copy</button>' +
+    '</div>' +
+    '</div>';
+
+  html += '<div class="card" style="border-left:4px solid var(--scen)">' +
+    '<div class="card-head"><h2>This week\'s challenge</h2><div class="spacer"></div>' +
+    '<span class="badge" style="background:var(--scen-soft);color:var(--scen)">' + PS.esc(challenge.difficulty) + '</span></div>' +
+    '<p class="note">' + PS.esc(challenge.desc) + '</p>' +
+    '<a class="btn btn-primary btn-sm" href="#/labs">Open the lab</a>' +
+    '</div>';
+
+  PS.pageInit = function () {
+    PS.acts['next-tip'] = function () {
+      PS.store.set('daily_tip_offset', PS.store.get('daily_tip_offset', 0) + 1);
+      var t = PS.dailyTips.getTipOfDay();
+      var card = PS.$('.hub-note');
+      if (card) {
+        card.textContent = t.tip;
+        var srcEl = card.parentNode.querySelector('.note');
+        if (srcEl) srcEl.textContent = 'Source: ' + t.source;
+      }
+    };
+    PS.acts['copy-tip'] = function () {
+      PS.copy(PS.dailyTips.getTipOfDay().tip, 'Tip');
+    };
+  };
+
+  return html;
+});
+
+PS.route('career-paths', function () {
+  PS.pageTitle = 'Career paths';
+
+  var paths = [
+    { title: 'Procurement Analyst', level: 'Entry', desc: 'Spend analysis, data management and reporting.', skills: ['Analytics', 'Excel', 'Data visualization'] },
+    { title: 'Buyer / Purchasing Agent', level: 'Entry to mid', desc: 'Purchase orders, expediting and day-to-day supplier contact.', skills: ['PO management', 'Negotiation basics', 'ERP systems'] },
+    { title: 'Category Manager', level: 'Mid', desc: 'Owns a category: strategy, sourcing events and supplier management.', skills: ['Strategic sourcing', 'Contract management', 'Stakeholder management'] },
+    { title: 'Senior Category Manager', level: 'Mid to senior', desc: 'Leads complex categories and mentors the analysts and buyers below them.', skills: ['Advanced negotiation', 'Risk management'] },
+    { title: 'Procurement Manager', level: 'Senior', desc: 'Runs the team and the processes: hiring, standards and performance.', skills: ['Team leadership', 'Process design', 'Budget management'] },
+    { title: 'Director of Procurement', level: 'Executive', desc: 'Sets procurement strategy and represents the function to the business.', skills: ['Strategic leadership', 'Change management'] },
+    { title: 'Chief Procurement Officer', level: 'C-suite', desc: 'Procurement at enterprise level: strategy, transformation and board reporting.', skills: ['Corporate strategy', 'Digital transformation'] }
+  ];
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Career paths</h1></div>' +
+    '<p class="lead">The usual progression in procurement, and what each rung actually does all day.</p>' +
+    '</div>';
+
+  html += '<div class="card">';
+
+  paths.forEach(function (path, i) {
+    html += '<div style="display:flex;gap:14px;padding:14px 0;' + (i < paths.length - 1 ? 'border-bottom:1px solid var(--border)' : '') + '">' +
+      '<div style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem">' + (i + 1) + '</div>' +
+      '<div style="flex:1">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">' +
+      '<h3 style="margin:0">' + PS.esc(path.title) + '</h3>' +
+      '<span class="level-pill">' + PS.esc(path.level) + '</span>' +
+      '</div>' +
+      '<p class="note" style="margin:4px 0">' + PS.esc(path.desc) + '</p>' +
+      '<div>' +
+      path.skills.map(function (s) { return '<span class="badge" style="margin-right:4px">' + PS.esc(s) + '</span>'; }).join('') +
+      '</div>' +
+      '</div>' +
+      '</div>';
+  });
+
+  html += '</div>';
+
+  html += '<div class="card">' +
+    '<h2>Where to start for each goal</h2>' +
+    '<div class="grid grid-3" style="margin-top:12px">' +
+    '<div class="card" style="text-align:center"><h3>Analyst</h3><p class="note">Spend analysis and data skills</p><a class="btn btn-sm" href="#/academy/func-spend-analysis">Start</a></div>' +
+    '<div class="card" style="text-align:center"><h3>Buyer</h3><p class="note">PO execution and supplier management</p><a class="btn btn-sm" href="#/academy/func-supplier-eval">Start</a></div>' +
+    '<div class="card" style="text-align:center"><h3>Manager</h3><p class="note">Strategy, contracts and leadership</p><a class="btn btn-sm" href="#/academy/func-category-mgmt">Start</a></div>' +
+    '</div></div>';
+
+  return html;
+});
+
+PS.route('community', function () {
+  PS.pageTitle = 'Community';
+  var posts = PS.store.get('community_posts', []);
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>Community</h1><div class="spacer"></div>' +
+    '<button type="button" class="btn btn-primary btn-sm" data-act="community-new">New post</button></div>' +
+    '<p class="lead">Notes, questions and wins. Posts are stored in this browser only; nothing is uploaded.</p>' +
+    '</div>';
+
+  html += '<div class="card" id="communityList">';
+
+  if (!posts.length) {
+    html += '<div class="empty">No posts yet. Start the first one above.</div>';
+  } else {
+    posts.slice(-20).reverse().forEach(function (post) {
+      html += '<div style="padding:12px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap">' +
+        '<strong>' + PS.esc(post.title) + '</strong>' +
+        '<span class="badge">' + PS.esc(post.category) + '</span>' +
+        '</div>' +
+        '<p class="note" style="margin:4px 0">' + PS.esc(post.body) + '</p>' +
+        '<div style="font-size:.78rem;color:var(--mute)">' + PS.esc(post.author) + ' &middot; ' + PS.dateStr(post.date) + '</div>' +
+        '</div>';
+    });
+  }
+
+  html += '</div>';
+
+  html += '<div class="card" id="communityForm" hidden>' +
+    '<h2>New post</h2>' +
+    '<div class="field"><label for="communityTitle">Title</label><input type="text" id="communityTitle" maxlength="120" placeholder="What is it about?"></div>' +
+    '<div class="field"><label for="communityCategory">Category</label><select id="communityCategory">' +
+    '<option>General</option><option>Sourcing</option><option>Negotiation</option>' +
+    '<option>Contracts</option><option>Risk</option><option>Career</option>' +
+    '</select></div>' +
+    '<div class="field"><label for="communityBody">Post</label><textarea id="communityBody" rows="4" maxlength="1000" placeholder="Write it out. What happened, what would you do differently?"></textarea></div>' +
+    '<div class="field"><label for="communityAuthor">Name</label><input type="text" id="communityAuthor" maxlength="40" placeholder="Anonymous"></div>' +
+    '<div class="btn-row"><button type="button" class="btn btn-primary" data-act="community-submit">Post</button>' +
+    '<button type="button" class="btn btn-ghost" data-act="community-cancel">Cancel</button></div>' +
+    '</div>';
+
+  PS.pageInit = function () {
+    PS.acts['community-new'] = function () {
+      PS.$('#communityForm').hidden = false;
+      PS.$('#communityTitle').focus();
+    };
+    PS.acts['community-cancel'] = function () {
+      PS.$('#communityForm').hidden = true;
+    };
+    PS.acts['community-submit'] = function () {
+      var title = PS.clean(PS.$('#communityTitle').value, 120);
+      var body = PS.clean(PS.$('#communityBody').value, 1000);
+      var author = PS.clean(PS.$('#communityAuthor').value, 40) || 'Anonymous';
+      var category = PS.$('#communityCategory').value;
+      if (!title || !body) { PS.toast('A title and a post are both needed.', 'warning'); return; }
+      var all = PS.store.get('community_posts', []);
+      all.push({ title: title, body: body, author: author, category: category, date: new Date().toISOString() });
+      PS.store.set('community_posts', all);
+      PS.toast('Posted.', 'ok');
+      PS.renderRoute();
+    };
+  };
+
+  return html;
+});
+
+/* ==========================================================
+   Procure Sherpa - What's New
+   Version history, newest first, so new features get found.
+   ========================================================== */
+
+PS.whatsNew = PS.whatsNew || {};
+
+PS.whatsNew.CHANGES = [
+  {
+    version: '2.3',
+    date: '2026-10-08',
+    title: 'Learning hub for procurement enthusiasts',
+    tag: 'Major',
+    items: [
+      'Skill assessment: ten questions that place you on a 1-5 level and shape your learning path',
+      'Learning paths: three tracks from foundations to strategic leadership',
+      'Practice labs: supplier evaluation, negotiation, contract review and spend analysis, each with feedback',
+      'Skill portfolio: your level across six competency areas with a copyable summary',
+      'Daily tip and weekly challenge',
+      'Career paths: the usual progression from analyst to CPO',
+      'Community board for notes and questions, stored locally'
+    ]
+  },
+  {
+    version: '2.2',
+    date: '2026-09-28',
+    title: 'Robustness and quality',
+    tag: 'Improvement',
+    items: [
+      'Unit tests for the core utilities (18 tests, under 100ms)',
+      'JSDoc type annotations across the core API',
+      'Storage usage bar in Settings, with a warning near the quota',
+      'Calculator validation at startup: missing implementations and broken examples are reported',
+      'Global handlers for uncaught errors and failed promises',
+      'Browser support stated plainly: evergreen browsers, ES2015+ built-ins'
+    ]
+  },
+  {
+    version: '2.1',
+    date: '2026-09-20',
+    title: 'Intelligence and automation',
+    tag: 'Feature',
+    items: [
+      'Procurement Copilot: answers questions from the bundled knowledge base, with citations',
+      'Certification exams: timed, randomised, with pass marks and attempt history',
+      'Spend data model: one category-supplier hierarchy feeding the Pareto and Kraljic charts',
+      'Document pack builder: assemble RFI/RFP/contract packs with a cover sheet',
+      'What-if analysis on any calculator, with saveable scenario trees',
+      'Static share pages for any route'
+    ]
+  },
+  {
+    version: '2.0',
+    date: '2026-09-16',
+    title: 'First release',
+    tag: 'Release',
+    items: [
+      'Procurement Academy with 19 competency modules, quizzes and badges',
+      '19 financial and operational calculators',
+      '13 SOPs, 27 checklists and 33 templates',
+      'Decision guides, KPIs, glossary and guided scenarios',
+      'Universal search with a Ctrl+K command palette',
+      'Savings dashboard, maturity assessment, saved work, favorites and backup/restore'
+    ]
+  }
+];
+
+PS.whatsNew.seenVersion = function () {
+  return PS.store.get('whatsnew_seen', '');
+};
+
+PS.whatsNew.markSeen = function () {
+  PS.store.set('whatsnew_seen', PS.VERSION);
+};
+
+PS.route('whats-new', function () {
+  PS.pageTitle = "What's new";
+  PS.whatsNew.markSeen();
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>What\'s new</h1>' +
+    '<div class="spacer"></div><span class="badge">v' + PS.esc(PS.VERSION) + '</span></div>' +
+    '<p class="lead">Every release, newest first. Yours is marked.</p>' +
+    '</div>';
+
+  PS.whatsNew.CHANGES.forEach(function (c) {
+    var tagColor = c.tag === 'Major' ? 'var(--scen-soft);color:var(--scen)'
+      : (c.tag === 'Feature' ? 'var(--accent-soft);color:var(--accent)'
+        : (c.tag === 'Improvement' ? 'var(--ok-soft);color:var(--ok)' : 'var(--sunken);color:var(--mute)'));
+    var isCurrent = c.version === PS.VERSION;
+    html += '<div class="card" style="' + (isCurrent ? 'border-left:4px solid var(--accent)' : '') + '">' +
+      '<div class="card-head"><div><h2 style="margin-bottom:2px">v' + PS.esc(c.version) + ': ' + PS.esc(c.title) + '</h2>' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+      '<span class="badge" style="background:' + tagColor + '">' + PS.esc(c.tag) + '</span>' +
+      '<span class="note">' + PS.esc(c.date) + '</span>' +
+      (isCurrent ? '<span class="badge" style="background:var(--accent-soft);color:var(--accent)">Your version</span>' : '') +
+      '</div></div></div>' +
+      '<ul style="margin-top:10px;padding-left:20px">' +
+      c.items.map(function (item) { return '<li style="margin-bottom:6px">' + PS.esc(item) + '</li>'; }).join('') +
+      '</ul></div>';
+  });
+
+  return html;
+});
+
+/* ==========================================================
+   Procure Sherpa - What to Learn Next
+   Suggestions drawn from the skill assessment, Academy progress
+   and lab completions. Changes as the user learns.
+   ========================================================== */
+
+PS.nextUp = PS.nextUp || {};
+
+PS.nextUp.getRecommendation = function () {
+  var recs = [];
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var assessment = PS.skillAssessment ? PS.skillAssessment.getLastResult() : null;
+  var stats = PS.academy.getStats();
+
+  var incomplete = funcs.filter(function (f) { return !PS.academy.isCompleted(f.id); });
+
+  if (!incomplete.length) {
+    return { state: 'complete', recs: [] };
+  }
+
+  var labProgress = PS.store.get('practice_labs', {});
+  var labsDone = Object.keys(labProgress).length;
+  var labsTotal = PS.practiceLabs ? PS.practiceLabs.LABS.length : 4;
+
+  if (!assessment) {
+    recs.push({
+      kind: 'assessment',
+      title: 'Take the skill assessment',
+      why: 'Three minutes. It places you on a 1-5 level across sourcing, negotiation, contracts and risk, and makes the rest of this page specific.',
+      href: '#/assessment',
+      cta: 'Start'
+    });
+  }
+
+  if (stats.completedCount === 0) {
+    recs.push({
+      kind: 'start',
+      title: 'Start with the foundations',
+      why: 'No module completed yet. Procurement Foundations starts from zero: what procurement is, cost basics and spend visibility.',
+      href: '#/learning-paths',
+      cta: 'Learning paths'
+    });
+  } else {
+    var nextModule = null;
+    var paths = PS.learningPaths ? PS.learningPaths.PATHS : [];
+    for (var p = 0; p < paths.length && !nextModule; p++) {
+      nextModule = PS.learningPaths.getNextModule(paths[p].id);
+    }
+    if (nextModule) {
+      var fn = PS.byId('academy', nextModule);
+      if (fn) {
+        recs.push({
+          kind: 'continue',
+          title: 'Continue: ' + fn.title,
+          why: 'The next module in your path. Scoring 70% or more on its quiz moves the path forward.',
+          href: '#/academy/' + encodeURIComponent(fn.id),
+          cta: 'Open'
+        });
+      }
+    }
+
+    var scores = PS.academy.getAll().scores || {};
+    var weakestId = null;
+    var weakestPct = 100;
+    Object.keys(scores).forEach(function (fid) {
+      var sc = scores[fid];
+      if (sc && sc.pct < 70 && sc.pct < weakestPct) {
+        weakestPct = sc.pct;
+        weakestId = fid;
+      }
+    });
+    if (weakestId) {
+      var weakFn = PS.byId('academy', weakestId);
+      if (weakFn) {
+        recs.push({
+          kind: 'retry',
+          title: 'Revisit: ' + weakFn.title,
+          why: 'Your last quiz here was ' + weakestPct + '%, below the 70% mastery mark. Read the lesson again, then retake the quiz.',
+          href: '#/academy/' + encodeURIComponent(weakestId),
+          cta: 'Revisit'
+        });
+      }
+    }
+  }
+
+  if (labsDone < labsTotal) {
+    recs.push({
+      kind: 'lab',
+      title: 'Try a practice lab (' + labsDone + '/' + labsTotal + ' done)',
+      why: 'Reading builds knowledge; the labs build judgment. The supplier evaluation and negotiation ones are the place to start.',
+      href: '#/labs',
+      cta: 'Labs'
+    });
+  }
+
+  if (assessment && assessment.score >= 75) {
+    recs.push({
+      kind: 'stretch',
+      title: 'Sit a certification exam',
+      why: 'Your assessment score was ' + assessment.score + '%. The timed exams are the strongest test of what has stuck.',
+      href: '#/exams',
+      cta: 'Exams'
+    });
+  }
+
+  recs.push({
+    kind: 'habit',
+    title: 'Read today\'s tip',
+    why: 'One procurement idea a day adds up over weeks. This week\'s challenge is on the same page.',
+    href: '#/daily-tip',
+    cta: "Today's tip"
+  });
+
+  return { state: 'active', recs: recs };
+};
+
+PS.route('next-up', function () {
+  PS.pageTitle = 'What to learn next';
+  var result = PS.nextUp.getRecommendation();
+
+  var html = '<div class="card">' +
+    '<div class="card-head"><h1>What to learn next</h1></div>' +
+    '<p class="lead">Suggestions drawn from your assessment, module progress and lab work. They change as you learn.</p>' +
+    '</div>';
+
+  if (result.state === 'complete') {
+    html += '<div class="card" style="border-left:4px solid var(--ok)">' +
+      '<h2>Curriculum complete</h2>' +
+      '<p>You have finished every module in the Academy. Keep sharp with the exams, the labs and the daily tips:</p>' +
+      '<div class="btn-row" style="margin-top:12px">' +
+      '<a class="btn" href="#/exams">Exams</a>' +
+      '<a class="btn" href="#/labs">Labs</a>' +
+      '<a class="btn" href="#/daily-tip">Daily tip</a>' +
+      '</div></div>';
+  } else {
+    result.recs.forEach(function (r, i) {
+      var primary = i === 0;
+      html += '<div class="card" style="' + (primary ? 'border-left:4px solid var(--accent)' : '') + '">' +
+        '<div class="card-head"><h2>' + PS.esc(r.title) + '</h2>' +
+        (primary ? '<span class="badge" style="background:var(--accent-soft);color:var(--accent)">Start here</span>' : '') + '</div>' +
+        '<p class="note" style="margin:8px 0">' + PS.esc(r.why) + '</p>' +
+        '<a class="btn ' + (primary ? 'btn-primary' : '') + '" href="' + r.href + '">' + PS.esc(r.cta) + '</a>' +
+        '</div>';
+    });
+  }
+
+  var stats = PS.academy.getStats();
+  var labProgress = PS.store.get('practice_labs', {});
+  var assessment = PS.skillAssessment ? PS.skillAssessment.getLastResult() : null;
+
+  html += '<div class="card">' +
+    '<h2>Progress</h2>' +
+    '<div class="grid grid-3 mb16" style="margin-top:12px">' +
+    '<div class="stat"><span class="s-val">' + stats.completedCount + '/' + stats.totalCount + '</span><span class="s-lab">Modules mastered</span></div>' +
+    '<div class="stat"><span class="s-val">' + Object.keys(labProgress).length + '/' + (PS.practiceLabs ? PS.practiceLabs.LABS.length : 4) + '</span><span class="s-lab">Labs done</span></div>' +
+    '<div class="stat"><span class="s-val">' + (assessment ? assessment.score + '%' : '\u2014') + '</span><span class="s-lab">Assessment</span></div>' +
+    '</div>' +
+    '<div class="btn-row"><a class="btn btn-sm" href="#/academy-progress">Transcript</a>' +
+    '<a class="btn btn-sm" href="#/portfolio">Skill portfolio</a>' +
+    '<a class="btn btn-sm" href="#/learning-paths">Learning paths</a></div>' +
+    '</div>';
+
+  return html;
+});
+
 /* ==========================================================
    Section M: content registries and data normalisation
    (Section 54: internal content structure)
@@ -18053,7 +20049,18 @@ PS.calcImpl.scorecard = function (v) {
   });
   if (isFinite(margin) && Math.abs(margin) < 0.2) w.push('The margin is under 0.2 points: this is a tie in practical terms. Decide on price, risk or references, and sensitivity-check one weight change.');
   var swing = crit.slice().sort(function (x, y) { return (y.w * Math.abs(y.a - y.b)) - (x.w * Math.abs(x.a - x.b)); })[0];
+  var radarHtml = '';
+  if (isFinite(tA) && isFinite(tB)) {
+    radarHtml = PS.chart.radar(
+      crit.map(function (c) { return { key: c.k, label: c.k }; }),
+      [
+        { name: 'Supplier A', color: 'var(--accent)', values: { Quality: v.aQuality, Delivery: v.aDelivery, Price: v.aPrice, Service: v.aService, Risk: v.aRisk } },
+        { name: 'Supplier B', color: 'var(--scen)', values: { Quality: v.bQuality, Delivery: v.bDelivery, Price: v.bPrice, Service: v.bService, Risk: v.bRisk } }
+      ]
+    );
+  }
   return PS.C({
+    chartHtml: radarHtml,
     r: [PS.res('Recommended', winner, isFinite(margin) ? 'Margin ' + PS.qty(Math.abs(margin)) + ' points' : 'Check the inputs', winner === 'No result' ? 'danger' : 'ok', true),
       PS.res('Supplier A total', isFinite(tA) ? PS.qty(tA) : '\u2014', 'Weighted out of 5', '', true),
       PS.res('Supplier B total', isFinite(tB) ? PS.qty(tB) : '\u2014', 'Weighted out of 5', '', true),
@@ -18585,6 +20592,29 @@ PS.normalizeContent = function () {
     (map[type] || []).forEach(function (item) { PS.register(type, item); });
   });
   PS.HELP = PS_HELP;
+  PS.validateCalculators();
+};
+
+PS.validateCalculators = function () {
+  var calcs = PS.data.calc || [];
+  var problems = [];
+  calcs.forEach(function (calc) {
+    if (!calc.id) problems.push('Calculator missing id');
+    if (!calc.title) problems.push('Calculator ' + calc.id + ' missing title');
+    if (!calc.run || typeof calc.run !== 'function') problems.push('Calculator ' + calc.id + ' missing run function');
+    if (!calc.fields || !calc.fields.length) problems.push('Calculator ' + calc.id + ' has no fields');
+    if (calc.example) {
+      var errs = PS.validateCalc(calc, calc.example);
+      if (errs && Object.keys(errs).length) {
+        problems.push('Calculator ' + calc.id + ' example fails validation: ' + Object.keys(errs).join(', '));
+      }
+    }
+  });
+  if (problems.length && window.console && console.warn) {
+    console.warn('Calculator validation: ' + problems.length + ' issue(s) found');
+    problems.forEach(function (p) { console.warn('  - ' + p); });
+  }
+  return problems;
 };
 /* ---------- hardening: prune dead relationship links at boot ----------
    Content authors may reference items planned for future releases.

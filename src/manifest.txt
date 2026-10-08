@@ -8,9 +8,12 @@ src/base/01h_academy.css
 src/base/01i_portal_user.css
 src/base/01j_global_extras.css
 src/base/01k_new_features.css
+src/base/01l_logo.css
+src/base/01m_hub.css
 src/base/01g_print.css
 src/base/02_shell.html
 src/core/03a_util.js
+src/core/03a2_logo.js
 src/core/03b_safeio.js
 src/core/03c_ui.js
 src/core/03d1_store.js
@@ -82,6 +85,13 @@ src/pages/08h1_pages_copilot.js
 src/pages/08h2_pages_exams.js
 src/pages/08h3_pages_spend.js
 src/pages/08h4_pages_docpack.js
+src/pages/08i1_pages_assessment.js
+src/pages/08i2_pages_paths.js
+src/pages/08i3_pages_labs.js
+src/pages/08i4_pages_portfolio.js
+src/pages/08i5_pages_tips.js
+src/pages/08i6_pages_whatsnew.js
+src/pages/08i7_pages_nextup.js
 src/content/09a_data_init.js
 src/content/09b_expand.js
 src/content/10a_kb_fund1.js

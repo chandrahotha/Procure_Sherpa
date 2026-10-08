@@ -2,14 +2,29 @@
    Section K: fallback page, migration, boot (Section 45, 55, 57)
    ========================================================== */
 PS.notFound = function (kind, id) {
-  var route = PS.TYPE_ROUTE[kind] || kind;
+  /* Recovery links must go somewhere real. The kind words callers pass
+     ('SOP', 'decision guide', 'library'...) do not match TYPE_ROUTE keys
+     ('sop', 'dec'...), so echoing the kind into a /list/ link used to
+     dead-end in a second not-found page. Resolve to a known destination
+     instead, falling back to the Knowledge Hub. */
+  var k = String(kind || '');
+  var href = '#/list/kb';
+  if (/academy/i.test(k)) href = '#/academy';
+  else if (/calc/i.test(k)) href = '#/list/calc';
+  else if (/sop/i.test(k)) href = '#/list/sop';
+  else if (/checklist/i.test(k)) href = '#/list/cl';
+  else if (/template/i.test(k)) href = '#/list/tpl';
+  else if (/decision/i.test(k)) href = '#/list/dec';
+  else if (/kpi/i.test(k)) href = '#/list/kpi';
+  else if (/glossary|term/i.test(k)) href = '#/glossary';
+  else if (/scenario/i.test(k)) href = '#/scenarios';
   return '<div class="card"><h1>Not found</h1>' +
     '<p>Procure Sherpa has no ' + PS.esc(kind || 'page') + ' with the reference <strong>' + PS.esc(PS.clean(id, 60)) + '</strong>.</p>' +
     '<p>The reference may have changed, or the link may have been typed with a small difference.</p>' +
     PS.actionsBar([
       '<a class="btn btn-primary" href="#/home">Go to Home</a>',
       '<a class="btn" href="#/search?q=' + encodeURIComponent(id || '') + '">Search instead</a>',
-      '<a class="btn btn-ghost" href="#/list/' + PS.esc(route) + '">Browse the library</a>'
+      '<a class="btn btn-ghost" href="' + href + '">Browse the library</a>'
     ]) + '</div>';
 };
 PS.route('notfound', function () {

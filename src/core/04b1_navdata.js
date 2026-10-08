@@ -9,17 +9,25 @@
 PS.NAV_UNIFIED = [
   { sec: 'Overview', ico: '1', items: [
     { label: 'Command Center', href: '#/home' },
+    { label: 'What to Learn Next', href: '#/next-up' },
     { label: 'What Should I Do?', href: '#/what' },
     { label: 'Procurement Lifecycle', href: '#/lifecycle' },
     { label: 'Maturity Assessment', href: '#/maturity' },
     { label: 'Global Search', href: '#/search' },
-    { label: 'Quick Start', href: '#/quickstart' }
+    { label: 'Quick Start', href: '#/quickstart' },
+    { label: "What's New", href: '#/whats-new' }
   ] },
   { sec: 'Learn', ico: '2', items: [
     { label: 'Academy Curriculum', href: '#/academy' },
+    { label: 'Skill Assessment', href: '#/assessment' },
+    { label: 'Learning Paths', href: '#/learning-paths' },
+    { label: 'Practice Labs', href: '#/labs' },
+    { label: 'Skill Portfolio', href: '#/portfolio' },
+    { label: 'Daily Tip & Career', href: '#/daily-tip' },
     { label: 'My Progress & Badges', href: '#/academy-progress' },
     { label: 'Certification Exams', href: '#/exams' },
-    { label: 'Credential Transcript (Future)', href: '#/certificate' }
+    { label: 'Credential Transcript (Future)', href: '#/certificate' },
+    { label: 'Community Forum', href: '#/community' }
   ] },
   { sec: 'Execute', ico: '3', items: [
     { label: 'SOPs & Procedures', href: '#/list/sop' },

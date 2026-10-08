@@ -24,7 +24,18 @@ PS.calcImpl.scorecard = function (v) {
   });
   if (isFinite(margin) && Math.abs(margin) < 0.2) w.push('The margin is under 0.2 points: this is a tie in practical terms. Decide on price, risk or references, and sensitivity-check one weight change.');
   var swing = crit.slice().sort(function (x, y) { return (y.w * Math.abs(y.a - y.b)) - (x.w * Math.abs(x.a - x.b)); })[0];
+  var radarHtml = '';
+  if (isFinite(tA) && isFinite(tB)) {
+    radarHtml = PS.chart.radar(
+      crit.map(function (c) { return { key: c.k, label: c.k }; }),
+      [
+        { name: 'Supplier A', color: 'var(--accent)', values: { Quality: v.aQuality, Delivery: v.aDelivery, Price: v.aPrice, Service: v.aService, Risk: v.aRisk } },
+        { name: 'Supplier B', color: 'var(--scen)', values: { Quality: v.bQuality, Delivery: v.bDelivery, Price: v.bPrice, Service: v.bService, Risk: v.bRisk } }
+      ]
+    );
+  }
   return PS.C({
+    chartHtml: radarHtml,
     r: [PS.res('Recommended', winner, isFinite(margin) ? 'Margin ' + PS.qty(Math.abs(margin)) + ' points' : 'Check the inputs', winner === 'No result' ? 'danger' : 'ok', true),
       PS.res('Supplier A total', isFinite(tA) ? PS.qty(tA) : '\u2014', 'Weighted out of 5', '', true),
       PS.res('Supplier B total', isFinite(tB) ? PS.qty(tB) : '\u2014', 'Weighted out of 5', '', true),

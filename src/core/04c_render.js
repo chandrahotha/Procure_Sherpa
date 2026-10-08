@@ -74,9 +74,10 @@ PS.disclaimer = function (kind) { return PS.withDisclaimer(kind); };
 PS.reportHead = function (title, subtitle) {
   var p = PS.prefs();
   return '<div class="report-head">' +
-    '<h1>' + PS.esc(PS.APP) + ' : ' + PS.esc(title) + '</h1>' +
-    '<div class="rh-meta">' + (p.orgName ? PS.esc(p.orgName) + ' \u00B7 ' : '') +
-    PS.esc(subtitle || '') + ' \u00B7 Generated ' + PS.esc(PS.dateStr()) + ' ' + PS.esc(PS.timeStr()) + '</div></div>';
+    (PS.LOGO_DATA ? '<span class="rh-logo" aria-hidden="true"><img src="' + PS.LOGO_DATA + '" alt=""></span>' : '') +
+    '<span class="rh-text"><h1>' + PS.esc(PS.APP) + ' : ' + PS.esc(title) + '</h1>' +
+    '<span class="rh-meta">' + (p.orgName ? PS.esc(p.orgName) + ' \u00B7 ' : '') +
+    PS.esc(subtitle || '') + ' \u00B7 Generated ' + PS.esc(PS.dateStr()) + ' ' + PS.esc(PS.timeStr()) + '</span></span></div>';
 };
 PS.reportFooter = function (note) {
   var p = PS.prefs();

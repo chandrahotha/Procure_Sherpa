@@ -85,6 +85,9 @@ PS.route('recent', function () {
 });
 PS.route('list', function (arg, params) {
   var type = arg || 'kb';
+  /* 'library' was a link target in earlier releases; treat it as the
+     Knowledge Hub so old bookmarks and stale links still resolve */
+  if (type === 'library') type = 'kb';
   var segs = PS.routeMeta.args;
   var cat = segs.slice(1).join('/') || '';
   if (!PS.LIST_META[type] && !PS.data[type]) return PS.notFound('library', type);

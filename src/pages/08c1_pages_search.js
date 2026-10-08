@@ -50,20 +50,36 @@ PS.route('search', function (arg, params) {
   };
   return html;
 });
+PS.recordSearch = function (q) {
+  var c = PS.clean(q, 120);
+  if (!c) return;
+  var list = PS.store.get('search_history', []);
+  list = list.filter(function (x) { return x !== c; });
+  list.unshift(c);
+  if (list.length > 12) list = list.slice(0, 12);
+  PS.store.set('search_history', list);
+};
 PS.renderSearch = function () {
   var box = PS.$('#searchResults');
   if (!box) return;
   var q = PS.$('#searchQ') ? PS.$('#searchQ').value : '';
   var type = PS.$('#searchType') ? PS.$('#searchType').value : '';
   if (!PS.clean(q)) {
+    var hist = PS.store.get('search_history', []);
     box.innerHTML = '<div class="card"><h2>Search tips</h2>' + PS.ul([
       'Search by the problem in your own words: "supplier increased price by 12%", "compare three quotes", "contract expiring".',
       'Search by document: RFQ, RFP, award recommendation, negotiation plan, single source justification.',
       'Search by measure: TCO, landed cost, HHI, PPV, OTIF, spend under management.',
       'Search by process: intake, prequalification, bid normalization, change control, closeout.'
-    ]) + '</div>';
+    ]) +
+      (hist.length ? '<h3 style="margin-top:14px">Recent searches <button type="button" class="btn btn-sm btn-ghost" data-act="search-history-clear">Clear</button></h3>' +
+        '<div class="chips">' + hist.map(function (t) {
+          return '<button type="button" class="chip" data-act="search-chip" data-q="' + PS.esc(t) + '">' + PS.esc(t) + '</button>';
+        }).join('') + '</div>' : '') +
+      '</div>';
     return;
   }
+  PS.recordSearch(q);
   var res = PS.search(q, { type: type || undefined, limit: 80 });
   if (!res.results.length) {
     box.innerHTML = '<div class="card"><h2>No matches for &ldquo;' + PS.esc(q) + '&rdquo;</h2>' +

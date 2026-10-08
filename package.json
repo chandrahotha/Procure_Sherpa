@@ -26,6 +26,8 @@
     "test:interactive": "node tools/test_interactive.mjs",
     "test:content": "node tools/test_quiz_tips.mjs",
     "test:layout": "node tools/test_layout.mjs",
+    "test:unit": "node --test tools/test_unit.mjs",
+    "test:visual": "node tools/test_visual.mjs",
     "audit:sec": "node tools/security_audit.mjs",
     "audit:a11y": "node tools/a11y_audit.mjs",
     "audit:i18n": "node tools/i18n_audit.mjs",

@@ -34,6 +34,12 @@ PS.storageOK = (function () {
 })();
 
 PS.store = {
+  /**
+   * Get a value from storage (localStorage or in-memory fallback)
+   * @param {string} key - Storage key
+   * @param {*} [fallback] - Default value if key not found or parse fails
+   * @returns {*} Stored value or fallback
+   */
   get: function (key, fallback) {
     try {
       var raw = PS.storageOK ? window.localStorage.getItem(key) : PS._mem[key];
@@ -45,6 +51,13 @@ PS.store = {
       return fallback;
     }
   },
+
+  /**
+   * Set a value in storage
+   * @param {string} key - Storage key
+   * @param {*} value - Value to store
+   * @returns {boolean} True if stored successfully
+   */
   set: function (key, value) {
     var raw;
     try { raw = JSON.stringify(value); }
@@ -62,10 +75,20 @@ PS.store = {
       return false;
     }
   },
+
+  /**
+   * Remove a key from storage
+   * @param {string} key
+   */
   remove: function (key) {
     try { if (PS.storageOK) window.localStorage.removeItem(key); } catch (e) { }
     delete PS._mem[key];
   },
+
+  /**
+   * List all Procure Sherpa keys in localStorage
+   * @returns {string[]}
+   */
   rawKeys: function () {
     var out = [];
     try {
@@ -76,12 +99,23 @@ PS.store = {
     } catch (e) { }
     return out;
   },
+
+  /**
+   * Calculate total bytes used by Procure Sherpa in localStorage
+   * @returns {number} Approximate bytes used
+   */
   bytes: function () {
     var n = 0;
     PS.store.rawKeys().forEach(function (k) { try { n += (window.localStorage.getItem(k) || '').length; } catch (e) { } });
     return n;
   }
 };
+
+/**
+ * Show a toast warning only once per unique tag
+ * @param {string} tag - Unique identifier for this warning type
+ * @param {string} msg - Warning message
+ */
 PS.warnOnce = function (tag, msg) {
   PS._warned = PS._warned || {};
   if (PS._warned[tag]) return;

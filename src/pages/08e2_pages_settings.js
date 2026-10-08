@@ -9,15 +9,38 @@ PS.route('settings', function () {
     '</div>' +
     '<div class="grid grid-2">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
     PS.settingsThresholdCard(p) + PS.settingsAssumptionCard(p) + '</div>' +
-    '<div class="card"><div class="btn-row no-print">' +
+    '<div class="card"><h2>Storage usage</h2>' +
+    '<div id="storageUsageBar" style="margin-bottom:8px">' +
+    '<div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden">' +
+    '<div id="storageUsageFill" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s ease"></div>' +
+    '</div>' +
+    '<div class="note" id="storageUsageText">Calculating...</div>' +
+    '</div>' +
+    '<div class="btn-row no-print">' +
     '<button type="button" class="btn btn-primary btn-lg" data-act="settings-save">Save settings</button>' +
     '<button type="button" class="btn" data-act="settings-reset">Restore defaults</button>' +
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
     '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
     '</div></div>' + PS.disclaimer('policy');
-  PS.pageInit = function () { PS.initThemeScheduleOptions(); };
+  PS.pageInit = function () { PS.initThemeScheduleOptions(); PS.updateStorageUsage(); };
   return html;
 });
+PS.updateStorageUsage = function () {
+  var fill = PS.$('#storageUsageFill');
+  var text = PS.$('#storageUsageText');
+  if (!fill || !text) return;
+  var bytes = PS.store.bytes();
+  var quota = 5 * 1024 * 1024;
+  var pct = Math.min(100, Math.round((bytes / quota) * 100));
+  fill.style.width = pct + '%';
+  if (pct > 80) fill.style.background = 'var(--danger, #dc3545)';
+  else if (pct > 60) fill.style.background = 'var(--warning, #ffc107)';
+  else fill.style.background = 'var(--accent, #0d6efd)';
+  var kb = (bytes / 1024).toFixed(1);
+  var qmb = (quota / 1024 / 1024).toFixed(0);
+  text.textContent = kb + ' KB used of ~' + qmb + ' MB typical browser quota (' + pct + '%)';
+  if (pct > 80) text.innerHTML = ' <strong style="color:var(--danger,#dc3545)">Storage nearly full. Consider exporting a backup and clearing old saved items.</strong>';
+};
 PS.settingsOrgCard = function (p) {
   return '<div class="card"><h2>Organisation and currency</h2>' +
     '<div class="field"><label for="setOrg">Organisation name (used in reports)</label><input type="text" id="setOrg" maxlength="120" value="' + PS.esc(p.orgName) + '" placeholder="Example: Northwind Manufacturing"></div>' +

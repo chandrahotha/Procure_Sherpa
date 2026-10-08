@@ -12,6 +12,7 @@ PS.route('k', function (id) {
     '<div class="alert alert-info"><strong>Definition</strong>' + PS.esc(it.def) + '</div>' +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
+    PS.actionsBar(['<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>']) +
     '<div class="grid grid-2">' +
     '<div class="card"><h2>Why procurement cares</h2>' + PS.ul(it.why) + '</div>' +
     '<div class="card"><h2>When it is used</h2>' + PS.ul(it.when) + '</div>' +

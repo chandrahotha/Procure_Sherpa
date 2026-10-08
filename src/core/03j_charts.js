@@ -5,12 +5,12 @@
    2. PS.chart.kraljic (2x2 Portfolio Matrix)
    3. PS.chart.pareto (80/20 Spend Concentration)
    4. PS.chart.zscoreGauge (Altman Z-Score Solvency Gauge)
+   5. PS.chart.radar (two-series comparison across criteria)
    ========================================================== */
 
 PS.chart = {
   /* Export SVG as file */
-  exportSVG: function (svgElement, filename) {
-    var serializer = new XMLSerializer();
+  exportSVG: function (svgElement, filename) {    var serializer = new XMLSerializer();
     var source = serializer.serializeToString(svgElement);
     if (!source.match(/^<svg[^>]*xmlns/)) {
       source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
@@ -348,6 +348,62 @@ PS.chart = {
       '</div>' +
       '<div class="chart-svg-wrap" style="text-align:center;">' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:380px; margin:0 auto;" role="img" aria-label="Altman Z-Score Gauge">' +
+      svg.join('') +
+      '</svg></div></div>';
+  },
+
+  /* Radar: two series compared across criteria (0-5 scale).
+     axes: [{key, label}], series: [{name, color, values: {key: score}}] */
+  radar: function (axes, series, opts) {
+    opts = opts || {};
+    var w = opts.width || 460;
+    var h = opts.height || 380;
+    if (!axes || !axes.length) return '<div class="chart-empty">No criteria to chart.</div>';
+    var n = axes.length;
+    var cx = w / 2;
+    var cy = h / 2 + 4;
+    var R = Math.min(w, h) / 2 - 54;
+
+    function pt(i, val) {
+      var ang = -Math.PI / 2 + (i / n) * 2 * Math.PI;
+      var r = R * (Math.max(0, Math.min(5, Number(val) || 0)) / 5);
+      return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) };
+    }
+
+    var svg = [];
+    [1, 2, 3, 4, 5].forEach(function (ring) {
+      var pts = [];
+      for (var i = 0; i < n; i++) { var p = pt(i, ring); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); }
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="none" stroke="var(--border)" stroke-width="1" />');
+    });
+
+    axes.forEach(function (a, i) {
+      var v5 = pt(i, 5);
+      var lab = pt(i, 5.9);
+      var anchor = Math.abs(lab.x - cx) < 14 ? 'middle' : (lab.x > cx ? 'start' : 'end');
+      svg.push('<line x1="' + cx + '" y1="' + cy + '" x2="' + v5.x.toFixed(1) + '" y2="' + v5.y.toFixed(1) + '" stroke="var(--border)" stroke-width="1" />');
+      svg.push('<text x="' + lab.x.toFixed(1) + '" y="' + (lab.y + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="700" fill="var(--dim)">' + PS.esc(a.label) + '</text>');
+    });
+
+    (series || []).forEach(function (s) {
+      var pts = [];
+      axes.forEach(function (a, i) { var p = pt(i, s.values[a.key]); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); });
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + s.color + '" stroke="' + s.color + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
+    });
+
+    var legend = (series || []).map(function (s) {
+      return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--dim)">' +
+        '<span style="width:10px;height:10px;border-radius:2px;background:' + s.color + '"></span>' + PS.esc(s.name) + '</span>';
+    }).join(' <span style="color:var(--mute);font-size:.8rem">vs</span> ');
+
+    return '<div class="chart-container">' +
+      '<div class="chart-title"><span>Scorecard profile</span> <span class="chart-badge">Weighted out of 5</span></div>' +
+      '<div class="chart-actions" style="display:flex;gap:8px;margin-top:8px;justify-content:center">' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="chart-export" data-chart-type="radar" title="Export as SVG">⬇ Export SVG</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:6px">' + legend + '</div>' +
+      '<div class="chart-svg-wrap" style="text-align:center;">' +
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" class="svg-responsive" style="max-width:420px;margin:0 auto;" role="img" aria-label="Radar chart comparing supplier scores across criteria">' +
       svg.join('') +
       '</svg></div></div>';
   }

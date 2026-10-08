@@ -20,6 +20,14 @@
    needs a real sw.js, an explicit manifest-src and connect-src 'self',
    and a README change - not a silent probe. */
 
+/* ---------- global error handlers ---------- */
+window.addEventListener('error', function (e) {
+  if (window.console && console.error) console.error('Global error:', e.message, e.filename, e.lineno);
+});
+window.addEventListener('unhandledrejection', function (e) {
+  if (window.console && console.error) console.error('Unhandled rejection:', e.reason);
+});
+
 /* ---------- boot ---------- */
 PS.boot = function () {
   try {
@@ -29,12 +37,18 @@ PS.boot = function () {
     if (PS.i18n && PS.i18n.applyDom) PS.i18n.applyDom();
     if (PS.user && PS.user.updateTopbar) PS.user.updateTopbar();
     PS.buildNav();
+    if (PS.applyLogo) PS.applyLogo();
     PS.wireEvents();
     PS.updateNavCounts();
     PS.bindGlobalKeys();
     PS.renderRoute();
     if (!PS.storageOK) PS.audit('storage-unavailable', 'Browser storage is blocked; running in session-only mode');
     PS.audit('app-opened', 'Procure Sherpa v' + PS.VERSION + (PS.storageOK ? '' : ' (session-only)'));
+    var loader = document.getElementById('bootLoader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(function () { loader.style.display = 'none'; }, 300);
+    }
   } catch (e) {
     if (window.console && console.error) console.error(e);
     var main = PS.$('#main');

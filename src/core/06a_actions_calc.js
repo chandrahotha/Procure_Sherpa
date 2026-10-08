@@ -120,13 +120,17 @@ PS.acts.handoff = function (el) {
 };
 PS.acts['chart-export'] = function (el) {
   var type = el.dataset.chartType;
-  var svg = document.querySelector('.chart-container .svg-responsive svg');
+  /* the svg element itself carries .svg-responsive; selecting a descendant
+     wrapper never matched, which made every export button report "no chart" */
+  var scope = el.closest ? el.closest('.chart-container') : document;
+  var svg = (scope || document).querySelector('svg.svg-responsive');
   if (!svg) { PS.toast('No chart found on this page.', 'danger'); return; }
   var filenames = {
     waterfall: 'should-cost-waterfall.svg',
     kraljic: 'kraljic-matrix.svg',
     pareto: 'pareto-spend.svg',
-    zscore: 'altman-zscore-gauge.svg'
+    zscore: 'altman-zscore-gauge.svg',
+    radar: 'supplier-radar.svg'
   };
   PS.chart.exportSVG(svg, filenames[type] || 'chart.svg');
   PS.toast('SVG downloaded', 'ok');

@@ -27,7 +27,15 @@ PS.buildNav = function () {
   var bMark = PS.$('#sidebarBrandMark');
   var bTitle = PS.$('#sidebarBrandTitle');
   var bVer = PS.$('#brandVersion');
-  if (bMark) bMark.textContent = 'PS';
+  if (bMark) {
+    /* the embedded emblem is mounted here (and by PS.applyLogo on boot);
+       re-check rather than overwrite so a nav refresh never wipes it */
+    if (PS.LOGO_DATA && !bMark.querySelector('img')) {
+      bMark.innerHTML = '<img src="' + PS.LOGO_DATA + '" alt="">';
+    } else if (!PS.LOGO_DATA) {
+      bMark.textContent = 'PS';
+    }
+  }
   if (bTitle) bTitle.textContent = 'Procure Sherpa';
   if (bVer) bVer.textContent = 'Navigation';
 

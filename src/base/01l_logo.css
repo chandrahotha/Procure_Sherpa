@@ -1,0 +1,27 @@
+/* ---------- brand logo (embedded emblem) ----------
+   The emblem itself is embedded once in src/core/03a2_logo.js as a
+   base64 data URI and mounted by PS.applyLogo(). These rules present
+   it: the sidebar brand mark becomes a white tile (the emblem's own
+   background is near-white, so a white chip keeps the blue mountain
+   readable in both light and dark themes), and the Academy hero shows
+   the emblem beside the title. */
+.brand-mark{
+  background:#ffffff;color:transparent;overflow:hidden;padding:2px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.25);
+}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block;border-radius:9px}
+.ps-logo-chip{
+  display:flex;align-items:center;justify-content:center;
+  background:#ffffff;border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--sh);overflow:hidden;
+}
+.ps-logo-chip img{width:100%;height:100%;object-fit:contain;display:block}
+/* print header: emblem beside the report title (report-head is print-only) */
+@media print{
+  .report-head{display:flex!important;align-items:center;gap:12px}
+  .report-head .rh-text{display:block}
+  .report-head .rh-text h1{display:block}
+  .report-head .rh-logo{width:46px;height:46px;flex:0 0 46px;padding:4px;background:#fff;border:1px solid #ccc;border-radius:10px;overflow:hidden;display:inline-block}
+  .report-head .rh-logo img{width:100%;height:100%;object-fit:contain;display:block}
+}

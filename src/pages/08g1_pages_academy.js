@@ -65,6 +65,7 @@ PS.renderAcademyHub = function () {
 
   var html = '<div class="academy-hero">' +
     '<div class="academy-title-row">' +
+    '<div class="ps-logo-chip" style="width:76px;height:76px;flex:0 0 76px;padding:6px" aria-hidden="true"><img src="' + PS.LOGO_DATA + '" alt="" loading="lazy"></div>' +
     '<div><span class="academy-badge-tag">Procure Sherpa Academy</span>' +
     '<h1 style="margin:6px 0 2px">The Digital Procurement Academy</h1>' +
     '<p class="lead mb0">Master end-to-end procurement from first principles to executive decision-making. Learn, reflect, practice with scenarios, and execute in the laboratory.</p>' +

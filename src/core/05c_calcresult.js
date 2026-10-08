@@ -23,6 +23,7 @@ PS.renderCalcResult = function (calc, values, out) {
   });
   if (out.analysis) html += '<div class="res-sub"><h3>Interpretation</h3>' + out.analysis + '</div>';
   if (out.table) html += PS.renderTable(out.table);
+  if (out.chartHtml) html += '<div class="res-sub">' + out.chartHtml + '</div>';
   if (out.formula) {
     html += '<details class="acc" open><summary>Formula and method</summary><div class="acc-body">' +
       (Array.isArray(out.formula) ? out.formula.map(function (x) { return '<p><code>' + PS.esc(x) + '</code></p>'; }).join('') : '<p><code>' + PS.esc(out.formula) + '</code></p>') +

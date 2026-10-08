@@ -172,6 +172,12 @@ Procure Sherpa is not a legally authorized issuer of procurement credentials, so
 
 ---
 
+## Browser Compatibility
+
+Procure Sherpa targets **modern evergreen browsers** (Chrome, Edge, Firefox, Safari — latest 2 versions). The source is written in ES5 syntax for auditability, but the runtime uses ES2015+ built-ins (`Set`, `Map`, `Promise`, `Object.keys`, `Array.isArray`, `Number.EPSILON`). Internet Explorer is **not** supported.
+
+---
+
 ## Operating Instructions
 
 ### Option 1: Direct File Launch (Simplest)

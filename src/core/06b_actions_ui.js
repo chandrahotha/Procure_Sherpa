@@ -2,6 +2,39 @@
 PS.acts.theme = function () { PS.toggleTheme(); };
 PS.acts.print = function () { try { window.print(); } catch (e) { PS.toast('Printing is not available in this browser.', 'danger'); } };
 PS.acts['print-kbd'] = function () { PS.kbdHelp.printCheatSheet(); };
+PS.acts['content-markdown'] = function () {
+  var c = PS.currentItem;
+  if (!c || !c.item) { PS.toast('Open a page before copying it as Markdown.'); return; }
+  var it = c.item;
+  var md = ['# ' + (it.title || it.term || 'Untitled'), ''];
+  if (it.desc) md.push(it.desc, '');
+  if (it.purpose) md.push('**Purpose:** ' + it.purpose, '');
+  if (it.scope) md.push('**Scope:** ' + it.scope, '');
+  if (it.trigger) md.push('**Trigger:** ' + it.trigger, '');
+  if (it.def) md.push(it.def, '');
+  if (it.steps && it.steps.length) {
+    md.push('## Steps', '');
+    it.steps.forEach(function (s, i) {
+      md.push((i + 1) + '. ' + (s.s || s.title || s.label || ''));
+      if (s.d || s.desc || s.note) md.push('   ' + (s.d || s.desc || s.note));
+    });
+    md.push('');
+  }
+  if (it.sections && it.sections.length) {
+    it.sections.forEach(function (sec) {
+      md.push('## ' + (sec.g || sec.title || ''), '');
+      (sec.items || []).forEach(function (item) { md.push('- [ ] ' + item); });
+      md.push('');
+    });
+  }
+  if (it.why) md.push('**Why it matters:** ' + (Array.isArray(it.why) ? it.why.join('; ') : it.why), '');
+  if (it.when) md.push('**When to use:** ' + (Array.isArray(it.when) ? it.when.join('; ') : it.when), '');
+  if (it.how) md.push('**How:** ' + (Array.isArray(it.how) ? it.how.join('; ') : it.how), '');
+  md.push('---');
+  md.push('From Procure Sherpa v' + PS.VERSION + ' - ' + PS.dateTime());
+  PS.copy(md.join('\n'), (it.title || 'Content') + ' Markdown');
+  PS.audit('markdown-exported', it.title || it.id);
+};
 PS.acts.fav = function () {
   var c = PS.currentItem;
   if (!c) { PS.toast('Open a page before adding it to favorites.'); return; }
@@ -34,6 +67,11 @@ PS.acts['recent-clear'] = function () {
     okLabel: 'Clear list',
     onOk: function () { PS.recent.clear(); PS.renderRoute(); PS.toast('Recently used list cleared.', 'ok'); }
   });
+};
+PS.acts['search-history-clear'] = function () {
+  PS.store.set('search_history', []);
+  if (PS.$('#searchQ') && !PS.clean(PS.$('#searchQ').value)) PS.renderSearch();
+  else PS.renderRoute();
 };
 PS.acts['save-notes'] = function (el) {
   var id = el.dataset.id;
