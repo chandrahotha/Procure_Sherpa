@@ -11,10 +11,19 @@
    Playwright is a heavy dev-only dependency. Run it in CI or
    locally before major UI changes.
    ========================================================== */
-import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+let chromium;
+try {
+  ({ chromium } = await import('playwright'));
+} catch (e) {
+  console.log('Playwright is not installed. This suite is optional:');
+  console.log('  npm install --save-dev playwright && npx playwright install chromium');
+  console.log('Skipping visual regression.');
+  process.exit(0);
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SHOT_DIR = path.join(ROOT, '_shot');
