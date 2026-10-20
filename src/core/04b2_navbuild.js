@@ -420,7 +420,14 @@ PS.wireNavFilter = function () {
     if (old) old.remove();
     if (!anyVisible) {
       var noMatchTxt = (PS.i18n && PS.i18n.t) ? PS.i18n.t('nav.noMatch', { 0: box.value }) : ('No menu items match \u201c' + box.value + '\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.');
-      root.insertAdjacentHTML('beforeend', '<div class="nav-empty">' + PS.esc(noMatchTxt) + '</div>');
+      /* The menu is scoped by the track, so something that is in the
+         product may not be in this view. The filter says so and offers
+         the way out, rather than leaving the reader with a dead end
+         and no explanation. */
+      var viewName = PS.navCurrentView() === 'operations' ? 'the working view' : 'the learning view';
+      root.insertAdjacentHTML('beforeend', '<div class="nav-empty">' + PS.esc(noMatchTxt) +
+        '<div class="nav-empty-hint">Nothing here matches in ' + PS.esc(viewName) + '.</div>' +
+        '<a class="btn btn-sm btn-ghost" href="#/search?q=' + encodeURIComponent(box.value) + '">Search everything</a></div>');
     }
   }, 120));
 };

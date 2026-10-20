@@ -168,6 +168,7 @@
   box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
 }
 .nav-view-btn[aria-pressed="true"]{font-weight:800}
+.nav-empty-hint{font-size:.72rem;color:var(--mute);margin:6px 0 10px;line-height:1.45}
 .nav-list{list-style:none;margin:0;padding:1px 0 7px}
 .nav-list a{
   position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
