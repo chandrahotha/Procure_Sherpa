@@ -51,7 +51,14 @@ check('Document has #modalRoot dialog mount point', !!d.querySelector('#modalRoo
 // 2. Navigation structure
 check('Sidebar has brand mark and title', !!d.querySelector('#sidebarBrandMark') && !!d.querySelector('#sidebarBrandTitle'));
 check('Sidebar has search filter input', !!d.querySelector('#navFilter'));
-check('Sidebar has five unified nav sections', d.querySelectorAll('#navRoot .nav-sec').length === 5);
+  check('Sidebar has the six unified nav sections', d.querySelectorAll('#navRoot .nav-sec').length === 6);
+  const secNames = [...d.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
+  check('Nav sections are Start, Learn, Workbench, Toolkit, Look It Up and My Work',
+    secNames.join('|') === 'Start|Learn|Workbench|Toolkit|Look It Up|My Work', secNames.join(', '));
+  check('Every nav section has items', [...d.querySelectorAll('#navRoot .nav-sec')].every((s) => s.querySelectorAll('li').length > 0));
+  check('The system links live in a labelled footer strip',
+    d.querySelectorAll('.sidebar-foot-links .sidebar-foot-link').length === 4 &&
+    !!d.querySelector('.sidebar-foot-label'));
 
 // 3. Calculator responsive layout
 window.location.hash = '#/calc/calc-tco';

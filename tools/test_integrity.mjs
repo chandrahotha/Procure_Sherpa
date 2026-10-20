@@ -274,6 +274,34 @@ for (const f of PS.ACADEMY_FUNCTIONS || []) {
 if (!qBad) ok('G12', qCount + ' quiz questions, each with exactly one correct option, a rationale on every option and a principle');
 if (!sBad) ok('G12', sCount + ' SOP steps, each with an owner, control, record and pitfall');
 
+/* ---------- G12: the workbenches are reachable and functional ---------- */
+console.log('\nG12  workbenches');
+const WB_ROUTES = ['rfx', 'suppliers', 'contracts', 'catalogue', 'receipts', 'budget', 'approvals', 'analytics'];
+let wbBad = 0;
+for (const r of WB_ROUTES) {
+  if (!PS.routes[r]) { fail('G12', 'workbench route missing: #' + r); wbBad++; continue; }
+  w.location.hash = '#/' + r;
+  PS.renderRoute();
+  const main = w.document.querySelector('#main');
+  const text = main ? main.textContent.trim() : '';
+  if (text.length < 300) { fail('G12', '#/' + r + ' rendered almost nothing'); wbBad++; }
+  if (text.includes('undefined')) { fail('G12', '#/' + r + ' leaks undefined'); wbBad++; }
+  if (!main.querySelector('#wbForm') && r !== 'rfx' && r !== 'analytics' && r !== 'budget') {
+    fail('G12', '#/' + r + ' has no record form'); wbBad++;
+  }
+}
+if (!wbBad) ok('G12', WB_ROUTES.length + ' workbenches render with a form, no leaks and no empty pages');
+/* every workbench collection must survive a round trip through the store */
+if (PS.wb) {
+  const probe = { id: 'probe', name: 'probe' };
+  PS.wb.upsert('suppliers', probe);
+  const stored = PS.store.get(PS.wb.KEY, {});
+  const kept = stored && Array.isArray(stored.suppliers) && stored.suppliers.some((r) => r.id === 'probe');
+  if (!kept) fail('G12', 'a workbench record does not survive the store round trip');
+  else ok('G12', 'workbench records persist through the store');
+  PS.wb.remove('suppliers', 'probe');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

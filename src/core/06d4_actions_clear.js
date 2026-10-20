@@ -30,6 +30,7 @@ PS.acts['clear-data'] = function () {
       '<tr><td>Copilot transcript</td><td>Deleted</td></tr>' +
       '<tr><td>Document packs (' + packs + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Community notes</td><td>Deleted</td></tr>' +
+      '<tr><td>Workbench records (suppliers, contracts, catalogue, budgets, match workpapers, sourcing events)</td><td>Deleted</td></tr>' +
       '<tr><td>Audit log (' + PS.auditList().length + ' events)</td><td>Deleted</td></tr>' +
       '<tr><td>Settings</td><td>Reset to defaults</td></tr>' +
       '</tbody></table></div>' +
@@ -44,7 +45,7 @@ PS.acts['clear-data'] = function () {
          packs, so "Purge Session Data" left them behind. */
       [PS.K.saved, PS.K.cl, PS.K.tpl, PS.K.fav, PS.K.recent, PS.K.audit, PS.K.prefs, PS.K.draft,
         PS.K.maturity, PS.K.exams, PS.K.spend, PS.K.spendLegacy, PS.K.copilot, PS.K.docpacks,
-        PS.K.academy, PS.K.labs, PS.K.assessment, PS.K.community, PS.K.schema, PS.K.user]
+        PS.K.academy, PS.K.labs, PS.K.assessment, PS.K.community, PS.K.schema, PS.K.user, PS.wb.KEY]
         .forEach(function (k) { PS.store.remove(k); });
       PS._prefsCache = null;
       PS.audit('data-cleared', 'All local Procure Sherpa data removed by user');

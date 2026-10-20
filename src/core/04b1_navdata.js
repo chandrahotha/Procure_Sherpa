@@ -86,7 +86,19 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Do the Work', ico: '■', items: [
+    sec: 'Workbench', ico: '■', items: [
+      { label: 'RFx & Evaluation', href: '#/rfx' },
+      { label: 'Supplier Register', href: '#/suppliers' },
+      { label: 'Contract Register', href: '#/contracts' },
+      { label: 'Catalogue & Prices', href: '#/catalogue' },
+      { label: 'Receipts & Invoicing', href: '#/receipts' },
+      { label: 'Budget & Spend', href: '#/budget' },
+      { label: 'Approvals & Policy', href: '#/approvals' },
+      { label: 'Analytics', href: '#/analytics' }
+    ]
+  },
+  {
+    sec: 'Toolkit', ico: '◆', items: [
       { label: 'Operations Hub', href: '#/operations' },
       { label: 'SOPs', href: '#/list/sop' },
       { label: 'Checklists', href: '#/list/cl' },
@@ -96,9 +108,7 @@ PS.NAV_UNIFIED = [
       { label: 'Scenarios', href: '#/scenarios' },
       { label: 'Maturity Check', href: '#/maturity' },
       { label: 'Copilot', href: '#/copilot' },
-      { label: 'Spend Data Model', href: '#/spend-model' },
-      { label: 'Doc Pack Builder', href: '#/docpack' },
-      { label: 'Savings Dashboard', href: '#/dash-savings' }
+      { label: 'Doc Pack Builder', href: '#/docpack' }
     ]
   },
   {

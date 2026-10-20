@@ -99,19 +99,20 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 
 | # | Capability | Summary |
 |---|---|---|
-| 1 | Command Center & Unified Navigation | Distraction-free home, one 5-section sidebar everywhere else |
+| 1 | Command Center & Unified Navigation | One home, one 6-section sidebar on every route |
 | 2 | Procurement Academy | 10 modules, 25 functions, 5-tab pedagogy, certification exams |
 | 3 | Visual Analytics Engine | Waterfall, Kraljic matrix, Pareto curve, Altman Z-Score, all inline SVG |
 | 4 | Crisis Simulation Sandboxes | 10 hands-on commercial scenarios with live calculation models |
 | 5 | Credential Transcript | Deliberately disabled — see below |
 | 6 | Spotlight Command Palette | `Ctrl+K` search across the whole platform |
 | 7 | Intelligence & Automation | Offline copilot, spend data model, doc pack builder |
+| 9 | Workbenches | 8 local workbenches: RFx and evaluation, suppliers, contracts, catalogue, receipts, budget, approvals, analytics |
 | 8 | Analysis Workbench | What-if branching, static share pages |
 
 ### 1. Command Center & Unified Navigation
 
-* **Distraction-Free Command Center (`#/home`)**: A clean, full-width executive dashboard providing direct gateway access to the Academy and Operations Hub, active draft summaries, and account-level status tracking, with no sidebar.
-* **One Sidebar, Five Sections, Everywhere Else**: Every other route shares a single persistent sidebar — **Overview**, **Learn** (Academy), **Execute** (SOPs/Calculators/Checklists/Templates/Copilot/Docpack), **Reference** (Knowledge Hub/KPIs/Decision Guides/Scenarios/Glossary), **Workspace** (Saved/Favorites/Settings/Backup). No hub-switching, no per-section identity changes, no per-module accordion clutter — deep Academy module/function browsing lives on the `#/academy` hub page itself.
+* **Command Center (`#/home`)**: A personal start point that knows whether this is a first visit or a return, with the next useful action, a daily tip and the week's challenge above the two hub gateways, so a new user is told what to do and a returning user is told what is next.
+* **One Sidebar, Six Sections, Every Route**: The sidebar is present on every route including the Command Center, and it opens the section you are in and leaves the rest collapsed. **Start** (Command Center, Help Me With a Problem, Search Everything), **Learn** (the Academy and the paths through it), **Workbench** (the eight places you record and analyse your own work), **Toolkit** (Operations Hub, SOPs, checklists, templates, calculators, decision guides, scenarios, maturity, copilot, doc pack), **Look It Up** (knowledge, KPIs, glossary, lifecycle) and **My Work** (dashboard, saved, favourites, recent, notes), with the system pages - settings, help, backup, changelog - in a permanent labelled footer strip. No hub-switching and no per-module accordion clutter.
 * **Unified Account Profile & Session Management**: Manages user focus tracks, organizational roles, and mastery milestones, with a sidebar footer that shows Academy mastery progress or saved-draft count depending on where you are.
 
 ### 2. Procurement Academy & Competency Curriculum

@@ -18,6 +18,11 @@ PS.backupObject = function () {
     labs: PS.store.get(PS.K.labs, {}),
     assessment: PS.store.get(PS.K.assessment, null),
     community: PS.store.get(PS.K.community, []),
+    /* The workbenches hold the user's own records: suppliers,
+       contracts, catalogue items, budget lines, match workpapers,
+       sourcing events, bids and sign-offs. They are the thing people
+       would be most upset to lose, so they travel in the backup. */
+    workbench: PS.wb ? PS.wb.load() : null,
     counts: PS.registrySummary()
   };
 };
@@ -65,6 +70,7 @@ PS.validateBackup = function (obj) {
       labs: (obj.labs && typeof obj.labs === 'object') ? obj.labs : null,
       assessment: (obj.assessment && typeof obj.assessment === 'object') ? obj.assessment : null,
       community: Array.isArray(obj.community) ? obj.community : null,
+      workbench: (obj.workbench && typeof obj.workbench === 'object') ? obj.workbench : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };

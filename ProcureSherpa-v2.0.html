@@ -6306,7 +6306,19 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Do the Work', ico: '■', items: [
+    sec: 'Workbench', ico: '■', items: [
+      { label: 'RFx & Evaluation', href: '#/rfx' },
+      { label: 'Supplier Register', href: '#/suppliers' },
+      { label: 'Contract Register', href: '#/contracts' },
+      { label: 'Catalogue & Prices', href: '#/catalogue' },
+      { label: 'Receipts & Invoicing', href: '#/receipts' },
+      { label: 'Budget & Spend', href: '#/budget' },
+      { label: 'Approvals & Policy', href: '#/approvals' },
+      { label: 'Analytics', href: '#/analytics' }
+    ]
+  },
+  {
+    sec: 'Toolkit', ico: '◆', items: [
       { label: 'Operations Hub', href: '#/operations' },
       { label: 'SOPs', href: '#/list/sop' },
       { label: 'Checklists', href: '#/list/cl' },
@@ -6316,9 +6328,7 @@ PS.NAV_UNIFIED = [
       { label: 'Scenarios', href: '#/scenarios' },
       { label: 'Maturity Check', href: '#/maturity' },
       { label: 'Copilot', href: '#/copilot' },
-      { label: 'Spend Data Model', href: '#/spend-model' },
-      { label: 'Doc Pack Builder', href: '#/docpack' },
-      { label: 'Savings Dashboard', href: '#/dash-savings' }
+      { label: 'Doc Pack Builder', href: '#/docpack' }
     ]
   },
   {
@@ -8703,6 +8713,11 @@ PS.backupObject = function () {
     labs: PS.store.get(PS.K.labs, {}),
     assessment: PS.store.get(PS.K.assessment, null),
     community: PS.store.get(PS.K.community, []),
+    /* The workbenches hold the user's own records: suppliers,
+       contracts, catalogue items, budget lines, match workpapers,
+       sourcing events, bids and sign-offs. They are the thing people
+       would be most upset to lose, so they travel in the backup. */
+    workbench: PS.wb ? PS.wb.load() : null,
     counts: PS.registrySummary()
   };
 };
@@ -8750,6 +8765,7 @@ PS.validateBackup = function (obj) {
       labs: (obj.labs && typeof obj.labs === 'object') ? obj.labs : null,
       assessment: (obj.assessment && typeof obj.assessment === 'object') ? obj.assessment : null,
       community: Array.isArray(obj.community) ? obj.community : null,
+      workbench: (obj.workbench && typeof obj.workbench === 'object') ? obj.workbench : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };
@@ -8822,6 +8838,27 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.labs) PS.store.set(PS.K.labs, c.labs);
       if (c.assessment) PS.store.set(PS.K.assessment, c.assessment);
       if (c.community) PS.store.set(PS.K.community, c.community);
+      /* The workbench records are replaced wholesale in replace mode
+         and merged collection by collection in merge mode, so a merge
+         does not quietly drop a supplier the user recorded. */
+      if (c.workbench) {
+        if (mode === 'replace') {
+          PS.wb.data = c.workbench;
+        } else {
+          var cur = PS.wb.load();
+          Object.keys(c.workbench).forEach(function (k) {
+            if (Array.isArray(c.workbench[k]) && Array.isArray(cur[k])) {
+              var have = {};
+              cur[k].forEach(function (r) { have[r.id] = 1; });
+              c.workbench[k].forEach(function (r) { if (!have[r.id]) cur[k].push(r); });
+            } else if (cur[k] === undefined) {
+              cur[k] = c.workbench[k];
+            }
+          });
+          PS.wb.data = cur;
+        }
+        PS.wb.save();
+      }
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -8852,6 +8889,22 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.labs) { var curL = PS.store.get(PS.K.labs, {}); PS.store.set(PS.K.labs, Object.assign({}, curL, c.labs)); }
       if (c.assessment) { PS.store.set(PS.K.assessment, c.assessment); }
       if (c.community) { var curC2 = PS.store.get(PS.K.community, []); PS.store.set(PS.K.community, curC2.concat(c.community).slice(-50)); }
+      /* Merged collection by collection, so a merge does not quietly
+         drop a supplier the user recorded. */
+      if (c.workbench) {
+        var curW = PS.wb.load();
+        Object.keys(c.workbench).forEach(function (k) {
+          if (Array.isArray(c.workbench[k]) && Array.isArray(curW[k])) {
+            var haveW = {};
+            curW[k].forEach(function (r) { haveW[r.id] = 1; });
+            c.workbench[k].forEach(function (r) { if (!haveW[r.id]) curW[k].push(r); });
+          } else if (curW[k] === undefined) {
+            curW[k] = c.workbench[k];
+          }
+        });
+        PS.wb.data = curW;
+        PS.wb.save();
+      }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();
@@ -8900,6 +8953,7 @@ PS.acts['clear-data'] = function () {
       '<tr><td>Copilot transcript</td><td>Deleted</td></tr>' +
       '<tr><td>Document packs (' + packs + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Community notes</td><td>Deleted</td></tr>' +
+      '<tr><td>Workbench records (suppliers, contracts, catalogue, budgets, match workpapers, sourcing events)</td><td>Deleted</td></tr>' +
       '<tr><td>Audit log (' + PS.auditList().length + ' events)</td><td>Deleted</td></tr>' +
       '<tr><td>Settings</td><td>Reset to defaults</td></tr>' +
       '</tbody></table></div>' +
@@ -8914,7 +8968,7 @@ PS.acts['clear-data'] = function () {
          packs, so "Purge Session Data" left them behind. */
       [PS.K.saved, PS.K.cl, PS.K.tpl, PS.K.fav, PS.K.recent, PS.K.audit, PS.K.prefs, PS.K.draft,
         PS.K.maturity, PS.K.exams, PS.K.spend, PS.K.spendLegacy, PS.K.copilot, PS.K.docpacks,
-        PS.K.academy, PS.K.labs, PS.K.assessment, PS.K.community, PS.K.schema, PS.K.user]
+        PS.K.academy, PS.K.labs, PS.K.assessment, PS.K.community, PS.K.schema, PS.K.user, PS.wb.KEY]
         .forEach(function (k) { PS.store.remove(k); });
       PS._prefsCache = null;
       PS.audit('data-cleared', 'All local Procure Sherpa data removed by user');
@@ -10204,6 +10258,367 @@ PS.acts['docpack-reopen'] = function (el) {
   var win = window.open('', '_blank');
   if (win) { win.document.write(PS.docpack._lastHtml); win.document.close(); win.focus(); }
 };
+/* ==========================================================
+   Workbench framework (Section 27, 50, 65)
+
+   The library is a reference. The workbenches are where the work
+   happens: they let a procurement professional record their own
+   suppliers, contracts, catalogue, bids, receipts and budgets in the
+   browser, and then analyse what they recorded.
+
+   Everything here is local. There is no server, no account and no
+   sync. The records are the user's own work papers, and they live in
+   the same localStorage as everything else.
+
+   The framework exists so that eight workbenches share one store, one
+   form language, one table renderer, one export path and one sign-off
+   mechanism, rather than eight copies of them.
+   ========================================================== */
+PS.wb = PS.wb || {};
+
+PS.wb.KEY = 'ps_workbench';
+
+/* ---------- the store ---------- */
+PS.wb.load = function () {
+  var d = PS.store.get(PS.wb.KEY, null);
+  if (!d || typeof d !== 'object') d = {};
+  PS.wb.data = d;
+  return d;
+};
+PS.wb.save = function () {
+  if (!PS.wb.data) PS.wb.load();
+  PS.store.set(PS.wb.KEY, PS.wb.data);
+};
+PS.wb.list = function (col) {
+  if (!PS.wb.data) PS.wb.load();
+  var a = PS.wb.data[col];
+  return Array.isArray(a) ? a : [];
+};
+PS.wb.get = function (col, id) {
+  return PS.wb.list(col).filter(function (x) { return x.id === id; })[0] || null;
+};
+PS.wb.upsert = function (col, rec) {
+  if (!PS.wb.data) PS.wb.load();
+  /* The collection has to exist in the store before it is pushed into.
+     PS.wb.list returns a fresh empty array when the collection is not
+     there yet, and pushing into that temporary array silently discarded
+     the record. */
+  if (!Array.isArray(PS.wb.data[col])) PS.wb.data[col] = [];
+  var list = PS.wb.data[col];
+  var i = -1;
+  for (var n = 0; n < list.length; n++) { if (list[n].id === rec.id) { i = n; break; } }
+  rec.modified = new Date().toISOString();
+  if (i >= 0) { list[i] = rec; } else { rec.created = rec.modified; list.push(rec); }
+  PS.wb.save();
+  return rec;
+};
+PS.wb.remove = function (col, id) {
+  if (!PS.wb.data) PS.wb.load();
+  PS.wb.data[col] = PS.wb.list(col).filter(function (x) { return x.id !== id; });
+  PS.wb.save();
+};
+PS.wb.newId = function (col) { return PS.uid(col.slice(0, 3)); };
+PS.wb.count = function (col) { return PS.wb.list(col).length; };
+
+/* ---------- the form language ----------
+   A field is { k, label, type, opts, req, hint, min, max, step, width }.
+   Types: text, textarea, number, money, date, select. */
+PS.wb.fieldHtml = function (f, value) {
+  var id = 'wb_' + f.k;
+  var v = value === undefined || value === null ? '' : value;
+  var common = 'id="' + id + '" data-wbk="' + f.k + '"';
+  var control;
+  if (f.type === 'textarea') {
+    control = '<textarea ' + common + ' rows="' + (f.rows || 3) + '" maxlength="4000">' + PS.esc(v) + '</textarea>';
+  } else if (f.type === 'select') {
+    control = '<select ' + common + '>' + (f.opts || []).map(function (o) {
+      var ov = typeof o === 'string' ? o : o.v;
+      var ol = typeof o === 'string' ? o : o.l;
+      return '<option value="' + PS.esc(ov) + '"' + (String(v) === String(ov) ? ' selected' : '') + '>' + PS.esc(ol) + '</option>';
+    }).join('') + '</select>';
+  } else if (f.type === 'number' || f.type === 'money') {
+    control = '<input type="number" ' + common + ' value="' + PS.esc(v) + '" step="' + (f.step || (f.type === 'money' ? '0.01' : 'any')) + '"' +
+      (f.min !== undefined ? ' min="' + f.min + '"' : '') + (f.max !== undefined ? ' max="' + f.max + '"' : '') + '>';
+  } else if (f.type === 'date') {
+    control = '<input type="date" ' + common + ' value="' + PS.esc(v) + '">';
+  } else {
+    control = '<input type="text" ' + common + ' value="' + PS.esc(v) + '" maxlength="240">';
+  }
+  return '<div class="field" style="margin-bottom:12px">' +
+    '<label for="' + id + '">' + PS.esc(f.label) + (f.req ? ' <span class="req" title="Required">*</span>' : '') + '</label>' +
+    control +
+    (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') +
+    '</div>';
+};
+
+PS.wb.formHtml = function (col, rec) {
+  var spec = PS.WB_FIELDS[col] || [];
+  return '<form class="wb-form" id="wbForm" data-col="' + PS.esc(col) + '" data-id="' + PS.esc(rec && rec.id ? rec.id : '') + '">' +
+    spec.map(function (f) { return PS.wb.fieldHtml(f, rec ? rec[f.k] : ''); }).join('') +
+    '<div class="btn-row no-print" style="margin-top:8px">' +
+    '<button type="button" class="btn btn-primary" data-act="wb-save">' + (rec && rec.id ? 'Save changes' : 'Add record') + '</button>' +
+    (rec && rec.id ? '<button type="button" class="btn btn-ghost" data-act="wb-new" data-col="' + PS.esc(col) + '">Add another</button>' : '') +
+    '</div></form>';
+};
+
+PS.wb.readForm = function (col, root) {
+  var spec = PS.WB_FIELDS[col] || [];
+  var out = {};
+  spec.forEach(function (f) {
+    var el = root.querySelector('[data-wbk="' + f.k + '"]');
+    if (!el) return;
+    if (f.type === 'number' || f.type === 'money') {
+      var n = PS.num(el.value);
+      out[f.k] = isFinite(n) ? n : null;
+    } else {
+      out[f.k] = PS.clean(el.value, f.type === 'textarea' ? 4000 : 240);
+    }
+  });
+  return out;
+};
+
+/* ---------- table ---------- */
+PS.wb.tableHtml = function (col, cols, recs, emptyMsg) {
+  if (!recs.length) return PS.empty(emptyMsg || 'Nothing recorded yet.');
+  var head = '<tr>' + cols.map(function (c) { return '<th' + (c.num ? ' class="num"' : '') + '>' + PS.esc(c.label) + '</th>'; }).join('') + '<th></th></tr>';
+  var body = recs.map(function (r) {
+    var cells = cols.map(function (c) {
+      var v = c.render ? c.render(r) : r[c.k];
+      if (v === undefined || v === null) v = '';
+      return '<td' + (c.num ? ' class="num"' : '') + '>' + (c.html ? v : PS.esc(String(v))) + '</td>';
+    }).join('');
+    return '<tr>' + cells +
+      '<td class="num"><button type="button" class="btn btn-sm btn-ghost" data-act="wb-edit" data-col="' + PS.esc(col) + '" data-id="' + PS.esc(r.id) + '">Edit</button>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-act="wb-delete" data-col="' + PS.esc(col) + '" data-id="' + PS.esc(r.id) + '">Delete</button></td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+};
+
+/* ---------- export ---------- */
+PS.wb.csv = function (filename, headers, rows) {
+  var esc = function (v) {
+    var s = v === undefined || v === null ? '' : String(v);
+    /* A leading =, +, - or @ is a formula injection in a spreadsheet. */
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    if (s.indexOf('"') >= 0) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+  var out = [headers.map(esc).join(',')];
+  rows.forEach(function (r) { out.push(r.map(esc).join(',')); });
+  PS.download(filename, out.join('\r\n'), 'text/csv');
+  PS.audit('workbench-exported', filename);
+};
+
+/* ---------- sign-off records ----------
+   A local approval record: who approved, when, against which value, and
+   on what basis. It is not a workflow engine and it does not enforce
+   anything; it is the evidence that a decision was taken by a person
+   with a named authority. */
+PS.wb.signoff = function (col, id, approver, note) {
+  if (!PS.wb.data) PS.wb.load();
+  if (!PS.wb.data.signoffs) PS.wb.data.signoffs = [];
+  var rec = {
+    id: PS.uid('so'), col: col, ref: id,
+    approver: PS.clean(approver, 120) || 'Unnamed approver',
+    note: PS.clean(note, 1000),
+    at: new Date().toISOString()
+  };
+  PS.wb.data.signoffs.push(rec);
+  PS.wb.save();
+  PS.audit('workbench-signoff', col + '/' + id + ' by ' + rec.approver);
+  return rec;
+};
+PS.wb.signoffsFor = function (col, id) {
+  return PS.wb.list('signoffs').filter(function (s) { return s.col === col && s.ref === id; });
+};
+PS.wb.signedOff = function (col, id) {
+  return PS.wb.signoffsFor(col, id).length > 0;
+};
+
+/* ---------- the shared actions ---------- */
+PS.acts['wb-save'] = function (el) {
+  var form = el.closest ? el.closest('#wbForm') : null;
+  if (!form) return;
+  var col = form.dataset.col;
+  var spec = PS.WB_FIELDS[col] || [];
+  var vals = PS.wb.readForm(col, form);
+  /* required fields are enforced here rather than by the browser, so the
+     same rule applies to every workbench and to a record restored from
+     a backup */
+  var missing = spec.filter(function (f) { return f.req && !String(vals[f.k] || '').trim(); });
+  if (missing.length) {
+    PS.toast('Fill in: ' + missing.map(function (f) { return f.label; }).join(', '), 'danger');
+    return;
+  }
+  var rec = PS.wb.get(col, form.dataset.id) || { id: PS.wb.newId(col) };
+  Object.keys(vals).forEach(function (k) { rec[k] = vals[k]; });
+  PS.wb.upsert(col, rec);
+  PS.toast('Saved.', 'ok');
+  PS.renderRoute();
+};
+PS.acts['wb-new'] = function (el) {
+  PS.wb.editing = { col: el.dataset.col, id: null };
+  PS.renderRoute();
+};
+PS.acts['wb-edit'] = function (el) {
+  PS.wb.editing = { col: el.dataset.col, id: el.dataset.id };
+  PS.renderRoute();
+  var f = PS.$('#wbForm');
+  if (f && f.scrollIntoView) { try { f.scrollIntoView({ block: 'center' }); } catch (e) { } }
+};
+PS.acts['wb-delete'] = function (el) {
+  var col = el.dataset.col, id = el.dataset.id;
+  var rec = PS.wb.get(col, id);
+  if (!rec) return;
+  var label = rec.name || rec.title || rec.supplier || rec.item || rec.ref || 'this record';
+  PS.confirm({
+    title: 'Delete this record?',
+    body: '<p><strong>' + PS.esc(label) + '</strong> will be removed from this browser. This cannot be undone. Export a backup first if you may need it.</p>',
+    okLabel: 'Delete', danger: true,
+    onOk: function () {
+      PS.wb.remove(col, id);
+      PS.toast('Deleted.', 'ok');
+      PS.renderRoute();
+    }
+  });
+};
+PS.acts['wb-cancel-edit'] = function () {
+  PS.wb.editing = null;
+  PS.renderRoute();
+};
+PS.acts['wb-signoff'] = function (el) {
+  var col = el.dataset.col, id = el.dataset.id;
+  PS.promptText({
+    title: 'Record a sign-off',
+    label: 'Approved by', value: '', okLabel: 'Record',
+    hint: 'This records who took the decision, when, and on what basis. It does not notify anyone and it does not enforce anything: it is the evidence you can show later.',
+    onOk: function (v) {
+      PS.wb.signoff(col, id, v, el.dataset.note || '');
+      PS.toast('Sign-off recorded.', 'ok');
+      PS.renderRoute();
+    }
+  });
+};
+
+/* ---------- shared page chrome ---------- */
+PS.wb.header = function (title, sub, extraBtns) {
+  return PS.reportHead(title, sub) +
+    '<div class="card"><div class="card-head"><h1>' + PS.esc(title) + '</h1><div class="spacer"></div>' +
+    (extraBtns || []).join('') + '</div>' +
+    '<p class="card-sub">Everything on this page is stored in this browser only. Nothing is uploaded, and there is no account. Export a backup from <a href="#/backup">Backup &amp; Restore</a> before you clear your browser data.</p></div>';
+};
+PS.wb.editorCard = function (col, title) {
+  var ed = PS.wb.editing || {};
+  var rec = (ed.col === col && ed.id) ? PS.wb.get(col, ed.id) : null;
+  var head = '<div class="card-head"><h2>' + PS.esc(title) + '</h2><div class="spacer"></div>' +
+    (rec ? '<button type="button" class="btn btn-sm btn-ghost" data-act="wb-cancel-edit">Cancel</button>' : '') + '</div>';
+  return '<div class="card">' + head + PS.wb.formHtml(col, rec) + '</div>';
+};
+PS.wb.emptyMsg = function (col) {
+  return 'No records yet. Use the form above to add the first one.';
+};
+
+/* ==========================================================
+   Workbench field specifications
+
+   One place where the shape of each record is declared, so that the
+   form, the table, the validation and the export all read from the
+   same definition and cannot drift apart.
+   ========================================================== */
+PS.WB_FIELDS = {
+  /* ---------- Supplier register ---------- */
+  suppliers: [
+    { k: 'name', label: 'Supplier name', type: 'text', req: true },
+    { k: 'legal', label: 'Legal entity', type: 'text', hint: 'The registered company, if it differs from the trading name.' },
+    { k: 'country', label: 'Country of supply', type: 'text' },
+    { k: 'category', label: 'Category', type: 'text' },
+    { k: 'spend', label: 'Annual spend', type: 'money', min: 0 },
+    { k: 'score', label: 'Qualification score (0-100)', type: 'number', min: 0, max: 100 },
+    { k: 'risk', label: 'Risk tier', type: 'select', opts: ['Low', 'Medium', 'High', 'Critical'] },
+    { k: 'status', label: 'Status', type: 'select', opts: ['Prospect', 'Approved', 'Suspended', 'Exited'] },
+    { k: 'contact', label: 'Primary contact', type: 'text' },
+    { k: 'email', label: 'Contact email', type: 'text' },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ],
+
+  /* ---------- Contract register ---------- */
+  contracts: [
+    { k: 'title', label: 'Contract', type: 'text', req: true },
+    { k: 'supplier', label: 'Supplier', type: 'text', req: true },
+    { k: 'category', label: 'Category', type: 'text' },
+    { k: 'value', label: 'Total contract value', type: 'money', min: 0 },
+    { k: 'start', label: 'Start date', type: 'date' },
+    { k: 'end', label: 'Expiry date', type: 'date' },
+    { k: 'notice', label: 'Notice deadline', type: 'date', hint: 'The date by which you must say nothing if you want to stop renewal.' },
+    { k: 'owner', label: 'Contract owner', type: 'text' },
+    { k: 'auto', label: 'Auto-renews', type: 'select', opts: ['No', 'Yes'] },
+    { k: 'obligations', label: 'Key obligations', type: 'textarea', hint: 'One per line: what you owe them, and what they owe you.' },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ],
+
+  /* ---------- Catalogue and price book ---------- */
+  catalogue: [
+    { k: 'item', label: 'Item', type: 'text', req: true },
+    { k: 'category', label: 'Category', type: 'text' },
+    { k: 'spec', label: 'Specification', type: 'text', hint: 'The specification the price is for. A price without a specification is not comparable.' },
+    { k: 'uom', label: 'Unit of measure', type: 'text', hint: 'Each, pack, box, kg, litre, hour.' },
+    { k: 'pack', label: 'Pack size', type: 'text', hint: 'How many units are in the pack you actually buy.' },
+    { k: 'price', label: 'Unit price', type: 'money', min: 0 },
+    { k: 'benchmark', label: 'Benchmark price', type: 'money', min: 0, hint: 'A market reference for the same specification, with its source and date.' },
+    { k: 'supplier', label: 'Preferred supplier', type: 'text' },
+    { k: 'contract', label: 'Contract reference', type: 'text' },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ],
+
+  /* ---------- Budget and spend ---------- */
+  budget: [
+    { k: 'line', label: 'Budget line', type: 'text', req: true },
+    { k: 'category', label: 'Category', type: 'text' },
+    { k: 'owner', label: 'Budget holder', type: 'text' },
+    { k: 'period', label: 'Period', type: 'text', hint: 'For example FY26, or Q1 2026.' },
+    { k: 'budget', label: 'Budget', type: 'money', min: 0 },
+    { k: 'committed', label: 'Committed', type: 'money', min: 0, hint: 'Signed but not yet spent.' },
+    { k: 'actual', label: 'Actual', type: 'money', min: 0, hint: 'Invoiced and paid.' },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ],
+
+  /* ---------- Receipts and invoicing ---------- */
+  receipts: [
+    { k: 'ref', label: 'Purchase order reference', type: 'text', req: true },
+    { k: 'supplier', label: 'Supplier', type: 'text', req: true },
+    { k: 'invoiceRef', label: 'Invoice reference', type: 'text' },
+    { k: 'poUnitPrice', label: 'PO unit price', type: 'money', min: 0 },
+    { k: 'poQty', label: 'PO quantity', type: 'number', min: 0 },
+    { k: 'invUnitPrice', label: 'Invoiced unit price', type: 'money', min: 0 },
+    { k: 'invQty', label: 'Invoiced quantity', type: 'number', min: 0 },
+    { k: 'receivedQty', label: 'Quantity actually received', type: 'number', min: 0 },
+    { k: 'freight', label: 'Freight or other charges', type: 'money', min: 0 },
+    { k: 'tax', label: 'Tax', type: 'money', min: 0 },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ],
+
+  /* ---------- Approval and policy configuration ---------- */
+  approvals: [
+    { k: 'name', label: 'Rule', type: 'text', req: true },
+    { k: 'kind', label: 'Type', type: 'select', opts: ['Approval threshold', 'Approval chain', 'Policy rule'] },
+    { k: 'role', label: 'Role or approver', type: 'text' },
+    { k: 'limit', label: 'Value limit', type: 'money', min: 0, hint: 'Zero means no limit.' },
+    { k: 'scope', label: 'Applies to', type: 'text', hint: 'Category, entity, spend type, or a condition.' },
+    { k: 'notes', label: 'Notes', type: 'textarea' }
+  ]
+};
+
+/* The RFx event is not a flat record: it has an event, a set of
+   evaluation criteria and a set of bids, so it gets its own shape
+   rather than being forced into the form language. */
+PS.WB_RFX_CRITERIA = [
+  { key: 'price', label: 'Price / commercial', weight: 35 },
+  { key: 'quality', label: 'Quality and technical', weight: 25 },
+  { key: 'delivery', label: 'Delivery and lead time', weight: 20 },
+  { key: 'risk', label: 'Risk and resilience', weight: 10 },
+  { key: 'esg', label: 'ESG and compliance', weight: 10 }
+];
+
 /* ==========================================================
    Section K: fallback page, migration, boot (Section 45, 55, 57)
    ========================================================== */
@@ -15733,6 +16148,950 @@ PS.route('next-up', function () {
     '<a class="btn btn-sm" href="#/learning-paths">Learning paths</a></div>' +
     '</div>';
 
+  return html;
+});
+
+/* ==========================================================
+   Workbench pages: the registry workbenches
+
+   Supplier register, contract register, catalogue and price book, and
+   the approval and policy configuration. All four are the same shape:
+   a form, a table, an export and the library tools that belong with
+   them. They share the framework in 06f1_workbench.js.
+   ========================================================== */
+
+/* Each workbench names the library material that goes with it, so the
+   record and the procedure live next to each other. */
+PS.WB_LINKS = {
+  suppliers: [
+    { type: 'sop', id: 'sop-supplier-evaluation' },
+    { type: 'cl', id: 'cl-supplier-due-diligence' },
+    { type: 'tpl', id: 'tpl-supplier-due-diligence' },
+    { type: 'tpl', id: 'tpl-supplier-onboarding' },
+    { type: 'calc', id: 'calc-supplier-scorecard' },
+    { type: 'calc', id: 'calc-supplier-concentration' },
+    { type: 'dec', id: 'supplier-financial-risk' }
+  ],
+  contracts: [
+    { type: 'sop', id: 'sop-contract-review' },
+    { type: 'sop', id: 'sop-contract-renewal' },
+    { type: 'cl', id: 'cl-contract-review' },
+    { type: 'cl', id: 'cl-contract-renewal' },
+    { type: 'tpl', id: 'tpl-contract-review-checklist' },
+    { type: 'tpl', id: 'tpl-contract-change-request' },
+    { type: 'dec', id: 'renew-vs-resource' }
+  ],
+  catalogue: [
+    { type: 'sop', id: 'sop-rfq' },
+    { type: 'cl', id: 'cl-quote-comparison' },
+    { type: 'tpl', id: 'tpl-bid-comparison' },
+    { type: 'calc', id: 'calc-compare-quotes' },
+    { type: 'calc', id: 'calc-moq' },
+    { type: 'kpi', id: 'kpi-sum' }
+  ],
+  approvals: [
+    { type: 'sop', id: 'sop-procurement-intake' },
+    { type: 'cl', id: 'cl-exception-approval' },
+    { type: 'cl', id: 'cl-single-source-justification' },
+    { type: 'tpl', id: 'tpl-exception-request' },
+    { type: 'calc', id: 'calc-po-value-check' },
+    { type: 'kb', id: 'delegation-of-authority' }
+  ]
+};
+
+PS.wb.relatedStrip = function (col) {
+  var links = (PS.WB_LINKS[col] || []).map(function (l) {
+    var o = l.type === 'kb' ? PS.byId('kb', l.id) : PS.byId(l.type, l.id);
+    if (!o) return '';
+    var title = o.title || o.term || l.id;
+    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + title) + '</a>';
+  }).filter(Boolean).join('');
+  if (!links) return '';
+  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
+    '<p class="card-sub">Recording something here does not replace the controlled procedure. Open the matching SOP, checklist, template and calculator to do the work properly.</p>' +
+    '<div class="chips">' + links + '</div></div>';
+};
+
+PS.wb.exportBtn = function (col, filename, headers) {
+  return '<button type="button" class="btn btn-sm btn-ghost" data-act="wb-export" data-col="' + PS.esc(col) + '">Export CSV</button>';
+};
+
+PS.acts['wb-export'] = function (el) {
+  var col = el.dataset.col;
+  var spec = PS.WB_FIELDS[col] || [];
+  var recs = PS.wb.list(col);
+  var headers = spec.map(function (f) { return f.label; });
+  var rows = recs.map(function (r) { return spec.map(function (f) { return r[f.k]; }); });
+  PS.wb.csv('procuresherpa-' + col + '-' + new Date().toISOString().slice(0, 10) + '.csv', headers, rows);
+};
+
+/* ---------- Supplier register ---------- */
+PS.route('suppliers', function () {
+  PS.pageTitle = 'Supplier Register';
+  var recs = PS.wb.list('suppliers');
+  var totalSpend = recs.reduce(function (a, r) { return a + (PS.num(r.spend) || 0); }, 0);
+  var byRisk = { Low: 0, Medium: 0, High: 0, Critical: 0 };
+  recs.forEach(function (r) { if (byRisk[r.risk] !== undefined) byRisk[r.risk]++; });
+  var approved = recs.filter(function (r) { return r.status === 'Approved'; }).length;
+
+  var html = PS.wb.header('Supplier register', recs.length + ' suppliers on record', [
+    PS.wb.exportBtn('suppliers', 'suppliers')
+  ]);
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Suppliers</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(totalSpend) + '</span><span class="s-lab">Recorded spend</span></div>' +
+    '<div class="stat"><span class="s-val">' + approved + '</span><span class="s-lab">Approved</span></div>' +
+    '<div class="stat"><span class="s-val">' + (byRisk.High + byRisk.Critical) + '</span><span class="s-lab">High or critical risk</span></div>' +
+    '</div>';
+
+  html += PS.wb.editorCard('suppliers', recs.length ? 'Add or edit a supplier' : 'Add your first supplier');
+
+  html += '<div class="card"><div class="card-head"><h2>Suppliers</h2><div class="spacer"></div>' +
+    '<span class="badge">' + recs.length + ' records</span></div>' +
+    PS.wb.tableHtml('suppliers', [
+      { k: 'name', label: 'Supplier' },
+      { k: 'category', label: 'Category' },
+      { k: 'country', label: 'Country' },
+      { k: 'spend', label: 'Spend', num: true, render: function (r) { return PS.moneyR(r.spend); } },
+      { k: 'score', label: 'Score', num: true },
+      { k: 'risk', label: 'Risk' },
+      { k: 'status', label: 'Status' }
+    ], recs, 'No suppliers recorded yet. Add the first one above, or work through the supplier due diligence record and bring the result across.') +
+    '</div>';
+
+  html += PS.wb.relatedStrip('suppliers');
+  html += PS.disclaimer('data');
+  return html;
+});
+
+/* ---------- Contract register ---------- */
+PS.route('contracts', function () {
+  PS.pageTitle = 'Contract Register';
+  var recs = PS.wb.list('contracts');
+  var today = new Date();
+  var total = recs.reduce(function (a, r) { return a + (PS.num(r.value) || 0); }, 0);
+  var expiring = [], autoRenew = [];
+  recs.forEach(function (r) {
+    if (r.end && r.notice) {
+      var n = new Date(r.notice);
+      if (n >= today) {
+        var days = Math.round((n - today) / 86400000);
+        if (days <= 180) expiring.push({ r: r, days: days });
+      }
+    }
+    if (r.auto === 'Yes') autoRenew.push(r);
+  });
+  expiring.sort(function (a, b) { return a.days - b.days; });
+
+  var html = PS.wb.header('Contract register', recs.length + ' contracts on record', [
+    PS.wb.exportBtn('contracts', 'contracts')
+  ]);
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Contracts</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Recorded value</span></div>' +
+    '<div class="stat"><span class="s-val">' + expiring.length + '</span><span class="s-lab">Notice due within 180 days</span></div>' +
+    '<div class="stat"><span class="s-val">' + autoRenew.length + '</span><span class="s-lab">Auto-renewing</span></div>' +
+    '</div>';
+
+  if (expiring.length) {
+    html += '<div class="card"><div class="card-head"><h2>Notice deadlines approaching</h2></div>' +
+      '<p class="card-sub">These are the dates on which you have to say something if you want to stop the renewal. A missed notice date is the most common way a good contract becomes a bad one.</p>' +
+      PS.wb.tableHtml('contracts', [
+        { k: 'title', label: 'Contract' },
+        { k: 'supplier', label: 'Supplier' },
+        { k: 'end', label: 'Expires' },
+        { k: 'notice', label: 'Notice by' },
+        { k: 'auto', label: 'Auto-renews' }
+      ], expiring.map(function (x) { return x.r; }), '') +
+      '</div>';
+  }
+
+  html += PS.wb.editorCard('contracts', 'Add or edit a contract');
+  html += '<div class="card"><div class="card-head"><h2>Contracts</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+    PS.wb.tableHtml('contracts', [
+      { k: 'title', label: 'Contract' },
+      { k: 'supplier', label: 'Supplier' },
+      { k: 'category', label: 'Category' },
+      { k: 'value', label: 'Value', num: true, render: function (r) { return PS.moneyR(r.value); } },
+      { k: 'end', label: 'Expires' },
+      { k: 'notice', label: 'Notice by' },
+      { k: 'owner', label: 'Owner' }
+    ], recs, 'No contracts recorded yet. Add one above, then work through the contract review checklist.') +
+    '</div>';
+
+  html += PS.wb.relatedStrip('contracts');
+  html += PS.disclaimer('policy');
+  return html;
+});
+
+/* ---------- Catalogue and price book ---------- */
+PS.route('catalogue', function () {
+  PS.pageTitle = 'Catalogue & Price Book';
+  var recs = PS.wb.list('catalogue');
+  var over = 0, total = 0;
+  recs.forEach(function (r) {
+    var p = PS.num(r.price) || 0, b = PS.num(r.benchmark) || 0;
+    total += p;
+    if (b > 0 && p > b) over++;
+  });
+
+  var html = PS.wb.header('Catalogue and price book', recs.length + ' items on the book', [
+    PS.wb.exportBtn('catalogue', 'catalogue')
+  ]);
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Items</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Unit price total</span></div>' +
+    '<div class="stat"><span class="s-val">' + over + '</span><span class="s-lab">Above benchmark</span></div>' +
+    '<div class="stat"><span class="s-val">' + recs.filter(function (r) { return !r.spec; }).length + '</span><span class="s-lab">No specification recorded</span></div>' +
+    '</div>';
+
+  html += PS.wb.editorCard('catalogue', 'Add or edit an item');
+  html += '<div class="card"><div class="card-head"><h2>Items</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+    PS.wb.tableHtml('catalogue', [
+      { k: 'item', label: 'Item' },
+      { k: 'category', label: 'Category' },
+      { k: 'uom', label: 'UoM' },
+      { k: 'price', label: 'Unit price', num: true, render: function (r) { return PS.moneyR(r.price); } },
+      { k: 'benchmark', label: 'Benchmark', num: true, render: function (r) { return PS.moneyR(r.benchmark); } },
+      { k: 'supplier', label: 'Supplier' },
+      { k: 'spec', label: 'Specification' }
+    ], recs, 'No items recorded yet. Add one above.') +
+    '</div>';
+
+  html += PS.wb.relatedStrip('catalogue');
+  html += PS.disclaimer('data');
+  return html;
+});
+
+/* ---------- Approvals and policy ---------- */
+PS.route('approvals', function () {
+  PS.pageTitle = 'Approvals & Policy';
+  var recs = PS.wb.list('approvals');
+  var thresholds = recs.filter(function (r) { return r.kind === 'Approval threshold'; })
+    .sort(function (a, b) { return (PS.num(a.limit) || 0) - (PS.num(b.limit) || 0); });
+
+  var html = PS.wb.header('Approvals and policy', recs.length + ' rules configured', [
+    PS.wb.exportBtn('approvals', 'approvals')
+  ]);
+
+  html += '<div class="card"><div class="card-head"><h2>How this works</h2></div>' +
+    '<p class="card-sub">This is your own delegation of authority and your own policy rules, recorded so that the decisions you make can be shown to be consistent. It is not a workflow engine: nothing here routes an approval, notifies anyone, or blocks a purchase. It is the reference a buyer, a budget holder and an auditor will all read, and it is only worth anything if it is written down before the argument rather than after it.</p>' +
+    '<p class="note">Set the default thresholds in <a href="#/settings">Settings</a> as well, because the PO Value Check calculator reads them from there.</p></div>';
+
+  html += PS.wb.editorCard('approvals', 'Add or edit a rule');
+  html += '<div class="card"><div class="card-head"><h2>Rules</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+    PS.wb.tableHtml('approvals', [
+      { k: 'name', label: 'Rule' },
+      { k: 'kind', label: 'Type' },
+      { k: 'role', label: 'Role or approver' },
+      { k: 'limit', label: 'Value limit', num: true, render: function (r) { return r.limit ? PS.moneyR(r.limit) : 'no limit'; } },
+      { k: 'scope', label: 'Applies to' }
+    ], recs, 'No rules recorded yet. Add the first threshold above.') +
+    '</div>';
+
+  if (thresholds.length) {
+    html += '<div class="card"><div class="card-head"><h2>Approval ladder</h2><div class="spacer"></div>' +
+      '<span class="badge">lowest limit first</span></div>' +
+      PS.renderSimpleTable({
+        headers: ['Value up to', 'Approved by', 'Applies to'],
+        rows: thresholds.map(function (r) {
+          return [r.limit ? PS.moneyR(r.limit) : 'No limit', r.role || 'Not stated', r.scope || 'All spend'];
+        })
+      }) + '</div>';
+  }
+
+  html += PS.wb.relatedStrip('approvals');
+  html += PS.disclaimer('policy');
+  return html;
+});
+
+/* ==========================================================
+   Workbench: RFx and Evaluation
+
+   The one workpaper that joins the pieces the library already has:
+   the RFQ and RFP templates, the bid comparison matrix, the weighted
+   scoring model, the award recommendation record, the quote comparison
+   calculator and the supplier scorecard calculator.
+
+   It is a workpaper, not a system of record. The bids are the ones you
+   received; you type them in. The evaluation is the one you have to
+   be able to defend, so the criteria and the weights are published in
+   the event before the bids arrive, and the award recommendation says
+   what the numbers say and what they do not.
+   ========================================================== */
+PS.rfx = PS.rfx || {};
+
+/* ---------- landed cost and scoring ---------- */
+PS.rfx.landed = function (bid) {
+  var goods = (PS.num(bid.price) || 0) * (PS.num(bid.qty) || 0);
+  var freight = PS.num(bid.freight) || 0;
+  var duty = goods * (PS.num(bid.dutyPct) || 0) / 100;
+  return { goods: goods, freight: freight, duty: duty, total: goods + freight + duty };
+};
+PS.rfx.weighted = function (event, bid) {
+  var crit = (event && event.criteria && event.criteria.length) ? event.criteria : PS.WB_RFX_CRITERIA;
+  var totalWeight = crit.reduce(function (a, c) { return a + (PS.num(c.weight) || 0); }, 0);
+  var weighted = 0;
+  crit.forEach(function (c) {
+    var s = PS.num(bid.scores && bid.scores[c.key]) || 0;
+    weighted += s * (PS.num(c.weight) || 0);
+  });
+  /* Divide by the total weight so a set that does not sum to 100 still
+     produces a comparable score out of 10. */
+  return totalWeight > 0 ? weighted / totalWeight : 0;
+};
+PS.rfx.rank = function (event) {
+  var bids = (event && event.bids) || [];
+  return bids.map(function (b) {
+    var l = PS.rfx.landed(b);
+    return { bid: b, landed: l, score: PS.rfx.weighted(event, b) };
+  }).sort(function (a, b) { return b.score - a.score; });
+};
+/* The commercial spread between the best landed cost and the worst. It
+   is the number that tells you how much the evaluation is actually
+   choosing between. */
+PS.rfx.spread = function (ranked) {
+  if (ranked.length < 2) return 0;
+  var totals = ranked.map(function (r) { return r.landed.total; });
+  return Math.max.apply(null, totals) - Math.min.apply(null, totals);
+};
+
+/* ---------- event editing ---------- */
+PS.rfx.events = function () { return PS.wb.list('rfx'); };
+PS.rfx.current = function () {
+  var evs = PS.rfx.events();
+  if (!evs.length) return null;
+  var id = PS.rfx.currentId;
+  return PS.rfx.get(id) || evs[0];
+};
+PS.rfx.get = function (id) { return PS.wb.get('rfx', id); };
+
+PS.acts['rfx-new'] = function () {
+  PS.rfx.currentId = null;
+  PS.rfx.editing = 'event';
+  PS.renderRoute();
+};
+PS.acts['rfx-save-event'] = function (el) {
+  var form = el.closest('#rfxEventForm');
+  if (!form) return;
+  var title = PS.clean(form.querySelector('[data-rf="title"]').value, 140);
+  if (!title) { PS.toast('Give the event a name.', 'danger'); return; }
+  var rec = PS.rfx.get(form.dataset.id) || { id: PS.wb.newId('rfx'), bids: [], criteria: [] };
+  rec.title = title;
+  rec.method = form.querySelector('[data-rf="method"]').value;
+  rec.category = PS.clean(form.querySelector('[data-rf="category"]').value, 80);
+  rec.deadline = form.querySelector('[data-rf="deadline"]').value;
+  rec.budget = PS.num(form.querySelector('[data-rf="budget"]').value);
+  rec.notes = PS.clean(form.querySelector('[data-rf="notes"]').value, 4000);
+  if (!rec.criteria || !rec.criteria.length) {
+    rec.criteria = PS.WB_RFX_CRITERIA.map(function (c) { return { key: c.key, label: c.label, weight: c.weight }; });
+  }
+  rec.bids = rec.bids || [];
+  PS.wb.upsert('rfx', rec);
+  PS.rfx.currentId = rec.id;
+  PS.toast('Event saved.', 'ok');
+  PS.renderRoute();
+};
+PS.acts['rfx-set-weights'] = function (el) {
+  var ev = PS.rfx.current();
+  if (!ev) return;
+  var form = el.closest('#rfxWeightForm');
+  if (!form) return;
+  (ev.criteria || []).forEach(function (c) {
+    var i = form.querySelector('[data-rw="' + c.key + '"]');
+    if (i) c.weight = PS.num(i.value);
+  });
+  var total = (ev.criteria || []).reduce(function (a, c) { return a + (PS.num(c.weight) || 0); }, 0);
+  PS.wb.upsert('rfx', ev);
+  PS.toast('Weights updated. Total ' + total + '.', total === 100 ? 'ok' : 'danger');
+  PS.renderRoute();
+};
+PS.acts['rfx-delete-event'] = function (el) {
+  var ev = PS.rfx.get(el.dataset.id);
+  if (!ev) return;
+  PS.confirm({
+    title: 'Delete this event?',
+    body: '<p><strong>' + PS.esc(ev.title) + '</strong> and its ' + ((ev.bids || []).length) + ' recorded bids will be removed from this browser.</p>',
+    okLabel: 'Delete', danger: true,
+    onOk: function () { PS.wb.remove('rfx', ev.id); PS.rfx.currentId = null; PS.toast('Deleted.', 'ok'); PS.renderRoute(); }
+  });
+};
+PS.acts['rfx-save-bid'] = function (el) {
+  var ev = PS.rfx.current();
+  if (!ev) { PS.toast('Create the event first.', 'danger'); return; }
+  var form = el.closest('#rfxBidForm');
+  if (!form) return;
+  var supplier = PS.clean(form.querySelector('[data-rb="supplier"]').value, 120);
+  if (!supplier) { PS.toast('Name the supplier.', 'danger'); return; }
+  var rec = PS.wb.get('rfxBids', form.dataset.id);
+  if (!rec) {
+    rec = { id: PS.uid('bd'), eventId: ev.id, scores: {} };
+  }
+  rec.eventId = ev.id;
+  rec.supplier = supplier;
+  rec.qty = PS.num(form.querySelector('[data-rb="qty"]').value);
+  rec.price = PS.num(form.querySelector('[data-rb="price"]').value);
+  rec.freight = PS.num(form.querySelector('[data-rb="freight"]').value);
+  rec.dutyPct = PS.num(form.querySelector('[data-rb="dutyPct"]').value);
+  rec.lead = PS.num(form.querySelector('[data-rb="lead"]').value);
+  rec.notes = PS.clean(form.querySelector('[data-rb="notes"]').value, 1000);
+  (ev.criteria || []).forEach(function (c) {
+    var i = form.querySelector('[data-rs="' + c.key + '"]');
+    rec.scores = rec.scores || {};
+    rec.scores[c.key] = i ? PS.num(i.value) : 0;
+  });
+  var list = PS.wb.list('rfxBids').filter(function (b) { return b.eventId !== ev.id; });
+  list.push(rec);
+  PS.wb.data.rfxBids = list;
+  PS.wb.save();
+  PS.toast('Bid saved.', 'ok');
+  PS.renderRoute();
+};
+PS.acts['rfx-delete-bid'] = function (el) {
+  var ev = PS.rfx.current();
+  if (!ev) return;
+  var id = el.dataset.id;
+  PS.wb.data.rfxBids = PS.wb.list('rfxBids').filter(function (b) { return b.id !== id; });
+  PS.wb.save();
+  PS.toast('Bid removed.', 'ok');
+  PS.renderRoute();
+};
+PS.acts['rfx-export'] = function () {
+  var ev = PS.rfx.current();
+  if (!ev) return;
+  var crit = ev.criteria || [];
+  var headers = ['Supplier', 'Quantity', 'Unit price', 'Freight', 'Duty %', 'Landed total', 'Lead time (days)']
+    .concat(crit.map(function (c) { return c.label + ' (' + c.weight + '%)'; }))
+    .concat(['Weighted score /10']);
+  var rows = PS.rfx.rank(ev).map(function (r) {
+    return [r.bid.supplier, r.bid.qty, r.bid.price, r.bid.freight, r.bid.dutyPct, r.landed.total, r.bid.lead]
+      .concat(crit.map(function (c) { return PS.num(r.bid.scores && r.bid.scores[c.key]) || 0; }))
+      .concat([Math.round(r.score * 100) / 100]);
+  });
+  PS.wb.csv('rfx-' + ev.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.csv', headers, rows);
+};
+
+/* ---------- the page ---------- */
+PS.route('rfx', function () {
+  PS.pageTitle = 'RFx & Evaluation';
+  var evs = PS.rfx.events();
+  var ev = PS.rfx.current();
+  var crit = (ev && ev.criteria && ev.criteria.length) ? ev.criteria : PS.WB_RFX_CRITERIA;
+
+  var html = PS.wb.header('RFx and evaluation', ev ? ev.title : 'No event yet', [
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-new">New event</button>',
+    (ev ? '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-export">Export evaluation</button>' : '')
+  ]);
+
+  if (evs.length > 1) {
+    html += '<div class="card no-print"><div class="card-head"><h2>Events</h2></div><div class="chips">' +
+      evs.map(function (e) {
+        return '<button type="button" class="chip' + (ev && e.id === ev.id ? ' is-on' : '') + '" data-act="rfx-pick" data-id="' + PS.esc(e.id) + '">' + PS.esc(e.title) + '</button>';
+      }).join('') + '</div></div>';
+  }
+
+  if (!ev) {
+    html += '<div class="card"><div class="card-head"><h2>Start an event</h2></div>' +
+      '<p class="card-sub">Create the event, fix the evaluation criteria and their weights, then add the bids you received. The award recommendation at the end is the record you will be asked to defend.</p>' +
+      PS.rfx.eventForm(null) + '</div>';
+    html += PS.rfx.libraryStrip();
+    html += PS.disclaimer('policy');
+    return html;
+  }
+
+  /* --- event --- */
+  html += '<div class="card"><div class="card-head"><h2>The event</h2><div class="spacer"></div>' +
+    '<span class="badge">' + PS.esc(ev.method || 'RFQ') + '</span>' +
+    (ev.deadline ? '<span class="badge">Closes ' + PS.esc(ev.deadline) + '</span>' : '') +
+    '<button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-event" data-id="' + PS.esc(ev.id) + '">Delete event</button></div>' +
+    PS.rfx.eventForm(ev) + '</div>';
+
+  /* --- criteria and weights --- */
+  var weightTotal = crit.reduce(function (a, c) { return a + (PS.num(c.weight) || 0); }, 0);
+  html += '<div class="card"><div class="card-head"><h2>Evaluation criteria and weights</h2><div class="spacer"></div>' +
+    '<span class="badge' + (weightTotal === 100 ? '' : ' badge-warn') + '">total ' + weightTotal + '%</span></div>' +
+    '<p class="card-sub">These are the criteria you told the bidders you would use. Set them before the bids come in, and do not change them afterwards: an evaluation weighted after the bids are read is not a process, it is a justification written at the end.</p>' +
+    '<form id="rfxWeightForm">' +
+    '<div class="grid grid-3">' + crit.map(function (c) {
+      return '<div class="field"><label for="rw_' + c.key + '">' + PS.esc(c.label) + ' (%)</label>' +
+        '<input type="number" id="rw_' + c.key + '" data-rw="' + c.key + '" value="' + PS.esc(c.weight) + '" min="0" max="100" step="5"></div>';
+    }).join('') + '</div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-set-weights">Save weights</button></div>' +
+    '</form></div>';
+
+  /* --- bids --- */
+  var bids = PS.wb.list('rfxBids').filter(function (b) { return b.eventId === ev.id; });
+  var ranked = PS.rfx.rank(Object.assign({}, ev, { bids: bids }));
+  var spread = PS.rfx.spread(ranked);
+
+  html += '<div class="card"><div class="card-head"><h2>Bids</h2><div class="spacer"></div>' +
+    '<span class="badge">' + bids.length + ' received</span></div>' +
+    (bids.length ? PS.rfx.bidTable(ev, crit, ranked) : '') +
+    '<h3 style="margin-top:18px">' + (bids.length ? 'Add or replace a bid' : 'Add the first bid') + '</h3>' +
+    PS.rfx.bidForm(ev, crit) + '</div>';
+
+  /* --- result --- */
+  if (ranked.length) {
+    var top = ranked[0];
+    var bestLanded = Math.min.apply(null, ranked.map(function (r) { return r.landed.total; }));
+    var cheapest = ranked.filter(function (r) { return r.landed.total === bestLanded; })[0];
+    html += '<div class="card"><div class="card-head"><h2>Evaluation result</h2><div class="spacer"></div>' +
+      '<span class="badge">' + ranked.length + ' bids scored</span></div>' +
+      '<p class="card-sub">The recommended award is the highest weighted score. The commercial spread tells you how much the evaluation is actually choosing between, and whether the score is doing the work or the price is.</p>' +
+      PS.renderSimpleTable({
+        headers: ['Rank', 'Supplier', 'Landed cost', 'Weighted score', 'Lead time', 'Verdict'],
+        rows: ranked.map(function (r, i) {
+          var cheapestHere = r.landed.total === bestLanded;
+          return [
+            String(i + 1),
+            r.bid.supplier,
+            PS.moneyR(r.landed.total),
+            r.score.toFixed(2) + ' / 10',
+            (r.bid.lead || 0) + ' days',
+            i === 0 ? 'Recommended' : (cheapestHere ? 'Lowest landed cost' : '')
+          ];
+        })
+      }) +
+      '<div class="alert alert-info" style="margin-top:14px"><strong>Recommended award: ' + PS.esc(top.bid.supplier) + '</strong>' +
+      'Weighted score ' + top.score.toFixed(2) + ' out of 10, landed cost ' + PS.moneyR(top.landed.total) + '. ' +
+      (cheapest && cheapest.bid.supplier !== top.bid.supplier
+        ? 'Note that ' + PS.esc(cheapest.bid.supplier) + ' is the lowest landed cost at ' + PS.moneyR(cheapest.landed.total) + '. You are choosing to pay ' +
+          PS.moneyR(top.landed.total - cheapest.landed.total) + ' more for a score advantage of ' + (top.score - cheapest.score).toFixed(2) + '. That is a reasonable trade, but it should be a decision someone takes and records, not an outcome the spreadsheet produced.'
+        : 'This supplier is also the lowest landed cost, so the commercial and the scored positions agree.') +
+      (spread > 0 ? ' The spread between the best and worst landed cost across ' + ranked.length + ' bids is ' + PS.moneyR(spread) + '.' : '') +
+      '</div>' +
+      '<div class="btn-row no-print">' +
+      '<a class="btn" href="#/tpl/tpl-award-recommendation">Open the award recommendation record</a>' +
+      '<a class="btn" href="#/calc/calc-compare-quotes">Check the quotes on landed cost</a>' +
+      '<a class="btn" href="#/tpl/tpl-weighted-scoring">Open the weighted scoring model</a>' +
+      '<button type="button" class="btn btn-ghost" data-act="wb-signoff" data-col="rfx" data-id="' + PS.esc(ev.id) + '" data-note="Award recommendation">Record the sign-off</button>' +
+      '</div>';
+    var sos = PS.wb.signoffsFor('rfx', ev.id);
+    if (sos.length) {
+      html += '<h3>Sign-offs</h3>' + PS.renderSimpleTable({
+        headers: ['Approved by', 'When', 'Note'],
+        rows: sos.map(function (s) { return [s.approver, PS.dateTime(s.at), s.note || '']; })
+      });
+    }
+  }
+
+  html += PS.rfx.libraryStrip();
+  html += PS.disclaimer('policy');
+  return html;
+});
+
+PS.acts['rfx-pick'] = function (el) {
+  PS.rfx.currentId = el.dataset.id;
+  PS.renderRoute();
+};
+
+PS.rfx.eventForm = function (ev) {
+  ev = ev || {};
+  return '<form id="rfxEventForm" data-id="' + PS.esc(ev.id || '') + '">' +
+    '<div class="grid grid-2">' +
+    '<div class="field"><label for="rfxTitle">Event name</label><input type="text" id="rfxTitle" data-rf="title" value="' + PS.esc(ev.title || '') + '" maxlength="140" placeholder="Packaging supply, 2026"></div>' +
+    '<div class="field"><label for="rfxMethod">Method</label><select id="rfxMethod" data-rf="method">' +
+    ['RFQ', 'RFP', 'RFI'].map(function (m) { return '<option' + (ev.method === m ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select></div>' +
+    '<div class="field"><label for="rfxCat">Category</label><input type="text" id="rfxCat" data-rf="category" value="' + PS.esc(ev.category || '') + '" maxlength="80"></div>' +
+    '<div class="field"><label for="rfxDeadline">Submission deadline</label><input type="date" id="rfxDeadline" data-rf="deadline" value="' + PS.esc(ev.deadline || '') + '"></div>' +
+    '<div class="field"><label for="rfxBudget">Budget or ceiling</label><input type="number" id="rfxBudget" data-rf="budget" value="' + PS.esc(ev.budget === undefined || ev.budget === null ? '' : ev.budget) + '" step="0.01" min="0"></div>' +
+    '<div class="field"><label for="rfxNotes">Notes</label><input type="text" id="rfxNotes" data-rf="notes" value="' + PS.esc(ev.notes || '') + '" maxlength="240"></div>' +
+    '</div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-event">Save event</button></div>' +
+    '</form>';
+};
+
+PS.rfx.bidTable = function (ev, crit, ranked) {
+  var order = {};
+  ranked.forEach(function (r, i) { order[r.bid.id] = i; });
+  var bids = PS.wb.list('rfxBids').filter(function (b) { return b.eventId === ev.id; })
+    .sort(function (a, b) { return (order[a.id] || 99) - (order[b.id] || 99); });
+  var head = '<tr><th>Supplier</th><th>Qty</th><th>Unit price</th><th>Landed cost</th>' +
+    crit.map(function (c) { return '<th class="num">' + PS.esc(c.label) + '</th>'; }).join('') +
+    '<th class="num">Score</th><th></th></tr>';
+  var body = bids.map(function (b) {
+    var l = PS.rfx.landed(b);
+    var sc = PS.rfx.weighted(ev, b);
+    return '<tr><td><strong>' + PS.esc(b.supplier) + '</strong></td>' +
+      '<td class="num">' + PS.esc(b.qty) + '</td>' +
+      '<td class="num">' + PS.moneyR(b.price) + '</td>' +
+      '<td class="num"><strong>' + PS.moneyR(l.total) + '</strong></td>' +
+      crit.map(function (c) { return '<td class="num">' + PS.esc(PS.num(b.scores && b.scores[c.key]) || 0) + '</td>'; }).join('') +
+      '<td class="num"><strong>' + sc.toFixed(2) + '</strong></td>' +
+      '<td class="num"><button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-bid" data-id="' + PS.esc(b.id) + '">Remove</button></td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
+    '<p class="note">Score each criterion from 0 to 10. The weighted score is the sum of score times weight, divided by the total weight, so it is always out of ten and stays comparable if the weights are changed.</p>';
+};
+
+PS.rfx.bidForm = function (ev, crit) {
+  return '<form id="rfxBidForm" data-id=""><div class="grid grid-3">' +
+    '<div class="field"><label for="rbSupplier">Supplier</label><input type="text" id="rbSupplier" data-rb="supplier" maxlength="120"></div>' +
+    '<div class="field"><label for="rbQty">Quantity</label><input type="number" id="rbQty" data-rb="qty" step="any" min="0"></div>' +
+    '<div class="field"><label for="rbPrice">Unit price</label><input type="number" id="rbPrice" data-rb="price" step="0.01" min="0"></div>' +
+    '<div class="field"><label for="rbFreight">Freight (total)</label><input type="number" id="rbFreight" data-rb="freight" step="0.01" min="0"></div>' +
+    '<div class="field"><label for="rbDuty">Duty %</label><input type="number" id="rbDuty" data-rb="dutyPct" step="0.1" min="0" max="100"></div>' +
+    '<div class="field"><label for="rbLead">Lead time (days)</label><input type="number" id="rbLead" data-rb="lead" step="1" min="0"></div>' +
+    crit.map(function (c) {
+      return '<div class="field"><label for="rs_' + c.key + '">' + PS.esc(c.label) + ' (0-10)</label>' +
+        '<input type="number" id="rs_' + c.key + '" data-rs="' + c.key + '" step="0.5" min="0" max="10"></div>';
+    }).join('') +
+    '<div class="field"><label for="rbNotes">Notes</label><input type="text" id="rbNotes" data-rb="notes" maxlength="240"></div>' +
+    '</div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-bid">Add bid</button></div>' +
+    '</form>';
+};
+
+PS.rfx.libraryStrip = function () {
+  var links = [
+    { type: 'tpl', id: 'tpl-rfq' }, { type: 'tpl', id: 'tpl-rfp' },
+    { type: 'tpl', id: 'tpl-bid-comparison' }, { type: 'tpl', id: 'tpl-weighted-scoring' },
+    { type: 'tpl', id: 'tpl-award-recommendation' },
+    { type: 'cl', id: 'cl-rfq-preparation' }, { type: 'cl', id: 'cl-technical-evaluation' },
+    { type: 'cl', id: 'cl-commercial-evaluation' }, { type: 'cl', id: 'cl-award-recommendation' },
+    { type: 'calc', id: 'calc-compare-quotes' }, { type: 'calc', id: 'calc-supplier-scorecard' },
+    { type: 'sop', id: 'sop-rfq' }, { type: 'sop', id: 'sop-rfp' }
+  ].map(function (l) {
+    var o = PS.byId(l.type, l.id);
+    if (!o) return '';
+    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + (o.title || o.term)) + '</a>';
+  }).filter(Boolean).join('');
+  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
+    '<p class="card-sub">Run the event properly with the controlled documents: the solicitation pack, the evaluation sheets, the scoring model and the award recommendation.</p>' +
+    '<div class="chips">' + links + '</div></div>';
+};
+
+/* ==========================================================
+   Workbench: receipts and invoicing, budget and spend, analytics
+
+   Three workbenches that read each other and the library.
+
+   The receipt workpaper is a three-way match as a workpaper: the
+   purchase order, the goods receipt and the invoice are three numbers
+   you hold, and the variance between them is the finding. It does not
+   release a payment and it does not assert that a payment was made.
+
+   The budget workbench puts a budget line next to what is committed
+   and what is actually spent, and sits on top of the spend model that
+   already drives the Pareto and Kraljic views.
+
+   The analytics workbench is the read-only view across all of it.
+   ========================================================== */
+
+/* ---------- receipts and the three-way match ---------- */
+PS.rcpt = PS.rcpt || {};
+
+PS.rcpt.match = function (r) {
+  var poQty = PS.num(r.poQty) || 0;
+  var recvQty = PS.num(r.receivedQty) || 0;
+  var invQty = PS.num(r.invQty) || 0;
+  var poPrice = PS.num(r.poUnitPrice) || 0;
+  var invPrice = PS.num(r.invUnitPrice) || 0;
+  var freight = PS.num(r.freight) || 0;
+  var tax = PS.num(r.tax) || 0;
+
+  var poExtended = poPrice * poQty;
+  var invExtended = invPrice * invQty + freight + tax;
+  var priceVariance = (invPrice - poPrice) * Math.min(recvQty, invQty);
+  var qtyVariance = (invQty - recvQty) * invPrice;
+  var uncontracted = freight + tax;
+  var total = priceVariance + qtyVariance + uncontracted;
+
+  var issues = [];
+  if (Math.abs(priceVariance) > 0.005) issues.push('Price variance');
+  if (Math.abs(qtyVariance) > 0.005) issues.push('Quantity variance');
+  if (uncontracted > 0.005) issues.push('Uncontracted charges');
+  if (recvQty <= 0 && invQty > 0) issues.push('Invoiced with no receipt');
+
+  return {
+    poExtended: poExtended, invExtended: invExtended,
+    priceVariance: priceVariance, qtyVariance: qtyVariance,
+    uncontracted: uncontracted, total: total,
+    issues: issues,
+    status: issues.length ? issues.join(' + ') : 'Matched'
+  };
+};
+
+/* Duplicate detection: the same supplier, the same invoice reference
+   and the same amount appearing twice is the classic double-payment
+   pattern, and it is worth catching by eye before it is caught by
+   finance. */
+PS.rcpt.duplicates = function () {
+  var recs = PS.wb.list('receipts');
+  var seen = {}, dupes = [];
+  recs.forEach(function (r) {
+    var key = (r.supplier || '').toLowerCase() + '|' + (r.invoiceRef || '').toLowerCase() + '|' +
+      (PS.num(r.invUnitPrice) * PS.num(r.invQty)).toFixed(2);
+    if (!r.invoiceRef) return;
+    if (seen[key]) dupes.push({ rec: r, first: seen[key] });
+    else seen[key] = r;
+  });
+  return dupes;
+};
+
+PS.route('receipts', function () {
+  PS.pageTitle = 'Receipts & Invoicing';
+  var recs = PS.wb.list('receipts');
+  var dupes = PS.rcpt.duplicates();
+  var exposure = 0, matched = 0, exceptions = 0;
+  recs.forEach(function (r) {
+    var m = PS.rcpt.match(r);
+    exposure += m.total;
+    if (m.issues.length) exceptions++; else matched++;
+  });
+
+  var html = PS.wb.header('Receipts and invoicing', recs.length + ' match workpapers', [
+    PS.wb.exportBtn('receipts', 'receipts')
+  ]);
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Workpapers</span></div>' +
+    '<div class="stat"><span class="s-val">' + matched + '</span><span class="s-lab">Matched</span></div>' +
+    '<div class="stat"><span class="s-val">' + exceptions + '</span><span class="s-lab">With exceptions</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Total exposure</span></div>' +
+    '</div>';
+
+  if (dupes.length) {
+    html += '<div class="card"><div class="card-head"><h2>Possible duplicate invoices</h2><div class="spacer"></div>' +
+      '<span class="badge badge-warn">' + dupes.length + '</span></div>' +
+      '<p class="card-sub">The same supplier, invoice reference and amount appear more than once. That is the shape of a double payment, and it is worth a phone call before it is a credit note.</p>' +
+      PS.renderSimpleTable({
+        headers: ['Supplier', 'Invoice', 'Amount', 'Also recorded as'],
+        rows: dupes.map(function (d) {
+          return [d.rec.supplier, d.rec.invoiceRef, PS.moneyR((PS.num(d.rec.invUnitPrice) || 0) * (PS.num(d.rec.invQty) || 0)), d.first.id];
+        })
+      }) + '</div>';
+  }
+
+  html += PS.wb.editorCard('receipts', 'Add or edit a match workpaper');
+  html += '<div class="card"><div class="card-head"><h2>Workpapers</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+    PS.wb.tableHtml('receipts', [
+      { k: 'ref', label: 'PO reference' },
+      { k: 'supplier', label: 'Supplier' },
+      { k: 'invoiceRef', label: 'Invoice' },
+      { k: 'poUnitPrice', label: 'PO price', num: true, render: function (r) { return PS.moneyR(r.poUnitPrice); } },
+      { k: 'invUnitPrice', label: 'Invoice price', num: true, render: function (r) { return PS.moneyR(r.invUnitPrice); } },
+      { k: 'receivedQty', label: 'Received', num: true },
+      { k: 'invQty', label: 'Invoiced', num: true },
+      { k: 'status', label: 'Result', render: function (r) { return PS.rcpt.match(r).status; } }
+    ], recs, 'No match workpapers yet. Add one above: the order, the receipt and the invoice are three numbers, and the variance between them is the finding.') +
+    '</div>';
+
+  var withIssues = recs.filter(function (r) { return PS.rcpt.match(r).issues.length; });
+  if (withIssues.length) {
+    html += '<div class="card"><div class="card-head"><h2>Exceptions</h2><div class="spacer"></div>' +
+      '<span class="badge">' + withIssues.length + ' open</span></div>' +
+      PS.renderSimpleTable({
+        headers: ['PO', 'Supplier', 'Price variance', 'Quantity variance', 'Uncontracted', 'Total'],
+        rows: withIssues.map(function (r) {
+          var m = PS.rcpt.match(r);
+          return [r.ref, r.supplier, PS.moneyR(m.priceVariance), PS.moneyR(m.qtyVariance), PS.moneyR(m.uncontracted), PS.moneyR(m.total)];
+        })
+      }) + '</div>';
+  }
+
+  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
+    '<p class="card-sub">This workpaper finds the variance. It does not release a payment and it does not record that one was made. The controlled process is separate.</p>' +
+    '<div class="chips">' +
+    '<a class="chip" href="#/sop/sop-procurement-audit">SOP: Procurement Audit</a>' +
+    '<a class="chip" href="#/cl/cl-procurement-file-completeness">Checklist: File completeness</a>' +
+    '<a class="chip" href="#/tpl/tpl-exception-request">Template: Exception request</a>' +
+    '<a class="chip" href="#/kpi/kpi-contract-compliance">KPI: Contract compliance</a>' +
+    '</div></div>';
+  html += PS.disclaimer('finance');
+  return html;
+});
+
+/* ---------- budget and spend ---------- */
+PS.route('budget', function () {
+  PS.pageTitle = 'Budget & Spend';
+  var lines = PS.wb.list('budget');
+  var spend = PS.spendModel ? PS.spendModel.load() : { categories: [] };
+  var budgetTotal = 0, committedTotal = 0, actualTotal = 0;
+  lines.forEach(function (l) {
+    budgetTotal += PS.num(l.budget) || 0;
+    committedTotal += PS.num(l.committed) || 0;
+    actualTotal += PS.num(l.actual) || 0;
+  });
+  var available = budgetTotal - committedTotal - actualTotal;
+
+  var html = PS.wb.header('Budget and spend', lines.length + ' budget lines', [
+    PS.wb.exportBtn('budget', 'budget'),
+    '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a>'
+  ]);
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(budgetTotal) + '</span><span class="s-lab">Budget</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(committedTotal) + '</span><span class="s-lab">Committed</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(actualTotal) + '</span><span class="s-lab">Spent</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(available) + '</span><span class="s-lab">Available</span></div>' +
+    '</div>';
+
+  html += '<div class="card"><div class="card-head"><h2>Budget position</h2></div>' +
+    '<p class="card-sub">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
+    (lines.length ? PS.renderSimpleTable({
+      headers: ['Line', 'Category', 'Holder', 'Budget', 'Committed', 'Spent', 'Available', 'Used'],
+      rows: lines.map(function (l) {
+        var b = PS.num(l.budget) || 0, c = PS.num(l.committed) || 0, a = PS.num(l.actual) || 0;
+        return [l.line, l.category || '', l.owner || '', PS.moneyR(b), PS.moneyR(c), PS.moneyR(a),
+          PS.moneyR(b - c - a), b > 0 ? Math.round((c + a) / b * 100) + '%' : ''];
+      })
+    }) : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
+    '</div>';
+
+  html += PS.wb.editorCard('budget', 'Add or edit a budget line');
+
+  if (spend && spend.categories && spend.categories.length) {
+    var suppliers = PS.spendModel.suppliers(spend);
+    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2><div class="spacer"></div>' +
+      '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a></div>' +
+      '<p class="card-sub">From the spend model: ' + spend.categories.length + ' categories across ' + suppliers.length + ' suppliers, totalling ' + PS.moneyR(PS.spendModel.total(spend)) + '.</p>' +
+      PS.spendModel.chartsHtml(spend) +
+      '</div>';
+  } else {
+    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2></div>' +
+      '<p class="card-sub">There is no spend model yet. The spend model is the category and supplier hierarchy that the Pareto and Kraljic views are drawn from, and it is the input to any budget position.</p>' +
+      '<a class="btn btn-primary" href="#/spend-model">Build the spend model</a></div>';
+  }
+
+  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
+    '<div class="chips">' +
+    '<a class="chip" href="#/calc/calc-budget-vs-actual">Calculator: Budget vs actual</a>' +
+    '<a class="chip" href="#/calc/calc-savings-analysis">Calculator: Savings analysis</a>' +
+    '<a class="chip" href="#/sop/sop-savings-calculation">SOP: Savings calculation</a>' +
+    '<a class="chip" href="#/cl/cl-savings-validation">Checklist: Savings validation</a>' +
+    '<a class="chip" href="#/dash-savings">Savings dashboard</a>' +
+    '<a class="chip" href="#/kpi/kpi-sum">KPI: Spend under management</a>' +
+    '</div></div>';
+  html += PS.disclaimer('finance');
+  return html;
+});
+
+/* ---------- analytics ---------- */
+PS.route('analytics', function () {
+  PS.pageTitle = 'Analytics';
+  var suppliers = PS.wb.list('suppliers');
+  var contracts = PS.wb.list('contracts');
+  var catalogue = PS.wb.list('catalogue');
+  var budget = PS.wb.list('budget');
+  var receipts = PS.wb.list('receipts');
+  var events = PS.wb.list('rfx');
+  var bids = PS.wb.list('rfxBids');
+  var spend = PS.spendModel ? PS.spendModel.load() : { categories: [] };
+  var today = new Date();
+
+  var spendTotal = 0, catTotals = {};
+  if (spend.categories) {
+    spend.categories.forEach(function (c) {
+      var t = (c.suppliers || []).reduce(function (a, s) { return a + (PS.num(s.spend) || 0); }, 0);
+      spendTotal += t;
+      catTotals[c.name] = t;
+    });
+  }
+  var budgetTotal = budget.reduce(function (a, l) { return a + (PS.num(l.budget) || 0); }, 0);
+  var spent = budget.reduce(function (a, l) { return a + (PS.num(l.committed) || 0) + (PS.num(l.actual) || 0); }, 0);
+  var contractValue = contracts.reduce(function (a, c) { return a + (PS.num(c.value) || 0); }, 0);
+  var risk = { Low: 0, Medium: 0, High: 0, Critical: 0 };
+  suppliers.forEach(function (s) { if (risk[s.risk] !== undefined) risk[s.risk]++; });
+  var expiring = contracts.filter(function (c) {
+    if (!c.end) return false;
+    var d = (new Date(c.end) - today) / 86400000;
+    return d >= 0 && d <= 180;
+  });
+  var openExceptions = receipts.filter(function (r) { return PS.rcpt.match(r).issues.length; });
+  var exposure = receipts.reduce(function (a, r) { return a + PS.rcpt.match(r).total; }, 0);
+  var savings = PS.savingsInitiatives ? PS.savingsInitiatives() : [];
+  var savingsTotal = savings.reduce(function (a, s) { return a + (PS.num(s.savings) || 0) + (PS.num(s.avoidance) || 0); }, 0);
+
+  var html = PS.wb.header('Analytics', 'Everything you have recorded, in one place');
+
+  html += '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(spendTotal) + '</span><span class="s-lab">Spend modelled</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(contractValue) + '</span><span class="s-lab">Contract value recorded</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(savingsTotal) + '</span><span class="s-lab">Savings recorded</span></div>' +
+    '<div class="stat"><span class="s-val">' + (budgetTotal > 0 ? Math.round(spent / budgetTotal * 100) + '%' : '—') + '</span><span class="s-lab">Budget used</span></div>' +
+    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Match exposure</span></div>' +
+    '</div>';
+
+  /* spend by category */
+  var cats = Object.keys(catTotals).sort(function (a, b) { return catTotals[b] - catTotals[a]; });
+  if (cats.length) {
+    html += '<div class="card"><div class="card-head"><h2>Spend by category</h2><div class="spacer"></div>' +
+      '<span class="badge">' + cats.length + ' categories</span></div>' +
+      PS.renderSimpleTable({
+        headers: ['Category', 'Spend', 'Share'],
+        rows: cats.map(function (c) {
+          return [c, PS.moneyR(catTotals[c]), spendTotal > 0 ? Math.round(catTotals[c] / spendTotal * 100) + '%' : ''];
+        })
+      }) + '</div>';
+  }
+
+  /* portfolio position */
+  html += '<div class="grid grid-2 mb16">' +
+    '<div class="card"><div class="card-head"><h2>Supplier risk</h2></div>' +
+    (suppliers.length ? PS.renderSimpleTable({
+      headers: ['Tier', 'Suppliers'],
+      rows: Object.keys(risk).map(function (k) { return [k, risk[k]]; })
+    }) : PS.empty('No suppliers recorded yet.')) + '</div>' +
+    '<div class="card"><div class="card-head"><h2>Open positions</h2></div>' +
+    PS.renderSimpleTable({
+      headers: ['Area', 'Open'],
+      rows: [
+        ['Contracts expiring within 180 days', expiring.length],
+        ['Match exceptions', openExceptions.length],
+        ['RFx events open', events.length],
+        ['Bids recorded', bids.length],
+        ['Catalogue items', catalogue.length]
+      ]
+    }) + '</div></div>';
+
+  /* exceptions and expiries */
+  if (expiring.length) {
+    html += '<div class="card"><div class="card-head"><h2>Contracts expiring</h2><div class="spacer"></div>' +
+      '<span class="badge badge-warn">' + expiring.length + '</span></div>' +
+      PS.renderSimpleTable({
+        headers: ['Contract', 'Supplier', 'Expires', 'Value'],
+        rows: expiring.map(function (c) { return [c.title, c.supplier, c.end, PS.moneyR(c.value)]; })
+      }) + '</div>';
+  }
+  if (openExceptions.length) {
+    html += '<div class="card"><div class="card-head"><h2>Match exceptions</h2><div class="spacer"></div>' +
+      '<span class="badge badge-warn">' + openExceptions.length + '</span></div>' +
+      PS.renderSimpleTable({
+        headers: ['PO', 'Supplier', 'Exception', 'Amount'],
+        rows: openExceptions.map(function (r) {
+          var m = PS.rcpt.match(r);
+          return [r.ref, r.supplier, m.status, PS.moneyR(m.total)];
+        })
+      }) + '</div>';
+  }
+
+  /* pipeline */
+  if (events.length) {
+    html += '<div class="card"><div class="card-head"><h2>Sourcing pipeline</h2></div>' +
+      PS.renderSimpleTable({
+        headers: ['Event', 'Method', 'Closes', 'Bids', 'Budget'],
+        rows: events.map(function (e) {
+          var n = bids.filter(function (b) { return b.eventId === e.id; }).length;
+          return [e.title, e.method || '', e.deadline || '', n, PS.moneyR(e.budget)];
+        })
+      }) + '</div>';
+  }
+
+  html += '<div class="card no-print"><div class="card-head"><h2>Where this comes from</h2></div>' +
+    '<p class="card-sub">Every number on this page is computed from records you entered in the workbenches, or from the spend model and the saved work in this browser. Nothing is fetched and nothing is sent.</p>' +
+    '<div class="btn-row">' +
+    '<a class="btn" href="#/suppliers">Supplier register</a>' +
+    '<a class="btn" href="#/contracts">Contract register</a>' +
+    '<a class="btn" href="#/rfx">RFx and evaluation</a>' +
+    '<a class="btn" href="#/receipts">Receipts and invoicing</a>' +
+    '<a class="btn" href="#/budget">Budget and spend</a>' +
+    '<a class="btn" href="#/spend-model">Spend data model</a>' +
+    '</div></div>';
+  html += PS.disclaimer('data');
   return html;
 });
 

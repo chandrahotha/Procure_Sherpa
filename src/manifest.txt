@@ -52,6 +52,8 @@ src/core/06e3_copilot.js
 src/core/06e4_exams.js
 src/core/06e5_spend.js
 src/core/06e6_docpack.js
+src/core/06f1_workbench.js
+src/core/06f2_workbench_specs.js
 src/core/07a1_boot_migrate.js
 src/core/07a2_boot_wire.js
 src/core/07b_boot.js
@@ -94,6 +96,9 @@ src/pages/08i4_pages_portfolio.js
 src/pages/08i5_pages_tips.js
 src/pages/08i6_pages_whatsnew.js
 src/pages/08i7_pages_nextup.js
+src/pages/08j1_pages_wb_registry.js
+src/pages/08j2_pages_wb_rfx.js
+src/pages/08j3_pages_wb_ops.js
 src/content/09a_data_init.js
 src/content/09b_expand.js
 src/content/09c_maturity_lifecycle.js

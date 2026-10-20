@@ -44,6 +44,27 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.labs) PS.store.set(PS.K.labs, c.labs);
       if (c.assessment) PS.store.set(PS.K.assessment, c.assessment);
       if (c.community) PS.store.set(PS.K.community, c.community);
+      /* The workbench records are replaced wholesale in replace mode
+         and merged collection by collection in merge mode, so a merge
+         does not quietly drop a supplier the user recorded. */
+      if (c.workbench) {
+        if (mode === 'replace') {
+          PS.wb.data = c.workbench;
+        } else {
+          var cur = PS.wb.load();
+          Object.keys(c.workbench).forEach(function (k) {
+            if (Array.isArray(c.workbench[k]) && Array.isArray(cur[k])) {
+              var have = {};
+              cur[k].forEach(function (r) { have[r.id] = 1; });
+              c.workbench[k].forEach(function (r) { if (!have[r.id]) cur[k].push(r); });
+            } else if (cur[k] === undefined) {
+              cur[k] = c.workbench[k];
+            }
+          });
+          PS.wb.data = cur;
+        }
+        PS.wb.save();
+      }
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -74,6 +95,22 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.labs) { var curL = PS.store.get(PS.K.labs, {}); PS.store.set(PS.K.labs, Object.assign({}, curL, c.labs)); }
       if (c.assessment) { PS.store.set(PS.K.assessment, c.assessment); }
       if (c.community) { var curC2 = PS.store.get(PS.K.community, []); PS.store.set(PS.K.community, curC2.concat(c.community).slice(-50)); }
+      /* Merged collection by collection, so a merge does not quietly
+         drop a supplier the user recorded. */
+      if (c.workbench) {
+        var curW = PS.wb.load();
+        Object.keys(c.workbench).forEach(function (k) {
+          if (Array.isArray(c.workbench[k]) && Array.isArray(curW[k])) {
+            var haveW = {};
+            curW[k].forEach(function (r) { haveW[r.id] = 1; });
+            c.workbench[k].forEach(function (r) { if (!haveW[r.id]) curW[k].push(r); });
+          } else if (curW[k] === undefined) {
+            curW[k] = c.workbench[k];
+          }
+        });
+        PS.wb.data = curW;
+        PS.wb.save();
+      }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();
