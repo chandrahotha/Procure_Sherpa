@@ -72,10 +72,26 @@ const sentinelHits = [];
 const emptyRoutes = [];
 const seenRoutes = new Set();
 
+/* Some routes only render their content when they have a query, so a
+   sweep with no query never sees the links inside them. The "what should
+   I do" plan builder and the search page both work that way, and a broken
+   link inside the plan builder went unnoticed for exactly that reason. */
+const ROUTE_VISITS = [];
 for (const r of routes) {
-  const args = (routeArgs[r] || []).length ? routeArgs[r] : [''];
-  for (const a of args) {
-    const hash = '#/' + r + (a ? '/' + a : '');
+  const a = (routeArgs[r] || []).length ? routeArgs[r] : [''];
+  for (const x of a) ROUTE_VISITS.push('#/' + r + (x ? '/' + x : ''));
+}
+ROUTE_VISITS.push('#/what?q=supplier%20increased%20price%20by%2012%20percent');
+ROUTE_VISITS.push('#/search?q=contract');
+ROUTE_VISITS.push('#/list/kb/Fundamentals');
+ROUTE_VISITS.push('#/academy/func-mission-value?tab=learn');
+ROUTE_VISITS.push('#/academy/func-mission-value?tab=think');
+ROUTE_VISITS.push('#/academy/func-mission-value?tab=sop');
+ROUTE_VISITS.push('#/academy/func-mission-value?tab=practice');
+ROUTE_VISITS.push('#/academy/func-mission-value?tab=apply');
+
+for (const hash of ROUTE_VISITS) {
+  {
     if (seenRoutes.has(hash)) continue;
     seenRoutes.add(hash);
     w.location.hash = hash;

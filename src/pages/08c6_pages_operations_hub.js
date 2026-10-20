@@ -1,120 +1,219 @@
 /* ==========================================================
-   Procure Sherpa v2.1 - Operations Hub Gateway
-   The practitioner repository for daily professional execution
+   Operations Hub: the practitioner gateway (Section 8, 50)
+
+   The hub used to be twenty-four hand-written links. It listed ten of
+   thirteen SOPs, one of twenty-seven checklists, four of thirty-three
+   templates, nine of nineteen calculators, and it linked to a template
+   that did not exist. Everything it did not list was invisible from
+   the gateway, which is the page a practitioner is most likely to land
+   on.
+
+   It is now derived from the registry. Six phases, each selecting the
+   content that belongs to it, with the twenty-one-stage lifecycle
+   reconciled against them: every phase names the lifecycle stages it
+   covers, so the three lifecycle views in the product (the six phases,
+   the twenty-one stages and the Academy functions) stop contradicting
+   each other.
    ========================================================== */
+PS.LIFECYCLE_PHASES = [
+  {
+    id: 'intake',
+    n: 1,
+    title: 'Intake and Need Validation',
+    purpose: 'Establish that the need is real, that it is specified, that the money exists and that this is the right way to buy it. Most of the cost of a bad procurement decision is created here, before a supplier is contacted.',
+    stages: [1, 2, 3, 4],
+    pick: {
+      kb: ['Fundamentals'],
+      sop: ['Process'],
+      cl: ['Intake & Planning'],
+      tpl: ['Governance'],
+      dec: ['Sourcing']
+    }
+  },
+  {
+    id: 'sourcing',
+    n: 2,
+    title: 'Sourcing and Tendering',
+    purpose: 'Test the market, choose the right method, publish the criteria, run the event, and compare the responses on one basis. Competition that is not set up properly costs more than it saves.',
+    stages: [5, 6, 7, 8, 9, 10, 11],
+    pick: {
+      kb: ['Sourcing'],
+      sop: ['Sourcing'],
+      cl: ['Sourcing', 'Evaluation & Award'],
+      tpl: ['Sourcing', 'Evaluation'],
+      dec: ['Sourcing']
+    }
+  },
+  {
+    id: 'cost',
+    n: 3,
+    title: 'Cost Engineering and Commercial Analysis',
+    purpose: 'Build the true cost, normalise the quotes, and test the commercial position before you commit. This is where a price becomes a cost and a cost becomes a decision.',
+    stages: [12, 13],
+    pick: {
+      kb: ['Commercial', 'Savings'],
+      calc: ['Cost Tools', 'Negotiation Tools', 'Budget & Savings Tools'],
+      cl: ['Evaluation & Award'],
+      tpl: ['Evaluation', 'Savings'],
+      kpi: ['Cost', 'Savings', 'Financial']
+    }
+  },
+  {
+    id: 'supplier',
+    n: 4,
+    title: 'Supplier Evaluation, Risk and Contracting',
+    purpose: 'Qualify the supplier, assess the risk, structure the contract and protect the organisation. Due diligence that stops at the supplier\'s own paperwork is not due diligence.',
+    stages: [6, 14, 15, 16, 17, 18],
+    pick: {
+      kb: ['Supplier Management', 'Supplier', 'Negotiation', 'Contracts', 'Risk'],
+      sop: ['Contract', 'Negotiation'],
+      cl: ['Supplier', 'Contract', 'Negotiation'],
+      tpl: ['Supplier', 'Contract', 'Negotiation'],
+      dec: ['Contracts', 'Negotiation', 'Risk'],
+      kpi: ['Risk']
+    }
+  },
+  {
+    id: 'performance',
+    n: 5,
+    title: 'Order Execution, Performance and Assurance',
+    purpose: 'Place the order, receive the goods, match the invoice, measure the supplier, and validate the saving. The work that proves the decision was right.',
+    stages: [19, 20],
+    pick: {
+      sop: ['Process'],
+      cl: ['Audit', 'Governance'],
+      kb: ['Governance'],
+      kpi: ['Supplier', 'Efficiency', 'Governance'],
+      calc: ['Buying Decision Tools', 'Tax & FX Tools', 'KPI Tools']
+    }
+  },
+  {
+    id: 'strategy',
+    n: 6,
+    title: 'Planning, Governance and Value Realization',
+    purpose: 'Plan the spend, set the policy, manage the portfolio and the contracts, and turn the savings into a result the business can rely on. The work that decides whether the function is worth having.',
+    stages: [21],
+    pick: {
+      kb: ['Risk', 'Savings', 'Governance', 'Fundamentals', 'Sourcing', 'Contracts'],
+      sop: ['Savings', 'Process'],
+      cl: ['Governance'],
+      dec: ['Governance', 'Risk'],
+      kpi: ['Spend', 'Efficiency']
+    }
+  }
+];
+
+/* Select the content that belongs to a phase, in a stable order and
+   without repeating an item that two phases both claim. */
+PS.phaseContent = function (phase, claimed) {
+  var out = [];
+  var pick = phase.pick || {};
+  Object.keys(pick).forEach(function (type) {
+    var cats = pick[type];
+    (PS.data[type] || []).forEach(function (item) {
+      var cat = item.cat || '';
+      if (cats.indexOf(cat) < 0) return;
+      var key = type + ':' + item.id;
+      if (claimed[key]) return;
+      claimed[key] = 1;
+      out.push({ type: type, id: item.id, item: item, route: PS.routeFor(type, item.id) });
+    });
+  });
+  return out;
+};
 
 PS.route('operations', function () {
   PS.pageTitle = 'Operations Hub';
-
-  var d = PS.data || {};
-  var nSop = d.sop ? d.sop.length : 13;
-  var nCl = d.cl ? d.cl.length : 27;
-
-  var phases = [
-    {
-      step: 'Phase 1',
-      title: 'Intake & Demand Gating',
-      desc: 'Verify business need, prevent maverick spend, confirm approved budget, and conduct contract register searches before initiating procurement.',
-      tools: [
-        { label: 'SOP: Procurement Intake & Triage', href: '#/sop/sop-procurement-intake', type: 'SOP' },
-        { label: 'Checklist: Procurement Intake', href: '#/cl/cl-procurement-intake', type: 'Checklist' },
-        { label: 'Calculator: PO Value & Delegation of Authority', href: '#/calc/calc-po-value-check', type: 'Calculator' },
-        { label: 'Template: Single-Source Justification', href: '#/tpl/tpl-single-source', type: 'Template' }
-      ],
-      academyLink: { label: 'Study Intake & SOW in Academy', href: '#/academy/func-requirement-scope' }
-    },
-    {
-      step: 'Phase 2',
-      title: 'Sourcing & Tendering',
-      desc: 'Formulate competitive solicitation strategy, draft clear specifications, issue sealed RFQ/RFPs, and conduct blind technical/commercial reviews.',
-      tools: [
-        { label: 'SOP: Request for Quotation (RFQ)', href: '#/sop/sop-rfq', type: 'SOP' },
-        { label: 'SOP: Request for Proposal (RFP)', href: '#/sop/sop-rfp', type: 'SOP' },
-        { label: 'Calculator: Multi-Supplier Quote Comparison', href: '#/calc/calc-compare-quotes', type: 'Calculator' },
-        { label: 'Template: RFQ Specification Package', href: '#/tpl/tpl-rfq', type: 'Template' }
-      ],
-      academyLink: { label: 'Study RFx Strategy in Academy', href: '#/academy/func-rfx-strategy' }
-    },
-    {
-      step: 'Phase 3',
-      title: 'Cost Engineering & TCO',
-      desc: 'Calculate Total Cost of Ownership, normalize Incoterms freight and tariffs, model bottom-up should-costs, and evaluate cash discount terms.',
-      tools: [
-        { label: 'Calculator: Total Cost of Ownership (TCO)', href: '#/calc/calc-tco', type: 'Calculator' },
-        { label: 'Calculator: Landed Cost & Freight Normalization', href: '#/calc/calc-landed-cost', type: 'Calculator' },
-        { label: 'Calculator: Should-Cost & Cost Breakdown', href: '#/calc/calc-should-cost', type: 'Calculator' },
-        { label: 'Calculator: Payment Terms & Working Capital', href: '#/calc/calc-payment-terms', type: 'Calculator' }
-      ],
-      academyLink: { label: 'Study TCO & Landed Cost in Academy', href: '#/academy/func-landed-cost-tco' }
-    },
-    {
-      step: 'Phase 4',
-      title: 'Supplier Vetting & Strategic Negotiation',
-      desc: 'Evaluate financial health via Altman Z-Score, build tradable concession matrices, establish walk-away reservation prices, and conduct disciplined bargaining.',
-      tools: [
-        { label: 'SOP: Supplier Evaluation & Pre-Qualification', href: '#/sop/sop-supplier-evaluation', type: 'SOP' },
-        { label: 'SOP: Negotiation Preparation & Strategy', href: '#/sop/sop-negotiation-preparation', type: 'SOP' },
-        { label: 'Calculator: Negotiation Savings Valuation', href: '#/calc/calc-negotiation-savings', type: 'Calculator' },
-        { label: 'Calculator: Weighted Supplier Scorecard', href: '#/calc/calc-supplier-scorecard', type: 'Calculator' }
-      ],
-      academyLink: { label: 'Study Negotiation Strategy in Academy', href: '#/academy/func-negotiation-strategy' }
-    },
-    {
-      step: 'Phase 5',
-      title: 'Contract Structuring & Award',
-      desc: 'Conduct 3-way convergence reviews (Commercial, Legal, Finance), verify Delegation of Authority execution, and establish performance SLAs.',
-      tools: [
-        { label: 'SOP: Contract Review & Sign-Off Convergence', href: '#/sop/sop-contract-review', type: 'SOP' },
-        { label: 'SOP: Contract Expiry & Renewal Defense', href: '#/sop/sop-contract-renewal', type: 'SOP' },
-        { label: 'Template: Statement of Work (SOW)', href: '#/tpl/tpl-contract-review-checklist', type: 'Template' },
-        { label: 'Template: Contract Change Request', href: '#/tpl/tpl-contract-change-request', type: 'Template' }
-      ],
-      academyLink: { label: 'Study Contract Structuring in Academy', href: '#/academy/func-contract-structuring' }
-    },
-    {
-      step: 'Phase 6',
-      title: 'Post-Award Governance, SRM & Audit',
-      desc: 'Manage OTIF delivery metrics, audit supplier price increases against independent indices, track hard savings, and maintain audit-ready files.',
-      tools: [
-        { label: 'SOP: Supplier Performance Management & QBRs', href: '#/sop/sop-supplier-performance-management', type: 'SOP' },
-        { label: 'SOP: Supplier Price Increase Audit', href: '#/sop/sop-supplier-price-increase-review', type: 'SOP' },
-        { label: 'SOP: Procurement Audit & File Completeness', href: '#/sop/sop-procurement-audit', type: 'SOP' },
-        { label: 'Calculator: Hard P&L vs Avoidance Savings', href: '#/calc/calc-savings-analysis', type: 'Calculator' }
-      ],
-      academyLink: { label: 'Study SRM & Scorecards in Academy', href: '#/academy/func-srm-scorecards' }
-    }
-  ];
+  var claimed = {};
+  var claimedByType = { kb: 0, sop: 0, cl: 0, tpl: 0, dec: 0, kpi: 0, calc: 0, scen: 0, gloss: 0 };
+  var total = 0;
 
   var html = '<div class="ops-gateway-hero no-print">' +
     '<div class="flex items-center justify-between flex-wrap gap12 mb12">' +
     '<div><span class="hub-badge operations">Practitioner Tools</span>' +
     '<h1 style="margin:8px 0 4px;">Operations Hub</h1>' +
-    '<p class="t-dim" style="margin:0;">The complete operational repository for active procurement execution. ' + nSop + ' controlled SOPs, 19 calculators, ' + nCl + ' checklists, and 33 production templates arranged across 6 lifecycle phases.</p></div>' +
+    '<p class="t-dim" style="margin:0;">Every procedure, checklist, template, calculator, guide and measure in the product, arranged by the six phases of the work and reconciled with the twenty-one-stage lifecycle.</p></div>' +
     '<div class="btn-row" style="margin:0;">' +
-    '<a class="btn btn-ops" href="#/list/sop">Browse ' + nSop + ' SOPs</a>' +
-    '<a class="btn" href="#/list/calc">Open Calculators</a>' +
-    '<a class="btn btn-ghost" href="#/academy">&larr; Switch to Academy</a>' +
+    '<a class="btn btn-ops" href="#/lifecycle">See the 21-stage lifecycle</a>' +
+    '<a class="btn" href="#/academy">Study the Academy</a>' +
+    '<a class="btn btn-ghost" href="#/what">Start from a problem</a>' +
     '</div></div></div>';
 
   html += '<div class="ops-phase-grid no-print">';
-  phases.forEach(function (phase) {
+  PS.LIFECYCLE_PHASES.forEach(function (phase) {
+    var items = PS.phaseContent(phase, claimed);
+    items.forEach(function (i) { claimedByType[i.type] = (claimedByType[i.type] || 0) + 1; total++; });
+    var byType = {};
+    items.forEach(function (i) { byType[i.type] = (byType[i.type] || 0) + 1; });
+    var counts = Object.keys(byType).map(function (t) {
+      return byType[t] + ' ' + PS.typeLabel(t).toLowerCase() + (byType[t] === 1 ? '' : 's');
+    }).join(', ');
+
     html += '<div class="ops-phase-card">' +
-      '<div class="ops-phase-kicker">' + PS.esc(phase.step) + '</div>' +
+      '<div class="ops-phase-kicker">Phase ' + phase.n + '</div>' +
       '<div class="ops-phase-title">' + PS.esc(phase.title) + '</div>' +
-      '<p class="t-dim t-sm">' + PS.esc(phase.desc) + '</p>' +
+      '<p class="t-dim t-sm">' + PS.esc(phase.purpose) + '</p>' +
       '<div class="ops-tool-links">' +
-      phase.tools.map(function (t) {
-        return '<a class="ops-tool-link" href="' + PS.esc(t.href) + '">' +
-          '<span>' + PS.esc(t.label) + '</span>' +
-          '<span class="badge">' + PS.esc(t.type) + '</span></a>';
+      items.slice(0, 8).map(function (i) {
+        var title = i.item.title || i.item.term || i.id;
+        return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
+          '<span>' + PS.esc(title) + '</span>' +
+          '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
       }).join('') +
       '</div>' +
-      '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--border); font-size:0.82rem;">' +
-      '<a class="text-accent font-semibold" href="' + PS.esc(phase.academyLink.href) + '">&bull; ' + PS.esc(phase.academyLink.label) + ' &rarr;</a>' +
-      '</div>' +
+      (items.length > 8 ? '<details class="ops-phase-more"><summary>Show the other ' + (items.length - 8) + ' in this phase</summary><div class="ops-tool-links">' +
+        items.slice(8).map(function (i) {
+          var title = i.item.title || i.item.term || i.id;
+          return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
+            '<span>' + PS.esc(title) + '</span>' +
+            '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
+        }).join('') + '</div></details>' : '') +
+      '<div class="ops-phase-meta">' + PS.esc(counts) +
+      ' &middot; lifecycle stages ' + phase.stages[0] + (phase.stages.length > 1 ? '-' + phase.stages[phase.stages.length - 1] : '') + '</div>' +
       '</div>';
   });
   html += '</div>';
 
+  /* The parts of the library that are reference rather than work, and
+     that no single phase claims. */
+  var rest = [];
+  var claimed2 = {};
+  PS.LIFECYCLE_PHASES.forEach(function (p) { PS.phaseContent(p, claimed2); });
+  ['gloss', 'scen'].forEach(function (type) {
+    (PS.data[type] || []).forEach(function (item) {
+      var key = type + ':' + item.id;
+      if (claimed2[key]) return;
+      claimed2[key] = 1;
+      rest.push({ type: type, id: item.id, item: item, route: PS.routeFor(type, item.id) });
+    });
+  });
+
+  html += '<div class="card no-print"><div class="card-head"><h2>Reference</h2>' +
+    '<div class="spacer"></div><span class="badge">' + rest.length + ' items</span></div>' +
+    '<p class="card-sub">Glossary and worked scenarios. The scenarios are the situations the rest of this hub is for: each one is a full commercial problem with the judgement calls along the way.</p>' +
+    '<div class="ops-tool-links">' +
+    rest.map(function (i) {
+      var title = i.item.title || i.item.term || i.id;
+      return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
+        '<span>' + PS.esc(title) + '</span>' +
+        '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
+    }).join('') +
+    '</div></div>';
+
+  html += '<div class="card no-print"><div class="card-head"><h2>Everything else in the product</h2></div>' +
+    '<p class="card-sub">' + total + ' working documents are placed in the phases above, and these are the libraries they were drawn from.</p>' +
+    '<div class="btn-row">' +
+    '<a class="btn" href="#/list/sop">All SOPs</a>' +
+    '<a class="btn" href="#/list/cl">All checklists</a>' +
+    '<a class="btn" href="#/list/tpl">All templates</a>' +
+    '<a class="btn" href="#/list/calc">All calculators</a>' +
+    '<a class="btn" href="#/list/dec">All decision guides</a>' +
+    '<a class="btn" href="#/list/kpi">All KPIs</a>' +
+    '<a class="btn" href="#/list/kb">Knowledge Hub</a>' +
+    '<a class="btn" href="#/scenarios">All scenarios</a>' +
+    '<a class="btn" href="#/glossary">Glossary</a>' +
+    '</div></div>';
+
+  html += PS.disclaimer('policy');
   return html;
 });

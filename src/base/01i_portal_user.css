@@ -366,7 +366,29 @@
   border-radius: var(--r);
   padding: 18px 20px;
   transition: border-color 0.14s, transform 0.14s, box-shadow 0.14s;
+  min-width: 0;
 }
+.ops-phase-meta {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 0.68rem;
+  color: var(--mute);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ops-phase-more { margin-top: 8px; }
+.ops-phase-more > summary {
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ops);
+  padding: 4px 0;
+  list-style: revert;
+}
+.ops-phase-more > summary:hover { color: var(--text); }
+.ops-phase-more .ops-tool-links { margin-top: 6px; }
 .ops-phase-card:hover {
   border-color: var(--ops);
   transform: translateY(-2px);

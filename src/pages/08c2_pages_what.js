@@ -25,13 +25,15 @@ PS.route('what', function (arg, params) {
   return html;
 });
 PS.planGroups = [
+  { type: 'kb', title: 'Knowledge to read first', lead: 'Understand the concept before you act - it usually changes the approach.' },
+  { type: 'academy', title: 'Academy modules to work through', lead: 'The curriculum for this area, one function at a time, with a quiz and a sandbox in each.' },
   { type: 'sop', title: 'SOPs to follow', lead: 'These procedures govern the work. Open the SOP that matches your situation and work its steps in order.' },
   { type: 'cl', title: 'Checklists to complete', lead: 'Use these to prove each step happened and to capture evidence for the file.' },
   { type: 'calc', title: 'Calculators to run', lead: 'Quantify the decision before you commit. Each tool shows its formula, assumptions and interpretation.' },
   { type: 'tpl', title: 'Templates to complete', lead: 'Document the analysis and the decision in a form that survives review and audit.' },
   { type: 'dec', title: 'Decision guides to test', lead: 'Challenge your reasoning before the approval meeting, and record the basis.' },
-  { type: 'kpi', title: 'KPIs to measure or report', lead: 'Show whether the outcome improved and how it will be tracked.' },
-  { type: 'kb', title: 'Knowledge to read first', lead: 'Understand the concept before you act - it usually changes the approach.' }
+  { type: 'scen', title: 'Worked scenarios', lead: 'The situation in full, with the judgement calls along the way.' },
+  { type: 'kpi', title: 'KPIs to measure or report', lead: 'Show whether the outcome improved and how it will be tracked.' }
 ];
 PS.renderWhatResult = function (q) {
   var res = PS.search(q, { limit: 40 });
@@ -63,7 +65,7 @@ PS.renderWhatResult = function (q) {
   html += '<h3>The documentation question</h3><p>Whatever you do next, record: the requirement, the options considered, your evaluation criteria, the commercial analysis, the risks, the negotiation outcome, the decision, who approved it and the assumptions behind the numbers. That habit is what makes a procurement decision defensible later.</p>' +
     '<div class="btn-row no-print">' +
     '<a class="btn" href="#/list/tpl/Governance">Justification templates</a>' +
-    '<a class="btn" href="#/cl/cl-procurement-file">File completeness checklist</a>' +
+    '<a class="btn" href="#/cl/cl-procurement-file-completeness">File completeness checklist</a>' +
     '<a class="btn" href="#/help">How to document a decision</a>' +
     '<a class="btn btn-ghost" href="#/search?q=' + encodeURIComponent(q) + '">Open full search</a>' +
     '</div></div>';
