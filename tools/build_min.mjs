@@ -33,6 +33,7 @@
    ========================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { minify } from 'terser';
 import { fileURLToPath } from 'node:url';
 
@@ -113,10 +114,13 @@ console.log('source:     ' + path.basename(SRC) + '  ' + beforeKB.toFixed(0) + '
 console.log('output:     dist/index.html  ' + afterKB.toFixed(0) + ' KB (script ' + jsAfterKB.toFixed(0) + ' KB)');
 console.log('reduction:  ' + saved.toFixed(1) + '%');
 
-/* Report headroom against the same 1600 KB budget build.mjs enforces, so
-   the two numbers are directly comparable and the effect of this step on
-   the ceiling is visible in the build log rather than inferred. */
-const BUDGET_KB = 1600;
-console.log('headroom:   readable ' + (BUDGET_KB - beforeKB).toFixed(0) + ' KB / deployed ' +
-  (BUDGET_KB - afterKB).toFixed(0) + ' KB of the ' + BUDGET_KB + ' KB budget');
+/* Report headroom against the same ceiling build.mjs enforces. The
+   ceiling is a transfer time, not a byte count: 3 seconds at a
+   conservative 1.5 Mbps effective 4G rate, which is 576 KB of
+   compressed payload. See docs/adr/0002. */
+const GZIP_CEILING_KB = Math.round(3 * 1.5 / 8 * 1024);
+const gzipKB = zlib.gzipSync(fs.readFileSync(OUT), { level: 9 }).length / 1024;
+console.log('gzip:       ' + gzipKB.toFixed(0) + ' KB compressed (ceiling ' + GZIP_CEILING_KB +
+  ' KB, 3 s at 1.5 Mbps 4G; ' + (gzipKB * 8 / 1.5 / 1000).toFixed(2) + ' s to transfer)');
+console.log('headroom:   ' + (GZIP_CEILING_KB - gzipKB).toFixed(0) + ' KB of the ' + GZIP_CEILING_KB + ' KB compressed ceiling');
 console.log('MINIFIED BUILD: ok');
