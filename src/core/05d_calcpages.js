@@ -21,6 +21,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="spacer"></div>' +
     '<div class="btn-row tight no-print">' +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Load example</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="share">Share link</button>' +
     '</div></div>' +
     '<p class="lead mb0">' + PS.esc(calc.purpose) + '</p>' +
@@ -38,6 +39,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '</div>' +
     '<div class="btn-row tight" style="margin-top:8px">' +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Example</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear" data-i18n="calc.reset">Reset</button>' +
     '</div></div>' +
     '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +

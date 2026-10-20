@@ -415,6 +415,67 @@ if (strays.length) {
   ok('G14', 'every knowledge domain holds more than one concept (' + Object.keys(catCounts).length + ' domains)');
 }
 
+/* ---------- G15: every explanation carries its example ---------- */
+console.log('\nG15  worked examples');
+/* A worked example is part of the explanation, not a separate
+   reflection. The case study used to live only in the 'Think' tab, so
+   somebody reading how a function works never met an example of it
+   working. */
+let noExample = [];
+for (const f of PS.ACADEMY_FUNCTIONS || []) {
+  w.location.hash = '#/academy/' + encodeURIComponent(f.id) + '?tab=learn';
+  PS.renderRoute();
+  if (!w.document.querySelector('#main .academy-worked-example')) noExample.push(f.id);
+}
+if (noExample.length) {
+  fail('G15', noExample.length + ' Academy functions have no worked example in the explanation: ' + noExample.slice(0, 4).join(', '));
+} else {
+  ok('G15', 'every Academy function shows a worked example in the explanation (' + (PS.ACADEMY_FUNCTIONS || []).length + ' functions)');
+}
+
+/* Every calculator must be able to show itself working, and the
+   example has to cover the fields or it is not an example. */
+let noCalcExample = [];
+let partialExample = [];
+for (const c of PS.data.calc || []) {
+  if (!c.example) { noCalcExample.push(c.id); continue; }
+  const missing = (c.fields || []).filter((f) => c.example[f.k] === undefined && f.type !== 'check');
+  if (missing.length) partialExample.push(c.id + ' (' + missing.map((f) => f.k).join(',') + ')');
+}
+if (noCalcExample.length) {
+  fail('G15', 'calculators with no example data: ' + noCalcExample.join(', '));
+} else {
+  ok('G15', 'every calculator carries example data (' + (PS.data.calc || []).length + ' tools)');
+}
+if (partialExample.length) {
+  fail('G15', 'calculator examples do not cover every field: ' + partialExample.join('; '));
+} else {
+  ok('G15', 'every calculator example covers every field');
+}
+
+/* The random values must respect the rules the field declares, or the
+   reader concludes the tool is broken rather than that it is exploring. */
+let ruleBreaks = [];
+for (const c of PS.data.calc || []) {
+  if (!c.example) continue;
+  for (const f of c.fields || []) {
+    if (f.type === 'check' || f.type === 'select' || f.type === 'date' || f.type === 'text') continue;
+    for (let i = 0; i < 12; i++) {
+      const v = PS.calcRandomValue(f, c.example[f.k] !== undefined ? c.example[f.k] : f.def);
+      if (f.min !== undefined && f.min !== null && v < f.min) ruleBreaks.push(c.id + '.' + f.k + ' below min');
+      if (f.max !== undefined && f.max !== null && v > f.max) ruleBreaks.push(c.id + '.' + f.k + ' above max');
+      if (f.nonNegative && v < 0) ruleBreaks.push(c.id + '.' + f.k + ' negative');
+      if (f.positive && v <= 0) ruleBreaks.push(c.id + '.' + f.k + ' not positive');
+      if (f.int && v !== Math.round(v)) ruleBreaks.push(c.id + '.' + f.k + ' not whole');
+    }
+  }
+}
+if (ruleBreaks.length) {
+  fail('G15', 'random values break the field rules: ' + ruleBreaks.slice(0, 5).join(', '));
+} else {
+  ok('G15', 'random values respect every field rule');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

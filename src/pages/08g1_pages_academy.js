@@ -253,6 +253,8 @@ PS.renderFuncTabLearn = function (f) {
     '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span style="color:#059669">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
     '</div></div>';
 
+  html += PS.academyWorkedExample(f);
+
   if (f.terms && f.terms.length) {
     html += '<div class="card"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
       f.terms.map(function (t) {
@@ -318,6 +320,57 @@ PS.academyRoleRecommendation = function (funcs) {
     '</div></div>';
 };
 
+/* ---------- The worked example, in the explanation ----------
+   The case study used to live only in the 'Think' tab, which meant that
+   somebody reading how a function works never met an example of it
+   working. A worked example is part of the explanation, not a separate
+   reflection: it is what turns a definition into something you can see
+   happening. It is now in the 'Learn' tab, where the explanation is,
+   and the 'Think' tab keeps the deeper treatment and the reflection
+   prompts. */
+PS.academyWorkedExample = function (f) {
+  var tps = f.thinkingPoints || [];
+  var tp0 = tps[0] || null;
+  var sc = f.realScenario || null;
+  var body = '';
+  if (sc) {
+    body = '<h3>' + PS.esc(sc.title) + '</h3>' +
+      '<p>' + PS.esc(sc.situation) + '</p>' +
+      '<div class="alert alert-info"><strong>The dilemma:</strong> ' + PS.esc(sc.dilemma) + '</div>' +
+      '<h3>How it was resolved</h3>' +
+      '<p>' + PS.esc(sc.resolution) + '</p>';
+  } else if (tp0 && tp0.realWorldExample) {
+    body = '<h3>The situation</h3>' +
+      '<p>' + PS.esc(tp0.realWorldExample) + '</p>' +
+      '<h3>What the decision turned on</h3>' +
+      '<p>' + PS.esc(tp0.explanation) + '</p>' +
+      '<div class="alert alert-info"><strong>What to take away:</strong> ' + PS.esc(tp0.quote) + '</div>';
+  } else {
+    return '';
+  }
+  /* If this function has a calculator attached, the reader can go
+     straight from the example to the tool with the example already
+     loaded, which is the difference between reading about a
+     calculation and seeing one. */
+  var calcLink = '';
+  var calcIds = (f.rel && f.rel.calcs) || [];
+  if (calcIds.length) {
+    var cid = calcIds[0];
+    var c = PS.byId('calc', cid);
+    if (c) {
+      calcLink = '<div class="btn-row no-print" style="margin-top:12px">' +
+        '<a class="btn btn-primary" href="' + PS.routeFor('calc', cid) + '?example=1">' +
+        'Open ' + PS.esc(c.title) + ' with the example loaded</a>' +
+        '</div>';
+    }
+  }
+  return '<div class="card academy-worked-example">' +
+    '<div class="card-head"><h2>Worked example</h2><div class="spacer"></div>' +
+    '<span class="eyebrow">See it happen</span></div>' +
+    body + calcLink +
+    '</div>';
+};
+
 /* ---------- Linked library: the Academy connected to the content library ----------
    Every Academy function links out to the concepts that explain it, the
    SOP that governs it, the checklist that evidences it, the template
@@ -343,7 +396,13 @@ PS.academyLinkedTools = function (f) {
       var item = g.type === 'kb' ? PS.byId('kb', id) : PS.byId(g.type, id);
       if (!item) return '';
       var title = item.title || item.term || id;
-      return '<a class="chip" href="' + PS.routeFor(g.type, id) + '">' + PS.esc(title) + '</a>';
+      /* A calculator link from an explanation should arrive at a working
+         calculation, not at an empty form. An empty form looks like a
+         broken tool; a tool with the example already in it and the result
+         showing looks like a tool you can learn from. */
+      var href = PS.routeFor(g.type, id);
+      if (g.type === 'calc') href += '?example=1';
+      return '<a class="chip" href="' + href + '">' + PS.esc(title) + '</a>';
     }).filter(Boolean).join('');
     if (!chips) return;
     blocks.push('<div class="hub-linked-row"><span class="hub-linked-label">' + PS.esc(g.label) + '</span>' + chips + '</div>');

@@ -4,6 +4,7 @@
 PS.acts = PS.acts || {};
 PS.acts.calc = function () { PS.runCalc(false); };
 PS.acts.example = function () { PS.loadCalcExample(); };
+PS.acts['calc-random'] = function () { PS.loadCalcRandom(); };
 PS.acts.clear = function () {
   var calc = PS.byId('calc', PS.calcState.id);
   if (!calc) return;

@@ -7350,6 +7350,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<div class="spacer"></div>' +
     '<div class="btn-row tight no-print">' +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Load example</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="share">Share link</button>' +
     '</div></div>' +
     '<p class="lead mb0">' + PS.esc(calc.purpose) + '</p>' +
@@ -7367,6 +7368,7 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '</div>' +
     '<div class="btn-row tight" style="margin-top:8px">' +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Example</button>' +
+    '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear" data-i18n="calc.reset">Reset</button>' +
     '</div></div>' +
     '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
@@ -7455,6 +7457,12 @@ PS.calcPageInit = function (calc, params) {
     }
     var anchor = PS.$('#calcForm');
     if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(note, anchor);
+  } else if (params && params.example) {
+    /* A deep link from the Academy: 'see the example working'. The point
+       of the link is that the reader arrives at a finished calculation
+       rather than at an empty form, which is the difference between
+       a tool that looks broken and a tool that looks alive. */
+    PS.loadCalcExample(true);
   } else if (params && params.s) {
     var payload = PS.decodeHashPayload(params.s);
     if (payload && payload.v) {
@@ -7539,9 +7547,9 @@ PS.calcGuidance = function (calc) {
   return '<details class="acc"><summary>Professional guidance: when to use it, what it drives, what to document</summary>' +
     '<div class="acc-body">' + rows.join('') + '</div></details>';
 };
-PS.loadCalcExample = function () {
+PS.loadCalcExample = function (quiet) {
   var calc = PS.byId('calc', PS.calcState.id);
-  if (!calc || !calc.example) { PS.toast('No example data is available for this tool.'); return; }
+  if (!calc || !calc.example) { if (!quiet) PS.toast('No example data is available for this tool.'); return; }
   PS.setCalcInputs(calc.example);
   PS.showCalcErrors({});
   PS.runCalc(false);
@@ -7556,6 +7564,102 @@ PS.loadCalcExample = function () {
   box.innerHTML = '<strong>Example data loaded - replace with your own information.</strong>' +
     'The figures demonstrate how this tool behaves; they are not market data, benchmarks or supplier positions.';
 };
+/* ---------- Random plausible values ----------
+   Every calculator carries a curated example. That example is the
+   right thing to show a reader, and it is the wrong thing to explore
+   with: once you have seen one set of numbers you can see how the tool
+   behaves, but you cannot see whether it is right because you cannot
+   vary the inputs.
+
+   So there are two buttons. 'Example' loads the curated set, which is
+   the demonstration. 'Random values' perturbs it, which is the
+   exploration. The perturbation is deliberately wide enough to change
+   the answer - a five percent wobble would be a worse version of the
+   example - and deliberately narrow enough that the figures still look
+   like procurement rather than like noise.
+
+   The base for the perturbation is the example value where there is one,
+   then the field default, then a range that suits the unit. Constraints
+   declared on the field (integer, non-negative, minimum, maximum) are
+   respected, because a random value that breaks the field's own rules
+   teaches the reader that the tool is broken rather than that it is
+   exploring. */
+PS.calcRandomValue = function (f, base) {
+  var unit = f.unit || '';
+  var n = base;
+  if (n === null || n === undefined || n === '' || isNaN(n)) {
+    if (unit === 'percent') n = 8;
+    else if (unit === 'years') n = 5;
+    else if (unit === 'qty') n = 1000;
+    else if (unit === 'currency') n = 10000;
+    else n = 100;
+  }
+  n = PS.num(n);
+  /* Percentages live on a much smaller scale than money, so a
+     percentage gets a tighter wobble. */
+  var spread = unit === 'percent' ? 0.45 : 0.55;
+  var factor = 1 - spread + Math.random() * (spread * 2);
+  var out = n * factor;
+  if (f.int) out = Math.round(out);
+  else if (unit === 'currency') {
+    if (Math.abs(out) >= 1000) out = Math.round(out / 10) * 10;
+    else if (Math.abs(out) >= 100) out = Math.round(out);
+    else out = Math.round(out * 100) / 100;
+  } else if (unit === 'percent') out = Math.round(out * 100) / 100;
+  else out = Math.round(out * 100) / 100;
+  if (f.min !== undefined && f.min !== null && out < f.min) out = f.min;
+  if (f.max !== undefined && f.max !== null && out > f.max) out = f.max;
+  if (f.nonNegative && out < 0) out = 0;
+  if (f.positive && out <= 0) out = f.min !== undefined && f.min !== null ? f.min : 1;
+  return out;
+};
+PS.loadCalcRandom = function () {
+  var calc = PS.byId('calc', PS.calcState.id);
+  if (!calc) return;
+  var ex = calc.example || {};
+  var values = {};
+  (calc.fields || []).forEach(function (f) {
+    if (f.type === 'check') {
+      values[f.k] = Math.random() < 0.4;
+      return;
+    }
+    if (f.type === 'select') {
+      var opts = f.options || [];
+      if (!opts.length) { values[f.k] = f.def; return; }
+      /* Pick something other than the default most of the time, so the
+         reader sees a different branch of the decision, not the same
+         answer in a different order. */
+      var pick = Math.floor(Math.random() * opts.length);
+      if (opts.length > 1 && pick === opts.indexOf(f.def)) pick = (pick + 1) % opts.length;
+      var o = opts[pick];
+      values[f.k] = (o && typeof o === 'object') ? o.v : o;
+      return;
+    }
+    if (f.type === 'date' || f.type === 'text') {
+      values[f.k] = (ex[f.k] !== undefined) ? ex[f.k] : (f.def !== undefined ? f.def : '');
+      return;
+    }
+    var base = (ex[f.k] !== undefined && ex[f.k] !== null && ex[f.k] !== '') ? ex[f.k] : f.def;
+    values[f.k] = PS.calcRandomValue(f, base);
+  });
+  PS.setCalcInputs(values);
+  PS.showCalcErrors({});
+  PS.runCalc(false);
+  var box = PS.$('#exampleNote');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'exampleNote';
+    box.className = 'alert alert-info no-print';
+    var anchor = PS.$('#calcForm');
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(box, anchor);
+  }
+  box.innerHTML = '<strong>Random values loaded.</strong>' +
+    'These are plausible figures, not market data. Change any of them and the result moves, ' +
+    'which is how you check that the tool is telling you something about your numbers ' +
+    'rather than about the example.';
+  PS.toast('Random values loaded.', 'ok');
+};
+
 PS.calcSummaryText = function (calc, values, out) {
   var lines = [];
   lines.push(PS.APP + ' - ' + calc.title);
@@ -7666,6 +7770,7 @@ PS.res = function (label, value, note, status, primary) {
 PS.acts = PS.acts || {};
 PS.acts.calc = function () { PS.runCalc(false); };
 PS.acts.example = function () { PS.loadCalcExample(); };
+PS.acts['calc-random'] = function () { PS.loadCalcRandom(); };
 PS.acts.clear = function () {
   var calc = PS.byId('calc', PS.calcState.id);
   if (!calc) return;
@@ -7944,6 +8049,7 @@ PS.i18n.CATALOG = {
 
     'calc.calculate': 'Calculate',
     'calc.example': 'Load example',
+  'calc.random': 'Random values',
     'calc.reset': 'Reset',
     'calc.save': 'Save to workspace',
     'calc.markdown': 'Copy as Markdown',
@@ -7994,6 +8100,7 @@ PS.i18n.CATALOG = {
 
     'calc.calculate': 'Calcular',
     'calc.example': 'Cargar ejemplo',
+  'calc.random': 'Valores aleatorios',
     'calc.reset': 'Restablecer',
     'calc.save': 'Guardar en espacio de trabajo',
     'calc.markdown': 'Copiar como Markdown',
@@ -13538,6 +13645,8 @@ PS.renderFuncTabLearn = function (f) {
     '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span style="color:#059669">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
     '</div></div>';
 
+  html += PS.academyWorkedExample(f);
+
   if (f.terms && f.terms.length) {
     html += '<div class="card"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
       f.terms.map(function (t) {
@@ -13603,6 +13712,57 @@ PS.academyRoleRecommendation = function (funcs) {
     '</div></div>';
 };
 
+/* ---------- The worked example, in the explanation ----------
+   The case study used to live only in the 'Think' tab, which meant that
+   somebody reading how a function works never met an example of it
+   working. A worked example is part of the explanation, not a separate
+   reflection: it is what turns a definition into something you can see
+   happening. It is now in the 'Learn' tab, where the explanation is,
+   and the 'Think' tab keeps the deeper treatment and the reflection
+   prompts. */
+PS.academyWorkedExample = function (f) {
+  var tps = f.thinkingPoints || [];
+  var tp0 = tps[0] || null;
+  var sc = f.realScenario || null;
+  var body = '';
+  if (sc) {
+    body = '<h3>' + PS.esc(sc.title) + '</h3>' +
+      '<p>' + PS.esc(sc.situation) + '</p>' +
+      '<div class="alert alert-info"><strong>The dilemma:</strong> ' + PS.esc(sc.dilemma) + '</div>' +
+      '<h3>How it was resolved</h3>' +
+      '<p>' + PS.esc(sc.resolution) + '</p>';
+  } else if (tp0 && tp0.realWorldExample) {
+    body = '<h3>The situation</h3>' +
+      '<p>' + PS.esc(tp0.realWorldExample) + '</p>' +
+      '<h3>What the decision turned on</h3>' +
+      '<p>' + PS.esc(tp0.explanation) + '</p>' +
+      '<div class="alert alert-info"><strong>What to take away:</strong> ' + PS.esc(tp0.quote) + '</div>';
+  } else {
+    return '';
+  }
+  /* If this function has a calculator attached, the reader can go
+     straight from the example to the tool with the example already
+     loaded, which is the difference between reading about a
+     calculation and seeing one. */
+  var calcLink = '';
+  var calcIds = (f.rel && f.rel.calcs) || [];
+  if (calcIds.length) {
+    var cid = calcIds[0];
+    var c = PS.byId('calc', cid);
+    if (c) {
+      calcLink = '<div class="btn-row no-print" style="margin-top:12px">' +
+        '<a class="btn btn-primary" href="' + PS.routeFor('calc', cid) + '?example=1">' +
+        'Open ' + PS.esc(c.title) + ' with the example loaded</a>' +
+        '</div>';
+    }
+  }
+  return '<div class="card academy-worked-example">' +
+    '<div class="card-head"><h2>Worked example</h2><div class="spacer"></div>' +
+    '<span class="eyebrow">See it happen</span></div>' +
+    body + calcLink +
+    '</div>';
+};
+
 /* ---------- Linked library: the Academy connected to the content library ----------
    Every Academy function links out to the concepts that explain it, the
    SOP that governs it, the checklist that evidences it, the template
@@ -13628,7 +13788,13 @@ PS.academyLinkedTools = function (f) {
       var item = g.type === 'kb' ? PS.byId('kb', id) : PS.byId(g.type, id);
       if (!item) return '';
       var title = item.title || item.term || id;
-      return '<a class="chip" href="' + PS.routeFor(g.type, id) + '">' + PS.esc(title) + '</a>';
+      /* A calculator link from an explanation should arrive at a working
+         calculation, not at an empty form. An empty form looks like a
+         broken tool; a tool with the example already in it and the result
+         showing looks like a tool you can learn from. */
+      var href = PS.routeFor(g.type, id);
+      if (g.type === 'calc') href += '?example=1';
+      return '<a class="chip" href="' + href + '">' + PS.esc(title) + '</a>';
     }).filter(Boolean).join('');
     if (!chips) return;
     blocks.push('<div class="hub-linked-row"><span class="hub-linked-label">' + PS.esc(g.label) + '</span>' + chips + '</div>');

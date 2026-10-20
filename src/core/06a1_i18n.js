@@ -56,6 +56,7 @@ PS.i18n.CATALOG = {
 
     'calc.calculate': 'Calculate',
     'calc.example': 'Load example',
+  'calc.random': 'Random values',
     'calc.reset': 'Reset',
     'calc.save': 'Save to workspace',
     'calc.markdown': 'Copy as Markdown',
@@ -106,6 +107,7 @@ PS.i18n.CATALOG = {
 
     'calc.calculate': 'Calcular',
     'calc.example': 'Cargar ejemplo',
+  'calc.random': 'Valores aleatorios',
     'calc.reset': 'Restablecer',
     'calc.save': 'Guardar en espacio de trabajo',
     'calc.markdown': 'Copiar como Markdown',
