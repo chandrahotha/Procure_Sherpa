@@ -165,7 +165,7 @@ the part worth recording.
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
   The script compiles in 21 ms, the application boots to a rendered first
-  page in 32 ms, and 539 KB reaches a browser once gzipped. The gate now
+  page in 104 ms, and 546 KB reaches a browser once gzipped. The gate now
   measures all three, because the previous 1300 KB "JS payload ceiling"
   was never derived from anything and had quietly become the rule
   instead of the reason. The transfer ceiling is derived from "3 seconds

@@ -62,28 +62,33 @@ reproducible on any machine with the dev dependencies installed:
    routes) and rendering the first page. It is the application-side
    share of first paint; transfer is covered by the byte budget.
 
-Measured on the artifact as it stood:
+Measured on the artifact as it stands at the end of the v2.4 revamp
+(2026-10-20). The ceilings are derived, not chosen, so they move with
+the reason they exist rather than with the content.
 
 | Measurement | Measured | Ceiling | Headroom |
 |---|---|---|---|
-| **Transfer time, 3 s at 1.5 Mbps 4G** | **2.76 s** | 3.0 s | 8% |
-| Compressed download, committed artifact | **518 KB gzip** | 576 KB | 10% |
-| Compressed download, deployed artifact | 444 KB gzip | 490 KB | 9% |
-| Script compile (full V8 parse, pessimistic) | 21 ms | 400 ms | 19x |
-| Script load (parse, compile, define every content record) | 8 ms | — | — |
-| Application boot to first rendered page | 32 ms | 500 ms | 15x |
-| Committed readable artifact | 1868 KB | not gated | — |
+| **Transfer time, 3 s at 3 Mbps 4G** | **1.46 s** | 3.0 s | 51% |
+| Compressed download, committed artifact | **546 KB gzip** | 1152 KB | 53% |
+| Compressed download, deployed artifact | 484 KB gzip | 979 KB | 51% |
+| Script compile (full V8 parse, pessimistic) | 65 ms | 400 ms | 6.2x |
+| Script load (parse, compile, define every content record) | 33 ms | - | - |
+| Application boot to first rendered page | 104 ms | 500 ms | 4.8x |
+| Committed readable artifact | 1976 KB | not gated | - |
+
 
 Two of those numbers were wrong the first time they were measured, and
 the correction matters.
 
 **The byte ceilings were measuring the wrong thing.** The committed
-artifact is 1.87 MB because it is deliberately unminified so that a
+artifact is 1.98 MB because it is deliberately unminified so that a
 procurement team can read every line of the thing they are about to
 trust with commercial decisions. What a browser receives is the
-compressed form: 518 KB, which is 2.76 seconds at a conservative
-1.5 Mbps. Gating on the uncompressed size was gating on bytes nobody
-receives, and it had quietly become the rule instead of the reason.
+compressed form: 546 KB, which is 1.46 seconds at 3 Mbps. Gating on the
+uncompressed size was gating on bytes nobody receives, and it had
+quietly become the rule instead of the reason. (When this ADR was first
+written the compressed download was 518 KB at the 1.5 Mbps rate the
+ceiling wrongly used, which is where those figures came from.)
 
 **The boot probe was not measuring the application.** The first
 version of the probe stripped the `<script>` element out of the artifact
@@ -91,8 +96,9 @@ before loading it, so it was timing jsdom's HTML parser rather than
 Procure Sherpa, and reporting 241 ms and later 818 ms for an
 application that was in fact starting in 32 ms. The probe now keeps the
 script and marks both ends of it, which is what separates the three
-real costs: 21 ms to parse and compile, 8 ms to define every content
-record, and 32 ms from boot to a rendered first page.
+real costs. On the current artifact they are 65 ms to parse and compile,
+33 ms to define every content record, and 104 ms from boot to a rendered
+first page.
 
 **The gate is now stated in the units that matter.** The hard limit is
 a transfer time: 3 seconds at a conservative effective 4G rate. The
@@ -143,13 +149,15 @@ entire value is its content.
   now a transfer time, derived from the trigger, and it is measured on
   every build. The curriculum is data, and data is what the user
   downloads, so the constraint is the honest one.
-- **The transfer time is the one to watch.** 2.76 s against a 3.00 s
-  trigger is 8% of headroom, and it is the tightest number in the
-  build. The next content release will need to be measured against it
-  rather than against a byte count.
+- **The transfer time is the one to watch.** 1.46 s against a 3.00 s
+  trigger is 51% of headroom, and it is still the tightest number in
+  the build. The next content release will need to be measured against
+  it rather than against a byte count. It was 2.76 s against the same
+  trigger when this ADR was first written, at the 1.5 Mbps rate the
+  ceiling wrongly used.
 - **The boot measurement is now trustworthy and it is not the
-  constraint.** 32 ms from boot to a rendered first page, with 21 ms
-  to parse and compile and 8 ms to define every content record. The
+  constraint.** 104 ms from boot to a rendered first page, with 65 ms
+  to parse and compile and 33 ms to define every content record. The
   application is not a first-paint problem; the download is.
 - **The measurement must not be allowed to rot.** The probes live in
   `tools/perf_check.mjs` and `tools/_perf_boot_run.mjs` and run in

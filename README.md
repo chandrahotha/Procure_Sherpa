@@ -99,7 +99,7 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 
 | # | Capability | Summary |
 |---|---|---|
-| 1 | Command Center & Unified Navigation | One home, one 6-section sidebar on every route |
+| 1 | Command Center & Unified Navigation | One home, one sidebar scoped to the track you chose |
 | 2 | Procurement Academy | 11 modules, 28 functions, 140 SOP steps, 112 questions, 5-tab pedagogy, certification exams |
 | 3 | Visual Analytics Engine | Waterfall, Kraljic matrix, Pareto curve, Altman Z-Score, all inline SVG |
 | 4 | Crisis Simulation Sandboxes | 10 hands-on commercial scenarios with live calculation models |
@@ -117,10 +117,12 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 
 ### 2. Procurement Academy & Competency Curriculum
 
-* **11 Modules, 28 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), Supplier Management & Value Realization, Services/Software/Indirect Procurement, and Risk/Compliance/Ethics/Sustainability.
+* **11 Modules, 28 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), Supplier Management & Value Realization, Services/Software/Indirect Procurement, Risk/Compliance/Ethics/Sustainability, and Digital Procurement/Analytics/Category Strategy.
+* **The curriculum is always in module order.** Module 1 to Module 11, for every role. The module number is the sequence, and a page whose first badge reads 'Module 7' tells the reader the page is broken. The role does not rearrange the curriculum; it recommends, in a panel directly under the hero, which modules carry that job's work - a compliance officer is pointed at Modules 4, 6, 8 and 10, a buyer at 2, 7 and 9 - and the curriculum below still runs 1 to 11.
+* **Every function carries a worked example, in the explanation.** A case study is part of how a function works, not a separate reflection, so it sits in the Learn tab rather than the Think tab. The example links to the matching calculator with `?example=1`, so the reader arrives at a finished calculation rather than an empty form, and 27 of the 28 functions link to the workbench where that work is actually practised.
 * **Disciplined 5-Tab Learning Pedagogy** per function:
-  1. **Core Concept**: Theoretical foundation, commercial relevance, process walkthroughs, common failure modes, and governance rules.
-  2. **Procurement Mindset**: Executive perspective, commercial thinking points, and enterprise case studies.
+  1. **Core Concept**: Theoretical foundation, commercial relevance, a worked example you can see happening, process walkthroughs, common failure modes, and governance rules.
+  2. **Procurement Mindset**: Executive perspective, commercial thinking points, and the full enterprise case study with the reflection prompts.
   3. **Digital SOP**: Controlled procedural workflows detailing step roles, mandatory controls, records generated, and common pitfalls.
   4. **Interactive Practice**: Scenario-based knowledge evaluations featuring escalating difficulty tiers and automated tactical advisor tips triggered on mistakes.
   5. **Apply in Laboratory**: Interactive commercial crisis simulation sandboxes paired with hands-on laboratory missions.
@@ -174,6 +176,25 @@ Procure Sherpa is not a legally authorized issuer of procurement credentials, so
 
 ---
 
+### 9. Workbenches: your own records, held locally
+
+The library teaches. The workbenches are where the work happens. All eight are local, all hold your own records, and all travel in the backup.
+
+| Workbench | Holds | Computes |
+|---|---|---|
+| **RFx & Evaluation** (`#/rfx`) | Events, criteria, weights, bids | Landed cost per bid, weighted score, a written award recommendation, and the tension between the lowest landed cost and the highest score |
+| **Supplier Register** (`#/suppliers`) | Contacts, qualification score, risk tier, approval state | Spend, risk distribution, high-risk count |
+| **Contract Register** (`#/contracts`) | Value, key dates, notice deadline, obligations | Notice deadlines inside 180 days, auto-renewal exposure |
+| **Catalogue & Price Book** (`#/catalogue`) | Items with specification, unit of measure, pack size, price | Price against a dated benchmark, items with no specification |
+| **Receipts & Invoicing** (`#/receipts`) | Order, receipt and invoice as three numbers | Price variance, quantity variance at the invoiced price, uncontracted charges, duplicate invoices |
+| **Budget & Spend** (`#/budget`) | Budget lines, committed, actual | Available, percentage used, against the spend model |
+| **Approvals & Policy** (`#/approvals`) | Thresholds, chains, policy rules | The approval ladder, lowest limit first |
+| **Analytics** (`#/analytics`) | Everything above | Spend by category, supplier risk, pipeline, match exposure, expiring contracts |
+
+**What they do not do is the thing only a system of record can do.** The receipt workpaper finds the variance and does not release a payment. The approvals workbench records a delegation of authority and does not route an approval or block a purchase. The RFx workbench produces an award recommendation and does not constitute a tender.
+
+**Every calculator can show itself working.** All 19 carry curated example data and a **Load example** button. **Random values** perturbs the example enough to change the answer and little enough that the figures still look like procurement, while respecting every rule the field declares - a random value that breaks the field's own rules teaches the reader that the tool is broken rather than that it is exploring.
+
 ## Browser Compatibility
 
 Procure Sherpa targets **modern evergreen browsers** (Chrome, Edge, Firefox, Safari — latest 2 versions). The source is written in ES5 syntax for auditability, but the runtime uses ES2015+ built-ins (`Set`, `Map`, `Promise`, `Object.keys`, `Array.isArray`, `Number.EPSILON`). Internet Explorer is **not** supported.
@@ -202,7 +223,7 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 <https://procuresherpa.vercel.app> runs the current `main`. It behaves
 identically to the downloaded file - still no server-side state, no accounts
 and no telemetry - but it serves the **minified** build (~1.55 MB instead of
-~1.87 MB, and ~466 KB over the wire once gzipped) and adds transport-level
+~1.98 MB, and ~546 KB over the wire once gzipped) and adds transport-level
 hardening: HSTS, `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and a
 restrictive `Permissions-Policy`.
@@ -224,7 +245,7 @@ ship an artifact that has not passed the same checks CI runs. It then
 deploys from a staging copy of the working tree that has no `.git`
 directory, and `npm run verify:deploy` loads the **served** bytes and
 asserts the same things the local gate asserts: the content registries
-are populated, all 43 routes render real content with no sentinel
+are populated, all 52 routes render real content with no sentinel
 leaks, every internal link resolves, the navigation has the expected
 shape and highlights correctly, and every cross-tool handoff still
 carries data.
@@ -353,7 +374,7 @@ npm run verify:min
 # Calculator correctness: asserts every calcImpl produces well-formed, finite output
 node tools/test_calcs.mjs
 
-# Run full route smoke tests across all 43 routes
+# Run full route smoke tests across all 52 routes
 node tools/smoke.mjs
 
 # Validate cross-reference referential integrity
@@ -374,7 +395,7 @@ node tools/test_layout.mjs
 node tools/perf_check.mjs
 ```
 
-`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1021 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (43 routes), responsive layout & dynamic UI verification (15 assertions), AST-based security scan (Espree traversal), accessibility scan (38 routes), the integrity gate, the measured performance budget, the i18n coverage audit (100% shell catalog keys wired across English and Spanish), and finally the minified deploy build re-verified with the smoke, calculator, accessibility, and layout suites.
+`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1021 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (72 route renders across both navigation views), responsive layout & dynamic UI verification (29 assertions), the integrity gate (19 gates, 46 assertions), AST-based security scan (Espree traversal), accessibility scan (38 routes), the measured performance budget, the i18n coverage audit (100% shell catalog keys wired across English and Spanish), and finally the minified deploy build re-verified with the smoke, calculator, accessibility, and layout suites.
 
 `npm run qa:ci` is what CI actually runs. It prefixes the suite with `npm run check:drift`, which must happen *before* anything rebuilds: `npm run qa` starts with `node build.mjs`, so running the drift check after it would regenerate the artifact and erase the very mismatch the check exists to find.
 
@@ -426,9 +447,9 @@ Documented here deliberately, rather than left for someone to discover:
 * **This is a single-user tool, not an enterprise system.** There is no server, no database, no account, no authentication and no multi-user state. Everything you enter lives in one browser's `localStorage` and disappears if that storage is cleared — use `#/backup` to export, which now carries the workbench records with it. The audit trail is a local convenience log, not a tamper-evident record, and nothing here is a system of record.
 * **The workbenches are workpapers, not a system of record.** The eight workbenches hold your own suppliers, contracts, catalogue, budgets, bids, receipts and approvals, and they compute real answers from them: a landed cost, a weighted score, a three-way-match variance, a budget position, a pipeline. What they do not do is the things only a system of record can do. The receipt workpaper finds the variance and does not release a payment. The approvals workbench records a delegation of authority and does not route an approval, notify anyone, or block a purchase. The RFx workbench produces an award recommendation and does not constitute a tender. A sign-off is evidence that a named person took a decision, and it is worth exactly as much as that person is.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
-* **The single-file design has a ceiling, and it is now measured rather than guessed.** The readable artifact is ~1.95 MB, of which ~539 KB reaches a browser once gzipped. All of it is parsed before first paint, and there is no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.61 MB, ~539 KB gzipped) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the architecture decision, the trigger conditions for revisiting it, and what the alternatives would actually cost. [`docs/adr/0002-measured-performance-budget.md`](docs/adr/0002-measured-performance-budget.md) replaces the guessed byte ceilings with measured ones: script compile time (21 ms, full V8 parse), application boot to first rendered page (32 ms), and transferred size (539 KB gzipped, 1.44 s at 3 Mbps) are all hard gates in `npm run perf`.
+* **The single-file design has a ceiling, and it is now measured rather than guessed.** The readable artifact is ~1.98 MB, of which ~546 KB reaches a browser once gzipped. All of it is parsed before first paint, and there is no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.62 MB, ~484 KB gzipped) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the architecture decision, the trigger conditions for revisiting it, and what the alternatives would actually cost. [`docs/adr/0002-measured-performance-budget.md`](docs/adr/0002-measured-performance-budget.md) replaces the guessed byte ceilings with measured ones: script compile time (65 ms, full V8 parse), application boot to first rendered page (104 ms), and transferred size (546 KB gzipped, 1.46 s at 3 Mbps) are all hard gates in `npm run perf`. The timing budgets are measured twice before they fail, because a wall-clock measurement on a machine that is also running something else is a measurement of the machine as much as of the build; the size budgets are never retried, because they are facts about the file.
 * **The QA badge reports the account's Actions state, not the code.** When GitHub cannot allocate a runner, the job is created with no steps and fails within seconds with *"recent account payments have failed or your spending limit needs to be increased"* (Settings -> Billing & plans). That is an account-level block and it looks identical to a broken build. The same gate runs locally with `npm run qa`, which is what `npm run deploy` uses before it will publish anything, so a release never depends on the hosted runner being available.
-* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 14 gates. It renders all 52 routes and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control has a handler; that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the role reorders the curriculum and the track changes the entry point; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
+* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 19 gates, 46 assertions. It renders all 52 routes in both navigation views and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control has a handler; that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the curriculum is in module order for every role and the role recommends rather than rearranges; that resume points at unfinished work; that every learning path is ascending; that every function shows a worked example and every calculator carries example data; that the menu is scoped to the track and the page you are on is in the menu; that no symbol has been mangled; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
 
 ---
 
