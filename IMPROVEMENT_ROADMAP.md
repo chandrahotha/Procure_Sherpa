@@ -37,8 +37,11 @@ truth badly in a dozen places.
 
 The sidebar was hiding itself on the landing page, failing to light up on
 8 of its 37 items, and pointing at a page that said "not available yet".
-It is now **five sections of 33 items plus a permanent footer strip**:
-Start, Learn, Do the Work, Look It Up, My Work. Four orphan routes were
+It is now **six sections of 39 items plus a permanent footer strip**:
+Start, Learn, Workbench, Toolkit, Look It Up, My Work. The Workbench
+section is where you record your own work and the Toolkit section is
+where the procedures live, and they are named differently because they
+do different things. Four orphan routes were
 rescued (`#/operations`, `#/dash`, `#/audit`, `#/career-paths`), four
 dead ends were removed with a stated reason, and every one of the
 previous 37 items is accounted for in a ledger in `04b1_navdata.js`. The
@@ -49,15 +52,18 @@ strip, and the layout no longer overflows on a phone.
 
 | | Before | After |
 |---|---|---|
-| Academy modules | 8 | **10** |
-| Academy functions | 19 | **25** |
-| Functions with a library link | 0 | **25** |
+| Academy modules | 8 | **11** |
+| Academy functions | 19 | **28** |
+| Functions with a library link | 0 | **28** |
 | Content items with no inbound link | 201 | **0** |
-| Learning paths | 3, covering 8 functions | 4, covering all 25 |
-| Skill portfolio areas | 6, covering 8 functions | 7, covering all 25 |
-| Badges | 8, with 7 of 19 functions earning none | 13, with every function covered |
+| Learning paths | 3, covering 8 functions | 4, covering all 28 |
+| Skill portfolio areas | 6, covering 8 functions | 7, covering all 28 |
+| Badges | 8, with 7 of 19 functions earning none | 12, with every function covered |
+| SOP steps | 96 | **140** |
+| Knowledge-check questions | 76 | **112** |
+| Question options | 274 | **411** |
 
-The two new modules are **Services, Software and Indirect Procurement**
+The three new modules are **Services, Software and Indirect Procurement**
 (indirect and MRO, software and SaaS licensing, professional services)
 and **Risk, Compliance, Ethics and Sustainability** (sustainable
 procurement, anti-bribery and third-party due diligence, supplier
@@ -66,14 +72,69 @@ and Supply Cycle, the OECD Guidelines for Multinational Enterprises, the
 UK Bribery Act 2010 section 7, the FCPA books-and-records provisions
 and the GHG Protocol Scope 3 standard.
 
+### Eight workbenches, so the toolkit can hold your own records
+
+The library was a reference. Everything a procurement professional
+actually has to keep - their suppliers, their contracts, their
+catalogue, their bids, their receipts, their budget - lived in a
+spreadsheet they had to keep, or nowhere at all. Eight workbenches now
+hold it, all local, all connected to the library that teaches you what
+to do with it.
+
+| Workbench | What it holds | What it computes |
+|---|---|---|
+| RFx and Evaluation | Events, criteria, weights, bids | Landed cost per bid, weighted score, written award recommendation, and the tension between the lowest cost and the highest score |
+| Supplier Register | Contacts, qualification score, risk tier, approval state | Spend, risk distribution, high-risk count |
+| Contract Register | Value, key dates, notice deadline, obligations | Notice deadlines inside 180 days, auto-renewal exposure |
+| Catalogue and Price Book | Items with specification, unit of measure, pack size, price | Price against a dated benchmark, items with no specification |
+| Receipts and Invoicing | Order, receipt and invoice as three numbers | Price variance, quantity variance at the invoiced price, uncontracted charges, duplicate invoices |
+| Budget and Spend | Budget lines, committed, actual | Available, percentage used, against the spend model |
+| Approvals and Policy | Thresholds, chains, policy rules | The approval ladder, lowest limit first |
+| Analytics | Everything above | Spend by category, supplier risk, pipeline, match exposure, expiring contracts |
+
+What they do not do is the thing only a system of record can do. The
+receipt workpaper finds the variance and does not release a payment.
+The approvals workbench records a delegation of authority and does not
+route an approval or block a purchase. The RFx workbench produces an
+award recommendation and does not constitute a tender. A sign-off is
+evidence that a named person took a decision, and it is worth exactly as
+much as that person is.
+
+### The role and the track finally do something
+
+The profile has carried a role and a track since the beginning. Twenty
+two places read them and every one of them was rendering the label:
+"Procurement Beginner & Enthusiast" next to "Academy Learner" in a
+pill, and nothing else. The promises in the track descriptions -
+"prioritize structured learning modules" and "prioritize daily
+execution tools" - were not implemented anywhere.
+
+They are now. The role decides the order the curriculum is presented in,
+because a role is a job and a job has a sequence of work in it. A
+compliance officer meets Module 4 (supplier evaluation and risk) and
+Module 10 (risk, compliance, ethics and sustainability) before Module 1.
+A buyer meets Module 7 (P2P order execution) and Module 9 (services,
+software and indirect) first. A category manager meets Module 11
+(digital, analytics and category strategy) early, because that is where
+their work lives. A beginner gets the natural order, because that is the
+order it is meant to be taught in.
+
+The track decides where the product starts you. An operational
+practitioner lands on the Operations Hub rather than on the Academy.
+The track deliberately does not override the role: a compliance officer
+wants the risk and contracting modules first whether they came here to
+learn or to work.
+
 ### Two engineering decisions were written down
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
   The script compiles in 21 ms, the application boots to a rendered first
-  page in 244 ms, and 446 KB reaches a browser once gzipped. The gate now
+  page in 32 ms, and 539 KB reaches a browser once gzipped. The gate now
   measures all three, because the previous 1300 KB "JS payload ceiling"
   was never derived from anything and had quietly become the rule
-  instead of the reason.
+  instead of the reason. The transfer ceiling is derived from "3 seconds
+  on 4G" at 3 Mbps, so it is 1152 KB gzipped and cannot drift away from
+  the reason it exists the way a hand-picked number can.
 - **The integrity gate** (`npm run test:integrity`) asserts what the
   other tests could not: that no route leaks `undefined`, that every
   internal link resolves, that every control has a handler, that every

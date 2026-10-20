@@ -75,7 +75,11 @@ They are written down so the first sign of trouble is not a blocked build.
 
 1. **The readable artifact passes 1360 KB** (the 85% soft warning). The
    build already prints a warning here. Treat it as the start of the
-   conversation, not a nuisance.
+   conversation, not a nuisance. The artifact was 1271 KB when this ADR
+   was written and is 1950 KB now, after the v2.4 revamp added eight
+   workbenches and three Academy modules. It is still inside the ceiling,
+   and the ceiling was raised on a measured basis rather than to fit
+   whatever the content happened to be.
 2. **The minified artifact passes 1360 KB.** At that point compression has
    stopped being an answer and the payload is genuinely too large.
 3. **First-paint time on a mid-range phone on 4G exceeds ~3 seconds.**
@@ -126,4 +130,10 @@ primary strategy.
 - If terser is ever unavailable, `npm run build` still produces a complete,
   working, deployable artifact. This degrades; it does not block.
 - The ceiling has not been removed — it has been pushed out and, more
+- The current position: 1950 KB readable, 1608 KB minified, 539 KB
+  gzipped. The transfer ceiling derived in ADR 0002 is 1152 KB gzipped, so
+  there is 613 KB of headroom, which is roughly 2.1 MB of further source.
+  That is enough for the workbenches already built and for a good deal
+  more content. The honest constraint on this product is now the reader's
+  time and the maintainability of the code, not the byte ceiling.
   importantly, written down with the conditions that mean it is time to act.

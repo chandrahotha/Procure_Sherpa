@@ -51,7 +51,8 @@ const TOKEN = process.env.VERCEL_TOKEN || '';
 
 /* Remove the staged copy, retrying briefly, and never failing the
    release over it. */
-function cleanupStage(dir) {
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function cleanupStage(dir) {
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
@@ -61,7 +62,7 @@ function cleanupStage(dir) {
         console.warn('\nNote: the staged copy at ' + dir + ' could not be removed (' + e.code + '). It is safe to delete manually.');
         return;
       }
-      spawnSync('ping', ['-n', '2', '127.0.0.1'], { stdio: 'ignore', shell: true });
+      await sleep(600);
     }
   }
 }
@@ -105,7 +106,7 @@ if (DRY) {
   console.log('\nDRY RUN: built and verified, deployment skipped.');
   console.log('  artifact : ' + (fs.statSync(path.join(ROOT, 'ProcureSherpa-v2.0.html')).size / 1024).toFixed(0) + ' KB');
   console.log('  deploy   : ' + (fs.statSync(path.join(ROOT, 'dist', 'index.html')).size / 1024).toFixed(0) + ' KB');
-  cleanupStage(stage);
+  await cleanupStage(stage);
   process.exit(0);
 }
 
@@ -122,6 +123,6 @@ run('npx', deployArgs, { cwd: stage });
    release after it had already gone live. A leftover temporary
    directory is a nuisance; a failed exit code that hides a
    successful deployment is worse. */
-cleanupStage(stage);
+await cleanupStage(stage);
 console.log('\nDeployed. Verify with:');
 console.log('  npx --yes vercel@latest inspect --logs');

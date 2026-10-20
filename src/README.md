@@ -4,7 +4,7 @@ This repository utilizes a modular multi-file architecture. The standalone `Proc
 
 ```
 src/
-  manifest.txt          Linear assembly sequence (155 fragments).
+  manifest.txt          Linear assembly sequence (177 fragments).
                         The build compiler concatenates files in this exact order.
                         To add a fragment: create the file in the designated folder,
                         then insert its path in manifest.txt.
@@ -31,6 +31,14 @@ src/
                         05a..05d_*          Calculator forms, validation, result formatters
                         06a..06e_*          Action controllers, templates, backup archives,
                                             i18n, exams, copilot, spend model, docpack
+                        06f1_workbench      The workbench framework: one local record
+                                            store, one form language, one table
+                                            renderer, one export path, one sign-off
+                                            mechanism, shared by all eight workbenches
+                        06f2_workbench_specs The field specification for every workbench
+                                            record, declared once so the form, the
+                                            table, the validation and the export
+                                            read the same definition
                         07a..07b_*          Boot lifecycle and global event wiring
                          06b1_actions_markdown Full-fidelity Markdown export for every content type
                          08g1a_sandbox_models  The eleven crisis sandboxes as data, plus the
@@ -50,10 +58,18 @@ src/
                         08g3_pages_certificate Certificate feature - disabled, honest placeholder
                                             (not a legally authorized credential issuer; see root README)
                         08h1..08h4_*        Copilot, exams, spend model, doc pack builder
+                        08i1..08i7_*        Learning paths, assessment, portfolio, career
+                                            paths, next lesson, daily tip
+                        08j1_pages_wb_registry The supplier, contract, catalogue and
+                                            approval workbenches
+                        08j2_pages_wb_rfx   The RFx and evaluation workbench: events,
+                                            criteria, weights, bids, award
+                        08j3_pages_wb_ops   The receipts, budget and analytics
+                                            workbenches
 
   content/              Controlled Knowledge Libraries
                         09*..18*            Concepts, SOPs, checklists, templates, KPIs
-                        19a..19d_*          10 modules / 25 Academy digital procurement functions
+                        19a..19e_*          11 modules / 28 Academy digital procurement functions
 
   calcs/                Financial & Operational Calculators
                         20*..38*            19 paired calculator definitions and math algorithms
@@ -69,6 +85,6 @@ src/
 5. **Validation Protocol**: After editing source fragments, run:
    * `node build.mjs` to assemble and perform AST syntax validation.
    * `npm run qa` for the full gate: rels, calculators, interactive checks,
-     content QA, smoke (43 routes), the integrity gate, security, a11y, and
+     content QA, smoke (52 routes), the 14-gate integrity suite, security, a11y, and
      the measured performance budget.
    * `node tools/check_rels.mjs` on its own to verify cross-reference relational integrity quickly.
