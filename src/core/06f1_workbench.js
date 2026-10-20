@@ -84,7 +84,11 @@ PS.wb.fieldHtml = function (f, value) {
   } else {
     control = '<input type="text" ' + common + ' value="' + PS.esc(v) + '" maxlength="240">';
   }
-  return '<div class="field" style="margin-bottom:12px">' +
+  /* A textarea needs the full width of the row; everything else is a
+     short field that reads better two or three across than one long
+     column down the page. */
+  var cls = f.type === 'textarea' ? 'field wb-field wb-field-wide' : 'field wb-field';
+  return '<div class="' + cls + '">' +
     '<label for="' + id + '">' + PS.esc(f.label) + (f.req ? ' <span class="req" title="Required">*</span>' : '') + '</label>' +
     control +
     (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') +
@@ -94,7 +98,9 @@ PS.wb.fieldHtml = function (f, value) {
 PS.wb.formHtml = function (col, rec) {
   var spec = PS.WB_FIELDS[col] || [];
   return '<form class="wb-form" id="wbForm" data-col="' + PS.esc(col) + '" data-id="' + PS.esc(rec && rec.id ? rec.id : '') + '">' +
+    '<div class="wb-fields">' +
     spec.map(function (f) { return PS.wb.fieldHtml(f, rec ? rec[f.k] : ''); }).join('') +
+    '</div>' +
     '<div class="btn-row no-print" style="margin-top:8px">' +
     '<button type="button" class="btn btn-primary" data-act="wb-save">' + (rec && rec.id ? 'Save changes' : 'Add record') + '</button>' +
     (rec && rec.id ? '<button type="button" class="btn btn-ghost" data-act="wb-new" data-col="' + PS.esc(col) + '">Add another</button>' : '') +

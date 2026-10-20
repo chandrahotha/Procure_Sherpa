@@ -439,6 +439,18 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   white-space:normal;text-align:left;line-height:1.35;align-items:flex-start;
 }
 .btn-block .btn-label{display:block;min-width:0;overflow-wrap:anywhere}
+
+/* Workbench record forms. Eleven fields stacked in one column is a
+   long scroll and an easy place to lose a field. The form is a grid:
+   short fields sit three across on a wide screen, and a textarea
+   takes the whole row because it is the one field that needs the
+   space. */
+.wb-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 18px}
+.wb-field{margin-bottom:14px;min-width:0}
+.wb-field-wide{grid-column:1/-1}
+@media (max-width:760px){
+  .wb-fields{grid-template-columns:1fr}
+}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn-row.tight{gap:6px}
 .icon-btn{
@@ -10432,7 +10444,11 @@ PS.wb.fieldHtml = function (f, value) {
   } else {
     control = '<input type="text" ' + common + ' value="' + PS.esc(v) + '" maxlength="240">';
   }
-  return '<div class="field" style="margin-bottom:12px">' +
+  /* A textarea needs the full width of the row; everything else is a
+     short field that reads better two or three across than one long
+     column down the page. */
+  var cls = f.type === 'textarea' ? 'field wb-field wb-field-wide' : 'field wb-field';
+  return '<div class="' + cls + '">' +
     '<label for="' + id + '">' + PS.esc(f.label) + (f.req ? ' <span class="req" title="Required">*</span>' : '') + '</label>' +
     control +
     (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') +
@@ -10442,7 +10458,9 @@ PS.wb.fieldHtml = function (f, value) {
 PS.wb.formHtml = function (col, rec) {
   var spec = PS.WB_FIELDS[col] || [];
   return '<form class="wb-form" id="wbForm" data-col="' + PS.esc(col) + '" data-id="' + PS.esc(rec && rec.id ? rec.id : '') + '">' +
+    '<div class="wb-fields">' +
     spec.map(function (f) { return PS.wb.fieldHtml(f, rec ? rec[f.k] : ''); }).join('') +
+    '</div>' +
     '<div class="btn-row no-print" style="margin-top:8px">' +
     '<button type="button" class="btn btn-primary" data-act="wb-save">' + (rec && rec.id ? 'Save changes' : 'Add record') + '</button>' +
     (rec && rec.id ? '<button type="button" class="btn btn-ghost" data-act="wb-new" data-col="' + PS.esc(col) + '">Add another</button>' : '') +

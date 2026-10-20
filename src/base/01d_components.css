@@ -29,6 +29,18 @@
   white-space:normal;text-align:left;line-height:1.35;align-items:flex-start;
 }
 .btn-block .btn-label{display:block;min-width:0;overflow-wrap:anywhere}
+
+/* Workbench record forms. Eleven fields stacked in one column is a
+   long scroll and an easy place to lose a field. The form is a grid:
+   short fields sit three across on a wide screen, and a textarea
+   takes the whole row because it is the one field that needs the
+   space. */
+.wb-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 18px}
+.wb-field{margin-bottom:14px;min-width:0}
+.wb-field-wide{grid-column:1/-1}
+@media (max-width:760px){
+  .wb-fields{grid-template-columns:1fr}
+}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn-row.tight{gap:6px}
 .icon-btn{
