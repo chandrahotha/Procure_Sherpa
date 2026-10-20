@@ -666,6 +666,38 @@ if (neverUsed.length) {
   ok('G18', 'all 8 workbenches are reachable from the Academy (' + (funcIds.length - noWb) + ' of ' + funcIds.length + ' functions)');
 }
 
+/* ---------- G19: the page you are on is in the menu ---------- */
+console.log('\nG19  menu and page agree');
+/* Every page that has a section in the navigation must show that
+   section while you are on it. This is the whole of the 'the current
+   route always wins' rule, checked across every route and in both
+   views.
+
+   It is a separate gate from G16 because the failure is different:
+   G16 checks that the rule works, this checks that it is applied
+   everywhere. A page that is not in the menu is a dead end, and there
+   is no reason for a reader to know which pages those are. */
+const navAgree = [];
+for (const view of ['academy', 'operations']) {
+  PS.user._cache = { name: 'T', role: 'beginner', track: view, company: '', avatarBg: '#000', joinedDate: '' };
+  for (const r of routes) {
+    if (r === 'notfound') continue;
+    const a = routeArgs[r] || [];
+    w.location.hash = '#/' + r + (a.length ? '/' + a[0] : '');
+    PS.renderRoute();
+    const owner = PS.navOwnerSection(r);
+    if (!owner) continue;
+    const shown = [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')]
+      .map((e) => e.textContent.trim());
+    if (shown.indexOf(owner.sec) < 0) navAgree.push(view + ' ' + r + ' -> ' + owner.sec);
+  }
+}
+if (navAgree.length) {
+  fail('G19', navAgree.length + ' pages are not in the menu while you are on them: ' + navAgree.slice(0, 4).join(', '));
+} else {
+  ok('G19', 'every page is in the menu while you are on it, in both views');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);
