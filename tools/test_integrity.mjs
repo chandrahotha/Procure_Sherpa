@@ -336,6 +336,24 @@ if (!PS.user || typeof PS.user.moduleOrder !== 'function') {
   setUser('beginner', 'academy');
 }
 
+/* ---------- G14: the knowledge library's domain map must be coherent ---------- */
+console.log('\nG14  category map');
+/* Only the knowledge library is a domain map. A KPI category holding
+   one measure, or a calculator category holding one tool, is perfectly
+   normal; a knowledge category holding one concept splits a domain on
+   the list page for no reason, and is almost always a typo. */
+const catCounts = {};
+for (const it of PS.data.kb || []) {
+  if (!it.cat) continue;
+  catCounts[it.cat] = (catCounts[it.cat] || 0) + 1;
+}
+const strays = Object.keys(catCounts).filter((k) => catCounts[k] === 1);
+if (strays.length) {
+  strays.forEach((k) => fail('G14', 'a knowledge category holds a single concept, which splits a domain: ' + k));
+} else {
+  ok('G14', 'every knowledge domain holds more than one concept (' + Object.keys(catCounts).length + ' domains)');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

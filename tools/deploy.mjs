@@ -49,6 +49,22 @@ const SKIP_QA = process.argv.includes('--skip-qa');
 const VERCEL_CLI = 'vercel@latest';
 const TOKEN = process.env.VERCEL_TOKEN || '';
 
+/* Remove the staged copy, retrying briefly, and never failing the
+   release over it. */
+function cleanupStage(dir) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+      return;
+    } catch (e) {
+      if (attempt === 4) {
+        console.warn('\nNote: the staged copy at ' + dir + ' could not be removed (' + e.code + '). It is safe to delete manually.');
+        return;
+      }
+      spawnSync('ping', ['-n', '2', '127.0.0.1'], { stdio: 'ignore', shell: true });
+    }
+  }
+}
 function run(cmd, args, opts = {}) {
   console.log('\n> ' + cmd + ' ' + args.join(' '));
   const r = spawnSync(cmd, args, { cwd: opts.cwd || ROOT, stdio: 'inherit', shell: process.platform === 'win32' });
@@ -89,7 +105,7 @@ if (DRY) {
   console.log('\nDRY RUN: built and verified, deployment skipped.');
   console.log('  artifact : ' + (fs.statSync(path.join(ROOT, 'ProcureSherpa-v2.0.html')).size / 1024).toFixed(0) + ' KB');
   console.log('  deploy   : ' + (fs.statSync(path.join(ROOT, 'dist', 'index.html')).size / 1024).toFixed(0) + ' KB');
-  fs.rmSync(stage, { recursive: true, force: true });
+  cleanupStage(stage);
   process.exit(0);
 }
 
@@ -100,6 +116,12 @@ const deployArgs = ['--yes', VERCEL_CLI, '--prod', '--yes'];
 if (TOKEN) deployArgs.push('--token=' + TOKEN);
 run('npx', deployArgs, { cwd: stage });
 
-fs.rmSync(stage, { recursive: true, force: true });
+/* The deployment has already happened at this point. On Windows the
+   staged copy is regularly still locked by an indexer or an antivirus
+   scanner, and an EPERM from the cleanup used to fail the whole
+   release after it had already gone live. A leftover temporary
+   directory is a nuisance; a failed exit code that hides a
+   successful deployment is worse. */
+cleanupStage(stage);
 console.log('\nDeployed. Verify with:');
 console.log('  npx --yes vercel@latest inspect --logs');

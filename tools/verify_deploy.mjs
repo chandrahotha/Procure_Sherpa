@@ -57,13 +57,28 @@ console.log('\nNavigation');
 w.location.hash = '#/home';
 PS.renderRoute();
 ok('sidebar present on the landing page', !w.document.querySelector('#app').classList.contains('has-no-sidebar'));
-ok('five sections', w.document.querySelectorAll('#navRoot .nav-sec').length === 5);
-ok('33 navigation items', w.document.querySelectorAll('#navRoot li').length === 33);
+ok('six sections', w.document.querySelectorAll('#navRoot .nav-sec').length === 6);
+ok('39 navigation items', w.document.querySelectorAll('#navRoot li').length === 39);
+const secNames = [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
+ok('the sections are Start, Learn, Workbench, Toolkit, Look It Up and My Work',
+  secNames.join('|') === 'Start|Learn|Workbench|Toolkit|Look It Up|My Work', secNames.join(', '));
 ok('four footer links', w.document.querySelectorAll('.sidebar-foot-link').length === 4);
 w.location.hash = '#/sop/sop-rfq';
 PS.renderRoute();
 ok('active item highlights on a detail route', !!w.document.querySelector('#navRoot a.is-current'));
 
+console.log('\nWorkbenches');
+const WB_ROUTES = ['rfx', 'suppliers', 'contracts', 'catalogue', 'receipts', 'budget', 'approvals', 'analytics'];
+let wbBad = 0;
+for (const r of WB_ROUTES) {
+  w.location.hash = '#/' + r;
+  PS.renderRoute();
+  const main = w.document.querySelector('#main');
+  const text = main ? main.textContent.trim() : '';
+  if (text.length < 300 || text.includes('undefined')) wbBad++;
+}
+ok('all eight workbenches render', wbBad === 0, wbBad + ' broken');
+ok('the workbench store is present', typeof PS.wb === 'object' && typeof PS.wb.upsert === 'function');
 console.log('\nRoutes');
 const routes = Object.keys(PS.routes).filter((r) => r !== 'notfound');
 let bad = 0, thin = 0, leaks = 0;
