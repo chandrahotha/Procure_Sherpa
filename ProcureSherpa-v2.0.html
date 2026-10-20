@@ -13616,13 +13616,15 @@ PS.renderAcademyHub = function () {
   var data = PS.academy.getAll();
   var funcs = PS.ACADEMY_FUNCTIONS || [];
 
-  // Group functions by module. The module order follows the learner's
-  // role and track, so a compliance officer is pointed at the modules
-  // that carry their work first, and a practitioner sees them in the
-  // order the work happens. The role used to be display-only.
+  // Group functions by module. The modules are always presented in
+  // module number order. The curriculum is numbered, and the number IS
+  // the sequence: a page whose first badge reads 'Module 7' tells the
+  // learner the page is broken. An earlier version reordered the
+  // modules by the learner's role, which scattered the curriculum for
+  // four of the five roles. The role now RECOMMENDS modules further
+  // down the page instead, and never moves them.
   var modules = {};
-  var ordered = (PS.user && PS.user.moduleOrder) ? PS.user.moduleOrder(funcs) : funcs;
-  ordered.forEach(function (f) {
+  funcs.forEach(function (f) {
     var mod = f.module || 'Core Foundations';
     if (!modules[mod]) modules[mod] = [];
     modules[mod].push(f);

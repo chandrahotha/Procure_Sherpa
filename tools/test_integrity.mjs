@@ -321,6 +321,15 @@ if (PS.wb) {
    broken. It now states the requirement in the requirement's words.
    ------------------------------------------------------------------- */
 console.log('\nG13  curriculum sequence');
+/* The reordering itself must not come back. It was removed because a
+   numbered curriculum whose number is not its position is broken, and
+   the role now recommends instead of moving things. */
+const reorderingHelpers = ['moduleOrder', 'moduleRank', 'toolOrder'].filter((k) => PS.user && typeof PS.user[k] === 'function');
+if (reorderingHelpers.length) {
+  fail('G13', 'the curriculum reordering has been reintroduced: PS.user.' + reorderingHelpers.join(', '));
+} else {
+  ok('G13', 'nothing in the profile can reorder the curriculum');
+}
 const setUser = (role, track) => { PS.user._cache = { name: 'T', role, track, company: '', avatarBg: '#000', joinedDate: '' }; };
 const moduleBadges = () => {
   w.location.hash = '#/academy';
