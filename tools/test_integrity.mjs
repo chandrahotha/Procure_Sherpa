@@ -617,6 +617,38 @@ if (docText.indexOf('\uFFFD') >= 0) {
   ok('G17', 'the document contains no replacement characters');
 }
 
+/* ---------- G18: the Academy and the workbenches are connected ---------- */
+console.log('\nG18  learning to practice');
+/* The library teaches and the workbenches are where the work happens.
+   A function that has no way to reach the tool where you would
+   practise it is a library, not a system. */
+const wbIds = Object.keys(PS.ACADEMY_WORKBENCH || {});
+const funcIds = (PS.ACADEMY_FUNCTIONS || []).map((f) => f.id);
+const phantom = wbIds.filter((id) => funcIds.indexOf(id) < 0);
+if (phantom.length) {
+  fail('G18', 'the workbench map points at functions that do not exist: ' + phantom.join(', '));
+} else {
+  ok('G18', 'every workbench link points at a real function');
+}
+let noWb = 0, badRoute = 0, used = {};
+for (const f of PS.ACADEMY_FUNCTIONS || []) {
+  const wb = (PS.ACADEMY_WORKBENCH || {})[f.id];
+  if (!wb) { noWb++; continue; }
+  used[wb] = (used[wb] || 0) + 1;
+  if (!PS.routes[wb]) { badRoute++; }
+}
+if (badRoute) {
+  fail('G18', badRoute + ' workbench links point at a route that does not exist');
+} else {
+  ok('G18', 'every workbench link resolves to a real route');
+}
+const neverUsed = Object.keys(PS.WORKBENCH_TITLES || {}).filter((k) => !used[k]);
+if (neverUsed.length) {
+  fail('G18', 'workbenches nothing in the Academy links to: ' + neverUsed.join(', '));
+} else {
+  ok('G18', 'all 8 workbenches are reachable from the Academy (' + (funcIds.length - noWb) + ' of ' + funcIds.length + ' functions)');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

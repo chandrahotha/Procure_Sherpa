@@ -382,6 +382,52 @@ PS.academyWorkedExample = function (f) {
    that records it, the calculator that quantifies it, the decision guide
    that frames it and the KPI that measures it. Before this existed the
    Academy was a content silo: 95 tabs, and not one link out of them. */
+/* Which workbench lets you practise each function for real. The
+   library teaches; the workbench is where the work happens. A reader
+   who has just read about a three-way match can open a match
+   workpaper, and a reader who has read about a bid evaluation can
+   open one. This is the link that makes the two halves of the product
+   one thing rather than two libraries sitting next to each other. */
+PS.ACADEMY_WORKBENCH = {
+  'func-rfq-issuance': 'rfx',
+  'func-requirement-scope': 'rfx',
+  'func-rfx-strategy': 'rfx',
+  'func-quote-normalization': 'rfx',
+  'func-supplier-eval': 'suppliers',
+  'func-supplier-risk': 'suppliers',
+  'func-srm-scorecards': 'suppliers',
+  'func-contract-structuring': 'contracts',
+  'func-negotiation-strategy': 'contracts',
+  'func-landed-cost-tco': 'catalogue',
+  'func-po-execution': 'catalogue',
+  'func-threeway-matching': 'receipts',
+  'func-spend-analysis': 'budget',
+  'func-savings-reporting': 'budget',
+  'func-category-mgmt': 'analytics',
+  'func-category-strategy': 'analytics',
+  'func-should-cost': 'catalogue',
+  'func-commercial-terms': 'contracts',
+  'func-indirect-sourcing': 'catalogue',
+  'func-software-licensing': 'catalogue',
+  'func-professional-services': 'catalogue',
+  'func-sustainability': 'suppliers',
+  'func-ethics-compliance': 'suppliers',
+  'func-resilience-continuity': 'suppliers',
+  'func-spend-analytics': 'analytics',
+  'func-digital-procurement': 'analytics',
+  'func-doa-controls': 'approvals',
+};
+PS.WORKBENCH_TITLES = {
+  rfx: 'RFx & Evaluation',
+  suppliers: 'Supplier Register',
+  contracts: 'Contract Register',
+  catalogue: 'Catalogue & Prices',
+  receipts: 'Receipts & Invoicing',
+  budget: 'Budget & Spend',
+  approvals: 'Approvals & Policy',
+  analytics: 'Analytics'
+};
+
 PS.academyLinkedTools = function (f) {
   var rel = f.rel || {};
   var groups = [
@@ -394,6 +440,14 @@ PS.academyLinkedTools = function (f) {
     { key: 'kpis', label: 'KPIs that measure it', type: 'kpi' }
   ];
   var blocks = [];
+  /* The workbench this function is practised in, if there is one. */
+  var wbId = PS.ACADEMY_WORKBENCH[f.id];
+  if (wbId) {
+    var wbTitle = PS.WORKBENCH_TITLES[wbId] || wbId;
+    blocks.push('<div class="hub-linked-row"><span class="hub-linked-label">Practise this in</span>' +
+      '<a class="chip" href="#/' + wbId + '">' + PS.esc(wbTitle) + '</a>' +
+      '<span class="hub-linked-note">Open it with your own numbers</span></div>');
+  }
   groups.forEach(function (g) {
     var ids = rel[g.key] || [];
     if (!ids.length) return;
