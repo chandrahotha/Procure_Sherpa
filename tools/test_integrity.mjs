@@ -235,6 +235,29 @@ if (orphanRoutes.length) {
   ok('G11', 'every registered route is reachable from somewhere');
 }
 
+/* ---------- G12: the curriculum is well-formed ---------- */
+console.log('\nG12  curriculum integrity');
+let qBad = 0, sBad = 0, qCount = 0, sCount = 0;
+for (const f of PS.ACADEMY_FUNCTIONS || []) {
+  for (const q of f.quizzes || []) {
+    qCount++;
+    const correct = (q.options || []).filter((o) => o.isCorrect).length;
+    if (correct !== 1) { qBad++; fail('G12', f.id + ' has a question with ' + correct + ' correct options (exactly one is required)'); }
+    for (const o of q.options || []) {
+      if (!o.rationale || !o.text) { qBad++; fail('G12', f.id + ' has a quiz option with no text or no rationale'); }
+    }
+    if (!q.principle) { qBad++; fail('G12', f.id + ' has a question with no principle'); }
+  }
+  for (const s of f.sopSteps || []) {
+    sCount++;
+    for (const k of ['title', 'role', 'desc', 'control', 'record', 'pitfall']) {
+      if (!s[k]) { sBad++; fail('G12', f.id + ' has an SOP step with no ' + k); }
+    }
+  }
+}
+if (!qBad) ok('G12', qCount + ' quiz questions, each with exactly one correct option, a rationale on every option and a principle');
+if (!sBad) ok('G12', sCount + ' SOP steps, each with an owner, control, record and pitfall');
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

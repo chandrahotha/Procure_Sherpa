@@ -95,8 +95,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Both parties initial agreed commercial points at the close of the meeting.',
       record: 'Signed Heads of Terms / Agreed Term Sheet.',
       pitfall: 'Leaving the meeting without written agreed notes, allowing the supplier to re-negotiate points the next week.'
+    },
+    {
+      "title": "Establish the Reservation Price and the BATNA",
+      "role": "Category Manager",
+      "desc": "Calculate the walk-away price from the cost of the alternative, including switching cost, dual-running and the risk of not having a supply, and identify what you would actually do if the deal fails.",
+      "control": "The BATNA is tested for executability, and any alternative that has not been scoped or costed is recorded as theoretical rather than counted as leverage.",
+      "record": "Negotiation mandate with the reservation price, the cost of the alternative and the walk-away conditions.",
+      "pitfall": "Counting a theoretical alternative as leverage, and then discovering mid-session that it is not one."
+    },
+    {
+      "title": "Build the Concession Matrix and the Agenda",
+      "role": "Category Manager",
+      "desc": "List what you can give, what it is worth to you, and what you will ask for each item in exchange, then sequence the agenda so the trades are made in the right order.",
+      "control": "Every concession is conditional and priced before the session, and nothing is given without something coming back for it.",
+      "record": "Concession matrix with the value of each item and the position taken, plus the signed negotiation mandate.",
+      "pitfall": "Giving a concession to build goodwill, and receiving nothing for it, which teaches the supplier that concessions are free."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -142,8 +158,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Every concession must be a trade: give what is cheap to you and valuable to them, to get what is valuable to you and cheap to them.'
+    },
+    {
+      "type": "scenario",
+      "context": "A supplier has quoted 118.50 against a 100.00 contract price, citing an 8 percent material index increase. The buyer has no cost breakdown, has not seen the index, and has a 30-day acceptance window. What is the strongest opening position?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Accept the increase, because an 8 percent material index increase is plausible and the buyer has no evidence to contest it.",
+          "isCorrect": false,
+          "rationale": "Conceding without evidence is the most expensive possible response, because it sets the reference point for the next increase and removes the supplier's incentive to ever provide a breakdown. Plausibility is not evidence: the index may apply, may not apply to this material, or may be measured on a base period that does not match the contract. The window length makes this worse, not better, because an unchallenged accepted increase becomes the baseline for the next one."
+        },
+        {
+          "text": "Accept the increase in principle but withhold agreement, and request the cost breakdown, the index reference and the base period, with a stated deadline before the acceptance window closes.",
+          "isCorrect": true,
+          "rationale": "This is the right opening because it changes the information position without changing the commercial position. You are not refusing the increase, you are refusing to agree it without the evidence that lets you judge it, and the request is specific: the breakdown, the index, the base period, the contract clause. Doing it inside the acceptance window, with a stated deadline, protects the supply relationship and your contractual position while giving the supplier a clear route to a resolution. The unevidenced element is then a negotiation, not an assumption."
+        },
+        {
+          "text": "Reject the increase outright and state that the contract price is fixed, because a 30-day window is too short to reopen price.",
+          "isCorrect": false,
+          "rationale": "If the contract has an escalation clause that permits the increase on evidenced index movement, a flat refusal is not a strong position, it is a position that will be tested and may end in escalation or dispute. If the contract has no such clause, then the price is fixed and the refusal is correct. The buyer's first task is to read the clause, not to take a position before knowing what the contract says."
+        },
+        {
+          "text": "Accept the increase but ask for the evidence afterwards, so the supply is not interrupted.",
+          "isCorrect": false,
+          "rationale": "This is the \"accept now, verify later\" pattern, and it is how an unevidenced increase becomes permanent. The evidence, once accepted, is no longer required; the supplier has no obligation to provide it after the fact, and the buyer has already given away the leverage that would have made it provided. If you are going to accept without evidence, at least record that you did so and on what basis, so that the next increase starts from a known position rather than a manufactured one."
+        }
+      ],
+      "principle": "Do not agree an increase you cannot evaluate. Ask for the evidence inside the window, with a deadline."
+    },
+    {
+      "type": "mcq",
+      "q": "A BATNA in negotiation planning is:",
+      "options": [
+        {
+          "text": "The best alternative you would accept if the deal with this supplier does not happen.",
+          "isCorrect": true,
+          "rationale": "A BATNA is your alternative to agreement, and its strength determines your negotiating position: the better your alternative, the less you need this deal and the more you can hold out for. The practical test is whether you could actually execute it, because a BATNA that is theoretical gives you no leverage at all, and a BATNA that is strong enough to walk away is the reason you never have to."
+        },
+        {
+          "text": "The first offer you intend to make, anchored against the market price.",
+          "isCorrect": false,
+          "rationale": "That is an anchor, which is a different and related thing. The anchor is the position you open with and try to justify; the BATNA is the position you fall back to. They interact, and it is a mistake to set your first offer as low as your fallback, because you will end up negotiating against yourself."
+        },
+        {
+          "text": "The zone of possible agreement between the two parties, expressed as a range.",
+          "isCorrect": false,
+          "rationale": "That is the ZOPA. The ZOPA is the space you are trying to find, the BATNA is what you do if there is no ZOPA, and the reservation price is the point inside your own range below which you walk. Keeping the three distinct is what stops a negotiation from being run on optimism about where the other side will land."
+        },
+        {
+          "text": "The list of concessions you are prepared to trade, ranked by cost to you.",
+          "isCorrect": false,
+          "rationale": "That is a concession matrix, and it is an important tool, but it is not a BATNA. A concession matrix is what you offer in exchange for something; a BATNA is what you do instead of agreeing. Confusing them produces a negotiation in which you trade concessions away without ever having established that walking away was realistic."
+        }
+      ],
+      "principle": "The BATNA is your alternative to agreement, and its real strength sets your negotiating position. Know it before you sit down."
     }
-  ],
+ ],
   relSop: 'sop-negotiation-preparation',
   rel: {
     concepts: ['negotiation-planning', 'batna', 'zopa', 'negotiation-leverage'],
@@ -259,8 +330,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Audit sample of first 3 invoices to confirm payment terms were entered correctly in Accounts Payable.',
       record: 'Vendor Master ERP Configuration Sign-Off.',
       pitfall: 'Negotiating Net 60 in the contract, but AP leaves the vendor master at default Net 30 in the system.'
+    },
+    {
+      "title": "Value the Working Capital Effect at Your Cost of Capital",
+      "role": "Category Manager",
+      "desc": "Calculate the cash released or absorbed by the terms against the invoice value and the days of difference, and value it at the organization's cost of capital.",
+      "control": "The cost of capital used is the one set in Settings or entered on the face of the analysis, and the working capital effect is shown separately from the price.",
+      "record": "Working capital analysis with the cash released, the days, the cost of capital and the annualised value.",
+      "pitfall": "Treating the terms as a concession and booking the benefit without the cash cost of the funding, which is the whole cost of the concession."
+    },
+    {
+      "title": "Assess the Counterparty and the Exposure Alongside the Terms",
+      "role": "Procurement Specialist",
+      "desc": "Assess the supplier's financial position and the size of the receivable exposure relative to the supplier's turnover, before accepting a longer term.",
+      "control": "The receivable exposure is within the limit set for that supplier's risk rating, and the assessment is dated and recorded.",
+      "record": "Exposure assessment with the risk rating, the exposure ratio and the approved terms.",
+      "pitfall": "Extending terms to a financially weak supplier to win a price concession, converting a price problem into a credit exposure."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'calc',
@@ -308,8 +395,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Balance purchase price discounts against inventory carrying costs and product obsolescence lifespans.'
+    },
+    {
+      "type": "scenario",
+      "context": "A supplier offers 2/10 net 30 on a 500,000 annual spend, against the buyer's standard net 60. The buyer's cost of capital is 9 percent. What is the annualised value of the discount?",
+      "q": "What is the correct calculation?",
+      "options": [
+        {
+          "text": "About 36 percent, because a 2 percent discount for paying 20 days early is worth roughly 36 percent annualised.",
+          "isCorrect": true,
+          "rationale": "The arithmetic: paying on day 10 rather than day 30 gets 2 percent off 20 days earlier, so the effective rate is 2 percent over 20/365 of a year, which annualises to roughly 36 percent. That is far above any plausible cost of capital, which is why early-payment discounts are usually worth taking. The comparison has to be against the cost of money, and 36 percent against 9 percent is decisive. The discount also has to be tested against the cash effect: paying on day 10 rather than day 60 puts 50 days of cash back into the business at the same time."
+        },
+        {
+          "text": "2 percent, because that is the discount stated on the invoice.",
+          "isCorrect": false,
+          "rationale": "That is the nominal rate, and it is not comparable with anything. A discount has to be expressed in the same terms as the alternatives: 2 percent for 20 days of early payment, or 2 percent for 120 days of extended terms, are completely different offers that both look like \"2 percent\" on the paperwork. Always convert to a rate the reader can compare, and always compare it against the cost of capital rather than against a nominal percentage."
+        },
+        {
+          "text": "2 percent of 500,000, which is 10,000 a year.",
+          "isCorrect": false,
+          "rationale": "That is the cash amount, which is useful but is not the decision. 10,000 a year is the benefit, and the cost is the working capital released early, which on 500,000 over 50 days at 9 percent is roughly 6,000. The net is positive, and the annualised comparison against a 9 percent cost of capital is the number that makes the decision. Both the cash benefit and the working capital effect belong in the analysis, and the decision is the difference between them, not the benefit alone."
+        },
+        {
+          "text": "About 0.5 percent, because 2 percent over 20 days is a small proportion of a year.",
+          "isCorrect": false,
+          "rationale": "The arithmetic is inverted: 2 percent over 20 days annualises upward, because the money is returned for a short period many times over. Dividing rather than multiplying by 365 is the classic error, and it turns a decisive offer into one that looks trivial. When a rate is short-period, it always scales up."
+        }
+      ],
+      "principle": "A short-period discount scales up. Compare it annualised against your cost of capital, and net it against the working capital it releases."
+    },
+    {
+      "type": "mcq",
+      "q": "The main commercial risk in accepting extended payment terms is:",
+      "options": [
+        {
+          "text": "That the supplier will increase prices to compensate for the longer payment period.",
+          "isCorrect": false,
+          "rationale": "That does happen, and it is worth watching, but it is a pricing risk rather than the main risk of the terms themselves. It is also mitigable: the terms are negotiated and priced, and a supplier charging more for net 90 than net 30 is making the terms visible in the price. The risk that is harder to see and harder to fix is the balance-sheet one."
+        },
+        {
+          "text": "That you are financing the supplier with your balance sheet, and the return is only the discount, which may be less than your cost of capital.",
+          "isCorrect": true,
+          "rationale": "This is the point that gets missed. Extended terms are not free: the buyer is lending the supplier money at the implied rate in the discount, and if that implied rate is below the buyer's own cost of capital, the terms are destroying value even though they feel like a concession. The analysis is simple: take the implied annualised rate from the discount and compare it with your cost of capital. If it is below, you are paying to be paid late."
+        },
+        {
+          "text": "That the supplier will fail and the receivable will be written off.",
+          "isCorrect": false,
+          "rationale": "Counterparty risk on a receivable is real, and for a small supplier it is a genuine concern, but it is a credit decision rather than a terms decision, and it is handled through the supplier risk assessment and the exposure limit. The terms themselves do not change the probability of failure; they change how long the exposure sits there. Keep the two apart: assess credit on its own merits, and price the terms on their own merits."
+        },
+        {
+          "text": "That the buyer loses negotiating leverage, because the supplier will not want to give the terms back.",
+          "isCorrect": false,
+          "rationale": "Leverage is a real consideration when terms are reconsidered at renewal, but it is not the main commercial risk and it is usually overestimated. A supplier who has priced extended terms into the rate knows that, and the buyer can negotiate the terms or the price as a package. The value question comes first, because a bad rate cannot be negotiated away later either."
+        }
+      ],
+      "principle": "Extended terms are a loan to the supplier at the implied discount rate. Below your cost of capital, you are paying to be paid late."
     }
-  ],
+ ],
   relSop: 'sop-negotiation-preparation',
   rel: {
     concepts: ['payment-terms', 'working-capital', 'concession-management'],
@@ -425,8 +567,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Verify that the signing officer possesses legal authority under the corporate DOA schedule.',
       record: 'Executed Contract PDF and Contract Registry Record.',
       pitfall: 'Storing the signed contract on an individual buyer\'s laptop where it is lost when they leave the company.'
+    },
+    {
+      "title": "Classify the Exposure and the Term for Each Risk Category",
+      "role": "Legal Counsel",
+      "desc": "Work through the risk categories that matter for this contract: ordinary performance, confidentiality, data protection, intellectual property, personal injury, regulatory breach and financial failure, and decide the position for each.",
+      "control": "Each category has a stated position, and the positions for data protection and IP are not treated as ordinary contractual risk.",
+      "record": "Clause position schedule, category by category, with the fallback and the approval level for each.",
+      "pitfall": "Accepting a single supplier paper clause set for every category, and then discovering that the highest-exposure category is covered by the most general term."
+    },
+    {
+      "title": "Secure the Continuity Terms: Assignment, Step-In and Exit",
+      "role": "Procurement Specialist",
+      "desc": "Secure the rights that let the buyer continue to perform if the supplier fails: assignment or novation on a change of control or insolvency, step-in, continued access to data, and an exit plan with a defined format, timeline and cost.",
+      "control": "The continuity terms are agreed before signature, and the exit plan names the data format, the assistance required and the cost, so that the exit is executable rather than aspirational.",
+      "record": "Executed contract with the continuity and exit schedule attached.",
+      "pitfall": "Leaving the exit plan to be negotiated at the point of failure, when there is no leverage and no time."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'red_flag',
@@ -472,8 +630,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Always negotiate Termination for Convenience to protect the enterprise from being trapped in obsolete multi-year commitments.'
+    },
+    {
+      "type": "scenario",
+      "context": "Legal has reviewed the supplier's liability clause: the buyer's total liability is capped at 12 months of fees, and there is no carve-out for data breach, confidentiality or IP infringement. The buyer stores customer personal data through this supplier. What is the correct response?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Accept the cap, because a liability cap at 12 months of fees is market standard for a services contract of this size.",
+          "isCorrect": false,
+          "rationale": "Market standard is a reasonable reference for a generic cap, and it says nothing about the carve-outs. The two things that matter here are the carve-outs and the exposure. A cap on ordinary contractual liability is normal; a cap that also applies to a data breach, to the buyer's own confidential information, and to third-party IP claims is a different clause with a different consequence, and it is very common in supplier paper precisely because most buyers do not challenge it."
+        },
+        {
+          "text": "Separate the cap on ordinary liability from the carve-outs, and require uncapped or super-capped liability for data breach, confidentiality and IP infringement, with indemnity and insurance behind it.",
+          "isCorrect": true,
+          "rationale": "This is the right structure and the standard commercial answer. Ordinary liability is capped at a multiple of fees, and the categories that are not capable of being capped at a commercial multiple, because the exposure is not proportional to the fees, are carved out. A data breach or an IP infringement claim can cost many times the annual contract value, so a fees-based cap is not a risk allocation, it is a limitation on the supplier's accountability. Behind the carve-out, you want indemnity and evidence of insurance, so that the cap is not a promise but a funded obligation."
+        },
+        {
+          "text": "Accept the cap but require a higher cap on the price to compensate for the risk.",
+          "isCorrect": false,
+          "rationale": "This does not solve the problem, it prices it. A buyer who has accepted an uncapped exposure with a fees-based cap is exposed to a claim the supplier cannot satisfy, and a price adjustment does not fund a multi-million liability. The exposure is not a cost line, it is a solvency question, and the remedy is the contractual structure, not the rate. If the supplier will not provide the carve-outs, the correct response is to escalate the risk and reconsider the choice of supplier, not to buy it."
+        },
+        {
+          "text": "Reject the clause and require unlimited liability for all breaches, since the buyer is the one carrying the customer risk.",
+          "isCorrect": false,
+          "rationale": "Asking for unlimited liability on everything is not a negotiating position, it is a reason for a supplier to walk. Suppliers will not offer unlimited liability for ordinary breaches, and a buyer who demands it often gets nothing. The skilled position is to accept a reasonable cap on ordinary liability, where the exposure is proportional, and reserve the uncapped or super-capped position for the categories where it is not. That is a position a supplier can accept, which is what makes it a position rather than a complaint."
+        }
+      ],
+      "principle": "Split ordinary liability from the carve-outs. A fees-based cap is not a risk allocation where the exposure is not proportional to the fees."
+    },
+    {
+      "type": "mcq",
+      "q": "Which contractual term gives a buyer the most practical protection in a supplier insolvency?",
+      "options": [
+        {
+          "text": "A termination for convenience clause, allowing the buyer to exit at any time.",
+          "isCorrect": false,
+          "rationale": "Termination for convenience is valuable and frequently mispriced, because it usually carries a compensation obligation that grows with the remaining term. In an insolvency it is also close to worthless: the supplier is insolvent, so there is nobody to pay the compensation and nobody to wind the contract down cooperatively. Its value is in the ordinary case, where the supplier is solvent and the buyer wants flexibility."
+        },
+        {
+          "text": "An assignment or novation right, so the contract can be transferred to a successor or a replacement supplier.",
+          "isCorrect": true,
+          "rationale": "This is the term that does the work in an insolvency, because the buyer's practical need is to get a different supplier performing the same scope. Assignment or novation, with the buyer's consent not to be unreasonably withheld, means the contract and the goodwill move to the successor or the acquirer. A step-in right is the related mechanism that lets the buyer step in and operate the service or take the goods directly. Together, they are what makes a contract survivable when the counterparty is not."
+        },
+        {
+          "text": "A most-favoured-customer clause, so the buyer is not paying more than anyone else.",
+          "isCorrect": false,
+          "rationale": "That is a pricing protection and a genuinely useful one in normal operation, but it is irrelevant in an insolvency: the counterparty no longer has prices to compare. It is also a term that mostly attracts a supplier's price increase rather than a discount, because the buyer has to share any improvement the supplier gives elsewhere, which is a one-way obligation unless it is drafted carefully."
+        },
+        {
+          "text": "A liquidated damages clause for late delivery, so the buyer is compensated for the failure.",
+          "isCorrect": false,
+          "rationale": "Liquidated damages improve the outcome in a solvent failure, and they are worth having. In an insolvency, though, they are a claim against an insolvent estate, and the recovery depends on the estate's priority and the size of the remaining assets, which is exactly the situation in which contractual remedies fail. The protection that works is the one that helps you perform without the counterparty: assignment, step-in, and continued access to the data, the tooling and the knowledge."
+        }
+      ],
+      "principle": "In an insolvency, contractual remedies are claims against an empty estate. What works is what lets you perform without the counterparty: assignment, step-in, data access."
     }
-  ],
+ ],
   relSop: 'sop-contract-review',
   rel: {
     concepts: ['contract-structure', 'liability-indemnity', 'service-level-agreement', 'statement-of-work'],
@@ -589,8 +802,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Verify that required minimum quotes (e.g. 3 quotes) or approved sole-source waiver is attached.',
       record: 'Approved and Dispatched Purchase Order.',
       pitfall: 'Approving POs after work is already 100% completed by the supplier.'
+    },
+    {
+      "title": "Classify the Request and Test It Against the Authority Schedule",
+      "role": "Procurement Specialist",
+      "desc": "Determine the total value of the commitment including recurring and contingent elements, classify the category and the risk, and identify the approval level required.",
+      "control": "The value is calculated on the full commitment and the approval level is taken from the schedule, and any value above a threshold is escalated rather than split.",
+      "record": "Approval request with the calculated total value, the category, the risk rating and the required authority level.",
+      "pitfall": "Splitting a commitment into parts to bring each under a threshold, which is a control failure and not an administrative convenience."
+    },
+    {
+      "title": "Obtain and Record the Approval Against the Authority",
+      "role": "Budget Holder",
+      "desc": "Review the request against the budget, the category strategy and the commercial case, and record the decision in the approval system with the approver, the date and the conditions.",
+      "control": "The approval is recorded against the correct authority level, and the approver is recorded as a person distinct from the requester and the buyer.",
+      "record": "Approval record with the approver, the authority level, the date, the decision and any conditions attached.",
+      "pitfall": "Approving by email or chat, which leaves no record of what was approved, against which budget, or by whom."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'red_flag',
@@ -636,8 +865,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Segregation of duties ensures that no single individual has total end-to-end control over committing funds and releasing payments.'
+    },
+    {
+      "type": "scenario",
+      "context": "A category manager needs a 60,000 purchase. The delegation of authority says the category manager can approve up to 50,000 and a head of department up to 250,000. The manager emails the head asking for approval, and the head replies \"go ahead\". The purchase order is raised. What has gone wrong?",
+      "q": "What is the correct reading of this?",
+      "options": [
+        {
+          "text": "Nothing. The head of department had the authority and gave it, so the approval is valid.",
+          "isCorrect": false,
+          "rationale": "The authority was valid and the approval was not, and the difference matters. A delegation of authority is a limit on who can commit the organization, and the limit was breached. The approval also happened in a way that could not be evidenced: an email saying \"go ahead\" does not show what was bought, against what budget, on what basis, and it creates no record that the person approving had the delegated authority at that moment."
+        },
+        {
+          "text": "The approval was not valid, because the value exceeded the approver's limit, and the evidence of it is an email rather than an approval record against the correct authority.",
+          "isCorrect": true,
+          "rationale": "Two separate failures. The value exceeded the limit, so whoever approved it did not have the authority to commit that spend. And the form of the evidence is a problem in its own right: an approval that is not recorded against the correct authority, the correct budget and the correct request is not auditable, and it does not show that segregation of duties was observed. A purchase order raised on the back of an email is exactly the pattern a post-payment audit finds."
+        },
+        {
+          "text": "The approval was fine but the process was poor, because the buyer should have asked for the approval to be raised formally first.",
+          "isCorrect": false,
+          "rationale": "This is too forgiving. The outcome is not a process blemish; it is a commitment made outside the delegated authority, which is the definition of a control failure, and it means the spend was approved by someone who could not approve it. The remedy is to reverse or ratify it properly, retrospectively, with the deviation recorded, and to fix the request route so that the next 60,000 purchase is raised against the right approver in the first place."
+        },
+        {
+          "text": "The purchase order should have been raised by the head of department, since they gave the approval.",
+          "isCorrect": false,
+          "rationale": "This confuses the approval with the raising of the order. The issue is not who types the purchase order but who commits the organization to spend, on whose authority, and against what record. A purchase order raised by the head of department but based on an approval outside the process is no better, and it obscures the trail. The commitment has to be raised through the route, with the approval recorded against the authority, and the segregation between requester, buyer and approver intact."
+        }
+      ],
+      "principle": "Authority limits who can commit the organization. A value above the limit is not approved, whoever says yes."
+    },
+    {
+      "type": "mcq",
+      "q": "What does segregation of duties require in a procurement process?",
+      "options": [
+        {
+          "text": "That different people perform the request, the evaluation, the approval and the payment, so no one can carry a transaction end to end.",
+          "isCorrect": true,
+          "rationale": "That is the definition, and it is the control that makes the others meaningful. The fraud that matters is usually not a single dishonest act but a sequence in which one person can raise a requirement, select a supplier, approve the spend and influence the payment, or can create a supplier and then pay it. Splitting the four steps means that a single manipulation has to be repeated by several people, and it is what makes an audit trail worth having."
+        },
+        {
+          "text": "That no one in procurement may approve a purchase for a department they have a relationship with.",
+          "isCorrect": false,
+          "rationale": "That is a conflict-of-interest rule, and it is a necessary one, but it addresses a different risk. Segregation of duties is structural: it does not depend on knowing who knows whom, and it holds even when everyone is honest. Conflict rules are a supplement to it, not a substitute."
+        },
+        {
+          "text": "That approval thresholds are documented and that the approval is recorded against the correct authority level.",
+          "isCorrect": false,
+          "rationale": "That is the delegation of authority, and it is a different control again. A documented threshold with a properly recorded approval can still be breached by one person who holds all the other roles. Delegation without segregation says how much one person may commit; segregation says how many people it takes."
+        },
+        {
+          "text": "That every purchase is checked by someone other than the person who raised it.",
+          "isCorrect": false,
+          "rationale": "That is a light version of the control and it leaves the real exposure open. If the same person can still select the supplier and process the payment, checking the request adds little. The four steps that must be separated are the request, the evaluation or selection, the approval, and the payment, and the separation has to be real rather than nominal."
+        }
+      ],
+      "principle": "Segregation of duties is structural: request, select, approve and pay are four different people. It holds even when everyone is honest."
     }
-  ],
+ ],
   relSop: 'sop-procurement-intake',
   rel: {
     concepts: ['delegation-of-authority', 'segregation-of-duties', 'conflict-of-interest', 'procurement-ethics'],
@@ -753,8 +1037,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Flag any supplier who attempts to change promised delivery dates on the acknowledgment.',
       record: 'Order Acknowledgment & Expediting Log.',
       pitfall: 'Waiting until the delivery is 2 weeks late before calling the supplier.'
+    },
+    {
+      "title": "Raise the Order Against the Agreement with Complete Detail",
+      "role": "Procurement Specialist",
+      "desc": "Raise the purchase order with the item, the specification, the quantity, the unit price, the delivery point, the required date and the cost centre, checked against the agreement terms.",
+      "control": "The order is checked against the framework or the contract before issue, and any deviation is referred for approval rather than corrected quietly.",
+      "record": "Purchase order with the agreement reference, the delivery schedule and the cost centre coding.",
+      "pitfall": "Raising the order with a delivery date copied from a previous order rather than from the requirement."
+    },
+    {
+      "title": "Monitor, Expedite and Record the Delivery Performance",
+      "role": "Procurement Specialist",
+      "desc": "Track the order against the promised date, raise an early warning when the date is at risk, and record the actual delivery performance for the supplier review.",
+      "control": "Delivery performance is recorded against the order and feeds the supplier scorecard, and an at-risk date is escalated before it becomes a failure.",
+      "record": "Order tracking record with the promised date, the actual date, the exception raised and the outcome.",
+      "pitfall": "Recording the delivery performance in a spreadsheet that nobody reconciles with the orders, so the scorecard reflects recollection rather than record."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -800,8 +1100,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Every Purchase Order must specify a precise, legally enforceable delivery date.'
+    },
+    {
+      "type": "scenario",
+      "context": "An order is due for delivery on Friday. The supplier calls on Thursday to say it will arrive the following Tuesday, with no reason given. The buyer's own order record shows the delivery date was agreed as a hard date because the item is on the critical path. What should the buyer do?",
+      "q": "What is the correct response?",
+      "options": [
+        {
+          "text": "Accept the new date, because the supplier's commitment is what the business will actually get, and the alternative is a disruption on Friday.",
+          "isCorrect": false,
+          "rationale": "The alternative is not a disruption, it is a conversation. The buyer does not have to accept a unilateral change; it has to find out what happened and what the options are. Accepting a date change without explanation sets the precedent that the delivery date in the purchase order is advisory, and the next late delivery will be met with the same conversation rather than a remedy."
+        },
+        {
+          "text": "Establish what happened and what the options are: part shipment, an alternative date with a documented reason, or a substitute from the second source, and apply the contractual remedy for late delivery if the cause is the supplier's.",
+          "isCorrect": true,
+          "rationale": "This is the disciplined sequence and it is also the most effective, because each of those options is a better outcome than simply accepting. A part shipment may cover the critical path, a documented reason may move you to a remedy rather than a negotiation, and a second source may exist for a reason you built the contract. Critically, the buyer should also find out the cause, because a first delay caused by the supplier's capacity is a pattern that needs escalation, while a one-off caused by a customs delay does not. And the remedy, if it is the supplier's fault, is part of the conversation from the start rather than something raised later."
+        },
+        {
+          "text": "Escalate immediately to the supplier's account manager and ask for a written recovery plan, as a late delivery is a breach of the contract.",
+          "isCorrect": false,
+          "rationale": "The escalation is right but the framing is wrong, and it wastes the time you need. Opening with \"this is a breach\" on a first late delivery, with no facts established, makes the supplier defensive before the conversation has begun, and it takes the focus off the operational question, which is what is actually needed on Thursday for a Friday requirement. Facts, options, and then the remedy."
+        },
+        {
+          "text": "Raise a dispute with the supplier and withhold payment until the delivery is made, to enforce the delivery date.",
+          "isCorrect": false,
+          "rationale": "Withholding payment in response to a late delivery creates a second dispute and damages the relationship, and it may breach the contract if the terms do not permit it. The buyer usually wins on the price and loses on the supply, because the cost of a disrupted line is larger than the value of the claim. A late delivery is normally managed through service credits and the performance record, and reserving the payment dispute for the case where the remedy is not being honoured."
+        }
+      ],
+      "principle": "A late delivery is a fact-finding conversation first, an options conversation second, and a remedy conversation third. Do not skip to the third."
+    },
+    {
+      "type": "mcq",
+      "q": "Why does issuing a purchase order against an existing framework agreement rather than a new one matter?",
+      "options": [
+        {
+          "text": "It avoids the need for a purchase order to be raised at all, since the agreement already commits the volume.",
+          "isCorrect": false,
+          "rationale": "Most framework agreements commit the terms and sometimes the access, not the volume, and a call-off is still usually required to draw against them. The order is what carries the quantity, the price and the delivery point, and without it there is no record of what was ordered against what the agreement allows. A framework without orders is a piece of paper."
+        },
+        {
+          "text": "It records the specific quantity, price and delivery point against the agreed terms, and it is the record that the receipt and the invoice can be matched against later.",
+          "isCorrect": true,
+          "rationale": "This is why the order matters operationally. The framework fixes the commercial terms, and the call-off order fixes the transaction: how much, at what price, delivered where and when. It is the document the goods receipt is matched against, the document the invoice is matched against, and the document that shows the commitment was made under the right terms. Without it, three-way matching has nothing to match, and the \"off-contract\" problem is invisible."
+        },
+        {
+          "text": "It speeds up the process, because the agreement removes the need for a competitive event on each order.",
+          "isCorrect": false,
+          "rationale": "The speed benefit is real and it is one of the reasons frameworks exist, but it is not what makes the order itself necessary. The order is the transaction record; the framework is the permission and the terms. Confusing the two leads to the practice of assuming that having a framework means you do not need to raise orders, and the commitments then go unrecorded."
+        },
+        {
+          "text": "It creates a separate legal commitment, so the buyer can enforce the order terms independently of the framework.",
+          "isCorrect": false,
+          "rationale": "An order made under a framework is subject to the framework, and does not create a separate contract. It is usually a call-off or an order form that incorporates the agreement. The benefit is the opposite of separate: the framework terms apply automatically, which is why the order must be raised and why it must be consistent with the agreement it calls off."
+        }
+      ],
+      "principle": "The framework fixes the terms; the order fixes the transaction. Both are needed, and the order is what matching is done against."
     }
-  ],
+ ],
   relSop: 'sop-procurement-intake',
   rel: {
     concepts: ['c-procure-to-pay', 'c-three-way-match', 'audit-trail'],
@@ -917,8 +1272,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Never pay disputed overbillings; pay only undisputed base amounts.',
       record: 'Discrepancy Resolution Memo / Credit Note.',
       pitfall: 'Letting blocked invoices sit in a drawer for 90 days until the supplier halts supply.'
+    },
+    {
+      "title": "Match the Three Documents Line by Line and Classify the Variance",
+      "role": "Accounts Payable Analyst",
+      "desc": "Match the purchase order, the goods receipt and the invoice line by line, and classify each difference as a price variance, a quantity variance, an uncontracted charge or a tolerance breach.",
+      "control": "Each variance is recorded and raised separately with its own cause and remedy, and no variance is netted against another before it is raised.",
+      "record": "Match record with the three documents referenced, the variance classified and the exception raised.",
+      "pitfall": "Netting a price variance against a quantity variance, which hides both and produces a wrong settlement."
+    },
+    {
+      "title": "Resolve the Exceptions with Evidence and a Decision",
+      "role": "Procurement Specialist",
+      "desc": "Investigate each exception with the receiver, the buyer and the supplier, and decide whether it is a price adjustment, a credit, a short-shipment recovery, a legitimate charge or a tolerance acceptance.",
+      "control": "Nothing is written off without a recorded decision and a named approver, and a repeated exception from the same supplier is escalated to the performance review.",
+      "record": "Exception log with the evidence, the resolution, the credit or adjustment raised and the approver.",
+      "pitfall": "Accepting the invoice to clear the queue, which converts a recoverable exception into a permanent cost."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -964,8 +1335,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Services require documented Service Entry Sheets to verify delivery before Accounts Payable releases funds.'
+    },
+    {
+      "type": "scenario",
+      "context": "A supplier invoices 600 units at 92.00. The purchase order is for 600 units at 85.00 and the goods receipt records 480 units received. The invoice also adds 1,800 of freight that was not ordered. What are the exceptions?",
+      "q": "Which exceptions should be raised?",
+      "options": [
+        {
+          "text": "A price variance only, because the quantity matches the purchase order and the freight is a legitimate additional charge.",
+          "isCorrect": false,
+          "rationale": "The price variance is real, but it is one of three and the least serious. The quantity difference is larger in money terms: 120 units at 92.00 is 11,040 invoiced for goods never received. And the freight is uncontracted, which is a separate control question: a supplier billing an amount that was not on the order, for a service that was not agreed, is precisely the kind of thing matching exists to catch."
+        },
+        {
+          "text": "Three: a price variance on 480 units received, a quantity variance of 120 units billed but not received, and an uncontracted freight charge.",
+          "isCorrect": true,
+          "rationale": "That is the correct reading and it is the reason matching is done line by line. Price variance: 92.00 against 85.00, which is 3,360 on the received quantity and is a question for the negotiation or an index clause. Quantity variance: 120 units billed with no matching receipt, which is 11,040 and is either a short delivery being billed in full or a receipt not being recorded. Freight: 1,800 not on the order, which is uncontracted spend. Each of the three should be raised separately, because each has a different cause and a different remedy, and bundling them into one \"query\" is how a quantity discrepancy becomes an accepted price."
+        },
+        {
+          "text": "A quantity variance only, because a 480-unit receipt against a 600-unit order is a normal short delivery.",
+          "isCorrect": false,
+          "rationale": "A short delivery is a normal operational event and it is what the goods receipt is for. The exception is that the supplier has invoiced the full 600 units. That the receipt says 480 and the invoice says 600 is the discrepancy, and it is 11,040 of value. Treating the short delivery as the finding and missing the invoice is how a receipt is never matched at all."
+        },
+        {
+          "text": "A price and a quantity variance, with the freight treated as a rounding or freight-forwarding arrangement.",
+          "isCorrect": false,
+          "rationale": "The freight is not a rounding item, and treating an uncontracted 1,800 as an arrangement rather than an exception removes it from the record. It is a real charge that was not on the order, and the fact that it is small relative to the other two is not a reason to skip it. Matching exists to catch exactly the small unbilled and uncontracted amounts, because those are the ones that recur every invoice without ever being noticed."
+        }
+      ],
+      "principle": "Raise price, quantity and uncontracted charges as separate exceptions. Each has a different cause and a different remedy."
+    },
+    {
+      "type": "mcq",
+      "q": "What is the purpose of a three-way match?",
+      "options": [
+        {
+          "text": "To confirm that the purchase order, the goods receipt and the supplier invoice agree before payment is released.",
+          "isCorrect": true,
+          "rationale": "That is the mechanism, and it works because the three documents come from three different places: the buyer raised the order, the receiver confirmed the goods, and the supplier sent the invoice. A single person cannot easily make all three agree. The three-way match is therefore as much a control against internal collusion as it is an accuracy check, which is why the match is done against the documents and not against a summary someone typed in."
+        },
+        {
+          "text": "To confirm that the invoice is arithmetically correct against the goods received, so the accounts are not overstated.",
+          "isCorrect": false,
+          "rationale": "That is a two-way match, and it leaves the price untested. The order is what establishes the price the organization agreed to pay, and without it the match confirms only that the supplier billed what they say they delivered. The order is the document that makes the price testable, which is the whole point of having one."
+        },
+        {
+          "text": "To confirm that the supplier has been paid on time, so that the relationship is maintained.",
+          "isCorrect": false,
+          "rationale": "Payment timing is a relationship and working-capital issue, and it is handled through the terms and the payment process rather than through matching. Matching is an accuracy and control mechanism. Conflating the two produces a process that gets skipped under payment pressure, and a skipped match is how an overpayment happens."
+        },
+        {
+          "text": "To confirm that the goods received are within the contracted tolerance, so that the supplier is not penalised for minor variances.",
+          "isCorrect": false,
+          "rationale": "Tolerance is a parameter of the match, not its purpose. A stated tolerance decides what counts as a variance worth raising, and that matters, but it is one setting inside a broader control rather than the reason the control exists. Describing tolerance as the purpose of matching inverts the relationship: the match exists to establish that the three documents agree, and tolerance determines how strictly you judge the agreement."
+        }
+      ],
+      "principle": "The three-way match is as much a control against internal collusion as an accuracy check, which is why it compares documents, not summaries."
     }
-  ],
+ ],
   relSop: 'sop-procurement-audit',
   rel: {
     concepts: ['c-three-way-match', 'audit-trail', 'segregation-of-duties'],
@@ -1081,8 +1507,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Document all agreed commitments in a formal Action Tracker with named owners and deadlines.',
       record: 'Signed QBR Minutes & Executive Action Log.',
       pitfall: 'Talking only about past disputes without discussing future business growth and technology roadmaps.'
+    },
+    {
+      "title": "Agree the Measures and the Plan with the Supplier",
+      "role": "Supplier Relationship Manager",
+      "desc": "Set the measures, the data sources, the reporting cadence and the remedy for each measure, and record the improvement plan with owners and dates.",
+      "control": "Both parties agree the measures in advance and the plan carries named owners and dates, and the measures are the ones the category strategy identifies as differentiating.",
+      "record": "Supplier performance plan with the measures, the data source, the target, the owner and the review date.",
+      "pitfall": "Measuring whatever data is available rather than what differentiates the supplier in this category."
+    },
+    {
+      "title": "Run the Review as a Decision on Volume, Terms and Status",
+      "role": "Supplier Relationship Manager",
+      "desc": "Present the performance against the plan, take the supplier's explanation, agree the forward actions, and decide explicitly what the performance means for volume, terms, status and senior access.",
+      "control": "The review records a decision with a named owner, and a repeated failure to meet an agreed plan escalates to the sourcing and contract strategy rather than being re-planned again.",
+      "record": "Business review record with the performance data, the explanation, the agreed actions and the decision on volume, terms and status.",
+      "pitfall": "Recording the performance and the actions but not the decision, so nothing actually changes and the review becomes an annual formality."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -1128,8 +1570,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'High-performing supply chains require two-way accountability: fixing internal buyer dysfunction is often the fastest way to improve supplier performance.'
+    },
+    {
+      "type": "scenario",
+      "context": "A strategic supplier scores 92 percent on delivery and quality but 68 percent on responsiveness, and has missed three service reviews. The account manager calls them \"a great supplier who is hard to work with\". What should the review do?",
+      "q": "What is the right approach?",
+      "options": [
+        {
+          "text": "Accept the narrative, because the delivery and quality record is strong and the account manager has the relationship.",
+          "isCorrect": false,
+          "rationale": "This is the failure mode of relationship-led reviews, and it is why scorecards are often ignored. A 68 percent responsiveness score is not a rounding error, and the narrative and the number are describing different things: the supplier delivers well and is hard to work with. That combination has consequences, and the review is the place to say so. Accepting the narrative also means the scorecard is not measuring anything, which removes the reason to have one."
+        },
+        {
+          "text": "Use the scorecard to make the trade explicit: 92 on delivery and quality against 68 on responsiveness, with the agreed remedy for the gap, and a decision on whether the performance still justifies the strategic status.",
+          "isCorrect": true,
+          "rationale": "This is what a business review is for. The scorecard makes the tension visible and quantified, the narrative makes it contextual, and the two together support a decision that neither supports alone. The step that is often missing is the last one: whether the performance still justifies the strategic status, the volume commitment and the senior access that go with it. A supplier that delivers reliably but makes the business expensive to work with is a different proposition from the one that was selected, and the review is where that is said out loud and acted on."
+        },
+        {
+          "text": "Re-weight the scorecard so delivery and quality count for more, since they reflect what matters to the business.",
+          "isCorrect": false,
+          "rationale": "Re-weighting after the results are known makes the scorecard meaningless and removes the comparability that made it useful. It also teaches everyone involved that the weights move to produce the desired answer. If responsiveness genuinely should carry more weight for this category, that is a change to the category strategy, agreed before the next cycle, and it applies to every supplier in the category rather than to one that has just been reviewed badly."
+        },
+        {
+          "text": "Move the supplier out of the strategic tier and onto a transactional agreement, given the responsiveness gap.",
+          "isCorrect": false,
+          "rationale": "This is a legitimate option but it is a large one to take on a 32-point gap in one dimension, and it should not be the first move. The gap has to be understood first: is it responsiveness on quotes, on issues, on invoices or on changes, and is it a capacity problem, a behaviour problem or a relationship problem? A supplier with a specific, fixable responsiveness gap and strong delivery is often worth keeping at a lower volume. Downgrading first and diagnosing afterwards risks losing a supplier that was recoverable."
+        }
+      ],
+      "principle": "Make the score and the narrative meet. A 68 on responsiveness next to a 92 on delivery is a decision to take, not a rounding issue."
+    },
+    {
+      "type": "mcq",
+      "q": "A supplier business review is most useful when it is:",
+      "options": [
+        {
+          "text": "Held at a fixed cadence, whether or not there is anything to discuss, so the data is comparable over time.",
+          "isCorrect": false,
+          "rationale": "A fixed cadence is good discipline for a data review and bad for a business review. Cadence without a purpose produces meetings that both sides skip, which is how a review that was meant to improve performance becomes a formality. The review should happen when there is a decision to make, and the data should be there to inform it, with a cadence covering the data collection."
+        },
+        {
+          "text": "Held to decide something: continue, improve, re-plan or exit, with the performance data and the relationship context in front of the decision.",
+          "isCorrect": true,
+          "rationale": "A review is a decision forum. If there is no decision available, the meeting has no purpose and will not improve the relationship. The structure that works is: performance against the agreed measures, the supplier's explanation, the forward plan with owners and dates, and then a decision on volume, terms, status or exit. The data is the evidence for the decision, and the relationship context is what makes the decision reasonable rather than merely correct."
+        },
+        {
+          "text": "Run by procurement alone, so that the commercial conversation is not diluted by operational complaints.",
+          "isCorrect": false,
+          "rationale": "The risk is the opposite: a review run only by procurement tends to become a score discussion, because procurement sees the supplier through a commercial lens and the receiving team sees a different supplier. The review needs the function that uses the supply, because delivery and responsiveness are experienced where the work happens, and the buyer is the one who has to convert the outcome into a plan."
+        },
+        {
+          "text": "Held with the supplier's account manager, because they are the relationship and will know what is really going on.",
+          "isCorrect": false,
+          "rationale": "The account manager is the right person to be in the room and the wrong person to be the only one. An account manager with a strong relationship will usually carry a sympathetic narrative, and the operational experience that contradicts it will not be in the room. The review needs the buyer, the user of the supply and the account manager together, or the scorecard will be quietly overruled by the relationship every cycle."
+        }
+      ],
+      "principle": "A review is a decision forum: continue, improve, re-plan or exit. The data informs the decision; it is not the meeting."
     }
-  ],
+ ],
   relSop: 'sop-supplier-performance-management',
   rel: {
     concepts: ['supplier-performance', 'supplier-relationship-management', 'supplier-development', 'supplier-segmentation'],
@@ -1245,8 +1742,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Formal written Finance Controller sign-off required on all savings entries.',
       record: 'Signed Savings Certificate & Executive Value Dashboard.',
       pitfall: 'Publishing savings reports without prior Finance Controller review and approval.'
+    },
+    {
+      "title": "Lock the Baseline and Agree It With Finance Before the Action",
+      "role": "Category Manager",
+      "desc": "Establish what was genuinely paid or would have been paid, document every adjustment, and obtain finance agreement on the baseline before the negotiation or the commitment happens.",
+      "control": "The baseline is dated, evidenced and signed by finance before the action, and any later change is recorded as a restatement with the reason.",
+      "record": "Baseline record with the source data, the adjustments, the finance agreement and the date locked.",
+      "pitfall": "Settling the baseline after the outcome is known, which is how savings numbers lose their finance sign-off."
+    },
+    {
+      "title": "Classify Savings Against Avoidance and Report Them Separately",
+      "role": "Category Manager",
+      "desc": "Classify each benefit as a saving, a cost avoidance or a one-off, record the realisation route and the expected date, and keep the three apart in the reporting.",
+      "control": "Every initiative is classified before it is reported, and no avoidance is added to a saving total before it is realised.",
+      "record": "Savings register with the classification, the baseline reference, the realisation route and the expected date.",
+      "pitfall": "Adding avoidance to savings in a headline total, and having to revise it down in public when the avoidance does not materialise."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'calc',
@@ -1294,8 +1807,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Never conflate business demand reductions with procurement commercial savings.'
+    },
+    {
+      "type": "scenario",
+      "context": "A negotiation saved 120,000 a year against a last-paid-price baseline. Finance will not sign it off, because the previous year's price was inflated by a one-off promotional discount that the supplier withdrew. What is the right response?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Report the saving against the budgeted price instead, which finance accepts, and keep the same 120,000 figure.",
+          "isCorrect": false,
+          "rationale": "Moving the baseline to make the number acceptable is baseline gaming, and it is the most common way a savings programme loses credibility with finance. The budgeted price is not what was paid, so a saving against it is not money the organization did not spend. Finance is right to refuse this figure, and the reason it can refuse it is that the baseline was never agreed before the negotiation."
+        },
+        {
+          "text": "Go back to the evidence and agree a baseline with finance before the fact: what was actually paid, adjusted for the one-off, with the adjustment documented and agreed.",
+          "isCorrect": true,
+          "rationale": "The substantive problem is that the baseline was never locked before the negotiation, which is the control that finance signs against. The remedy is to reconstruct it properly, not to move it: establish what was genuinely paid, remove the one-off and document the adjustment, and have finance agree the basis with the reasoning stated. That produces a figure that is lower than 120,000 and defensible, rather than 120,000 that is not. The lesson to carry forward is the process one, and it belongs in the savings calculation procedure."
+        },
+        {
+          "text": "Report the 120,000 as a cost avoidance rather than a saving, since the increase would otherwise have applied.",
+          "isCorrect": false,
+          "rationale": "That is a category change, not a baseline change, and it will not survive scrutiny either, because the underlying claim is still measured against a price that was never really paid. Avoidance is a different measure with different rules, and the honest use of it is for cost that genuinely did not arise, not as a relabelling of a saving the baseline cannot support."
+        },
+        {
+          "text": "Split the difference, report 90,000 as the saving and 30,000 as an unallocated benefit, so part of it can be signed.",
+          "isCorrect": false,
+          "rationale": "This invents a number to fit a process, and it is the worst of the options because it looks like compromise while being entirely arbitrary. The finance reviewer is not asking for a smaller number; they are asking for a number they can defend to an auditor. An arbitrary split gives them neither, and it removes the incentive to fix the actual problem, which is the baseline discipline."
+        }
+      ],
+      "principle": "If finance will not sign the baseline, the answer is a better baseline, evidenced and agreed - not a smaller number and not a different label."
+    },
+    {
+      "type": "mcq",
+      "q": "Which of these is the correct treatment of cost avoidance?",
+      "options": [
+        {
+          "text": "It is reported separately from savings, because it is a different measure with different rules.",
+          "isCorrect": true,
+          "rationale": "They are different things and the distinction is the point. A saving is money the organization did not spend that it otherwise would have. An avoidance is money the organization did not spend that it was never going to spend anyway, because the demand never materialised or the risk never crystallised. Reporting them together inflates the number and, in most review processes, gets the whole programme discredited. They also have different realization profiles, so a saving committed in a negotiation and an avoidance that depends on a project not happening should never be added before they are realized."
+        },
+        {
+          "text": "It is added to savings in the reporting, because both reduce cost and the total is what the business cares about.",
+          "isCorrect": false,
+          "rationale": "The total is not what the business can act on, and combining them is the single most common reason a savings number is challenged. Avoidance is usually not realized and is often not repeatable, so adding it to a contracted saving overstates the result and, when the avoidance fails to materialise, the reported total has to be revised downwards in public."
+        },
+        {
+          "text": "It is excluded entirely from savings reporting, because it is not a real saving.",
+          "isCorrect": false,
+          "rationale": "Excluding avoidance entirely is also wrong, because avoidance has real value and the CFO needs to see it: a negotiated cost avoidance on a renewal is worth a great deal, and it is often the largest single benefit of the negotiation. The error is not counting avoidance; the error is counting it as if it were a saving, or counting it before it is realized."
+        },
+        {
+          "text": "It is counted only once it is realized in the actuals, in the same period as the savings.",
+          "isCorrect": false,
+          "rationale": "Realisation in the actuals is the right test, and it is a necessary part of the treatment. The error is in the last clause: counting avoidance in the same period as the savings is how the two measures get combined, and combining them is precisely what the separate reporting exists to prevent. Avoidance and savings belong on separate lines, each realised on its own evidence, and a total that adds them together is the number finance will not sign."
+        }
+      ],
+      "principle": "Savings and avoidance are different measures with different rules. Report them separately, and count both only once they are realized."
     }
-  ],
+ ],
   relSop: 'sop-savings-calculation',
   rel: {
     concepts: ['savings-types', 'savings-measurement', 'savings-baseline', 'savings-realization', 'cost-avoidance'],

@@ -224,8 +224,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Uptake of the agreed route comes before price. Design the route the business will actually use, then optimise what sits behind it.'
+    },
+    {
+      "type": "scenario",
+      "context": "A facilities manager has been buying his own cleaning supplies from a local supplier on a card, and says it takes too long to raise a purchase order for a box of gloves. Procurement wants to put everything on contract. What is the right approach?",
+      "q": "What should procurement do?",
+      "options": [
+        {
+          "text": "Put all of it on contract, because the tail is uncontrolled and every saving has to be captured.",
+          "isCorrect": false,
+          "rationale": "Contracting the tail of a category that works today destroys the reason it works. A requester who can get gloves in an hour does not want a purchase order, and forcing him onto a thirty-day process for consumables produces workarounds, not compliance. The savings from consolidating a few hundred pounds of cleaning supplies will not pay for the friction, and the requester will route around it."
+        },
+        {
+          "text": "Consolidate the categories that carry real value into an agreement, keep a card or catalogue for the genuine tail, and remove the friction from both routes.",
+          "isCorrect": true,
+          "rationale": "This is the segmentation logic applied honestly. The value is in the categories where spend is concentrated, the specifications are standard and the volume is real, and those belong in an agreement with a rate card and a delivery point. The tail needs a fast, low-friction route with a limit and a monthly reconciliation, because the cost of administering a small purchase must be less than the value of controlling it. The friction argument from the requester is legitimate data about the design, not an excuse."
+        },
+        {
+          "text": "Raise a low-value purchase order form so everything is visible and consistent, accepting a longer lead time for gloves.",
+          "isCorrect": false,
+          "rationale": "A purchase order for a box of gloves is a control that costs more than it controls. The transaction value is trivial, the risk is negligible, and the administrative cost of the approval and the three-way match is a real cost against a trivial benefit. What is needed is a route that is fast and reconciled, not a slow route applied uniformly. Consistency is not a good enough argument to make the process worse for everyone."
+        },
+        {
+          "text": "Let the facilities manager keep his supplier but require him to reconcile his card spend monthly, so the category is visible without changing how he buys.",
+          "isCorrect": false,
+          "rationale": "Visibility without control is the outcome this project is trying to leave. Monthly reconciliation tells you what happened and changes nothing about it, and it formalises a pattern the buyer has already chosen rather than one the organisation has decided. It is a reasonable interim step while a proper route is designed, but it is not the destination, and it leaves the requester with a purchasing card that is effectively a personal account with a reporting requirement."
+        }
+      ],
+      "principle": "The tail needs a fast, reconciled route, not a slow contract. Friction is design data, not an excuse."
+    },
+    {
+      "type": "mcq",
+      "q": "A national agreement with tiered pricing by site is most valuable because it:",
+      "options": [
+        {
+          "text": "Guarantees the lowest price, because the supplier commits to the tier regardless of volume.",
+          "isCorrect": false,
+          "rationale": "A rate card is a price for a volume, and the price is what the supplier charges for that volume. It does not guarantee the lowest price and it does not remove the need to aggregate: the price only reaches the better tier if the volume actually arrives at that tier, which is the buyer's job. The supplier commits to the price, not to the outcome."
+        },
+        {
+          "text": "Makes demand aggregation commercially rational for the buyer, because the supplier rewards it with a better tier.",
+          "isCorrect": true,
+          "rationale": "That is the mechanism. Without a tiered structure, a site buying on its own gets a worse price than the group does, and every site is then incentivised to protect its own supplier. A rate card that pays for aggregation gives the requester a reason to bring volume to the network, and it gives the buyer a concrete mechanism to aggregate rather than an instruction. This is why a rate card is more valuable than a discount off a list price."
+        },
+        {
+          "text": "Removes the need to keep checking the supplier's performance, because the agreement fixes the price.",
+          "isCorrect": false,
+          "rationale": "A fixed price removes the price negotiation, not the performance problem. If a supplier misses the service level across a hundred sites, the response is not a lower rate card, it is service credits, escalation and a different supplier. The agreement fixes what is paid, and the performance management fixes whether the supply is worth paying for, and they are separate problems."
+        },
+        {
+          "text": "Locks the price for the whole term, so the category is not exposed to inflation.",
+          "isCorrect": false,
+          "rationale": "A rate card for a defined volume locks the price for that volume, and it usually has an annual uplift and an index or cap mechanism. For a short or a fixed-price agreement, a firm price is possible, but it transfers the input-cost risk to the supplier, who will price it. If cost certainty is the objective, say so in the requirement and design the commercial model around it, rather than assuming a rate card gives it."
+        }
+      ],
+      "principle": "A tiered rate card is an incentive to aggregate. It rewards the buyer for the demand they actually bring together."
     }
-  ],
+ ],
   relSop: 'sop-procurement-intake',
   rel: {
     concepts: ['category-management', 'demand-management', 'direct-indirect-spend'],
@@ -432,8 +487,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'A metric is not a detail. Before you compare prices, decide what you are buying and how it is counted, and make every vendor answer on the same basis.'
+    },
+    {
+      "type": "scenario",
+      "context": "A 300,000 annual software subscription renews automatically in 45 days. The contract has a 30-day notice window, so the last date to act is in 15 days. Usage data shows 22 percent of the seats have not been used in six months, and the true-up is calculated on the vendor's deployment report. What should the buyer do first?",
+      "q": "What is the right first action?",
+      "options": [
+        {
+          "text": "Cancel the subscription now, since 22 percent of the seats are unused and the renewal is excessive.",
+          "isCorrect": false,
+          "rationale": "Cancelling with 15 days of notice on a 300,000 commitment, on the strength of a seat count rather than a business need, is a decision made under time pressure with no analysis behind it. Unused seats are real waste, but they are not a reason to lose a capability the business depends on, and the cancellation terms in a subscription are usually a full-term commitment rather than a month-to-month exit. The waste is recoverable; the loss of the tool is not necessarily reversible."
+        },
+        {
+          "text": "Establish what is actually used and what the business needs, reconcile the entitlements against that, and use the notice window to negotiate a right-sized renewal with a capped uplift and a true-up on the buyer's own records.",
+          "isCorrect": true,
+          "rationale": "The sequence matters. The 15-day window is the real constraint and it should drive the work plan rather than the panic. The unused seats are a genuine finding and the right-sizing is where the money is, but the first job is to establish what the business actually needs, because that determines whether the right answer is fewer seats, a different tier, or a different product. Then negotiate inside the window: a capped uplift, a true-up computed on the buyer's deployment record, a notice period that is not 30 days, and the right-sized volume. The window is short, which is exactly why the analysis has to be done now rather than after the renewal."
+        },
+        {
+          "text": "Do nothing, because cancelling at 45 days would trigger an early termination penalty.",
+          "isCorrect": false,
+          "rationale": "A termination penalty is a cost to be quantified, not a reason to take no decision. Doing nothing is a decision to renew, and it is the most expensive of the options because it costs 300,000 for twelve months of unchanged waste. If there is a penalty, it belongs in the analysis of what the alternatives cost, and it is usually small next to a year of unused seats. Inaction is not a neutral option here."
+        },
+        {
+          "text": "Accept the renewal to protect continuity, and start a right-sizing exercise after the renewal date.",
+          "isCorrect": false,
+          "rationale": "This is a reasonable instinct and a poor plan, because right-sizing a subscription means paying for fewer seats, and that saving is only available at renewal. After the renewal you are locked into another year at the same volume, and the \"exercise\" becomes an analysis of waste you have already agreed to pay for. The value of the right-sizing is entirely in the renewal, which is why the window, however tight, is where the work has to happen."
+        }
+      ],
+      "principle": "In a subscription, right-sizing only pays at renewal. The notice window is the whole opportunity, so the analysis happens inside it."
+    },
+    {
+      "type": "mcq",
+      "q": "A software true-up clause is most dangerous when:",
+      "options": [
+        {
+          "text": "The measurement of deployment is left to the vendor's own report, with no right to the underlying data.",
+          "isCorrect": true,
+          "rationale": "That is the dangerous version, because it makes the reconciliation a self-assessment by the party with an interest in the outcome. The buyer then discovers a shortfall it never measured, calculates it on the vendor's terms, and pays it. The control is to require the buyer's own deployment record to be the basis, with a right to the vendor's underlying data on request so the two can be reconciled. A true-up computed on a shared method is a commercial process; one computed on one party's data is a revenue mechanism."
+        },
+        {
+          "text": "The true-up is calculated quarterly, because frequent measurement is always better than annual.",
+          "isCorrect": false,
+          "rationale": "Frequency is not the risk, and quarterly can be a genuine advantage: the shortfall is smaller, the correction is cheaper and the buyer learns earlier. The risk is the basis of calculation and the flow of data, not how often it happens. A quarterly true-up on the buyer's own records is a better arrangement than an annual one computed by the vendor on a report the buyer never sees."
+        },
+        {
+          "text": "The contract allows the vendor to audit the buyer's deployment, which creates a risk of billable findings.",
+          "isCorrect": false,
+          "rationale": "The audit right is the counterweight to the buyer's own measurement, and it is not the danger. A vendor audit can find an over-deployment, which is a billable finding, but that risk exists whether the clause is there or not, and it exists because the deployment does not match the entitlements. The honest response is to keep the deployment record accurate, not to remove the clause that makes the position checkable."
+        },
+        {
+          "text": "The true-up applies a price per unit that is higher than the contracted unit price.",
+          "isCorrect": false,
+          "rationale": "A true-up at a higher rate is a commercial point worth negotiating, but it is an ordinary price term and it is visible and bounded. The dangerous clause is the one that determines whether there is a shortfall at all, because an unbounded measurement error is worse than a known premium. Negotiate the rate; insist on the data."
+        }
+      ],
+      "principle": "A true-up is a revenue mechanism unless the buyer controls the measurement. Own the deployment record and demand the underlying data."
     }
-  ],
+ ],
   relSop: 'sop-rfp',
   rel: {
     concepts: ['contract-structure', 'payment-terms', 'working-capital'],
@@ -639,8 +749,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'In services buying, the specification is the product. That is why the brief, not the negotiation, is where the money is won or lost.'
+    },
+    {
+      "type": "scenario",
+      "context": "A consultancy has quoted 480,000 for a nine-month programme. The internal estimate of the equivalent work is 350,000. A colleague says the firm is overpriced and should be challenged. What is the correct analysis?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Challenge the fee as overstated, since the internal estimate is 130,000 lower.",
+          "isCorrect": false,
+          "rationale": "The internal estimate is not a price for the same thing. It is what the organisation thinks the work would cost if the organisation did it, which omits the cost of the capability, the opportunity cost of the internal people who would otherwise be doing their day jobs, the cost of ramping up the knowledge, and the risk that the internal team is wrong about how hard the work is. The 130,000 gap is the first place to look, not a conclusion. A challenger who opens with \"you are 27 percent overpriced\" and no cost model has lost the argument before it starts."
+        },
+        {
+          "text": "Convert both to a day rate using the proposed team and the hours implied, and test the rate against the market, the seniority mix and the internal cost of providing the capability.",
+          "isCorrect": true,
+          "rationale": "This is the only comparison that means anything, and it is the same discipline as quote normalisation. 480,000 over nine months at a plausible team is a rate; the internal 350,000 over the same team is a different rate. Once both are expressed per day, the difference is visible and explicable: is it the rate, the mix, the hours, or the expectation of the internal estimate? The internal comparison then becomes a make-or-buy input rather than a price benchmark, because the organisation's cost of providing the capability is a real alternative and it should be in the comparison on a like-for-like basis."
+        },
+        {
+          "text": "Accept the fee, because the internal team could not deliver the work to the required standard in the timeframe.",
+          "isCorrect": false,
+          "rationale": "That may well be true, and it is a reason to buy rather than a reason to pay any price. The point of the analysis is to establish what the capability is worth, not to explain away whatever the number turns out to be. If the internal team genuinely could not do it, that is a make-or-buy conclusion and it belongs in the business case with a stated plan for the capability afterwards, not as a reason to accept the first quote without testing it."
+        },
+        {
+          "text": "Ask three more firms to quote, and take the lowest.",
+          "isCorrect": false,
+          "rationale": "A lowest-price rule on a complex professional service is the wrong rule, because the bids are not comparable and the difference in what was scoped will swamp the price difference. If the requirement is complex enough that price cannot separate the bids, which is the normal case for a programme of this kind, the answer is a scope and a weighted evaluation, not a race to the bottom. One more well-specified quote from a firm with relevant experience would tell you more than three competing guesses."
+        }
+      ],
+      "principle": "Convert both sides to a rate and a team before you compare. The internal estimate is a make-or-buy input, not a price benchmark."
+    },
+    {
+      "type": "mcq",
+      "q": "The most common cause of scope creep in a professional services engagement is:",
+      "options": [
+        {
+          "text": "The supplier deliberately under-scopes to win the work and recovers the margin later.",
+          "isCorrect": false,
+          "rationale": "It happens, but it is not the most common cause, and treating every overrun as bad faith destroys the working relationship that the rest of the engagement depends on. The more common cause is structural: the scope was written by the buyer, the buyer knew more about what would be needed than the supplier, and neither party wrote down what was out of scope. In an engagement where the buyer is a better expert on the problem than the supplier, which is the normal case in professional services, an undefined scope will expand in the direction of the buyer's unstated expectations."
+        },
+        {
+          "text": "The scope was defined by the buyer without an explicit out-of-scope section, so both parties fill the gap differently.",
+          "isCorrect": true,
+          "rationale": "This is the structural cause, and it is a design fault in the request, not a commercial manoeuvre. The remedy is in the scope of work and it is unglamorous: list what is included, list what is explicitly excluded, list the assumptions the estimate depends on, state the change mechanism and the rate, and put a named approver on both sides for changes. A scope with a defined boundary does not stop changes; it makes them visible, priced and approved rather than absorbed quietly into the fee."
+        },
+        {
+          "text": "A time and materials contract, which removes the incentive to control the scope.",
+          "isCorrect": false,
+          "rationale": "A time and materials contract removes the supplier's incentive to be efficient, and that is a real effect. But the incentive problem is a symptom: a fixed-price contract over an undefined scope simply relocates the overrun into a dispute, and the supplier still has to deliver the work. Fixing the contract without fixing the scope produces a worse outcome, because the overrun becomes contested rather than merely unpriced."
+        },
+        {
+          "text": "The absence of a written statement of work, which leaves the deliverable open to interpretation.",
+          "isCorrect": false,
+          "rationale": "A statement of work is necessary and its absence is a serious problem, but a statement of work that lists deliverables without excluding anything is not much protection. The exclusion list, the assumptions and the change mechanism are the parts that do the work, and they are the parts most often left out because they are the least comfortable to write. A document that everybody signs and nobody reads is not a control."
+        }
+      ],
+      "principle": "Scope creep is usually a design fault in the request: no exclusions, no assumptions, no change mechanism. Fix the scope, not the supplier."
     }
-  ],
+ ],
   relSop: 'sop-rfp',
   rel: {
     concepts: ['specification', 'negotiation-leverage', 'statement-of-work'],
@@ -848,8 +1013,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Never blend verified and unverified into one number. Report them apart, so the gap is visible and the effort goes where it belongs.'
+    },
+    {
+      "type": "scenario",
+      "context": "A packaging supplier states a recycled content percentage on its quotation and provides no supporting document. The buyer has recorded the figure in the sustainability report. What is the correct response?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Accept the figure, because the supplier is a regulated supplier with a reputation to protect and would not misstate it.",
+          "isCorrect": false,
+          "rationale": "Reputation is not a verification system, and the incentive runs the wrong way: a supplier who can publish a percentage without evidence has a competitive reason to overstate it, and the reason is a lower recycled-content specification costing the buyer more. The figure is also now in a published report, which means the exposure is the buyer's as well as the supplier's. A number in a public sustainability claim has to survive scrutiny, and a self-declaration with no method and no document does not."
+        },
+        {
+          "text": "Ask for the evidence, the method and the boundary, and treat the figure as unverified until it is received. Publish only what has been verified.",
+          "isCorrect": true,
+          "rationale": "This is the right sequence and it is the one that makes the published number defensible. The request is specific: the certificate with its scheme and expiry, or the mass-balance calculation with its method, or the mill record, plus the boundary the percentage applies to and the period it covers. Until that arrives, the figure is unverified and does not go into a published number. Where the supplier cannot evidence it, the honest treatment is to publish nothing rather than to publish a claim the buyer cannot stand behind, and to record the gap so the improvement effort knows where it is."
+        },
+        {
+          "text": "Publish the figure with a caveat noting that it is self-declared and unverified.",
+          "isCorrect": false,
+          "rationale": "A caveat does not make a number defensible, and in a sustainability report it can make things worse, because an unverified figure with a caveat still reads as a figure that has been checked. Regulators increasingly ask for the method and the evidence behind a published claim, and \"the supplier told us and we added a caveat\" is not an answer. The buyer should publish what it can substantiate and say plainly what it cannot."
+        },
+        {
+          "text": "Publish only the verified portion of the figure and exclude the unverified material from the calculation.",
+          "isCorrect": false,
+          "rationale": "That is arithmetically tempting and analytically wrong. The verified portion of a bill of materials is usually the small part, and a weighted average that blends a certified material with an unverified majority reports a number whose quality is nowhere described. Reporting the pieces apart is the correct treatment, not blending them: a figure that says \"certified for 12 percent of the bill of materials, unverified for the rest\" is honest, and a single blended percentage is not."
+        }
+      ],
+      "principle": "An unverified figure does not go into a published number. Publish what you can evidence, and record the gap."
+    },
+    {
+      "type": "mcq",
+      "q": "Why does the Scope 3 standard place most purchased goods and services emissions outside the company's own operational control?",
+      "options": [
+        {
+          "text": "Because they are measured differently and are less reliable than Scope 1 and 2 emissions.",
+          "isCorrect": false,
+          "rationale": "Measurement reliability is a genuine difficulty with Scope 3, and it is not the reason for the structure. The standard is organised around the GHG Protocol's concept of control, and a purchased good is a Scope 3 emission precisely because the emitting entity is the supplier and the buyer does not control it. The reason the categories exist is that a company's own emissions are a small part of the footprint of most value chains, and a standard that excluded them would exclude most of what matters."
+        },
+        {
+          "text": "Because the emitting activity is outside the company's control, and the standard is organised around ownership and control of the emissions.",
+          "isCorrect": true,
+          "rationale": "That is the organising principle, and it is why the categories are divided at all. Scope 1 is what the company owns directly, Scope 2 is what it purchases as energy, and Scope 3 is everything else in the value chain. For procurement specifically, this means the category that moves the number is bought goods and services, so the specification and the contract are the only instruments that change it. A declaration from a supplier changes the report; a requirement in a contract changes the emissions."
+        },
+        {
+          "text": "Because the standard assigns reporting responsibility to the largest company in the value chain.",
+          "isCorrect": false,
+          "rationale": "That is not how responsibility is assigned. Each company in a value chain reports its own scopes, and the largest company's Scope 3 figure includes the emissions of its suppliers, which are also reported in their own Scope 1 and 2. The double counting in the value chain is a known characteristic of the method and is handled at the category level, not by concentrating the obligation on one company."
+        },
+        {
+          "text": "Because Scope 3 emissions are not regulated and are reported on a voluntary basis.",
+          "isCorrect": false,
+          "rationale": "Voluntary reporting is a feature of the framework rather than the reason for the structure, and the regulatory position has moved considerably: disclosure regimes in several jurisdictions now require Scope 3 reporting for large undertakings, and it is increasingly a condition of supplying to large buyers. The reporting driver is the reason to do it now; the control structure of the standard is the reason it is organised this way."
+        }
+      ],
+      "principle": "Scope 3 exists because the emissions are outside your control and inside your value chain. Which means the contract is the only instrument that moves them."
     }
-  ],
+ ],
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['procurement-ethics', 'supplier-qualification', 'contract-structure'],
@@ -1056,8 +1276,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Payment plus delegated influence plus invisibility is the bribery mechanism. Every control worth having follows from naming those three elements.'
+    },
+    {
+      "type": "scenario",
+      "context": "A sales agent asks to be paid a 6 percent commission for introducing a new distributor, to be paid into an account in the agent's own company. The distributor contract is worth 2.1 million over three years. What is the correct response?",
+      "q": "What should procurement do?",
+      "options": [
+        {
+          "text": "Pay the commission, because the agent introduced the business and the rate is within the normal range for the region.",
+          "isCorrect": false,
+          "rationale": "A normal rate is not the test. The three features here are what make it a red flag: a commission paid for influence over the buyer's own decision, a payment to an account in the agent's company rather than to a verified supplier, and a large value. Paying it creates a documentary record of exactly the arrangement that a regulator or an anti-bribery investigation would look at, and it is paid from a company that will then be asked to account for the decision. \"It is normal in the region\" is not a defence to paying money to someone who influenced a decision you made."
+        },
+        {
+          "text": "Do not pay it without due diligence. Establish who the agent is, who owns the agent company, what service was actually delivered, and whether the payment to the agent's own account is justified and lawful in that jurisdiction.",
+          "isCorrect": true,
+          "rationale": "This is the sequence, and the last part is the one most often skipped. The questions are: who is the agent, who ultimately owns the agent company, and does that ownership connect to the distributor or to any official? What service was delivered that is worth 6 percent of a 2.1 million contract, evidenced and documented? And is paying a commission to that account permissible where the business operates, because the laws differ sharply on commission payments to third parties and to individuals. If the answers are clean, the payment may be entirely proper. If they are not, the payment and possibly the contract are both at risk."
+        },
+        {
+          "text": "Pay the commission but require the agent to declare it, so that the arrangement is transparent.",
+          "isCorrect": false,
+          "rationale": "A declaration by the party asking for the payment adds nothing, and it creates a document that shows the buyer knew about the arrangement and approved it. Transparency is only a control when it is transparency to someone who can act on it. A declaration filed in the agent's own file is not a control, it is a receipt, and the fact that it exists is the problem: it evidences the payment rather than preventing it."
+        },
+        {
+          "text": "Refuse the commission and instruct the business unit to source the distributor directly, since the agency adds no value.",
+          "isCorrect": false,
+          "rationale": "This assumes the agency added no value, which nobody has established. Agents do real work: local market access, regulatory knowledge, introductions and the working capital that some distributors require. Refusing the commission on an assumption about the value of the relationship does not remove the risk, it removes the documentation of the risk, and it leaves the business unit to contract with the distributor directly with the same underlying questions unanswered. Establish the facts first, then decide."
+        }
+      ],
+      "principle": "A commission paid for influence, into a third-party account, needs due diligence on ownership, service and local law before it is paid."
+    },
+    {
+      "type": "mcq",
+      "q": "Under the UK Bribery Act 2010, the corporate offence of failing to prevent bribery is:",
+      "options": [
+        {
+          "text": "A strict liability offence, with a defence available only where the organisation can show it had adequate procedures in place.",
+          "isCorrect": true,
+          "rationale": "That is the structure, and it is why the defence is a documentation question rather than a conduct question. It does not matter that no one in the organisation bribed anyone, and it does not matter that the organisation is decent to work for. The question is whether it could be shown that it had adequate procedures, which is a matter of record: the policy, the due diligence on third parties, the training, the reporting route, the monitoring and the evidence that all of it happened. An organisation that cannot produce those records has no defence, whatever its culture is genuinely like."
+        },
+        {
+          "text": "An offence that applies only where a bribe was actually paid, and only the payment is penalised.",
+          "isCorrect": false,
+          "rationale": "That is the ordinary bribery offence, and it is not the one that creates the organisational exposure. The section 7 offence is about the failure to prevent bribery by an associated person, and it does not require a bribe to have been paid or to have been discovered. The exposure is precisely in the case where something was paid that should not have been, because the defence is about the systems rather than about the outcome."
+        },
+        {
+          "text": "An offence that applies only to companies operating outside the United Kingdom.",
+          "isCorrect": false,
+          "rationale": "The offence applies to an organisation and its associated persons, and an organisation is in scope if it has a UK presence, which is a much lower threshold than being UK-registered. A company that trades in the UK through a branch, a sales office or a subsidiary can be in scope, and so can an overseas supplier that sells into the UK. The reach is wide, and the practical question for any organisation is whether it can evidence adequate procedures, not where it is incorporated."
+        },
+        {
+          "text": "A strict liability offence with no defence available, making it impossible to contract with intermediaries.",
+          "isCorrect": false,
+          "rationale": "The defence exists, and it is the whole point of the provision. The problem the section is solving is that a corporation cannot be imprisoned, and without a corporate offence a company could simply decline to investigate a bribe that an employee paid, because the employee, not the company, would be liable. Adequate procedures give the organisation a way to prevent that outcome, and they are entirely within its control to build. What is impossible is to contract with an intermediary without due diligence, not to contract at all."
+        }
+      ],
+      "principle": "The defence is documentation, not conduct. If you cannot produce the policy, the due diligence, the training and the monitoring, you do not have a defence."
     }
-  ],
+ ],
   relSop: 'sop-procurement-audit',
   rel: {
     concepts: ['procurement-ethics', 'conflict-of-interest', 'segregation-of-duties', 'audit-trail'],
@@ -1264,8 +1539,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Resilience is measured in independent failure modes, not in the number of suppliers. A dependency map is what tells you which you have.'
+    },
+    {
+      "type": "scenario",
+      "context": "A component is single-sourced. The supplier has a documented continuity plan, has never missed a delivery, and the buyer's due diligence covers the supplier's solvency and quality. Testing the plan reveals that the supplier's sole backup is a distributor of the same plant's output in another region. What is the correct conclusion?",
+      "q": "What should the buyer conclude?",
+      "options": [
+        {
+          "text": "The plan is adequate, because it names an alternative source and the supplier has a good delivery record.",
+          "isCorrect": false,
+          "rationale": "A documented plan is not a working alternative. A distributor of the same plant's output is not a second source; it is the same source with a different logistics route, and the alternative fails for exactly the same reason the primary does. The delivery record shows the primary has not failed, which is a fact about the past, not about the scenario. The question is not \"has this worked so far\" but \"does this hold when the event occurs\", and on that test the plan does not hold."
+        },
+        {
+          "text": "The plan is not a genuine alternative, because both routes depend on the same plant, so the exposure is a single point of failure that the plan does not cover.",
+          "isCorrect": true,
+          "rationale": "That is the correct reading and it is the whole point of testing a continuity plan rather than receiving one. A plan that fails the same test as the primary is not a plan, and it is worse than no plan because it appears on a document as evidence of resilience. The conclusion is not that the supplier has done anything wrong; it is that the buyer has a single point of failure that the file says it does not have, and that has to be corrected, funded and recorded as a known risk until it is."
+        },
+        {
+          "text": "The risk is acceptable because the supplier has never had a disruption, so the scenario is remote.",
+          "isCorrect": false,
+          "rationale": "The absence of a past disruption is not evidence about a future one, and the whole point of a continuity exercise is to work through the scenario before it happens rather than after. This reasoning is how single points of failure survive in every plan until the event, at which point the plan is discovered to have been a document rather than a mitigation. The scenario might be remote, and it might also be the scenario the exercise exists to find."
+        },
+        {
+          "text": "The buyer should require the supplier to document the distributor arrangement in detail, so that the file is complete.",
+          "isCorrect": false,
+          "rationale": "Better documentation of a non-mitigation produces a more complete file describing an unmitigated risk, which is the opposite of what the exercise is for. What the buyer needs is either a genuinely independent second source, a tested buffer and recovery plan, or a documented decision to accept the risk with an owner and a mitigation. A fuller file on the same single plant is not a treatment of anything."
+        }
+      ],
+      "principle": "A plan that fails the same test as the primary is not a mitigation. Test the alternative, not the document."
+    },
+    {
+      "type": "mcq",
+      "q": "What is the most reliable way to identify a supplier's single points of failure?",
+      "options": [
+        {
+          "text": "From the supplier's own continuity plan, which is the document they are required to maintain.",
+          "isCorrect": false,
+          "rationale": "The supplier's plan is the natural place to look and it is a poor place to stop, for a reason the resilience case in this curriculum makes concrete: the supplier has no incentive to describe its own fragility, and a plan that names a distributor of the same plant is not a mitigation. The plan is evidence about what the supplier believes, and it is worth reading, but it cannot be the basis of the assessment."
+        },
+        {
+          "text": "By mapping the sub-tier and the locations behind the supply, and testing whether each dependency has an independent alternative.",
+          "isCorrect": true,
+          "rationale": "This is the only method that finds the fragility, because it looks past the contractual boundary to where the exposure actually is. The questions are always the same: which plant, which route, which sub-supplier, and what happens to us if that one thing stops. Independence has to be tested, not assumed, and the test is whether the alternative would survive the same event. A second supplier in the same region buying from the same plant is not a second source."
+        },
+        {
+          "text": "By reviewing the supplier's financial statements, since a weak balance sheet is the usual source of failure.",
+          "isCorrect": false,
+          "rationale": "Financial fragility is one failure mode and an important one, and it is the one already covered by the due diligence process. The failure mode that financial review cannot see is the operational one: a single plant, a single sub-tier, a single port or a single component, none of which appears in a set of accounts. A solvent, well-run supplier can still be unable to deliver, and a set of financial statements will not tell you so."
+        },
+        {
+          "text": "By looking at the supplier's customer concentration, because a supplier with one dominant customer is fragile.",
+          "isCorrect": false,
+          "rationale": "Customer concentration is a legitimate signal about the supplier's own stability, and it belongs in the financial assessment. It is not a map of your exposure, though. Your risk is what happens when your supply chain stops, and the answer is found in the chain, not in the supplier's customer list. The two analyses are both worth doing, and they answer different questions."
+        }
+      ],
+      "principle": "Find the fragility below the contract: which plant, which route, which sub-supplier, and is the alternative independent of the same event."
     }
-  ],
+ ],
   relSop: 'sop-supplier-performance-management',
   rel: {
     concepts: ['supply-chain-risk', 'business-continuity', 'concentration-risk'],

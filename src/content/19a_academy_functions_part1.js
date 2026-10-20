@@ -95,8 +95,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Adhere strictly to corporate Delegation of Authority (DOA) financial thresholds.',
       record: 'Assigned Sourcing Project Charter.',
       pitfall: 'Splitting requisitions into smaller batches to artificially bypass competitive tender thresholds (order splitting).'
+    },
+    {
+      "title": "Baseline the Addressable Spend and the Influenceable Share",
+      "role": "Head of Procurement",
+      "desc": "Reconstruct twelve months of spend, separate what procurement can influence from what it cannot, and state the addressable figure with the assumptions behind it.",
+      "control": "The addressable definition is written down and agreed with finance before any target is set against it.",
+      "record": "Addressable spend baseline with the inclusion and exclusion criteria and the source of each figure.",
+      "pitfall": "Treating every invoice as addressable, and producing a number so large that no category strategy can ever move it."
+    },
+    {
+      "title": "Publish the Category Portfolio and the Plan Behind It",
+      "role": "Category Manager",
+      "desc": "Segment the addressable spend into categories, classify each for complexity and supply risk, and state which categories get strategic effort and which are deliberately left to a managed tail.",
+      "control": "Every category has a named owner and a stated posture, and the categories with the most risk and margin are prioritised explicitly rather than by whoever asks loudest.",
+      "record": "Category portfolio with the Kraljic classification, the owner and the review frequency for each.",
+      "pitfall": "Trying to manage every category with the same rigour, so the strategic two get the same attention as the tail."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -147,8 +163,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Without a disciplined S2C contract in place, P2P simply automates the payment of uncompetitive, unvetted invoices.'
+    },
+    {
+      "type": "scenario",
+      "context": "A newly appointed CPO is told by the CFO that the company will save 4 percent of addressable spend next year. The procurement team has 48 people, no spend data, and 3 weeks before the budget is locked. What is the right first move?",
+      "q": "What should the CPO do first?",
+      "options": [
+        {
+          "text": "Agree the 4 percent target and start with the largest supplier, because the biggest supplier is the biggest saving.",
+          "isCorrect": false,
+          "rationale": "Conceding the target before you know where the money is produces a commitment you cannot keep and a negotiation you cannot win. The largest supplier is often the hardest to move, the most likely to resist, and frequently the source of value you cannot see: their specification, their lead time, their demand plan. Attacking the biggest name first is how a procurement function earns a reputation for missing its numbers."
+        },
+        {
+          "text": "Establish a spend baseline and an addressable-spend figure before committing to a number, and tell the CFO that the target is a function of what the data shows.",
+          "isCorrect": true,
+          "rationale": "This is the sequence that works. You need three things before a savings number is meaningful: what you actually spend, which of it procurement can influence, and what the current performance is. You also need to say out loud that the target follows the data rather than the other way round, because a number imposed before the baseline exists becomes a number nobody can substantiate at year end, and an unsubstantiated savings number is worse than no target because it is reported as fact."
+        },
+        {
+          "text": "Target the 4 percent on the categories where supplier concentration is lowest, because that is where competition is easiest to create.",
+          "isCorrect": false,
+          "rationale": "Low concentration is usually a symptom of a small, fragmented tail, where the absolute value is negligible and the administrative cost of running events is high. Concentration is a legitimate consideration but it is an input to strategy, not a substitute for a baseline. A 4 percent of a small number is a small number, and it does not survive contact with a board that wanted 4 percent of the whole."
+        },
+        {
+          "text": "Accept the target, and report savings against a baseline you set at the 4 percent level, so the numbers show the plan working.",
+          "isCorrect": false,
+          "rationale": "This is the single most common way savings programmes are falsified: the baseline is set to the target, so the target is met by definition and no procurement action is required. Finance signs savings against a baseline agreed before the negotiation, which is why the baseline has to be built from history before you have a target to defend."
+        }
+      ],
+      "principle": "A savings target is an output of the baseline, not an input to it. Fix the baseline first, and the number follows from evidence you can defend."
+    },
+    {
+      "type": "mcq",
+      "q": "Which statement about spend under management is accurate?",
+      "options": [
+        {
+          "text": "It is the percentage of total spend that procurement has negotiated a price for.",
+          "isCorrect": false,
+          "rationale": "That describes price coverage, and it is a weaker measure than it sounds. A category with one incumbent and a framework agreement negotiated years ago is \"negotiated\" and completely unmanaged. SUM measures how much of the spend procurement actively governs: the categories with a strategy, a market view, a supplier panel and a performance rhythm."
+        },
+        {
+          "text": "It is the share of addressable spend that procurement actively governs, rather than the share that merely passes through a purchase order.",
+          "isCorrect": true,
+          "rationale": "The word that matters is \"actively\". A function that processes every order but has no strategy, no category plan and no supplier management is running a transaction service, and its SUM would be high while its influence is close to zero. The measure is a prompt for the category work, not a score to report upwards."
+        },
+        {
+          "text": "It should be as close to 100 percent as possible in every organization.",
+          "isCorrect": false,
+          "rationale": "That would mean bringing fragmented tail spend and genuinely uncompetitive categories under heavy management, which destroys value: the administrative cost exceeds the commercial benefit, and the categories that need real strategic attention get none of the attention. The right target is the spend where management creates more value than it costs."
+        },
+        {
+          "text": "It is calculated as savings divided by addressable spend.",
+          "isCorrect": false,
+          "rationale": "That is a savings rate, not spend under management, and the two should not be confused. Savings rate measures what one year of activity produced. SUM measures the structural reach of the function. Reporting one as the other is how a low-value, high-volume category is allowed to consume the team while the strategic categories are neglected."
+        }
+      ],
+      "principle": "Spend under management measures structural reach, not price coverage and not savings rate. Use it to prompt category work, not to report upwards."
     }
-  ],
+ ],
   relSop: 'sop-procurement-lifecycle',
   rel: {
     concepts: ['c-procurement-lifecycle', 'c-procurement', 'c-spend-management'],
@@ -264,8 +335,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Ensure unclassified or "miscellaneous" spend represents less than 3% of total volume.',
       record: 'Completed Spend Cube and Annual Sourcing Opportunity Matrix.',
       pitfall: 'Allowing broad catch-all categories like "General Supplies" to hide million-dollar contracts.'
+    },
+    {
+      "title": "Reconcile the Spend Data Before Analysing It",
+      "role": "Category Manager",
+      "desc": "Reconcile contract, purchase order, card and petty cash spend into one view for the category, and state the period, the source systems and the known gaps.",
+      "control": "The reconciled total is agreed with finance before any analysis is run on it, and any residual difference is documented rather than ignored.",
+      "record": "Reconciled category spend view with the source, the period and the unreconciled difference stated.",
+      "pitfall": "Analysing purchase order data alone, and concluding that the tail does not exist because the tail never produced a purchase order."
+    },
+    {
+      "title": "Segment by Value Band, Frequency and Requirement Type",
+      "role": "Category Manager",
+      "desc": "Split the reconciled spend into value bands, and for each band identify what the demand actually is, how often it occurs and what would happen if it were not bought.",
+      "control": "The segmentation is documented with the reason each band is treated differently, so the supply routes that follow are traceable to the analysis.",
+      "record": "Category segmentation with value band, transaction count, demand type and the proposed supply route for each band.",
+      "pitfall": "Segmenting only by value, and missing that a band contains a safety-critical item and a consumable with the same unit price."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'calc',
@@ -313,8 +400,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Differentiate your strategy: manage the head of spend with deep strategic rigor; manage the tail of spend with process efficiency and automation.'
+    },
+    {
+      "type": "scenario",
+      "context": "A spend analysis of one category shows 62 suppliers, 1.8 million a year, and a purchasing card that generated 41 percent of the transactions but only 9 percent of the value. The category manager proposes consolidating onto three suppliers and banning the card. What is wrong with that proposal?",
+      "q": "What should the category manager do instead?",
+      "options": [
+        {
+          "text": "Ban the card immediately, because low-value transactions are pure administrative cost and every one of them is maverick spend.",
+          "isCorrect": false,
+          "rationale": "41 percent of transactions and 9 percent of value is the signature of a managed tail, not of maverick spend. Those transactions are buying consumables, stationery and small tools that have to be bought somewhere, and banning the card simply moves the demand to expense claims and informal orders, where it becomes invisible rather than eliminated. The administrative cost is real, but it is not fixed by removing the channel."
+        },
+        {
+          "text": "Segment the spend by value band and transaction count, design a different route for each segment, and make the agreed route the easiest thing for a requester to use.",
+          "isCorrect": true,
+          "rationale": "This is the actual problem. A category with 62 suppliers and 1.8 million of value is not one problem, it is three: a high-value concentrated core that deserves a sourcing event, a mid-value middle that deserves a framework, and a high-frequency low-value tail that deserves a catalogue or a card with a limit and a spend rule. Consolidating the top and banning the tail in one action addresses neither properly, and the measurable result is that the tail comes back through a channel nobody can see."
+        },
+        {
+          "text": "Consolidate onto the three largest suppliers and require everyone else to justify their existence at renewal.",
+          "isCorrect": false,
+          "rationale": "Supplier reduction is a consequence of good analysis, not a substitute for it, and it is usually applied to the wrong end. Without knowing which of the 62 suppliers serve which demand, the three you keep may not cover the requirement and the 59 you drop may not be the tail. Consolidation driven by spend rank rather than by demand and criticality breaks the supply that nobody was tracking."
+        },
+        {
+          "text": "Run an RFP for the whole category, since the fragmentation is clearly the problem.",
+          "isCorrect": false,
+          "rationale": "The fragmentation is confined to the small-transaction tail, and an RFP across 1.8 million of mixed demand is disproportionate: it consumes the team's time for weeks, it puts tail requirements into a competitive process designed for strategic spend, and it will not be won on price because the price is not the issue. The tail needs a supply model, not a tender."
+        }
+      ],
+      "principle": "Segment before you act. High transaction count with low value is a supply-design problem, and the fix is a route, not a prohibition."
+    },
+    {
+      "type": "mcq",
+      "q": "A Pareto analysis of a category shows that 20 percent of suppliers hold 80 percent of the spend. What does that justify?",
+      "options": [
+        {
+          "text": "Immediate supplier reduction, because the other 80 percent of suppliers are not worth the administrative cost.",
+          "isCorrect": false,
+          "rationale": "Pareto describes the distribution of spend, not the distribution of risk, requirement or service. A low-value supplier can be the only approved source for a safety-critical item, or the one that stops a line when it fails. Consolidation is justified by the demand and the risk, and the Pareto view tells you where to look, not what to remove."
+        },
+        {
+          "text": "Targeted attention on the 20 percent, and a deliberate supply design for the remaining 80 percent.",
+          "isCorrect": true,
+          "rationale": "The Pareto result is a pointer. It says where the commercial leverage is, so that is where a sourcing event, a should-cost exercise and a negotiation will pay. The long tail then gets the treatment it actually needs, which is a catalogue, a card with a limit, or a framework with call-off, and a plan for consolidating it where the underlying requirement genuinely is standard."
+        },
+        {
+          "text": "A dual-source requirement for every supplier in the 20 percent, because concentration is always a risk.",
+          "isCorrect": false,
+          "rationale": "Dual sourcing a strategic supplier you have no relationship with, and no time to qualify, is a poor answer to a concentration concern. It spreads the commitment rather than reducing the risk, and it usually means two mediocre relationships instead of one good one. The right response to concentration depends on whether the category is substitutable and how long qualification takes."
+        },
+        {
+          "text": "A decision to bring the 20 percent in-house, because the spend is large enough to justify it.",
+          "isCorrect": false,
+          "rationale": "Spend size is not a make-or-buy criterion; the question is whether the activity is core, whether you have the capability, and what the fully loaded cost of building it is. A large, stable, well-specified spend can often be bought more cheaply than it can be made, and the in-house decision needs the make-or-buy analysis, not a Pareto chart."
+        }
+      ],
+      "principle": "A Pareto chart tells you where to look and where to act. It never tells you to remove a supplier or bring work in-house."
     }
-  ],
+ ],
   relSop: 'sop-savings-calculation',
   rel: {
     concepts: ['spend-analysis', 'c-spend-management', 'direct-indirect-spend'],
@@ -430,8 +572,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Formal executive sign-off and alignment with corporate financial targets.',
       record: 'Signed Category Strategy Document and 3-Year Sourcing Wave Plan.',
       pitfall: 'Proceeding without stakeholder consensus, leading to widespread off-contract maverick spending.'
+    },
+    {
+      "title": "Build the Category Charter and the Baseline",
+      "role": "Category Manager",
+      "desc": "For each category in scope, write the charter: the demand, the market structure, the incumbent position, the baseline spend and the baseline performance.",
+      "control": "The baseline is agreed with finance before any action is taken, and the charter states the date the baseline was locked.",
+      "record": "Category charter with the demand profile, market view, baseline spend, baseline performance and the locked date.",
+      "pitfall": "Writing the charter after the negotiation, so the baseline becomes whatever makes the result look good."
+    },
+    {
+      "title": "Test the Market and Choose the Sourcing Posture",
+      "role": "Category Manager",
+      "desc": "Assess the market for the category: how many credible suppliers, how concentrated, how substitutable, and what the switching cost really is.",
+      "control": "The market view is evidenced, not asserted, and the sourcing posture follows from it rather than from a template.",
+      "record": "Market assessment with the supplier count, concentration, substitutability and the chosen posture.",
+      "pitfall": "Assuming a market is competitive because there are several suppliers on a list, when only one can actually deliver the requirement at scale."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -477,8 +635,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Leverage exists only when the buyer has significant volume AND the credible ability to switch suppliers.'
+    },
+    {
+      "type": "scenario",
+      "context": "A category manager inherits 40 categories. The previous owner ran a detailed strategy for three of them and nothing for the rest. Finance asks for the expected saving from the category programme. What is the honest answer?",
+      "q": "What should the category manager do?",
+      "options": [
+        {
+          "text": "Report the historical savings from the three categories that had strategies, scaled across the portfolio.",
+          "isCorrect": false,
+          "rationale": "Scaling a saving rate from three well-run categories across forty is the most common way a category programme reports a number that was never earned. The categories with strategies were selected precisely because they had savings in them, so the rate is not representative, and the categories without strategies are the ones the programme has not touched at all."
+        },
+        {
+          "text": "State that the portfolio has no established saving rate, prioritise the categories by risk and margin, and report against a baseline built for each one as it is worked.",
+          "isCorrect": true,
+          "rationale": "This is the truthful position and it is also the stronger one. A category programme with no strategies has no demonstrated rate, and saying so protects the programme from being asked to deliver a number it has not earned. Prioritising by risk and margin, then building a baseline per category as it is worked, means every reported saving has a baseline agreed before the work started, which is what finance can actually sign."
+        },
+        {
+          "text": "Build a strategy for all 40 categories in the next quarter so the savings rate can be extrapolated.",
+          "isCorrect": false,
+          "rationale": "Forty strategies in a quarter produces forty documents and no category that anyone has actually worked. A category strategy is a decision about where the money and the risk are, and it takes market knowledge to write one that means anything. The failure mode of a portfolio-wide template is that it describes the category in the abstract and commits nobody to anything."
+        },
+        {
+          "text": "Ask the three successful category managers to mentor the other 37, working through them in turn.",
+          "isCorrect": false,
+          "rationale": "Mentoring is not a plan, and the three people with the knowledge are the three people already carrying the categories that matter. It also spreads a scarce capability thin rather than concentrating it where the risk and the margin are. There may be a role for mentoring later, once the priorities are set."
+        }
+      ],
+      "principle": "A portfolio with no category strategies has no savings rate. Say that, prioritise by risk and margin, and build a baseline per category as you work it."
+    },
+    {
+      "type": "mcq",
+      "q": "Which is the correct use of the Kraljic matrix in category management?",
+      "options": [
+        {
+          "text": "It identifies which categories are worth a full strategic sourcing event, by combining profit impact with supply risk.",
+          "isCorrect": true,
+          "rationale": "That is what it is for. Strategic and leverage items carry high profit impact and need a competitive market; bottleneck and non-critical items need a different posture, from securing supply to automating the transaction. The matrix is a triage tool for scarce attention, and it earns its keep by telling you where NOT to spend strategic effort as clearly as where to spend it."
+        },
+        {
+          "text": "It ranks categories by spend so the biggest ones get worked first.",
+          "isCorrect": false,
+          "rationale": "Rank by spend and you will work the biggest categories, which is often exactly wrong. A small, high-risk, high-profit category can be the most urgent thing in the portfolio, and a large low-profit tail can be the most expensive to manage for the least return. Spend is one input to the matrix, not the output."
+        },
+        {
+          "text": "It sets the sourcing route for each category, so no further judgement is needed.",
+          "isCorrect": false,
+          "rationale": "The matrix suggests a posture, and the judgement is still required. A bottleneck item in a market with one credible supplier needs a different answer from a bottleneck item in a contested market, and the matrix does not know which one you are in. It tells you where the difficulty is; the market view tells you what to do about it."
+        },
+        {
+          "text": "It identifies savings opportunities by showing where the margin is concentrated.",
+          "isCorrect": false,
+          "rationale": "It is a sourcing and portfolio-prioritisation tool, not a savings tool. Margin concentration is a commercial reality, and the matrix says nothing about whether a saving is available, who holds it, or what it would take to get it. Using it to hunt savings substitutes a proxy for the real work."
+        }
+      ],
+      "principle": "Kraljic is a triage tool for scarce attention: it tells you where to spend strategic effort and, just as usefully, where not to."
     }
-  ],
+ ],
   relSop: 'sop-procurement-lifecycle',
   rel: {
     concepts: ['category-management', 'c-spend-management'],
@@ -594,8 +807,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Ensure "or approved equal" clause is included for any referenced standards or model numbers.',
       record: 'Final Approved Bid Specification Package.',
       pitfall: 'Allowing the favored supplier to help write the RFP specifications in secret.'
+    },
+    {
+      "title": "Separate the Need from the Solution the Business Has in Mind",
+      "role": "Business Sponsor",
+      "desc": "Establish what the business is actually trying to achieve, which parts of the current solution are essential, and which are inherited habit or a workaround for a process problem.",
+      "control": "Each specified attribute is tied to a stated business need, and any attribute that cannot be justified is removed from the requirement.",
+      "record": "Requirement definition record mapping each attribute to the business need it serves.",
+      "pitfall": "Accepting the incumbent specification uncritically, which locks in the incumbent design and often the incumbent price."
+    },
+    {
+      "title": "Confirm the Demand Profile and the Real Delivery Date",
+      "role": "Business Sponsor",
+      "desc": "Confirm quantities, consumption pattern, required delivery date and the consequences of a delay, rather than a date the business has assumed.",
+      "control": "The delivery date and the quantity are confirmed in writing by the requester, and the consequences of a late delivery are stated.",
+      "record": "Confirmed demand profile and delivery schedule with the requester sign-off.",
+      "pitfall": "Relying on a date the requester inferred from last year, which then becomes a contractual obligation nobody planned for."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'red_flag',
@@ -642,8 +871,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Convert brand-name requisitions into functional specifications to invite competition while preserving technical integrity.'
+    },
+    {
+      "type": "scenario",
+      "context": "A business unit asks for 500 units of a component and wants a quote in 10 days. The last quote took 8 weeks because the specification included a feature nobody used and a delivery schedule tied to a date the business had assumed but never confirmed. What should procurement do?",
+      "q": "What is the right response?",
+      "options": [
+        {
+          "text": "Request quotes from five suppliers and tell the business the lead time is 8 weeks, because that is what the specification requires.",
+          "isCorrect": false,
+          "rationale": "This is how the 8 weeks happens again. The lead time was not caused by the market, it was caused by a specification and a schedule the business never confirmed. Procurement is the function that asks those questions, and skipping straight to the market transfers a business failure to a supply problem and makes procurement look slow."
+        },
+        {
+          "text": "Go back to the business and separate the must-have from the nice-to-have, confirm the real delivery date, and price the requirement at its true scope before approaching the market.",
+          "isCorrect": true,
+          "rationale": "The quote was slow because the requirement was wrong, not because the market was. Two questions recover most of the time: which of these features are actually used, and when do you need it. Requirement definition is a conversation with the requester, and it is the cheapest place in the whole cycle to save weeks. A quote for the right requirement, even if it takes a week longer, beats a fast quote for the wrong one that comes back amended three times."
+        },
+        {
+          "text": "Ask the incumbent for a faster quote on the existing specification, since they have built the tooling already.",
+          "isCorrect": false,
+          "rationale": "This locks in the wrong requirement and hands the timing advantage to the incumbent. The 10-day date is achievable if the scope shrinks; it is not achievable with a specification that requires a feature nobody uses. The incumbent is the party most likely to benefit from a rushed, unexamined requirement, because every rushed requirement is a change order later."
+        },
+        {
+          "text": "Quote the must-have scope to three suppliers in 10 days, and quote the full scope to the rest over the next quarter.",
+          "isCorrect": false,
+          "rationale": "Running two different scopes through the market means the bids are not comparable, and you will spend the next month arguing about why the two sets of prices differ. Splitting the event also halves the competitive tension on the part you do run. The scope should be settled once, properly, and then the event run once against it."
+        }
+      ],
+      "principle": "The requirement is the cause of most lead-time problems. Confirm the scope and the real date before you go near the market."
+    },
+    {
+      "type": "mcq",
+      "q": "A good specification for a sourced item should state:",
+      "options": [
+        {
+          "text": "The preferred brand or model, to avoid the risk of an inferior alternative being supplied.",
+          "isCorrect": false,
+          "rationale": "A brand in the specification converts a competitive event into a single-source award, and the market will price the specification rather than the need. Where a specific feature is genuinely essential, state the performance requirement that the feature delivers, and the performance requirement is what a supplier can meet and you can verify."
+        },
+        {
+          "text": "The performance and functional requirements, the acceptance criteria, the quantities, the delivery schedule and the quality standards, without naming a brand.",
+          "isCorrect": true,
+          "rationale": "That is the shape of a specification that can be bid against, compared and verified on receipt. It states what the item must do, how many you need, when and how often, and the standard you will accept. Naming a brand is the single fastest way to lose both the competition and the ability to compare like with like."
+        },
+        {
+          "text": "The budget available, the target cost and the internal cost owner, so suppliers can be steered to the required price.",
+          "isCorrect": false,
+          "rationale": "That information belongs in the tender instructions, not in the specification, and publishing a target price to the market is how a buyer loses the negotiation before it starts: every supplier will price to your number rather than to the requirement. The specification should describe the need, and the commercial terms should describe the price."
+        },
+        {
+          "text": "The outcome the business needs, leaving the solution entirely to the supplier.",
+          "isCorrect": false,
+          "rationale": "Leaving the solution open to the supplier is right for a genuinely complex or novel requirement, where an RFP rather than an RFQ is appropriate. It is wrong for a standard item, where an open specification produces a range of different answers, most of which do not meet the real need, and the comparison becomes a comparison of interpretations rather than of price."
+        }
+      ],
+      "principle": "A specification states what the item must do and how you will know. It does not name a brand, and it does not publish a price."
     }
-  ],
+ ],
   relSop: 'sop-procurement-intake',
   rel: {
     concepts: ['specification', 'c-procurement-lifecycle'],
@@ -760,8 +1044,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Publish all questions and answers anonymously to all participating bidders simultaneously.',
       record: 'Tender Clarification Bulletin.',
       pitfall: 'Answering a favored bidder\'s phone call and giving them private hints about competitor pricing.'
+    },
+    {
+      "title": "Classify the Requirement and Select the Sourcing Method",
+      "role": "Category Manager",
+      "desc": "Classify the requirement on supply complexity and market structure, and select RFI, RFQ, RFP or direct award, recording the reason for the choice.",
+      "control": "The method selection is recorded with the evidence behind it: the number of credible suppliers, the complexity and the substitution options.",
+      "record": "Sourcing method decision record with the classification and the rationale.",
+      "pitfall": "Defaulting to an RFQ because it is faster, and discovering at evaluation that the bids are not comparable."
+    },
+    {
+      "title": "Design and Publish the Evaluation Criteria and Weightings",
+      "role": "Category Manager",
+      "desc": "Define the criteria, their relative weightings and the evidence each requires, and publish them inside the tender document with the invitation.",
+      "control": "The criteria and weights are locked before the tender is issued and are not revised while bids are open, and any change is recorded and re-issued to all bidders.",
+      "record": "Evaluation criteria and weighting schedule, version-locked, with the issue date.",
+      "pitfall": "Designing the criteria after the first bids are read, and calling the resulting document a published evaluation framework."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -807,8 +1107,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'All bidders must compete on a strictly level playing field: identical information, identical deadlines, identical rules.'
+    },
+    {
+      "type": "scenario",
+      "context": "A category manager has a 600,000 requirement for a managed service. One incumbent holds 90 percent of the volume, there are four credible alternatives, and the requirement is complex enough that price alone will not separate the bids. Which sourcing method is right?",
+      "q": "What should the category manager choose?",
+      "options": [
+        {
+          "text": "An RFQ, because with four suppliers a request for price is enough and the complexity can be handled in evaluation.",
+          "isCorrect": false,
+          "rationale": "An RFQ assumes the requirement is sufficiently defined that price separates the answers, and it assumes the suppliers are comparable. When complexity is the differentiator, an RFQ produces four prices for four different things, and the evaluation becomes a judgement about whether the differences are worth the money rather than a comparison on a common basis. That is what a weighted evaluation in an RFP is for."
+        },
+        {
+          "text": "An RFP with published evaluation criteria and weightings, since complexity will not be separated by price alone.",
+          "isCorrect": true,
+          "rationale": "This is the textbook trigger for an RFP: the requirement is complex, the suppliers differ on more than price, and the decision has to be defended on more than the lowest number. Publishing the criteria and weightings before the bids arrive is what makes the result defensible. With 90 percent incumbent volume, the alternatives also need a reason to believe they can win, and a weighted evaluation is the mechanism that gives them one."
+        },
+        {
+          "text": "A single-source negotiation with the incumbent, because 90 percent of the volume already sits there and the alternatives cannot match the service.",
+          "isCorrect": false,
+          "rationale": "Concentration of this kind is a reason to test the market, not a reason to skip it. A 90 percent incumbent position is exactly the situation where a competitive event is most valuable, because it is the one place the incumbent has real volume at risk. And the alternatives cannot be assumed to be unable to match: that is what a competitive event would establish, and four credible alternatives is not a thin market."
+        },
+        {
+          "text": "An RFI, to understand the market better before committing to a process.",
+          "isCorrect": false,
+          "rationale": "An RFI is a market-research instrument, and using it when you already know there are four credible suppliers and a clear decision to make spends the event and the time for information you do not need. The market question here is not \"who exists\" but \"who is best against criteria we publish\", and an RFP answers that directly."
+        }
+      ],
+      "principle": "Complexity, not value, is the trigger for an RFP. Publish the criteria and weightings before the bids arrive."
+    },
+    {
+      "type": "mcq",
+      "q": "Why must evaluation criteria and weightings be published before bids are received?",
+      "options": [
+        {
+          "text": "Because suppliers are entitled to know how they will be judged, and withholding it invites a legal challenge.",
+          "isCorrect": false,
+          "rationale": "Transparency to suppliers is a courtesy and, in some regimes, a legal requirement, but it is not the reason. The reason is that a criterion set you can change after reading the bids is not a criterion set, it is a justification you are writing afterwards, and the bidders can tell. A defensible award has to be the one you said you would apply."
+        },
+        {
+          "text": "Because an award decided against criteria published afterwards is not defensible, and the decision can be challenged on the ground that it was not a competitive process.",
+          "isCorrect": true,
+          "rationale": "This is the governance point, and it is what a procurement audit tests. If the criteria are set after the bids are open, the evaluation is vulnerable on fairness grounds, the result can be reopened, and the file no longer demonstrates a controlled process. Publishing the criteria and the weighting in the tender document is what makes the award a decision rather than a preference, and it is what lets the result stand up when a losing bidder asks why."
+        },
+        {
+          "text": "Because bidders will refuse to bid without knowing the criteria, and you want a competitive response rate.",
+          "isCorrect": false,
+          "rationale": "Bidders do want to know the criteria, and publishing them generally improves response rates, but that is a commercial benefit rather than the governance reason. The reason is defensibility: the decision has to be the one you said you would make, applied the way you said you would apply it."
+        },
+        {
+          "text": "Because it shortens the evaluation, since the panel does not have to agree the criteria at the end.",
+          "isCorrect": false,
+          "rationale": "It does save a meeting, and that is worth having, but it is not why. The reason is that criteria agreed after the bids are open are, in substance, chosen to fit the outcome. Agreeing them in advance is a discipline, and it is the discipline that makes the award survive scrutiny."
+        }
+      ],
+      "principle": "Criteria published before bids are open are what make an award defensible. Criteria chosen afterwards are a justification written after the fact."
     }
-  ],
+ ],
   relSop: 'sop-rfq',
   rel: {
     concepts: ['rfi-rfq-rfp', 'sourcing-strategy', 'competitive-tension'],
@@ -925,8 +1280,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Enforce two-person tender opening protocol for high-value tenders to verify bid integrity.',
       record: 'Tender Closing Register and Safe Storage of Bids.',
       pitfall: 'Opening one supplier\'s bid early and leaking their pricing to an incumbent vendor.'
+    },
+    {
+      "title": "Issue the Pack to Every Bidder Simultaneously",
+      "role": "Procurement Specialist",
+      "desc": "Release identical tender packages, with the scope, the commercial schedule, the evaluation criteria, the submission requirements and the deadline, to every shortlisted supplier at the same time.",
+      "control": "Release is evidenced with a timestamp per recipient, and every recipient receives the same document version.",
+      "record": "Issue record with the document version, the recipient list and the release timestamp.",
+      "pitfall": "Sending the pack to the suppliers in stages, or letting one supplier see the questions of another."
+    },
+    {
+      "title": "Run the Clarification Window to a Published Deadline",
+      "role": "Procurement Specialist",
+      "desc": "Log every question, prepare the answer with the technical stakeholders, and distribute a written clarification bulletin to all bidders at the same time, holding the deadline unless the process itself requires otherwise.",
+      "control": "Every clarification is answered in writing to all bidders, and the deadline moves for everybody or not at all.",
+      "record": "Clarification bulletin log with each question, the answer, the date and the distribution list.",
+      "pitfall": "Answering a question on the phone to one bidder, or moving the deadline for one supplier without a published reason."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'red_flag',
@@ -973,8 +1344,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Procedural integrity and fairness protect the organization from procurement corruption, bid-rigging, and legal liability.'
+    },
+    {
+      "type": "scenario",
+      "context": "During an RFQ, Supplier A asks whether it can extend the submission deadline by three days. The same day, Supplier B asks a clarification about the specification. The deadline is tomorrow. What is the correct response?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Grant Supplier A the extension, because a fair process accommodates every bidder equally.",
+          "isCorrect": false,
+          "rationale": "Extending for one supplier is not accommodation, it is a change to the competition made after a request from a bidder. Supplier A may also be asking precisely because it has not finished, and the answer tells every other bidder that the deadline is soft. The correct handling is to decide the extension on its merits for all bidders, not to grant it to whoever asked."
+        },
+        {
+          "text": "Refuse the extension for everyone, issue the clarification to all bidders, and let the deadline hold.",
+          "isCorrect": true,
+          "rationale": "The deadline is a control and it holds unless there is a genuine reason to move it for everybody, in which case it is moved for everybody and the change is recorded and re-issued. The clarification goes to all bidders through the same channel, in writing, at the same time. This is the equal-information rule, and the two requests in front of you are a test of it."
+        },
+        {
+          "text": "Extend the deadline for all bidders, since one request indicates the timeline may be unrealistic.",
+          "isCorrect": false,
+          "rationale": "One bidder asking for more time is not evidence that the timeline is wrong. The request is self-serving, and acting on it rewards the bidder who asked. If there is a genuine problem with the timeline, it should be identified independently and communicated to everyone, with the reason stated. Extending unilaterally on a bidder request changes the competition in a way you cannot later explain."
+        },
+        {
+          "text": "Answer Supplier B directly and keep it confidential, because the question was specific to their situation.",
+          "isCorrect": false,
+          "rationale": "A clarification that applies to the requirement has to go to every bidder, or the supplier who received it has been given information the others did not have. If the question genuinely concerns something specific to Supplier B, it is not a clarification of the requirement and it should not be treated as one. The default is the same answer, to everyone, at the same time."
+        }
+      ],
+      "principle": "The equal-information rule: the same answer, to everyone, at the same time. A deadline moves for everybody or it does not move."
+    },
+    {
+      "type": "mcq",
+      "q": "What is the purpose of a bid opening register?",
+      "options": [
+        {
+          "text": "To record who submitted a bid, so that the process can be defended if the award is challenged.",
+          "isCorrect": true,
+          "rationale": "The register is the evidence that the process was controlled: who submitted, when it was received, and that it was opened against the published criteria. It is what allows you to demonstrate that the evaluation began with a complete and undisturbed set of bids. Without it, the file cannot show that the process was fair, however fair it was."
+        },
+        {
+          "text": "To confirm the number of bids received, so that the buyer knows whether the event was competitive.",
+          "isCorrect": false,
+          "rationale": "The count matters, but it is the least interesting output. A register that only records the number does not let you reconstruct what happened, and a single bid is not automatically a failed competition: in a genuinely sole-source market, one bid is the correct outcome and the justification is the market view, not the number of responses."
+        },
+        {
+          "text": "To assign each bid an identifier, so that the evaluation panel cannot see the supplier names while scoring.",
+          "isCorrect": false,
+          "rationale": "Blinding the panel is a genuine technique and often a good one, but it is a method, not the purpose of the register. The register records arrival and integrity, and it is what proves the bids were opened intact and that nothing was added or removed between opening and evaluation."
+        },
+        {
+          "text": "To record the compliance check on each bid, so that non-conforming bids can be excluded.",
+          "isCorrect": false,
+          "rationale": "A compliance check is part of the opening process, and recording the outcome of it is useful, but the register serves a wider purpose: it is the chain of custody for the bids. A register that only captures compliance does not show that the bids arrived when they were supposed to or that they were opened in the presence of the right people."
+        }
+      ],
+      "principle": "The bid opening register is the chain of custody for the bids, and it is what lets you defend the process later."
     }
-  ],
+ ],
   relSop: 'sop-rfq',
   rel: {
     concepts: ['rfi-rfq-rfp', 'evaluation-criteria'],

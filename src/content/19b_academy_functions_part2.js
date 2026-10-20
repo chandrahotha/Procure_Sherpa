@@ -95,8 +95,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Sign-off by Category Lead and Finance Business Partner.',
       record: 'Final Commercial Evaluation Summary.',
       pitfall: 'Presenting raw quote numbers to executive stakeholders before normalization is complete.'
+    },
+    {
+      "title": "Normalize the Commercial Basis of Every Quote",
+      "role": "Procurement Specialist",
+      "desc": "Convert every quote to a common basis: one Incoterm, one currency, one tax treatment, one payment term, one scope and one delivery point, recording every adjustment made.",
+      "control": "The normalization sheet shows the original quote and every adjustment applied to it, so any line can be traced back to the supplier's own submission.",
+      "record": "Normalized comparison sheet with the original quote, each adjustment and the reason for it.",
+      "pitfall": "Adjusting the numbers silently, so the file no longer shows what the supplier actually said."
+    },
+    {
+      "title": "Quantify the Working Capital Effect of the Terms",
+      "role": "Procurement Specialist",
+      "desc": "Value the difference in payment terms and in the timing of delivery at your own cost of capital, so that a longer-term, lower-price offer can be compared fairly.",
+      "control": "The cost-of-capital rate used is the one set in Settings or entered on the face of the comparison, and the working capital effect is shown as a separate line rather than folded into the price.",
+      "record": "Comparison sheet with the working capital effect shown separately from the unit price.",
+      "pitfall": "Comparing a cash price with a 60-day price and concluding that the cash price is better, when the cash cost of the 60-day terms is higher."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'calc',
@@ -144,8 +160,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Payment terms carry significant risk and working capital value. Never accept advance payment terms without security instruments.'
+    },
+    {
+      "type": "scenario",
+      "context": "Three suppliers quote the same 1,000 units. Supplier A quotes 12.00 per unit EXW. Supplier B quotes 14.50 per unit DDP. Supplier C quotes 13.20 per unit FOB with a separately quoted 900 freight and 6 percent duty. Which is the lowest landed cost?",
+      "q": "What is the correct comparison?",
+      "options": [
+        {
+          "text": "Supplier A, at 12.00 per unit.",
+          "isCorrect": false,
+          "rationale": "That is the lowest headline price, and it is the number that the whole exercise exists to prevent you from using. A quoted price is not a comparable price until it is on the same basis: the same Incoterm, the same scope, the same currency, the same tax treatment, the same payment terms and the same delivery point. An EXW price is the supplier's cost before almost everything, and comparing it to a DDP price compares two different obligations."
+        },
+        {
+          "text": "Supplier C, at 13.20 plus 900 freight plus 6 percent duty, which brings it to 14.10 per unit before anything else, and still needs the tax treatment checked.",
+          "isCorrect": false,
+          "rationale": "This is closer, but it is still not the comparison, and it is a useful illustration of how much work a normalization is. The 6 percent duty applies to a customs value that includes freight to the port of import, not to the FOB price, and the freight element may be partly non-deductible. The tax treatment, the currency and the payment terms are still outstanding. This is the right direction and the wrong level of finish."
+        },
+        {
+          "text": "None can be called lowest until all three are converted to the same basis: the same Incoterm, currency, scope, tax treatment and payment terms, with freight and duty computed on the correct customs base.",
+          "isCorrect": true,
+          "rationale": "This is the discipline. You do not pick a winner from the quotes; you build a comparison. Convert every bid to a common basis, then make the additions explicit: freight to a stated destination, duty on the correct customs value, tax at the stated recoverability, and the cost of money for any materially different payment terms. The result is a landed, like-for-like cost per unit, and only then can the award be argued on the numbers. The spread between the raw quotes is the negotiation range, and the normalized spread is the decision."
+        },
+        {
+          "text": "Supplier B, at 14.50 DDP, because the landed cost is included and no further additions are needed.",
+          "isCorrect": false,
+          "rationale": "A DDP price does include freight and duty to the named destination, which is why it is a good basis, but it is not automatically the cheapest once the other dimensions are equalized: the tax treatment, the currency, the scope and the payment terms can each move it. It is also possible for a supplier to price DDP high to win a delivery-inclusive comparison, which is exactly why the basis has to be chosen and applied consistently, not inferred from whichever quote is largest."
+        }
+      ],
+      "principle": "Do not pick a winner from the quotes. Build a like-for-like comparison, and let the additions be explicit."
+    },
+    {
+      "type": "mcq",
+      "q": "Why must a quote comparison use the same payment terms for every supplier?",
+      "options": [
+        {
+          "text": "Because a contract with different terms is invalid, so the comparison has to be on a single set of terms.",
+          "isCorrect": false,
+          "rationale": "Suppliers routinely quote their standard terms, and a comparison is meant to normalise exactly that. You are not going to get every bidder onto your terms before you compare; you are going to price the difference between their terms and yours."
+        },
+        {
+          "text": "Because the cost of money differs between terms, so an equal price on different terms is not an equal offer.",
+          "isCorrect": true,
+          "rationale": "Net 30 against net 90 is not a cosmetic difference: on a large commitment, the value of the payment terms can outweigh a percentage point of price. That is the same reasoning as the early-payment discount calculator, applied in reverse to the comparison. Price the terms at your own cost of capital and the comparison becomes honest, and the award can be argued on the whole commercial position rather than on the unit price alone."
+        },
+        {
+          "text": "Because it simplifies the contract award, since only one set of terms needs to be written into it.",
+          "isCorrect": false,
+          "rationale": "That is an administrative convenience and it comes at the cost of the comparison. Forcing terms at the point of comparison throws away information the buyer needs: a supplier offering worse terms may be better value, and a supplier offering better terms may be worth negotiating for. You want to know the difference, not to hide it."
+        },
+        {
+          "text": "Because differing terms indicate differing risk, and a higher-risk supplier is usually less reliable.",
+          "isCorrect": false,
+          "rationale": "There is no reliable relationship between a supplier's payment terms and its reliability, and treating it as one would be a heuristic, not an analysis. If you want to assess delivery or performance risk, assess it directly, with a scorecard and evidence. Using payment terms as a proxy for reliability is guessing."
+        }
+      ],
+      "principle": "Payment terms carry a cost of money. Price the difference at your own cost of capital before you compare."
     }
-  ],
+ ],
   relSop: 'sop-rfq',
   rel: {
     concepts: ['evaluation-criteria', 'rfi-rfq-rfp'],
@@ -262,8 +333,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Finance validation of WACC discount rates and inflation assumptions.',
       record: 'Formal TCO Business Case and Recommendation Dossier.',
       pitfall: 'Recommending an asset with lowest TCO that the internal maintenance team cannot service locally.'
+    },
+    {
+      "title": "Build the Life-Cycle Cost Model for Each Option",
+      "role": "Category Manager",
+      "desc": "Model acquisition, installation, energy, maintenance, consumables, downtime, disposal and residual value for every option over the same life and the same utilisation.",
+      "control": "Every option is modelled over the same life and on the same assumptions, and any difference in the assumptions is declared rather than embedded in a number.",
+      "record": "Life-cycle cost model per option with the acquisition, operating and end-of-life lines and the assumptions used.",
+      "pitfall": "Comparing a new machine against a ten-year-old one, so the maintenance and residual assumptions flatter the new option."
+    },
+    {
+      "title": "Discount the Cash Flows and Test the Sensitivity",
+      "role": "Category Manager",
+      "desc": "Discount the modelled cash flows at the organization's cost of capital, then test the answer against the assumptions it is most sensitive to: utilisation, energy price, maintenance scope and residual value.",
+      "control": "The discount rate is the one set in Settings, and the sensitivity test shows the point at which the ranking would change.",
+      "record": "Discounted life-cycle comparison with a sensitivity table on the four assumptions that move the answer.",
+      "pitfall": "Reporting a single discounted number with no sensitivity, so a reader cannot see how close the decision is."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -311,8 +398,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Beware of "free" or subsidized capital equipment that locks the enterprise into proprietary, high-margin consumables or replacement parts.'
+    },
+    {
+      "type": "scenario",
+      "context": "An equipment supplier offers machine A at 90,000 with 26,000 of annual energy and 11,000 of annual maintenance, and machine B at 130,000 with 11,500 of energy and 4,500 of maintenance, both over five years. A colleague says A is 40,000 cheaper. What is the correct analysis?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Agree with the colleague. A is 40,000 cheaper on purchase price and the budget is what matters this year.",
+          "isCorrect": false,
+          "rationale": "That is the exact error total cost of ownership exists to prevent, and it is expensive in both directions: a decision made this way can be wrong by more than the price difference it was based on. The budget is a constraint on when the money is spent, not a measure of which machine is cheaper over its life, and the operating difference here is 21,000 a year, which is 105,000 over five years."
+        },
+        {
+          "text": "Compare on discounted total cost of ownership over the five years, including the operating difference and the discount rate, and check what the residual value assumption is doing to the answer.",
+          "isCorrect": true,
+          "rationale": "A costs 90,000 + 5 x 37,000 = 275,000. B costs 130,000 + 5 x 16,000 = 210,000. B is 65,000 cheaper over the life, before discounting, on these figures. The comparison has to be discounted because the money is not spent at the same time, and the discount rate has to be yours, not the supplier's. And the residual value assumption matters: it is the one figure that is pure forecast, and it is where these comparisons are usually gamed."
+        },
+        {
+          "text": "Compare the operating cost difference only, because the purchase price is the same for both under the framework agreement.",
+          "isCorrect": false,
+          "rationale": "The purchase prices are not the same, and if a framework agreement fixed the price the choice would be made on operating cost alone, which is a different problem. Here the capital difference is 40,000 and the operating difference is 21,000 a year, so the operating comparison is the larger part of the decision but it is not the whole of it. Discounted total cost of ownership is the comparison that keeps both in one number."
+        },
+        {
+          "text": "Ask each supplier for a 5-year guaranteed total cost of ownership, and take the lower figure.",
+          "isCorrect": false,
+          "rationale": "That is outsourcing the analysis to the party with an interest in the answer, and a guaranteed figure is only as good as the guarantee. You do need the supplier's operating cost data, and you should test it, but you also need the discount rate, the residual value, the utilisation assumption and the maintenance scope, none of which a supplier will hand you complete and none of which you should accept unchecked."
+        }
+      ],
+      "principle": "Purchase price is one input. Discounted total cost of ownership over the real life, with your own discount rate, is the decision."
+    },
+    {
+      "type": "mcq",
+      "q": "In a total cost of ownership comparison, the discount rate should be:",
+      "options": [
+        {
+          "text": "The weighted average cost of capital of the organization, because that is the cost of the money being committed.",
+          "isCorrect": true,
+          "rationale": "The discount rate is the cost of the capital the organization is committing, and for a capital purchase that is normally the WACC. It is also the most contestable part of the analysis, which is exactly why it should be yours and stated, because the supplier will always prefer a higher rate (which shrinks the present value of future running costs and makes their machine look better). Setting it in Settings and stating it on the face of the analysis is what stops it being a negotiation variable."
+        },
+        {
+          "text": "The risk-free rate, because the analysis should reflect the time value of money without a risk premium.",
+          "isCorrect": false,
+          "rationale": "A risk-free rate systematically overvalues cash flows further out, because it ignores the risk that the cash flows will not arrive as forecast. For a comparison whose whole purpose is to weigh a known capital cost against forecast operating costs, using a rate that carries no risk premium flatters whichever option has the larger forecast tail. The organization's actual cost of capital already contains the relevant risk."
+        },
+        {
+          "text": "A low rate, to make the analysis conservative and avoid overstating the value of the decision.",
+          "isCorrect": false,
+          "rationale": "A low discount rate is not conservative, it is directional: it inflates the present value of future running costs, which flatters the option with the larger operating tail. If anything the choice is sensitive in both directions, which is precisely why it should be set from the organization's own cost of capital and disclosed, rather than picked for its effect on the answer."
+        },
+        {
+          "text": "Whatever rate makes the two options look closest, so the decision is made on the other criteria.",
+          "isCorrect": false,
+          "rationale": "That is tuning the analysis to the desired answer, and it is the fastest way to lose the credibility of the whole exercise with finance. The discount rate is a fact about the organization's cost of capital, and the analysis reports what it produces. If the answer is uncomfortable, the answer is that the assumptions or the options need work, not that the rate needs adjusting."
+        }
+      ],
+      "principle": "The discount rate is your cost of capital, stated on the face of the analysis. It is an input, never a lever."
     }
-  ],
+ ],
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['total-cost-of-ownership', 'cost-breakdown', 'incoterms'],
@@ -428,8 +570,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Establish formal Best Alternative to a Negotiated Agreement (BATNA) before meeting.',
       record: 'Commercial Negotiation Playbook.',
       pitfall: 'Showing the supplier your raw spreadsheet rather than using the data to guide targeted probing questions.'
+    },
+    {
+      "title": "Decompose the Product into Cost Drivers",
+      "role": "Category Manager",
+      "desc": "Break the item into the elements that actually drive its cost: material with the index and base period, labour with the rate and the productivity assumption, machine time, overhead absorption, packaging, logistics, scrap and tooling.",
+      "control": "Every element is stated with the source of the figure and the base period, so that a dispute is about the number rather than about which model is being used.",
+      "record": "Cost breakdown structure with the driver, the value, the unit, the source and the base period for each element.",
+      "pitfall": "Building the breakdown from the supplier's own figures, which guarantees agreement and teaches you nothing."
+    },
+    {
+      "title": "Set the Margin and Test the Gap Against the Evidence",
+      "role": "Category Manager",
+      "desc": "Apply a defensible fair-margin allowance, compare the resulting should-cost with the quote, and prepare the challenge on the elements where the two differ.",
+      "control": "The margin is set and justified independently of the quote, and the challenge is evidence-based: the question to the supplier is \"what drives this line\", not \"we think you are wrong\".",
+      "record": "Should-cost model with the margin justification, the gap analysis and the challenge questions for each driver.",
+      "pitfall": "Adjusting the margin until the gap closes, which converts an independent estimate into a copy of the quote."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -476,8 +634,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Cost transparency transforms negotiation from an emotional argument into an objective joint problem-solving exercise.'
+    },
+    {
+      "type": "scenario",
+      "context": "A sole-source supplier quotes 89.00 per unit for 20,000 units a year. The buyer builds a should-cost of 38.50 material, 0.40 hours at 35.00, 8.50 machine overhead, 10 percent SG&A and a 12 percent fair margin, and gets 81.30. What is the right next step?",
+      "q": "What should the buyer do?",
+      "options": [
+        {
+          "text": "Reject the quote and award to a competitor, since a 7.70 per unit gap proves the supplier is overcharging.",
+          "isCorrect": false,
+          "rationale": "The gap does not prove overcharging, and there is no competitor to award to: this is a sole source. The gap is a starting point for a conversation about where the 7.70 sits. It may be in the material index, the labour rate, the overhead allocation or the margin. The next step is decomposition and challenge, not a rejection, and a rejection with no alternative simply ends the supply."
+        },
+        {
+          "text": "Challenge the quote line by line against the cost build-up, starting with the elements most likely to be misstated, and ask for the evidence behind each.",
+          "isCorrect": true,
+          "rationale": "This is what should-cost is for. You are not asserting that the supplier is wrong; you are asking a better-informed question than \"why is it 89 when you say 81.30\". Material index and base period, labour rate and productivity assumption, overhead absorption basis, and the margin target are the four lines to attack first, because they are the four that most often differ for a legitimate reason and can be settled with evidence. The right outcome is often a price change, but it is also sometimes a discovered cost the buyer had not modelled, and both are worth having."
+        },
+        {
+          "text": "Accept the 7.70 per unit gap as the price of not having an alternative, and record it as an unavoidable cost of single sourcing.",
+          "isCorrect": false,
+          "rationale": "Conceding without asking converts a negotiating position into a permanent cost, and it is not what the gap tells you. Single sourcing is a decision with a price, and the price has not yet been established: nobody has tested whether the 89.00 is supportable, or whether the build-up of 81.30 is missing a cost the buyer should be carrying. A should-cost that is never used to challenge anything is an internal document, not an analysis."
+        },
+        {
+          "text": "Rebuild the should-cost with a higher margin allowance to close the gap, and treat the result as market-validated.",
+          "isCorrect": false,
+          "rationale": "That reverses the analysis into something it cannot be. The should-cost is an independent estimate of what the product ought to cost, built from the cost drivers; changing the margin assumption until it matches the quote makes it a description of the quote rather than a test of it, and it destroys the only thing the exercise has to offer. The margin is an input you justify, not a plug you close a gap with."
+        }
+      ],
+      "principle": "A should-cost is a question, not a verdict. Decompose the gap, challenge the drivers, and use the evidence."
+    },
+    {
+      "type": "mcq",
+      "q": "A should-cost model is most valuable when:",
+      "options": [
+        {
+          "text": "It is used to challenge a quote in a competitive event, where the buyer has a reference point to negotiate from.",
+          "isCorrect": false,
+          "rationale": "It is a legitimate application, but it is not where the model is most valuable. In a competitive event the buyer already has competing quotes as a reference point, so the should-cost is a second opinion rather than the only one. It also carries a risk in a live event: a should-cost built during the tender invites a dispute about the buyer's cost model, which is a distraction from the published evaluation criteria."
+        },
+        {
+          "text": "It is used to validate a price in a sole-source situation, where the buyer has no other offer to compare against.",
+          "isCorrect": true,
+          "rationale": "This is where it is most valuable, and it is the place most buyers skip. Without a market price, an independent cost estimate is the only reference point the buyer has, and a should-cost gives the negotiation something concrete to work with. Many organisations never build one here, which is precisely why sole-source pricing drifts upwards year after year with nobody able to say why."
+        },
+        {
+          "text": "It is used after the award, to check whether the supplier made the margin the buyer expected.",
+          "isCorrect": false,
+          "rationale": "That is a job the buyer cannot do, because the supplier does not disclose its margin and never will, and attempting it consumes the relationship and produces no reliable answer. The should-cost is a pre-award negotiating instrument. Its value is in what it tells you about the cost structure before you commit, not in auditing a private number afterwards."
+        },
+        {
+          "text": "It is used to select the sourcing route, by showing whether the product can be made or bought more cheaply.",
+          "isCorrect": false,
+          "rationale": "A should-cost tells you what the product ought to cost on the current design, which is a different question from whether a different design or a different route is better. The make-or-buy decision is made with a full cost model of both options including the non-price costs of owning the capability, and a should-cost of the current specification is one input to that, not the decision itself."
+        }
+      ],
+      "principle": "A should-cost has the most force before the award, in both competitive and sole-source situations. It is a negotiating instrument, not an audit tool."
     }
-  ],
+ ],
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['should-cost', 'cost-breakdown', 'price-vs-cost'],
@@ -593,8 +806,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Verify that mathematical formulas treat lowest price accurately and consistently.',
       record: 'Consolidated Evaluation Ranking & Award Recommendation.',
       pitfall: 'Using non-linear commercial scoring formulas that distort price differences.'
+    },
+    {
+      "title": "Derive the Evaluation Criteria from the Category Strategy",
+      "role": "Category Manager",
+      "desc": "Set the criteria from what matters in this category: the drivers of performance for this supply, the risks the category carries, and the differentiators that actually separate the field.",
+      "control": "The number of criteria is limited to what the panel can assess with rigour, and each criterion has a defined scale and a defined evidence source.",
+      "record": "Evaluation criteria sheet with the rationale, the scale and the evidence source for each criterion.",
+      "pitfall": "Copying a generic scorecard used for a different category, and scoring the field on things that do not differentiate them."
+    },
+    {
+      "title": "Brief the Panel and Score Against the Published Scale",
+      "role": "Procurement Specialist",
+      "desc": "Brief the evaluators on the criteria, the scales and the evidence before any bid is opened, and require an individual score and a written reason for each criterion.",
+      "control": "No bid is opened before the panel has been briefed and the criteria and scales confirmed, and the panel scores independently before any discussion.",
+      "record": "Panel briefing record and the individual scoring sheets with reasons, retained with the evaluation file.",
+      "pitfall": "Opening the bids and then explaining the scales, which makes the scale fit whichever bid is in front of the panel."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -641,8 +870,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Evaluation scores must reflect factual evidence submitted within the tender documents, never undocumented personal relationships.'
+    },
+    {
+      "type": "scenario",
+      "context": "Two finalists score 8.4 and 8.1 out of 10 on a published weighted scorecard. The 0.3 difference is well inside the noise of a subjective assessment. The procurement manager wants to award to the higher score. What is the right approach?",
+      "q": "What should the manager do?",
+      "options": [
+        {
+          "text": "Award to the higher score, because that is what the published criteria require.",
+          "isCorrect": false,
+          "rationale": "The criteria say how to score, and 8.4 versus 8.1 is what the criteria produced, so awarding to 8.4 is procedurally correct. The problem is what the score means, and this is where a scorecard is often misread. A weighted score compresses real differences: a 0.3 gap on a 10-point scale is inside the margin of assessor disagreement, and treating it as a decisive result is how a published framework gets quietly overridden anyway."
+        },
+        {
+          "text": "Award to the higher score, and record the margin of difference and the fact that the scores were within assessor variation.",
+          "isCorrect": true,
+          "rationale": "This is the disciplined answer and it is also the one that survives scrutiny. The criteria were published and they produced 8.4, so the award follows the criteria, and the record states that the margin was narrow. That is the honest position: the process was followed, and the decision is exposed to the fact that the difference was not significant. If the two bidders were genuinely equivalent on the criteria, the tie-break has to come from somewhere else, and naming where it comes from is better than letting a decimal place decide it."
+        },
+        {
+          "text": "Re-score both suppliers with a fresh panel until the gap is clearer, so the award is not decided by a narrow margin.",
+          "isCorrect": false,
+          "rationale": "Re-scoring until the gap widens is a way of getting the answer you wanted, and it breaches the published process, because the criteria and the method were already fixed. If the assessment was poor, the answer is to run the evaluation properly with a properly briefed panel, not to repeat it until the numbers suit the outcome. Two evaluations with different results are harder to defend than one honest result with a narrow margin."
+        },
+        {
+          "text": "Award to the lower-priced bidder, since a 0.3 score difference does not justify a price premium and the decision is really a commercial one.",
+          "isCorrect": false,
+          "rationale": "That abandons the published criteria in the other direction, and it treats the score as worthless when what it actually indicates is that quality and service are equivalent within measurement error. If price is the deciding factor, that is a legitimate outcome, but it should be taken as an explicit commercial decision with the price difference quantified and accepted, not smuggled in as a reinterpretation of a scoring exercise."
+        }
+      ],
+      "principle": "A weighted score compresses real differences. Follow the published criteria, and record honestly when the margin is inside the noise."
+    },
+    {
+      "type": "mcq",
+      "q": "The most common weakness of a supplier scorecard is:",
+      "options": [
+        {
+          "text": "It measures the wrong things, because the criteria are chosen for convenience rather than from the category strategy.",
+          "isCorrect": true,
+          "rationale": "That is the most damaging failure, because the scorecard then measures whatever the last buyer found easy to count. Scorecards that are not derived from the category strategy produce a number that is defensible in form and meaningless in substance: high scores that say nothing about whether the supplier will deliver what this category needs. The fix is to derive the criteria from the strategy, not to standardise a generic scorecard across every category."
+        },
+        {
+          "text": "It uses too many criteria, so the assessment takes too long and the panel loses focus.",
+          "isCorrect": false,
+          "rationale": "Too many criteria is a real problem, and it is usually a symptom of the bigger one: criteria added because someone wanted them measured, without anyone deciding what actually differentiates the suppliers in this category. Four or five criteria that discriminate between the field beat fifteen that do not, and the length is a consequence of the absence of a strategy rather than the cause."
+        },
+        {
+          "text": "It relies on the supplier's own data, so it is not independently verified.",
+          "isCorrect": false,
+          "rationale": "Self-reported data is a genuine weakness in some scorecards, but it is a fixable one: the data that matters is delivery performance, quality and responsiveness, all of which the buyer observes independently, and the cost performance the buyer can test. A scorecard that measures only what the supplier reports is a weak scorecard, but that is a design fault rather than the general condition."
+        },
+        {
+          "text": "It is applied too infrequently, so the scores are out of date by the time they are used.",
+          "isCorrect": false,
+          "rationale": "Frequency matters, and a scorecard reviewed annually for a fast-moving category is not much use. But the fundamental problem is what is measured and why. A perfectly current scorecard of irrelevant criteria gives a current and equally meaningless answer, and refreshing it on a schedule makes the irrelevance look like rigour."
+        }
+      ],
+      "principle": "A scorecard is only as good as the strategy behind it. Derive the criteria from the category, not from a template."
     }
-  ],
+ ],
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['supplier-qualification', 'supplier-segmentation', 'evaluation-criteria'],
@@ -758,8 +1042,24 @@ PS.ACADEMY_FUNCTIONS.push({
       control: 'Formal sign-off on Single-Source Justification if dual sourcing is unfeasible.',
       record: 'Supplier Risk Treatment Plan.',
       pitfall: 'Allowing sole-source arrangements to persist for years without regular market testing.'
+    },
+    {
+      "title": "Obtain the Financial Position and Assess Solvency",
+      "role": "Procurement Specialist",
+      "desc": "Get the financial information the supplier will not volunteer: filed accounts, management information, credit references, and the reasons for any change in credit facility.",
+      "control": "The information is obtained and recorded with its date and source, and an assessed risk position is signed off by a named officer.",
+      "record": "Financial risk assessment with the evidence, the risk rating and the date the assessment was made.",
+      "pitfall": "Accepting a management assurance about a supplier whose bank has withdrawn a facility, which is a signal that requires evidence rather than reassurance."
+    },
+    {
+      "title": "Map the Sub-Tier Exposure for Critical Categories",
+      "role": "Category Manager",
+      "desc": "For the categories where a failure would stop the business, map the sub-tier suppliers, the plants, the routes and the single points of failure, and record whether an independent alternative exists.",
+      "control": "The map covers the categories that would actually stop operations, and every single point of failure has a treatment decision with an owner.",
+      "record": "Multi-tier supply base map with the single point of failure register and the treatment decisions.",
+      "pitfall": "Mapping the tier-two suppliers of everything, instead of the sub-tier of the few suppliers whose failure would actually stop the business."
     }
-  ],
+ ],
   quizzes: [
     {
       type: 'scenario',
@@ -805,8 +1105,63 @@ PS.ACADEMY_FUNCTIONS.push({
         }
       ],
       principle: 'Dual-sourcing is an active insurance policy: volume allocation creates healthy competitive pressure and instantaneous supply redundancy.'
+    },
+    {
+      "type": "scenario",
+      "context": "A supplier of a critical component has missed three delivery dates in a year. Its financial statements are not yet published, its bank has just withdrawn a credit facility, and the buyer has no alternative source qualified. What should the buyer do first?",
+      "q": "What is the right first action?",
+      "options": [
+        {
+          "text": "Qualify an alternative supplier immediately, because the financial signals and the delivery record together mean the supply is at risk.",
+          "isCorrect": false,
+          "rationale": "This is the right destination and the wrong first move, and the sequence matters more than it appears. Qualifying an alternative takes weeks to months, and a bank withdrawing a facility is a signal to be acted on, not a fact that means supply has already stopped. The first action is to understand what is actually happening and to stabilise the current supply, while the qualification runs in parallel. Treating the first step as the second step is how a panic becomes a crisis."
+        },
+        {
+          "text": "Get the facts: obtain the financial information directly, understand the cause of the three misses, and assess the exposure by volume and by what happens if delivery stops.",
+          "isCorrect": true,
+          "rationale": "This is the disciplined first step, and it is three things at once. Obtain the information you have been refused, because a withdrawn facility and a missed delivery pattern are a different situation depending on the cause. Understand the misses, because three misses caused by the buyer's own forecast errors and three caused by capacity failure call for different responses. And size the exposure: what share of output depends on this supplier, what is the substitute, how long would it take to switch, and what is at risk in the meantime. Only with those facts can you choose between qualifying an alternative, placing a buffer order, negotiating a recovery plan, or exiting."
+        },
+        {
+          "text": "Place a large forward order with the supplier to secure the supply before anything changes.",
+          "isCorrect": false,
+          "rationale": "This looks prudent and is often the opposite. It converts a delivery problem into a cash and inventory problem, it increases your exposure to a supplier whose financial position you have just been warned about, and it may simply accelerate the failure. Forward buying is justified when you have a confident view of the supplier and a known temporary constraint. Here you have neither, so it is a bet on a supplier whose bank has just withdrawn credit."
+        },
+        {
+          "text": "Escalate to the supplier's management and require a written recovery plan before taking any further action.",
+          "isCorrect": false,
+          "rationale": "Escalation is part of the answer but it is not the whole first step, and it is not a substitute for your own assessment. It is entirely possible for the supplier to produce a reassuring recovery plan and still fail, and the volume at risk will not be smaller for the plan existing. You need the facts and the exposure assessment to decide how much weight the plan carries, and you need to start the alternative qualification clock running regardless."
+        }
+      ],
+      "principle": "In a supply risk, the first step is facts and exposure. The action follows the facts, and the alternative qualification runs in parallel."
+    },
+    {
+      "type": "mcq",
+      "q": "Why is a tier-two or tier-three supplier risk relevant to a tier-one buyer?",
+      "options": [
+        {
+          "text": "Because the buyer is contractually liable for the conduct of its suppliers' suppliers.",
+          "isCorrect": false,
+          "rationale": "Liability for sub-tier conduct is a separate and real issue in some regimes, but it is not why the exposure matters. The operational reason is simpler and more immediate: a disruption at the sub-tier becomes the tier-one supplier's inability to deliver to you, and the tier-one supplier cannot always recover it for you because it has the same problem."
+        },
+        {
+          "text": "Because most material disruption arrives through a sub-tier the buyer has never assessed, and the tier-one supplier is exposed to the same failure.",
+          "isCorrect": true,
+          "rationale": "This is the reason to look below tier one, and it is the reason a supplier due diligence that stops at the direct supplier is incomplete. A tier-one supplier can be healthy, solvent and qualified and still be unable to deliver because its own critical input comes from one fragile sub-supplier. Mapping the sub-tier for the categories that would actually stop you is what turns a generic continuity plan into a real one."
+        },
+        {
+          "text": "Because tier-one contracts are usually silent about sub-tier subcontracting.",
+          "isCorrect": false,
+          "rationale": "Silence in the contract is often the reason the buyer does not know the answer, and the remedy is a flow-down clause, not an inference. A requirement to disclose and approve material sub-tier suppliers, with a right to audit the arrangement, is a contractual control that has to be put in deliberately. A buyer who has never asked cannot know the tier-two picture, and a buyer who has asked and been refused has learned something important about the relationship."
+        },
+        {
+          "text": "Because it improves the buyer's negotiating position with the tier-one supplier.",
+          "isCorrect": false,
+          "rationale": "Knowing the sub-tier map is sometimes useful leverage, but treating it primarily as a negotiating tool produces a bad outcome: the supplier learns that disclosure of its supply base is penalised, and the map gets less accurate over time. The buyer needs the map to manage risk, and the way to get it is to make disclosure a condition of the relationship and to use it for that purpose."
+        }
+      ],
+      "principle": "Disruption arrives through the sub-tier. Map it for the categories that would stop you, and put the disclosure obligation in the contract."
     }
-  ],
+ ],
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['supplier-qualification', 'supplier-financial-risk', 'concentration-risk', 'supply-chain-risk'],
