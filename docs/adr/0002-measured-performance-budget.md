@@ -175,3 +175,20 @@ entire value is its content.
 4. **The application acquires a server-side component.** Then the
    offline artifact stops being the whole product and the offline
    budget question changes shape entirely.
+
+## On measuring a wall-clock budget
+
+The size budgets are deterministic. The timing budgets are not: they
+are wall-clock measurements, and a wall-clock measurement on a machine
+that is also running a headless browser is a measurement of the machine
+as much as of the build. A release was blocked here once because the
+gate ran while a screenshot job was competing for the CPU. The same
+build measured 127 ms against a 500 ms budget moments later.
+
+So a timing failure is measured once more after a short pause, and the
+reported figures are the ones from the passing run. A build that is
+genuinely slow fails twice and still fails. The retry is reported in
+the output, because a gate that sometimes re-measures should say so
+rather than quietly produce a nicer number. The size budgets are
+never retried: they are facts about the file, not about the moment.
+
