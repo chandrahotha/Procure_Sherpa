@@ -131,6 +131,36 @@ The track deliberately does not override the role: a compliance officer
 wants the risk and contracting modules first whether they came here to
 learn or to work.
 
+### The second review found three things the first one missed
+
+All three were wrong in ways that had passed a full review, which is
+the part worth recording.
+
+- **The curriculum was scattered.** The Academy reordered its modules
+  by the profile role, so a buyer saw Module 7, 9, 2, 1, 3... while
+  every badge still read its own number. Only the default profile got
+  1 to 11, and the default is what every screenshot had used. The
+  cause was the method rather than the code: gate G13 had been written
+  from the feature instead of from the requirement, so it asserted
+  that the role reordered the curriculum and protected the defect. It
+  now states the requirement in the requirement's words, and the role
+  recommends modules rather than moving them.
+- **The menu had a two-option field and ignored it.** The profile's
+  track changed one line of text while the sidebar showed the same
+  flat 39 items to everybody. The menu is now scoped by the track: 26
+  items for a learner, 30 for a practitioner, with the reference
+  library shared between them and a Learn / Work switch in the
+  sidebar that writes the same profile field the profile modal does.
+  This changed the rule in src/README that forbade a hub-switcher,
+  and the reason it changed is now recorded there rather than
+  quietly overwritten.
+- **The explanation did not carry its example.** The worked example
+  lived in the Think tab, so a reader never met an example of the
+  function working. It is in the Learn tab now, and it links to the
+  calculator with the example already loaded. The calculators also
+  gained a Random values button, so the numbers can be varied rather
+  than only read.
+
 ### Two engineering decisions were written down
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
