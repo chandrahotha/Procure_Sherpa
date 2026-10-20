@@ -126,6 +126,7 @@ src/content/19a_academy_functions_part1.js
 src/content/19b_academy_functions_part2.js
 src/content/19c_academy_functions_part3.js
 src/content/19d_academy_functions_part4.js
+src/content/19e_academy_functions_part5.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js

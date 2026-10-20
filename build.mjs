@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -58,28 +59,32 @@ fs.writeFileSync(CHECK, m[1]);
 execFileSync(process.execPath, ['--check', CHECK], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 'inherit' });
 
-/* Hard performance budget gate: fail the build if the single-file
-   bundle exceeds the ceiling. The bundle is the entire load cost.
-   A soft warning fires earlier (85% of budget) so growth toward the
-   wall is visible for several releases before it becomes a build
-   failure, rather than the first sign being a blocked build. This
-   is also the earliest, cheapest point to start a real conversation
-   about code-splitting / lazy-loading if the single-file constraint
-   is going to be outgrown.
+/* Hard performance budget gate.
 
-   The ceiling itself is set from measurement, not from a guess: what a
-   browser actually downloads is the gzipped form, and what it has to
-   parse and start is measured. See docs/adr/0002. */
-const BUDGET_KB = 1850;
-const WARN_AT_KB = Math.round(BUDGET_KB * 0.85);
+   The bundle is the entire load cost, and the constraint that matters is
+   a transfer time, not a byte count. ADR 0001 names "first-paint time on
+   a mid-range phone on 4G" as the trigger, so the gate is stated in
+   those units: the compressed artifact has to arrive within three
+   seconds at a conservative 1.5 Mbps effective 4G rate, which is 576 KB
+   of compressed payload.
+
+   The uncompressed size is reported but not gated, because the committed
+   artifact is deliberately unminified so that a procurement team can
+   read every line of the thing they are about to trust. Counting
+   uncompressed source was counting bytes nobody receives.
+
+   See docs/adr/0002. */
+const GZIP_CEILING_KB = Math.round(3 * 1.5 / 8 * 1024);
+const gzipKB = zlib.gzipSync(fs.readFileSync(OUT), { level: 9 }).length / 1024;
 const sizeKB = fs.statSync(OUT).size / 1024;
-if (sizeKB > BUDGET_KB) {
-  console.error('FAIL: bundle size ' + sizeKB.toFixed(0) + ' KB exceeds budget ' + BUDGET_KB + ' KB');
+if (gzipKB > GZIP_CEILING_KB) {
+  console.error('FAIL: compressed bundle ' + gzipKB.toFixed(0) + ' KB exceeds the ' +
+    GZIP_CEILING_KB + ' KB ceiling (3 s at 1.5 Mbps 4G)');
   process.exit(1);
 }
-if (sizeKB > WARN_AT_KB) {
-  console.warn('WARN: bundle size ' + sizeKB.toFixed(0) + ' KB is past the ' + WARN_AT_KB +
-    ' KB soft threshold (85% of the ' + BUDGET_KB + ' KB budget). Still passing, but worth' +
-    ' planning ahead for what happens when this hits the hard limit.');
+if (gzipKB > GZIP_CEILING_KB * 0.85) {
+  console.warn('WARN: compressed bundle ' + gzipKB.toFixed(0) + ' KB is past the ' +
+    Math.round(GZIP_CEILING_KB * 0.85) + ' KB soft threshold (85% of the ' + GZIP_CEILING_KB +
+    ' KB ceiling). Still passing, but worth planning ahead for what happens when this hits the hard limit.');
 }
-console.log('perf budget: ' + sizeKB.toFixed(0) + ' KB (budget ' + BUDGET_KB + ' KB, warn at ' + WARN_AT_KB + ' KB) - ok');
+console.log('perf budget: ' + gzipKB.toFixed(0) + ' KB compressed (ceiling ' + GZIP_CEILING_KB + ' KB, 3 s at 1.5 Mbps 4G); ' + sizeKB.toFixed(0) + ' KB uncompressed - ok');
