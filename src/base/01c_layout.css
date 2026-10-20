@@ -143,6 +143,31 @@
 }
 .nav-sec[data-open="false"] .nav-list{display:none}
 .nav-sec[data-open="false"] .chev{transform:rotate(-90deg)}
+
+/* ---------- The Learn / Work switch ----------
+   The menu follows the profile's track, and this is the control that
+   changes it. It sits between the tree and the system footer, where
+   it is visible without competing with the navigation itself. */
+.nav-view-switch{
+  padding:10px 14px 12px;border-top:1px solid var(--border);
+}
+.nav-view-label{
+  display:block;font-size:.6rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:6px;
+}
+.nav-view-group{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.nav-view-btn{
+  appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--dim);
+  font:inherit;font-size:.76rem;font-weight:700;padding:7px 6px;border-radius:9px;cursor:pointer;
+  transition:background .13s,color .13s,border-color .13s;
+}
+.nav-view-btn:hover{border-color:var(--border-2);color:var(--text);background:var(--sunken)}
+.nav-view-btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.nav-view-btn.is-on{
+  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
+  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
+}
+.nav-view-btn[aria-pressed="true"]{font-weight:800}
 .nav-list{list-style:none;margin:0;padding:1px 0 7px}
 .nav-list a{
   position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);

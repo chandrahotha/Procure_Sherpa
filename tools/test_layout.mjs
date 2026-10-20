@@ -51,14 +51,45 @@ check('Document has #modalRoot dialog mount point', !!d.querySelector('#modalRoo
 // 2. Navigation structure
 check('Sidebar has brand mark and title', !!d.querySelector('#sidebarBrandMark') && !!d.querySelector('#sidebarBrandTitle'));
 check('Sidebar has search filter input', !!d.querySelector('#navFilter'));
-  check('Sidebar has the six unified nav sections', d.querySelectorAll('#navRoot .nav-sec').length === 6);
-  const secNames = [...d.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
-  check('Nav sections are Start, Learn, Workbench, Toolkit, Look It Up and My Work',
-    secNames.join('|') === 'Start|Learn|Workbench|Toolkit|Look It Up|My Work', secNames.join(', '));
-  check('Every nav section has items', [...d.querySelectorAll('#navRoot .nav-sec')].every((s) => s.querySelectorAll('li').length > 0));
-  check('The system links live in a labelled footer strip',
-    d.querySelectorAll('.sidebar-foot-links .sidebar-foot-link').length === 4 &&
-    !!d.querySelector('.sidebar-foot-label'));
+/* The navigation is scoped by the profile's track, so the layout audit
+   checks BOTH views rather than one fixed list. A sidebar that renders
+   correctly for one profile and wrongly for another is not correct. */
+const setView = (track) => {
+  window.PS.user._cache = { name: 'T', role: 'beginner', track, company: '', avatarBg: '#000', joinedDate: '' };
+  window.PS.buildNav();
+};
+const secNames = () => [...d.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
+const navItems = () => d.querySelectorAll('#navRoot li').length;
+
+setView('academy');
+check('The learn view shows five nav sections', d.querySelectorAll('#navRoot .nav-sec').length === 5,
+  secNames().join(', '));
+check('The learn view sections are Start, Learn, Library, Look It Up and My Work',
+  secNames().join('|') === 'Start|Learn|Library|Look It Up|My Work', secNames().join(', '));
+check('The learn view shows 26 navigation items', navItems() === 26, navItems() + ' items');
+check('The learn view hides the working sections',
+  !secNames().includes('Workbench') && !secNames().includes('Toolkit'));
+check('The learn view keeps the shared library', secNames().includes('Library'));
+
+setView('operations');
+check('The work view shows six nav sections', d.querySelectorAll('#navRoot .nav-sec').length === 6,
+  secNames().join(', '));
+check('The work view sections are Start, Workbench, Toolkit, Library, Look It Up and My Work',
+  secNames().join('|') === 'Start|Workbench|Toolkit|Library|Look It Up|My Work', secNames().join(', '));
+check('The work view shows 30 navigation items', navItems() === 30, navItems() + ' items');
+check('The work view hides the learning section', !secNames().includes('Learn'));
+check('The work view keeps the shared library', secNames().includes('Library'));
+
+check('The sidebar carries a Learn / Work switch', d.querySelectorAll('#navViewSwitch .nav-view-btn').length === 2);
+check('The switch marks the current view with aria-pressed',
+  [...d.querySelectorAll('#navViewSwitch .nav-view-btn')].filter((b) => b.getAttribute('aria-pressed') === 'true').length === 1);
+check('The switch is labelled', !!d.querySelector('#navViewSwitch .nav-view-label'));
+setView('academy');
+
+check('Every nav section has items', [...d.querySelectorAll('#navRoot .nav-sec')].every((s) => s.querySelectorAll('li').length > 0));
+check('The system links live in a labelled footer strip',
+  d.querySelectorAll('.sidebar-foot-links .sidebar-foot-link').length === 4 &&
+  !!d.querySelector('.sidebar-foot-label'));
 
 // 3. Calculator responsive layout
 window.location.hash = '#/calc/calc-tco';

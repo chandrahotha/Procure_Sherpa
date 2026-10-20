@@ -85,7 +85,7 @@ PS.copilot.buildIndex = function () {
     push('kpi', x.id, x.title, x.cat, PS.routeFor('kpi', x.id),
       [x.title, x.def, x.formula, x.formulaNote, (x.inputs || []).join(' '), (x.interp || []).join(' ')].join(' '));
   });
-  /* The Academy curriculum: twenty-five functions and ten modules, the
+  /* The Academy curriculum: twenty-eight functions and eleven modules, the
      largest body of procurement teaching in the product, and until now
      invisible to the assistant. */
   (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {

@@ -22,9 +22,9 @@ PS.homeStartHere = function () {
   if (isNew) {
     if (operational) {
       primary = { href: '#/operations', label: 'Start with the Operations Hub', note: 'Six phases of the work, and every procedure, checklist, template and calculator that belongs to them.' };
-      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-five functions, beginner to advanced.' };
+      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-eight functions, beginner to advanced.' };
     } else {
-      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
+      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-eight functions across eleven modules, beginner to advanced, with a quiz and a sandbox in each.' };
       secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
     }
   } else if (saved.length) {

@@ -64,16 +64,33 @@
                               link to the audit log, which was only
                               reachable from an orphaned page.
    ========================================================== */
+/* Each section declares which views it belongs to: 'academy',
+   'operations', or 'both'. The sidebar is scoped by the profile's
+   track, so a learner sees the learning navigation and a practitioner
+   sees the working navigation, and the shared sections are always
+   there. The profile already carried a two-option track from the
+   beginning; it changed one line of text and nothing else. This is the
+   thing that was chosen when the track was added: the menu follows the
+   selection.
+
+   The reference library is deliberately shared. The Academy is taught
+   through the SOPs, templates and calculators, so hiding them from a
+   learner would cut the link between learning and doing, and every
+   Academy function links into it.
+
+   The current route always wins: if you are on a page whose section
+   your view hides, that section is shown for that visit. Nothing is
+   ever a dead end in the navigation. */
 PS.NAV_UNIFIED = [
   {
-    sec: 'Start', ico: '★', items: [
+    sec: 'Start', ico: '\u2605', views: 'both', items: [
       { label: 'Command Center', href: '#/home' },
       { label: 'Help Me With a Problem', href: '#/what' },
       { label: 'Search Everything', href: '#/search' }
     ]
   },
   {
-    sec: 'Learn', ico: '◆', items: [
+    sec: 'Learn', ico: '\u25C6', views: 'academy', items: [
       { label: 'Academy Curriculum', href: '#/academy' },
       { label: 'Learning Paths', href: '#/learning-paths' },
       { label: 'Skill Assessment', href: '#/assessment' },
@@ -86,7 +103,7 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Workbench', ico: '■', items: [
+    sec: 'Workbench', ico: '\u25A0', views: 'operations', items: [
       { label: 'RFx & Evaluation', href: '#/rfx' },
       { label: 'Supplier Register', href: '#/suppliers' },
       { label: 'Contract Register', href: '#/contracts' },
@@ -98,13 +115,8 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Toolkit', ico: '◆', items: [
+    sec: 'Toolkit', ico: '\u25C6', views: 'operations', items: [
       { label: 'Operations Hub', href: '#/operations' },
-      { label: 'SOPs', href: '#/list/sop' },
-      { label: 'Checklists', href: '#/list/cl' },
-      { label: 'Templates', href: '#/list/tpl' },
-      { label: 'Calculators', href: '#/list/calc' },
-      { label: 'Decision Guides', href: '#/list/dec' },
       { label: 'Scenarios', href: '#/scenarios' },
       { label: 'Maturity Check', href: '#/maturity' },
       { label: 'Copilot', href: '#/copilot' },
@@ -112,7 +124,16 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Look It Up', ico: '●', items: [
+    sec: 'Library', ico: '\u25A4', views: 'both', items: [
+      { label: 'SOPs', href: '#/list/sop' },
+      { label: 'Checklists', href: '#/list/cl' },
+      { label: 'Templates', href: '#/list/tpl' },
+      { label: 'Calculators', href: '#/list/calc' },
+      { label: 'Decision Guides', href: '#/list/dec' }
+    ]
+  },
+  {
+    sec: 'Look It Up', ico: '\u25CF', views: 'both', items: [
       { label: 'Knowledge Hub', href: '#/list/kb' },
       { label: 'KPIs & Metrics', href: '#/list/kpi' },
       { label: 'Glossary', href: '#/glossary' },
@@ -120,7 +141,7 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'My Work', ico: '▲', items: [
+    sec: 'My Work', ico: '\u25B2', views: 'both', items: [
       { label: 'Dashboard', href: '#/dash' },
       { label: 'Saved Work', href: '#/saved', badge: 'saved', i18n: 'nav.saved' },
       { label: 'Favorites', href: '#/fav', badge: 'fav', i18n: 'nav.fav' },

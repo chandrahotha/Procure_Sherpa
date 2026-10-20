@@ -57,11 +57,25 @@ console.log('\nNavigation');
 w.location.hash = '#/home';
 PS.renderRoute();
 ok('sidebar present on the landing page', !w.document.querySelector('#app').classList.contains('has-no-sidebar'));
-ok('six sections', w.document.querySelectorAll('#navRoot .nav-sec').length === 6);
-ok('39 navigation items', w.document.querySelectorAll('#navRoot li').length === 39);
-const secNames = [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
-ok('the sections are Start, Learn, Workbench, Toolkit, Look It Up and My Work',
-  secNames.join('|') === 'Start|Learn|Workbench|Toolkit|Look It Up|My Work', secNames.join(', '));
+/* The navigation is scoped by the profile's track, so both views are
+   checked against the bytes that are actually served. */
+const setView = (track) => {
+  w.PS.user._cache = { name: 'T', role: 'beginner', track, company: '', avatarBg: '#000', joinedDate: '' };
+  w.PS.buildNav();
+};
+const secNames = () => [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((s) => s.textContent.trim());
+setView('academy');
+ok('the learn view shows five sections', w.document.querySelectorAll('#navRoot .nav-sec').length === 5, secNames().join(', '));
+ok('the learn view shows 26 navigation items', w.document.querySelectorAll('#navRoot li').length === 26);
+ok('the learn view sections are Start, Learn, Library, Look It Up and My Work',
+  secNames().join('|') === 'Start|Learn|Library|Look It Up|My Work', secNames().join(', '));
+setView('operations');
+ok('the work view shows six sections', w.document.querySelectorAll('#navRoot .nav-sec').length === 6, secNames().join(', '));
+ok('the work view shows 30 navigation items', w.document.querySelectorAll('#navRoot li').length === 30);
+ok('the work view sections are Start, Workbench, Toolkit, Library, Look It Up and My Work',
+  secNames().join('|') === 'Start|Workbench|Toolkit|Library|Look It Up|My Work', secNames().join(', '));
+ok('the sidebar carries a Learn / Work switch', w.document.querySelectorAll('#navViewSwitch .nav-view-btn').length === 2);
+setView('academy');
 ok('four footer links', w.document.querySelectorAll('.sidebar-foot-link').length === 4);
 w.location.hash = '#/sop/sop-rfq';
 PS.renderRoute();

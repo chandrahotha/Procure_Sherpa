@@ -37,11 +37,17 @@ truth badly in a dozen places.
 
 The sidebar was hiding itself on the landing page, failing to light up on
 8 of its 37 items, and pointing at a page that said "not available yet".
-It is now **six sections of 39 items plus a permanent footer strip**:
-Start, Learn, Workbench, Toolkit, Look It Up, My Work. The Workbench
-section is where you record your own work and the Toolkit section is
-where the procedures live, and they are named differently because they
-do different things. Four orphan routes were
+It is now **scoped by the profile's track, plus a permanent footer
+strip**. A learner sees 5 sections and 26 items: Start, Learn, Library,
+Look It Up, My Work. A practitioner sees 6 sections and 30 items: Start,
+Workbench, Toolkit, Library, Look It Up, My Work. The reference library
+- SOPs, checklists, templates, calculators, decision guides - is shared,
+because the Academy is taught through it and every Academy function
+links into it. A **Learn / Work** switch in the sidebar changes the
+track, writing the same profile field the profile modal writes, so there
+is one source of truth. The current route always wins: a page whose
+section your track hides has that section shown for that visit, so the
+menu is never a dead end. Four orphan routes were
 rescued (`#/operations`, `#/dash`, `#/audit`, `#/career-paths`), four
 dead ends were removed with a stated reason, and every one of the
 previous 37 items is accounted for in a ledger in `04b1_navdata.js`. The

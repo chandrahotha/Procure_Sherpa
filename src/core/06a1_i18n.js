@@ -24,7 +24,10 @@ PS.i18n.CATALOG = {
     'app.tagline': 'Navigation',
 
     'nav.filter': 'Filter menu\u2026',
-    'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',
+    'nav.view.label': 'What you see in the menu',
+  'nav.view.learn': 'Learn',
+  'nav.view.work': 'Work',
+  'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',
     'nav.saved': 'Saved Work',
     'nav.fav': 'Favorites',
     'nav.recent': 'Recently Used',
@@ -71,6 +74,9 @@ PS.i18n.CATALOG = {
   },
 
   es: {
+    'nav.view.label': 'Lo que ve en el menú',
+    'nav.view.learn': 'Aprender',
+    'nav.view.work': 'Trabajar',
     'app.name': 'Procure Sherpa',
     'app.tagline': 'Navegaci\u00F3n',
 

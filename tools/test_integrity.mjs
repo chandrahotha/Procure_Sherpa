@@ -242,8 +242,20 @@ for (const r of routes) {
   PS.renderRoute();
   collectTargets();
 }
-/* the sidebar and the footer strip are inbound links too */
+/* The sidebar and the footer strip are inbound links too. The
+   navigation is scoped by the profile's track, so a route is reachable
+   if it is reachable in the view it belongs to. Checking only the
+   rendered menu would have called the three Workbench routes orphans,
+   which is the opposite of the truth. */
+const savedProfile = PS.user._cache;
+PS.user._cache = { name: 'T', role: 'beginner', track: 'academy', company: '', avatarBg: '#000', joinedDate: '' };
+PS.buildNav();
 collectTargets();
+PS.user._cache = { name: 'T', role: 'beginner', track: 'operations', company: '', avatarBg: '#000', joinedDate: '' };
+PS.buildNav();
+collectTargets();
+PS.user._cache = savedProfile;
+if (PS.buildNav) PS.buildNav();
 const orphanRoutes = routes.filter((r) => !routeTargets.has(r));
 if (orphanRoutes.length) {
   orphanRoutes.forEach((r) => fail('G11', 'route has no inbound link anywhere: #/' + r));
@@ -474,6 +486,126 @@ if (ruleBreaks.length) {
   fail('G15', 'random values break the field rules: ' + ruleBreaks.slice(0, 5).join(', '));
 } else {
   ok('G15', 'random values respect every field rule');
+}
+
+/* ---------- G16: the navigation is scoped by the track, and the current
+   route always wins ---------- */
+console.log('\nG16  navigation scoping');
+const navSetView = (track) => {
+  PS.user._cache = { name: 'T', role: 'beginner', track, company: '', avatarBg: '#000', joinedDate: '' };
+  PS.buildNav();
+};
+const navSecs = () => [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((e) => e.textContent.trim());
+const navCount = () => w.document.querySelectorAll('#navRoot li').length;
+
+w.location.hash = '#/home';
+PS.renderRoute();
+navSetView('academy');
+if (navSecs().length !== 5 || navCount() !== 26) {
+  fail('G16', 'the learn view is wrong: ' + navSecs().length + ' sections, ' + navCount() + ' items');
+} else {
+  ok('G16', 'the learn view shows 5 sections and 26 items (' + navSecs().join(', ') + ')');
+}
+if (navSecs().indexOf('Learn') < 0 || navSecs().indexOf('Workbench') >= 0) {
+  fail('G16', 'the learn view shows the wrong sections: ' + navSecs().join(', '));
+} else {
+  ok('G16', 'the learn view shows the learning navigation and hides the working one');
+}
+w.location.hash = '#/home';
+PS.renderRoute();
+navSetView('operations');
+if (navSecs().indexOf('Learn') >= 0 || navSecs().indexOf('Workbench') < 0) {
+  fail('G16', 'the work view shows the wrong sections: ' + navSecs().join(', '));
+} else {
+  ok('G16', 'the work view shows the working navigation and hides the learning one');
+}
+if (navSecs().indexOf('Library') < 0) {
+  fail('G16', 'the shared library is not reachable from the work view');
+} else {
+  ok('G16', 'the shared library is reachable from both views');
+}
+
+/* The current route always wins: a page outside the current view must
+   still have its section in the navigation, or the menu is a dead end. */
+navSetView('operations');
+w.location.hash = '#/academy';
+PS.renderRoute();
+PS.buildNav();
+if (navSecs().indexOf('Learn') < 0) {
+  fail('G16', 'an Academy page in the work view has no Learn section in the menu');
+} else {
+  ok('G16', 'a page outside the current view still shows its section');
+}
+navSetView('academy');
+w.location.hash = '#/suppliers';
+PS.renderRoute();
+PS.buildNav();
+if (navSecs().indexOf('Workbench') < 0) {
+  fail('G16', 'a Workbench page in the learn view has no Workbench section in the menu');
+} else {
+  ok('G16', 'a working page in the learn view still shows its section');
+}
+
+/* The switch writes the profile field, and only the profile field. */
+navSetView('academy');
+w.location.hash = '#/academy';
+PS.renderRoute();
+PS.buildNav();
+PS.acts['nav-view']({ dataset: { view: 'operations' } });
+if (PS.user.getProfile().track !== 'operations') {
+  fail('G16', 'the switch does not write profile.track');
+} else {
+  ok('G16', 'the switch writes profile.track');
+}
+if (w.location.hash !== '#/operations') {
+  fail('G16', 'switching view from a hidden section did not navigate to the new landing page');
+} else {
+  ok('G16', 'switching view from a hidden section lands on the new view');
+}
+navSetView('academy');
+w.location.hash = '#/list/sop';
+PS.renderRoute();
+PS.buildNav();
+PS.acts['nav-view']({ dataset: { view: 'operations' } });
+if (w.location.hash !== '#/list/sop') {
+  fail('G16', 'switching view on a shared page moved the reader off it');
+} else {
+  ok('G16', 'switching view on a shared page leaves the reader where they were');
+}
+navSetView('academy');
+
+/* ---------- G17: nothing in the interface has been mangled ---------- */
+console.log('\nG17  text integrity');
+/* A build script that pipes source through a shell can quietly turn a
+   symbol into a question mark. It happened here: the seven navigation
+   icons were written through a PowerShell pipe whose encoding was not
+   UTF-8, and every one of them became a literal '?'. The page still
+   rendered, the tests still passed, and the sidebar looked like it had
+   a font problem. A question mark where a symbol belongs is always a
+   bug, and it should fail the build rather than be noticed in a
+   screenshot. */
+const symbolish = [];
+for (const g of PS.NAV_UNIFIED || []) {
+  if (!g.ico || g.ico === '?' || g.ico.indexOf('?') >= 0) symbolish.push('nav icon for ' + g.sec);
+}
+for (const g of PS.NAV_UNIFIED || []) {
+  (g.items || []).forEach((it) => {
+    if (it.label && it.label.indexOf('\uFFFD') >= 0) symbolish.push(it.label);
+  });
+}
+if (symbolish.length) {
+  fail('G17', 'mangled characters in the interface: ' + symbolish.slice(0, 5).join(', '));
+} else {
+  ok('G17', 'no mangled characters in the navigation');
+}
+/* And the same check across the whole document, because the same pipe
+   could have mangled anything written through it. */
+const docText = w.document.documentElement.innerHTML;
+if (docText.indexOf('\uFFFD') >= 0) {
+  const at = docText.indexOf('\uFFFD');
+  fail('G17', 'the document contains a replacement character near: ' + docText.slice(Math.max(0, at - 60), at + 20));
+} else {
+  ok('G17', 'the document contains no replacement characters');
 }
 
 w.close();

@@ -331,6 +331,31 @@ button{font-family:inherit}
 }
 .nav-sec[data-open="false"] .nav-list{display:none}
 .nav-sec[data-open="false"] .chev{transform:rotate(-90deg)}
+
+/* ---------- The Learn / Work switch ----------
+   The menu follows the profile's track, and this is the control that
+   changes it. It sits between the tree and the system footer, where
+   it is visible without competing with the navigation itself. */
+.nav-view-switch{
+  padding:10px 14px 12px;border-top:1px solid var(--border);
+}
+.nav-view-label{
+  display:block;font-size:.6rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:6px;
+}
+.nav-view-group{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.nav-view-btn{
+  appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--dim);
+  font:inherit;font-size:.76rem;font-weight:700;padding:7px 6px;border-radius:9px;cursor:pointer;
+  transition:background .13s,color .13s,border-color .13s;
+}
+.nav-view-btn:hover{border-color:var(--border-2);color:var(--text);background:var(--sunken)}
+.nav-view-btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.nav-view-btn.is-on{
+  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
+  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
+}
+.nav-view-btn[aria-pressed="true"]{font-weight:800}
 .nav-list{list-style:none;margin:0;padding:1px 0 7px}
 .nav-list a{
   position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
@@ -3278,6 +3303,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
       <button type="button" class="nav-toggle-all" id="navToggleAll" data-act="nav-toggle-all">Collapse all</button>
     </div>
     <nav class="nav" id="navRoot" aria-label="Sections"></nav>
+    <div class="nav-view-switch no-print" id="navViewSwitch"></div>
     <div class="sidebar-foot" id="sidebarFoot">
       <div class="privacy-note">
         <span aria-hidden="true">&#128274;</span>
@@ -6404,16 +6430,33 @@ PS.updateNavCounts = function () {
                               link to the audit log, which was only
                               reachable from an orphaned page.
    ========================================================== */
+/* Each section declares which views it belongs to: 'academy',
+   'operations', or 'both'. The sidebar is scoped by the profile's
+   track, so a learner sees the learning navigation and a practitioner
+   sees the working navigation, and the shared sections are always
+   there. The profile already carried a two-option track from the
+   beginning; it changed one line of text and nothing else. This is the
+   thing that was chosen when the track was added: the menu follows the
+   selection.
+
+   The reference library is deliberately shared. The Academy is taught
+   through the SOPs, templates and calculators, so hiding them from a
+   learner would cut the link between learning and doing, and every
+   Academy function links into it.
+
+   The current route always wins: if you are on a page whose section
+   your view hides, that section is shown for that visit. Nothing is
+   ever a dead end in the navigation. */
 PS.NAV_UNIFIED = [
   {
-    sec: 'Start', ico: '★', items: [
+    sec: 'Start', ico: '\u2605', views: 'both', items: [
       { label: 'Command Center', href: '#/home' },
       { label: 'Help Me With a Problem', href: '#/what' },
       { label: 'Search Everything', href: '#/search' }
     ]
   },
   {
-    sec: 'Learn', ico: '◆', items: [
+    sec: 'Learn', ico: '\u25C6', views: 'academy', items: [
       { label: 'Academy Curriculum', href: '#/academy' },
       { label: 'Learning Paths', href: '#/learning-paths' },
       { label: 'Skill Assessment', href: '#/assessment' },
@@ -6426,7 +6469,7 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Workbench', ico: '■', items: [
+    sec: 'Workbench', ico: '\u25A0', views: 'operations', items: [
       { label: 'RFx & Evaluation', href: '#/rfx' },
       { label: 'Supplier Register', href: '#/suppliers' },
       { label: 'Contract Register', href: '#/contracts' },
@@ -6438,13 +6481,8 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Toolkit', ico: '◆', items: [
+    sec: 'Toolkit', ico: '\u25C6', views: 'operations', items: [
       { label: 'Operations Hub', href: '#/operations' },
-      { label: 'SOPs', href: '#/list/sop' },
-      { label: 'Checklists', href: '#/list/cl' },
-      { label: 'Templates', href: '#/list/tpl' },
-      { label: 'Calculators', href: '#/list/calc' },
-      { label: 'Decision Guides', href: '#/list/dec' },
       { label: 'Scenarios', href: '#/scenarios' },
       { label: 'Maturity Check', href: '#/maturity' },
       { label: 'Copilot', href: '#/copilot' },
@@ -6452,7 +6490,16 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'Look It Up', ico: '●', items: [
+    sec: 'Library', ico: '\u25A4', views: 'both', items: [
+      { label: 'SOPs', href: '#/list/sop' },
+      { label: 'Checklists', href: '#/list/cl' },
+      { label: 'Templates', href: '#/list/tpl' },
+      { label: 'Calculators', href: '#/list/calc' },
+      { label: 'Decision Guides', href: '#/list/dec' }
+    ]
+  },
+  {
+    sec: 'Look It Up', ico: '\u25CF', views: 'both', items: [
       { label: 'Knowledge Hub', href: '#/list/kb' },
       { label: 'KPIs & Metrics', href: '#/list/kpi' },
       { label: 'Glossary', href: '#/glossary' },
@@ -6460,7 +6507,7 @@ PS.NAV_UNIFIED = [
     ]
   },
   {
-    sec: 'My Work', ico: '▲', items: [
+    sec: 'My Work', ico: '\u25B2', views: 'both', items: [
       { label: 'Dashboard', href: '#/dash' },
       { label: 'Saved Work', href: '#/saved', badge: 'saved', i18n: 'nav.saved' },
       { label: 'Favorites', href: '#/fav', badge: 'fav', i18n: 'nav.fav' },
@@ -6501,6 +6548,56 @@ PS.syncNavForRoute = function (r) {
   app.classList.remove('has-no-sidebar');
   app.classList.add('has-sidebar');
   PS.updateSidebarFoot(r);
+};
+
+/* ---------- The view the navigation is scoped to ----------
+   The profile has carried a two-option track since it was added, and
+   until now it changed one line of text on the Command Center. It is
+   the selection the menu follows: 'academy' shows the learning
+   navigation, 'operations' shows the working navigation, and the
+   shared sections are always there.
+
+   This is not a second source of truth. The switch in the sidebar
+   writes the same profile.track field that the profile modal writes,
+   and both read it from the same place. */
+PS.navCurrentView = function () {
+  var p = (PS.user && PS.user.getProfile) ? PS.user.getProfile() : null;
+  return (p && p.track === 'operations') ? 'operations' : 'academy';
+};
+/* The section object that owns a route, whether or not the current
+   view would show it. */
+PS.navOwnerSection = function (name) {
+  var href = PS.navHrefForRoute(name);
+  for (var i = 0; i < PS.NAV_UNIFIED.length; i++) {
+    var items = PS.NAV_UNIFIED[i].items || [];
+    for (var j = 0; j < items.length; j++) {
+      if (items[j].href === href) return PS.NAV_UNIFIED[i];
+    }
+  }
+  return null;
+};
+/* The sections the sidebar shows right now: the shared ones, the ones
+   this view owns, and - if the current route lives in a section this
+   view hides - that section as well. The current route always wins, so
+   the navigation is never a dead end, and the extra section does not
+   persist, so the menu does not creep back to everything over time. */
+PS.navVisibleSections = function () {
+  var view = PS.navCurrentView();
+  var list = PS.NAV_UNIFIED.filter(function (g) {
+    return g.views === 'both' || g.views === view;
+  });
+  var currentName = (PS.routeMeta && PS.routeMeta.name) ? PS.routeMeta.name : 'home';
+  var owner = PS.navOwnerSection(currentName);
+  if (owner && list.indexOf(owner) < 0) {
+    var at = list.length;
+    var ownerIdx = PS.NAV_UNIFIED.indexOf(owner);
+    for (var k = 0; k < list.length; k++) {
+      if (PS.NAV_UNIFIED.indexOf(list[k]) > ownerIdx) { at = k; break; }
+    }
+    list = list.slice();
+    list.splice(at, 0, owner);
+  }
+  return list;
 };
 
 /* Which section owns a given route. Used to open only the relevant
@@ -6547,7 +6644,8 @@ PS.buildNav = function () {
      thirty-three items in a column that is roughly a viewport tall. */
   var currentName = (PS.routeMeta && PS.routeMeta.name) ? PS.routeMeta.name : 'home';
   var ownerSec = PS.navSectionFor(currentName) || PS.NAV_UNIFIED[0].sec;
-  root.innerHTML = PS.NAV_UNIFIED.map(function (g) {
+  var visible = PS.navVisibleSections();
+  root.innerHTML = visible.map(function (g) {
     var isOpen = open[g.sec] === undefined ? (g.sec === ownerSec) : !!open[g.sec];
     var secLabel = (PS.i18n && g.i18n) ? PS.i18n.t(g.i18n) : g.sec;
     var listId = 'navlist-' + g.sec.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
@@ -6569,6 +6667,66 @@ PS.buildNav = function () {
   PS.updateNavCounts();
   PS.wireNavFilter();
   PS.syncNavToggle();
+  PS.renderViewSwitch();
+};
+
+/* ---------- The Learn / Work switch ----------
+   This writes profile.track, the same field the profile modal writes.
+   It is a view of that field, not a second mode, so there is only
+   ever one answer to the question 'which view is this person in'.
+
+   Switching navigates only when it has to: if the page you are on
+   belongs to a section the new view hides, you go to that view's
+   landing page. If you are on a shared page, such as an SOP, you stay
+   where you are. Moving somebody off a page they deliberately opened
+   would be worse than leaving the menu briefly out of step. */
+PS.NAV_VIEW_LANDING = { academy: '#/academy', operations: '#/operations' };
+PS.renderViewSwitch = function () {
+  var box = PS.$('#navViewSwitch');
+  if (!box) return;
+  var view = PS.navCurrentView();
+  /* PS.i18n.t is called with the literal key so the i18n audit can see
+     the wiring; the fallback keeps the English label if a locale is
+     missing the key. */
+  var t = function (key, fallback) {
+    if (PS.i18n && PS.i18n.t) {
+      var v = null;
+      if (key === 'nav.view.learn') v = PS.i18n.t('nav.view.learn');
+      else if (key === 'nav.view.work') v = PS.i18n.t('nav.view.work');
+      else if (key === 'nav.view.label') v = PS.i18n.t('nav.view.label');
+      if (v) return v;
+    }
+    return fallback;
+  };
+  var opts = [
+    { id: 'academy', label: t('nav.view.learn', 'Learn') },
+    { id: 'operations', label: t('nav.view.work', 'Work') }
+  ];
+  box.innerHTML = '<div class="nav-view-label">' + PS.esc(t('nav.view.label', 'What you see in the menu')) + '</div>' +
+    '<div class="nav-view-group" role="group" aria-label="' + PS.esc(t('nav.view.label', 'What you see in the menu')) + '">' +
+    opts.map(function (o) {
+      var on = o.id === view;
+      return '<button type="button" class="nav-view-btn' + (on ? ' is-on' : '') + '" data-act="nav-view" ' +
+        'data-view="' + o.id + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + PS.esc(o.label) + '</button>';
+    }).join('') + '</div>';
+};
+PS.acts['nav-view'] = function (el) {
+  var view = el.dataset.view;
+  if (view !== 'academy' && view !== 'operations') return;
+  if (!PS.user || !PS.user.saveProfile) return;
+  var cur = PS.navCurrentView();
+  if (cur === view) return;
+  var currentName = (PS.routeMeta && PS.routeMeta.name) ? PS.routeMeta.name : 'home';
+  var owner = PS.navOwnerSection(currentName);
+  var ownerViews = owner ? (owner.views || 'both') : 'both';
+  var landing = PS.NAV_VIEW_LANDING[view] || '#/home';
+  PS.user.saveProfile({ track: view });
+  if (ownerViews !== 'both' && ownerViews !== view) {
+    location.hash = landing;
+  } else {
+    PS.renderRoute();
+  }
+  PS.toast(view === 'academy' ? 'Learning view.' : 'Working view.', 'ok');
 };
 
 /* The collapse/expand control reflects the current state of the tree. */
@@ -6576,15 +6734,15 @@ PS.syncNavToggle = function () {
   var btn = PS.$('#navToggleAll');
   if (!btn) return;
   var open = PS.prefs().navOpen || {};
-  var anyClosed = PS.NAV_UNIFIED.some(function (g) { return open[g.sec] === false; });
+  var anyClosed = PS.navVisibleSections().some(function (g) { return open[g.sec] === false; });
   btn.textContent = anyClosed ? 'Expand all' : 'Collapse all';
   btn.setAttribute('aria-label', anyClosed ? 'Expand every navigation section' : 'Collapse every navigation section');
 };
 PS.acts['nav-toggle-all'] = function () {
   var open = PS.prefs().navOpen || {};
-  var anyClosed = PS.NAV_UNIFIED.some(function (g) { return open[g.sec] === false; });
+  var anyClosed = PS.navVisibleSections().some(function (g) { return open[g.sec] === false; });
   var next = {};
-  PS.NAV_UNIFIED.forEach(function (g) { next[g.sec] = anyClosed; });
+  PS.navVisibleSections().forEach(function (g) { next[g.sec] = anyClosed; });
   PS.savePrefs({ navOpen: next }, true);
   PS.buildNav();
 };
@@ -6755,7 +6913,7 @@ PS.wireNavFilter = function () {
       PS.$$('.sec-count', root).forEach(function (c) {
         var sec = c.closest('.nav-sec');
         if (!sec) return;
-        var all = PS.NAV_UNIFIED.filter(function (g) { return g.sec === sec.dataset.sec; })[0];
+        var all = PS.navVisibleSections().filter(function (g) { return g.sec === sec.dataset.sec; })[0];
         if (all) c.textContent = all.items.length;
       });
       var emp = PS.$('.nav-empty', root);
@@ -8017,7 +8175,10 @@ PS.i18n.CATALOG = {
     'app.tagline': 'Navigation',
 
     'nav.filter': 'Filter menu\u2026',
-    'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',
+    'nav.view.label': 'What you see in the menu',
+  'nav.view.learn': 'Learn',
+  'nav.view.work': 'Work',
+  'nav.noMatch': 'No menu items match \u201c{0}\u201d. Try \u201cquotes\u201d, \u201cSOP\u201d or \u201csavings\u201d.',
     'nav.saved': 'Saved Work',
     'nav.fav': 'Favorites',
     'nav.recent': 'Recently Used',
@@ -8064,6 +8225,9 @@ PS.i18n.CATALOG = {
   },
 
   es: {
+    'nav.view.label': 'Lo que ve en el menú',
+    'nav.view.learn': 'Aprender',
+    'nav.view.work': 'Trabajar',
     'app.name': 'Procure Sherpa',
     'app.tagline': 'Navegaci\u00F3n',
 
@@ -9581,7 +9745,7 @@ PS.copilot.buildIndex = function () {
     push('kpi', x.id, x.title, x.cat, PS.routeFor('kpi', x.id),
       [x.title, x.def, x.formula, x.formulaNote, (x.inputs || []).join(' '), (x.interp || []).join(' ')].join(' '));
   });
-  /* The Academy curriculum: twenty-five functions and ten modules, the
+  /* The Academy curriculum: twenty-eight functions and eleven modules, the
      largest body of procurement teaching in the product, and until now
      invisible to the assistant. */
   (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
@@ -11308,9 +11472,9 @@ PS.homeStartHere = function () {
   if (isNew) {
     if (operational) {
       primary = { href: '#/operations', label: 'Start with the Operations Hub', note: 'Six phases of the work, and every procedure, checklist, template and calculator that belongs to them.' };
-      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-five functions, beginner to advanced.' };
+      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-eight functions, beginner to advanced.' };
     } else {
-      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
+      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-eight functions across eleven modules, beginner to advanced, with a quiz and a sandbox in each.' };
       secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
     }
   } else if (saved.length) {
