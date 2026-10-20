@@ -88,6 +88,11 @@ PS.renderAcademyHub = function () {
     '</div>';
 
   // Badges strip
+  /* The recommendation sits directly under the hero, not at the end
+     of the page. The badge wall below is twelve locked cards, and the
+     most useful thing on the page was underneath all of it. */
+  html += PS.academyRoleRecommendation(funcs);
+
   html += '<div class="card mb16"><div class="card-head"><h2>Achievement Badges</h2><div class="spacer"></div>' +
     '<span class="badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span></div>' +
     '<div class="badge-grid">' +
@@ -103,8 +108,6 @@ PS.renderAcademyHub = function () {
     '</div></div>';
 
   // Curriculum modules
-  html += PS.academyRoleRecommendation(funcs);
-
   html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2></div>';
 
   Object.keys(modules).forEach(function (modName, modIdx) {
