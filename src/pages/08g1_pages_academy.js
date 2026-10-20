@@ -52,9 +52,13 @@ PS.renderAcademyHub = function () {
   var data = PS.academy.getAll();
   var funcs = PS.ACADEMY_FUNCTIONS || [];
 
-  // Group functions by module
+  // Group functions by module. The module order follows the learner's
+  // role and track, so a compliance officer is pointed at the modules
+  // that carry their work first, and a practitioner sees them in the
+  // order the work happens. The role used to be display-only.
   var modules = {};
-  funcs.forEach(function (f) {
+  var ordered = (PS.user && PS.user.moduleOrder) ? PS.user.moduleOrder(funcs) : funcs;
+  ordered.forEach(function (f) {
     var mod = f.module || 'Core Foundations';
     if (!modules[mod]) modules[mod] = [];
     modules[mod].push(f);
@@ -103,7 +107,10 @@ PS.renderAcademyHub = function () {
     var modFuncs = modules[modName];
     html += '<div class="module-group">' +
       '<div class="module-head">' +
-      '<span class="module-badge">Module ' + (modIdx + 1) + '</span>' +
+      /* The badge is the module's own number, not its position in the
+         list: the list is ordered by the learner's role, so position
+         and module number are no longer the same thing. */
+      '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
       '</div>' +
       '<div class="grid grid-3">' +

@@ -18,6 +18,8 @@ PS.USER_TRACKS = [
   { id: 'operations', label: 'Operational Practitioner', desc: 'Prioritize daily execution tools: SOPs, calculators, checklists, and templates.' }
 ];
 
+
+
 PS.user = {
   _cache: null,
 
@@ -195,6 +197,92 @@ PS.user = {
     });
   }
 };
+
+/* The role and the track used to be display-only: twenty-two places
+   read them and every one of them was rendering the label. They now
+   decide what the product recommends, which is what a role and a track
+   are for. The role weights which kind of work the person does, and
+   the track decides whether the Academy or the Toolkit leads. */
+/* What each Academy module actually covers. A role does not
+   prefer a kind of learning, it prefers a kind of work, and this is
+   the mapping that turns a job title into an order. */
+PS.ACADEMY_MODULE_TAGS = {
+  'Module 1: Foundations, Strategy & Spend Intelligence': ['spend', 'strategy', 'learn'],
+  'Module 2: Requirement Definition & Market Engagement': ['sourcing', 'learn'],
+  'Module 3: Commercial Analysis & Cost Engineering': ['cost', 'learn'],
+  'Module 4: Supplier Evaluation & Risk Management': ['supplier', 'risk', 'learn'],
+  'Module 5: Negotiation Strategy & Commercial Terms': ['negotiation', 'learn'],
+  'Module 6: Contracting & Governance': ['contract', 'governance', 'learn'],
+  'Module 7: Operational Purchasing & Order Execution (P2P)': ['operations', 'learn'],
+  'Module 8: Supplier Management & Value Realization': ['supplier', 'value', 'learn'],
+  'Module 9: Services, Software and Indirect Procurement': ['services', 'operations', 'learn'],
+  'Module 10: Risk, Compliance, Ethics and Sustainability': ['risk', 'governance', 'learn'],
+  'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn']
+};
+
+/* The order a role should meet the curriculum in. The first tag that
+   matches wins; a module that matches nothing keeps its natural place
+   after the ones that do. */
+PS.user.ROLE_PRIORITY = {
+  beginner: ['spend', 'sourcing', 'cost', 'learn'],
+  buyer: ['operations', 'sourcing', 'services', 'spend', 'learn'],
+  manager: ['strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'learn'],
+  finance: ['cost', 'analytics', 'value', 'contract', 'governance', 'learn'],
+  compliance: ['risk', 'governance', 'contract', 'supplier', 'learn']
+};
+PS.user.rolePriority = function () {
+  var p = this.getProfile();
+  return PS.user.ROLE_PRIORITY[p.role] || PS.user.ROLE_PRIORITY.beginner;
+};
+PS.academyModuleNumber = function (moduleName) {
+  var m = /Module\s+(\d+)/.exec(moduleName || '');
+  return m ? parseInt(m[1], 10) : 0;
+};
+PS.user.moduleRank = function (moduleName) {
+  var tags = PS.ACADEMY_MODULE_TAGS[moduleName] || ['learn'];
+  var pri = this.rolePriority();
+  for (var i = 0; i < pri.length; i++) {
+    if (tags.indexOf(pri[i]) >= 0) return i;
+  }
+  return pri.length;
+};
+/* The order the Academy's modules should be presented in for this
+   person. The order is the role's priority on the kind of work the
+   module covers, and the track decides whether the Academy or the
+   Toolkit leads. The role used to be display-only: twenty-two places
+   read it and every one of them was rendering the label. */
+PS.user.moduleOrder = function (modules) {
+  /* The role always orders the curriculum: a compliance officer
+     wants the risk and contracting modules first whether they came here
+     to learn or to work. The track is not the same thing as the role -
+     the track decides where the product starts you and whether the
+     Toolkit leads, not what you need to know first. */
+  var list = (modules || []).slice();
+  var self = this;
+  list.sort(function (a, b) {
+    var ra = self.moduleRank(a.module);
+    var rb = self.moduleRank(b.module);
+    if (ra !== rb) return ra - rb;
+    return (PS.academyModuleNumber(a.module) || 0) - (PS.academyModuleNumber(b.module) || 0);
+  });
+  return list;
+};
+/* The order the Toolkit's libraries should be presented in. */
+PS.user.toolOrder = function (tools) {
+  var p = this.getProfile();
+  var pri = this.rolePriority();
+  var list = (tools || []).slice();
+  if (p.track === 'academy') return list;
+  list.sort(function (a, b) {
+    var ia = pri.indexOf(a.type), ib = pri.indexOf(b.type);
+    if (ia < 0) ia = 90;
+    if (ib < 0) ib = 90;
+    if (ia !== ib) return ia - ib;
+    return 0;
+  });
+  return list;
+};
+
 
 /* Wire profile button in topbar on boot */
 PS.acts = PS.acts || {};

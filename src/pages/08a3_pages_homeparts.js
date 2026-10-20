@@ -17,9 +17,16 @@ PS.homeStartHere = function () {
   var challenge = (PS.dailyTips && PS.dailyTips.getChallengeOfWeek) ? PS.dailyTips.getChallengeOfWeek() : null;
 
   var primary, secondary;
+  var prof = PS.user ? PS.user.getProfile() : { role: 'beginner', track: 'academy' };
+  var operational = prof.track === 'operations';
   if (isNew) {
-    primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
-    secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
+    if (operational) {
+      primary = { href: '#/operations', label: 'Start with the Operations Hub', note: 'Six phases of the work, and every procedure, checklist, template and calculator that belongs to them.' };
+      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-five functions, beginner to advanced.' };
+    } else {
+      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
+      secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
+    }
   } else if (saved.length) {
     primary = { href: '#/saved', label: 'Resume: ' + (saved[0].title || 'your saved work'), note: saved.length + ' item' + (saved.length === 1 ? '' : 's') + ' saved in this browser.' };
     secondary = { href: curFunc ? '#/academy/' + encodeURIComponent(curFunc.id) : '#/next-up', label: 'Next lesson: ' + (curFunc ? curFunc.title : 'continue'), note: 'Pick up where the Academy left off.' };

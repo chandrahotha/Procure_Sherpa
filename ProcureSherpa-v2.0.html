@@ -5461,6 +5461,8 @@ PS.USER_TRACKS = [
   { id: 'operations', label: 'Operational Practitioner', desc: 'Prioritize daily execution tools: SOPs, calculators, checklists, and templates.' }
 ];
 
+
+
 PS.user = {
   _cache: null,
 
@@ -5638,6 +5640,92 @@ PS.user = {
     });
   }
 };
+
+/* The role and the track used to be display-only: twenty-two places
+   read them and every one of them was rendering the label. They now
+   decide what the product recommends, which is what a role and a track
+   are for. The role weights which kind of work the person does, and
+   the track decides whether the Academy or the Toolkit leads. */
+/* What each Academy module actually covers. A role does not
+   prefer a kind of learning, it prefers a kind of work, and this is
+   the mapping that turns a job title into an order. */
+PS.ACADEMY_MODULE_TAGS = {
+  'Module 1: Foundations, Strategy & Spend Intelligence': ['spend', 'strategy', 'learn'],
+  'Module 2: Requirement Definition & Market Engagement': ['sourcing', 'learn'],
+  'Module 3: Commercial Analysis & Cost Engineering': ['cost', 'learn'],
+  'Module 4: Supplier Evaluation & Risk Management': ['supplier', 'risk', 'learn'],
+  'Module 5: Negotiation Strategy & Commercial Terms': ['negotiation', 'learn'],
+  'Module 6: Contracting & Governance': ['contract', 'governance', 'learn'],
+  'Module 7: Operational Purchasing & Order Execution (P2P)': ['operations', 'learn'],
+  'Module 8: Supplier Management & Value Realization': ['supplier', 'value', 'learn'],
+  'Module 9: Services, Software and Indirect Procurement': ['services', 'operations', 'learn'],
+  'Module 10: Risk, Compliance, Ethics and Sustainability': ['risk', 'governance', 'learn'],
+  'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn']
+};
+
+/* The order a role should meet the curriculum in. The first tag that
+   matches wins; a module that matches nothing keeps its natural place
+   after the ones that do. */
+PS.user.ROLE_PRIORITY = {
+  beginner: ['spend', 'sourcing', 'cost', 'learn'],
+  buyer: ['operations', 'sourcing', 'services', 'spend', 'learn'],
+  manager: ['strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'learn'],
+  finance: ['cost', 'analytics', 'value', 'contract', 'governance', 'learn'],
+  compliance: ['risk', 'governance', 'contract', 'supplier', 'learn']
+};
+PS.user.rolePriority = function () {
+  var p = this.getProfile();
+  return PS.user.ROLE_PRIORITY[p.role] || PS.user.ROLE_PRIORITY.beginner;
+};
+PS.academyModuleNumber = function (moduleName) {
+  var m = /Module\s+(\d+)/.exec(moduleName || '');
+  return m ? parseInt(m[1], 10) : 0;
+};
+PS.user.moduleRank = function (moduleName) {
+  var tags = PS.ACADEMY_MODULE_TAGS[moduleName] || ['learn'];
+  var pri = this.rolePriority();
+  for (var i = 0; i < pri.length; i++) {
+    if (tags.indexOf(pri[i]) >= 0) return i;
+  }
+  return pri.length;
+};
+/* The order the Academy's modules should be presented in for this
+   person. The order is the role's priority on the kind of work the
+   module covers, and the track decides whether the Academy or the
+   Toolkit leads. The role used to be display-only: twenty-two places
+   read it and every one of them was rendering the label. */
+PS.user.moduleOrder = function (modules) {
+  /* The role always orders the curriculum: a compliance officer
+     wants the risk and contracting modules first whether they came here
+     to learn or to work. The track is not the same thing as the role -
+     the track decides where the product starts you and whether the
+     Toolkit leads, not what you need to know first. */
+  var list = (modules || []).slice();
+  var self = this;
+  list.sort(function (a, b) {
+    var ra = self.moduleRank(a.module);
+    var rb = self.moduleRank(b.module);
+    if (ra !== rb) return ra - rb;
+    return (PS.academyModuleNumber(a.module) || 0) - (PS.academyModuleNumber(b.module) || 0);
+  });
+  return list;
+};
+/* The order the Toolkit's libraries should be presented in. */
+PS.user.toolOrder = function (tools) {
+  var p = this.getProfile();
+  var pri = this.rolePriority();
+  var list = (tools || []).slice();
+  if (p.track === 'academy') return list;
+  list.sort(function (a, b) {
+    var ia = pri.indexOf(a.type), ib = pri.indexOf(b.type);
+    if (ia < 0) ia = 90;
+    if (ib < 0) ib = 90;
+    if (ia !== ib) return ia - ib;
+    return 0;
+  });
+  return list;
+};
+
 
 /* Wire profile button in topbar on boot */
 PS.acts = PS.acts || {};
@@ -11070,9 +11158,16 @@ PS.homeStartHere = function () {
   var challenge = (PS.dailyTips && PS.dailyTips.getChallengeOfWeek) ? PS.dailyTips.getChallengeOfWeek() : null;
 
   var primary, secondary;
+  var prof = PS.user ? PS.user.getProfile() : { role: 'beginner', track: 'academy' };
+  var operational = prof.track === 'operations';
   if (isNew) {
-    primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
-    secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
+    if (operational) {
+      primary = { href: '#/operations', label: 'Start with the Operations Hub', note: 'Six phases of the work, and every procedure, checklist, template and calculator that belongs to them.' };
+      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-five functions, beginner to advanced.' };
+    } else {
+      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
+      secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
+    }
   } else if (saved.length) {
     primary = { href: '#/saved', label: 'Resume: ' + (saved[0].title || 'your saved work'), note: saved.length + ' item' + (saved.length === 1 ? '' : 's') + ' saved in this browser.' };
     secondary = { href: curFunc ? '#/academy/' + encodeURIComponent(curFunc.id) : '#/next-up', label: 'Next lesson: ' + (curFunc ? curFunc.title : 'continue'), note: 'Pick up where the Academy left off.' };
@@ -13204,9 +13299,13 @@ PS.renderAcademyHub = function () {
   var data = PS.academy.getAll();
   var funcs = PS.ACADEMY_FUNCTIONS || [];
 
-  // Group functions by module
+  // Group functions by module. The module order follows the learner's
+  // role and track, so a compliance officer is pointed at the modules
+  // that carry their work first, and a practitioner sees them in the
+  // order the work happens. The role used to be display-only.
   var modules = {};
-  funcs.forEach(function (f) {
+  var ordered = (PS.user && PS.user.moduleOrder) ? PS.user.moduleOrder(funcs) : funcs;
+  ordered.forEach(function (f) {
     var mod = f.module || 'Core Foundations';
     if (!modules[mod]) modules[mod] = [];
     modules[mod].push(f);
@@ -13255,7 +13354,10 @@ PS.renderAcademyHub = function () {
     var modFuncs = modules[modName];
     html += '<div class="module-group">' +
       '<div class="module-head">' +
-      '<span class="module-badge">Module ' + (modIdx + 1) + '</span>' +
+      /* The badge is the module's own number, not its position in the
+         list: the list is ordered by the learner's role, so position
+         and module number are no longer the same thing. */
+      '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
       '</div>' +
       '<div class="grid grid-3">' +

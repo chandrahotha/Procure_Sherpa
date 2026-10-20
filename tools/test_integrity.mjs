@@ -302,6 +302,40 @@ if (PS.wb) {
   PS.wb.remove('suppliers', 'probe');
 }
 
+/* ---------- G13: the role and the track must do something ---------- */
+console.log('\nG13  role and track');
+if (!PS.user || typeof PS.user.moduleOrder !== 'function') {
+  fail('G13', 'the role does not order the curriculum');
+} else {
+  const setUser = (role, track) => { PS.user._cache = { name: 'T', role, track, company: '', avatarBg: '#000', joinedDate: '' }; };
+  const order = () => {
+    w.location.hash = '#/academy';
+    PS.renderRoute();
+    return [...w.document.querySelectorAll('#main .module-group .module-badge')].map((e) => e.textContent.trim());
+  };
+  setUser('beginner', 'academy');
+  const base = order();
+  setUser('compliance', 'academy');
+  const compliance = order();
+  setUser('buyer', 'academy');
+  const buyer = order();
+  if (base.join() === compliance.join() || base.join() === buyer.join()) {
+    fail('G13', 'the role does not change the order the curriculum is presented in');
+  } else {
+    ok('G13', 'the role reorders the curriculum (' + base.length + ' modules, ' +
+      'compliance leads with ' + compliance[0] + ', buyer with ' + buyer[0] + ')');
+  }
+  setUser('beginner', 'operations');
+  w.location.hash = '#/home';
+  PS.renderRoute();
+  if (!/Start with the Operations Hub/.test(w.document.querySelector('#main').textContent)) {
+    fail('G13', 'the operations track does not change where the Command Center starts you');
+  } else {
+    ok('G13', 'the track changes where the product starts you');
+  }
+  setUser('beginner', 'academy');
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);
