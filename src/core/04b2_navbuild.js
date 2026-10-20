@@ -133,7 +133,7 @@ PS.updateSidebarFoot = function (r) {
       (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(lbl) + '</a>';
   }).join('');
 
-  foot.innerHTML = '<div class="sidebar-foot-links">' + footLinks + '</div>' +
+  foot.innerHTML = '<div class="sidebar-foot-links"><span class="sidebar-foot-label">System</span>' + footLinks + '</div>' +
     '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
     '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' +
     PS.esc(PS.user.getInitials(prof.name)) + '</div>' +

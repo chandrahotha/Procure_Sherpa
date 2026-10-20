@@ -37,7 +37,7 @@ PS.homeStartHere = function () {
     '<p class="home-start-note">' + PS.esc(secondary.note) + '</p>' +
     '<form class="home-start-problem" id="homeProblemForm">' +
     '<label class="sr-only" for="homeWhat">Describe the procurement problem you are working on</label>' +
-    '<input type="text" id="homeWhat" maxlength="200" placeholder="Describe a procurement problem in your own words, for example: my supplier raised prices 12 percent">' +
+    '<input type="text" id="homeWhat" maxlength="200" placeholder="Describe a procurement problem in your own words">' +
     '<button type="button" class="btn btn-primary" data-act="home-what-run">Find the tools</button>' +
     '</form>' +
     '<p class="note home-start-hint">Or <a href="#/search">search everything</a>, or press <kbd>Ctrl</kbd>+<kbd>K</kbd>.</p>' +
@@ -96,7 +96,10 @@ PS.homeDualHub = function () {
     '</div>' +
     '<div class="hub-card-title">Procurement Academy</div>' +
     '<p class="hub-card-desc">Interactive digital learning journeys for newcomers, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
-    '<div class="academy-progress-track" style="margin-bottom:16px;"><div class="academy-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
+    '<div class="hub-progress">' +
+    '<div class="hub-progress-meta"><span>Academy completion</span><span>' + stats.pct + '%</span></div>' +
+    '<div class="academy-progress-track"><div class="academy-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
+    '</div>' +
     '<div class="hub-quick-features">' +
     '<div class="hub-feature-item"><span>📚</span><span>' + nModules + ' Core Learning Modules</span></div>' +
     '<div class="hub-feature-item"><span>🎯</span><span>' + allFuncs.length + ' Practical Functions</span></div>' +
@@ -114,10 +117,17 @@ PS.homeDualHub = function () {
     '<div class="hub-portal-card is-operations">' +
     '<div class="hub-card-header">' +
     '<span class="hub-badge operations">Operations Hub &middot; Practitioner Tools</span>' +
-    '<span class="t-xs t-dim font-bold">' + nSop + ' SOPs &middot; ' + nCalc + ' Calculators</span>' +
+    '<span class="t-xs t-dim font-bold">' + nSop + ' SOPs &middot; ' + nCl + ' checklists &middot; ' + nTpl + ' templates</span>' +
     '</div>' +
     '<div class="hub-card-title">Operations Hub</div>' +
     '<p class="hub-card-desc">The complete operational reference for active procurement execution. Controlled standard operating procedures, financial calculators, contract review checklists, and production RFP templates arranged by lifecycle phase.</p>' +
+    '<div class="hub-progress">' +
+    '<div class="hub-progress-meta"><span>Work phases</span><span>' + (PS.LIFECYCLE_PHASES ? PS.LIFECYCLE_PHASES.length : 6) + '</span></div>' +
+    '<div class="hub-phase-strip">' +
+    (PS.LIFECYCLE_PHASES || []).map(function (ph, i) {
+      return '<span class="hub-phase-chip" title="' + PS.esc(ph.title) + '">' + (i + 1) + '</span>';
+    }).join('') +
+    '</div></div>' +
     '<div class="hub-quick-features">' +
     '<div class="hub-feature-item"><span>📋</span><span>' + nSop + ' Controlled SOPs</span></div>' +
     '<div class="hub-feature-item"><span>🧮</span><span>' + nCalc + ' Financial Calculators</span></div>' +

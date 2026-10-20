@@ -18,3 +18,45 @@
   background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
   padding:12px 14px;font-size:.84rem;color:var(--dim);line-height:1.55;
 }
+
+/* ---------- learning path cards ----------
+   Four cards in one row, each with a different amount of text, ended up
+   with ragged heights and an action button floating in the middle of
+   the card, and a long button label clipped by the card's own
+   overflow:hidden. The card is now a flex column with a fixed internal
+   rhythm and the action pinned to the bottom, so all four align. */
+.path-grid{align-items:stretch}
+.path-card{display:flex;flex-direction:column;gap:0;padding:20px 20px 18px}
+.path-card-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;min-height:26px}
+.path-card-title{
+  margin:0 0 8px;font-size:1.06rem;line-height:1.3;letter-spacing:-.015em;color:var(--text);
+  /* Two lines' worth, so the progress row sits at the same height in
+     every card regardless of how long the title is. */
+  min-height:2.6em;
+}
+.path-card-desc{
+  margin:0 0 16px;font-size:.88rem;line-height:1.55;color:var(--dim);min-height:4.65em;
+}
+.path-progress{margin:0 0 16px}
+.path-progress-meta{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font-size:.79rem;font-weight:700;color:var(--mute);margin-bottom:6px;
+}
+.path-skills{margin:0 0 14px}
+.path-label{
+  display:block;font-size:.66rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:6px;
+}
+.path-skill-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.path-skill-list li{
+  font-size:.76rem;line-height:1.5;color:var(--dim);background:var(--sunken);
+  border:1px solid var(--border);border-radius:999px;padding:2px 9px;
+}
+.path-meta-row{
+  display:flex;align-items:baseline;gap:10px;margin:0 0 16px;font-size:.82rem;color:var(--dim);
+}
+.path-meta-row .path-label{margin:0;flex:0 0 auto}
+.path-card-foot{margin-top:auto;padding-top:4px}
+@media (max-width:560px){
+  .path-card-desc{min-height:0}
+}

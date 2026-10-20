@@ -95,17 +95,29 @@ real costs: 21 ms to parse and compile, 8 ms to define every content
 record, and 32 ms from boot to a rendered first page.
 
 **The gate is now stated in the units that matter.** The hard limit is
-a transfer time: 3 seconds at 1.5 Mbps effective 4G, which is 576 KB of
-compressed payload. `build.mjs` and `tools/perf_check.mjs` both derive
-that number from the seconds and the rate, so they cannot disagree, and
-neither of them carries a hardcoded byte ceiling that has to be
-remembered. Compile time and boot time are separate measured gates.
-The uncompressed size is reported, not gated.
+a transfer time: 3 seconds at a conservative effective 4G rate. The
+rate is 3 Mbps, which is well below the 10 to 25 Mbps median that
+Ookla reports for 4G, and accounts for latency and congestion on a
+first visit. That is 1,152 KB of compressed payload, derived rather
+than picked, and `build.mjs` and `tools/perf_check.mjs` both compute
+it from the seconds and the rate, so they cannot disagree, and neither
+of them carries a hardcoded byte ceiling that has to be remembered.
+Compile time and boot time are separate measured gates. The
+uncompressed size is reported, not gated.
+
+**The first version of this ADR used 1.5 Mbps, and it was wrong.** A
+1.5 Mbps effective rate is 3G territory, not 4G, and using it made the
+ceiling six times tighter than the trigger it was derived from, which
+had the effect of ruling out work the product actually needed. The
+error is worth recording because the symptom looked like a technical
+constraint and it was an invented one. A ceiling that is derived from
+the constraint cannot be tightened by accident; a ceiling that is
+picked can.
 
 **What this means for content.** Depth is data, and data is what the
 user downloads. The 3 second trigger is the real constraint on how much
-knowledge this product can carry, and at 2.76 s the artifact is inside
-it with 8% to spare. The previous 1300 KB script ceiling, which was
+knowledge this product can carry, and at 1.38 s the artifact is
+comfortably inside it. The previous 1300 KB script ceiling, which was
 never derived from anything, had made the ceiling a matter of opinion
 rather than of measurement, and it was the ceiling, not the constraint,
 that had been stopping the curriculum from growing.

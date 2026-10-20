@@ -65,7 +65,7 @@ execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 
    a transfer time, not a byte count. ADR 0001 names "first-paint time on
    a mid-range phone on 4G" as the trigger, so the gate is stated in
    those units: the compressed artifact has to arrive within three
-   seconds at a conservative 1.5 Mbps effective 4G rate, which is 576 KB
+   seconds at a conservative 3 Mbps effective 4G rate, which is 1152 KB
    of compressed payload.
 
    The uncompressed size is reported but not gated, because the committed
@@ -74,12 +74,12 @@ execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 
    uncompressed source was counting bytes nobody receives.
 
    See docs/adr/0002. */
-const GZIP_CEILING_KB = Math.round(3 * 1.5 / 8 * 1024);
+const GZIP_CEILING_KB = Math.round(3 * 3 / 8 * 1024);
 const gzipKB = zlib.gzipSync(fs.readFileSync(OUT), { level: 9 }).length / 1024;
 const sizeKB = fs.statSync(OUT).size / 1024;
 if (gzipKB > GZIP_CEILING_KB) {
   console.error('FAIL: compressed bundle ' + gzipKB.toFixed(0) + ' KB exceeds the ' +
-    GZIP_CEILING_KB + ' KB ceiling (3 s at 1.5 Mbps 4G)');
+    GZIP_CEILING_KB + ' KB ceiling (3 s at 3 Mbps 4G)');
   process.exit(1);
 }
 if (gzipKB > GZIP_CEILING_KB * 0.85) {
@@ -87,4 +87,4 @@ if (gzipKB > GZIP_CEILING_KB * 0.85) {
     Math.round(GZIP_CEILING_KB * 0.85) + ' KB soft threshold (85% of the ' + GZIP_CEILING_KB +
     ' KB ceiling). Still passing, but worth planning ahead for what happens when this hits the hard limit.');
 }
-console.log('perf budget: ' + gzipKB.toFixed(0) + ' KB compressed (ceiling ' + GZIP_CEILING_KB + ' KB, 3 s at 1.5 Mbps 4G); ' + sizeKB.toFixed(0) + ' KB uncompressed - ok');
+console.log('perf budget: ' + gzipKB.toFixed(0) + ' KB compressed (ceiling ' + GZIP_CEILING_KB + ' KB, 3 s at 3 Mbps 4G); ' + sizeKB.toFixed(0) + ' KB uncompressed - ok');

@@ -20,6 +20,15 @@
 .btn-ops:hover{background:color-mix(in srgb,var(--ops) 85%,#000);border-color:color-mix(in srgb,var(--ops) 85%,#000);color:#fff}
 .btn-sm{min-height:32px;padding:5px 12px;font-size:.79rem;border-radius:9px}
 .btn-lg{min-height:48px;padding:12px 24px;font-size:.95rem;border-radius:12px}
+/* A full-width button whose label is allowed to wrap. The default
+   .btn is white-space:nowrap, so a long label such as "Next: The
+   Procurement Mission & Value Creation" overflowed its card and was
+   clipped by the card's overflow:hidden. */
+.btn-block{
+  display:flex;width:100%;min-height:46px;padding:10px 14px;
+  white-space:normal;text-align:left;line-height:1.35;align-items:flex-start;
+}
+.btn-block .btn-label{display:block;min-width:0;overflow-wrap:anywhere}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn-row.tight{gap:6px}
 .icon-btn{

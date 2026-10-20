@@ -181,8 +181,8 @@
   background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 24px 28px;
-  margin-bottom: 22px;
+  padding: 16px 22px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,8 +219,8 @@
   box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .home-user-meta h1 {
-  font-size: 1.45rem;
-  margin: 0 0 4px;
+  font-size: 1.2rem;
+  margin: 0 0 3px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -260,7 +260,7 @@
   background: var(--panel);
   border: 2px solid var(--border);
   border-radius: var(--r-lg);
-  padding: 26px 28px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -325,6 +325,31 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 20px;
+}
+/* A bare progress track with nothing on it reads as a broken element.
+   With a label row it reads as a measure that is genuinely at zero. */
+.hub-progress { margin-bottom: 18px; }
+.hub-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--mute);
+  margin-bottom: 6px;
+}
+.hub-phase-strip { display: flex; gap: 4px; }
+.hub-phase-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--ops);
+  background: var(--ops-soft);
+  border-radius: 6px;
+  padding: 4px 0;
 }
 .hub-feature-item {
   display: flex;

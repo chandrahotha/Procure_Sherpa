@@ -116,11 +116,11 @@ console.log('reduction:  ' + saved.toFixed(1) + '%');
 
 /* Report headroom against the same ceiling build.mjs enforces. The
    ceiling is a transfer time, not a byte count: 3 seconds at a
-   conservative 1.5 Mbps effective 4G rate, which is 576 KB of
+   conservative 3 Mbps effective 4G rate, which is 1152 KB of
    compressed payload. See docs/adr/0002. */
-const GZIP_CEILING_KB = Math.round(3 * 1.5 / 8 * 1024);
+const GZIP_CEILING_KB = Math.round(3 * 3 / 8 * 1024);
 const gzipKB = zlib.gzipSync(fs.readFileSync(OUT), { level: 9 }).length / 1024;
 console.log('gzip:       ' + gzipKB.toFixed(0) + ' KB compressed (ceiling ' + GZIP_CEILING_KB +
-  ' KB, 3 s at 1.5 Mbps 4G; ' + (gzipKB * 8 / 1.5 / 1000).toFixed(2) + ' s to transfer)');
+  ' KB, 3 s at 3 Mbps 4G; ' + (gzipKB * 8 / 3 / 1000).toFixed(2) + ' s to transfer)');
 console.log('headroom:   ' + (GZIP_CEILING_KB - gzipKB).toFixed(0) + ' KB of the ' + GZIP_CEILING_KB + ' KB compressed ceiling');
 console.log('MINIFIED BUILD: ok');

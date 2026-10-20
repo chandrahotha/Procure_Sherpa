@@ -81,7 +81,7 @@ PS.route('learning-paths', function () {
 
   var html = '<div class="card">' +
     '<div class="card-head"><h1>Learning paths</h1></div>' +
-    '<p class="lead">Three tracks. Start where you are; each path builds on the one before it.</p>';
+    '<p class="lead">Four tracks. Start where you are; each path builds on the one before it.</p>';
 
   if (assessment) {
     var level = PS.skillAssessment.getLevel(assessment.score);
@@ -93,31 +93,36 @@ PS.route('learning-paths', function () {
 
   html += '</div>';
 
-  html += '<div class="grid grid-3 mb16">';
+  html += '<div class="grid grid-3 mb16 path-grid">';
 
   PS.learningPaths.PATHS.forEach(function (path) {
     var progress = PS.learningPaths.getUserProgress(path.id);
     var nextMod = PS.learningPaths.getNextModule(path.id);
     var nextFunc = nextMod ? PS.byId('academy', nextMod) : null;
     var isComplete = progress && progress.pct === 100;
+    var done = progress ? progress.completed : 0;
+    var total = path.modules.length;
 
-    html += '<div class="card" style="border-top:3px solid ' + path.color + '">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-      '<div><span class="level-pill">' + path.level + '</span>' +
-      '<h2 style="margin:8px 0 4px;font-size:1.05em">' + PS.esc(path.title) + '</h2></div>' +
+    html += '<div class="card path-card" style="border-top:3px solid ' + path.color + '">' +
+      '<div class="path-card-head">' +
+      '<span class="level-pill">Level ' + path.level + '</span>' +
       (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
       '</div>' +
-      '<p class="note" style="margin:8px 0">' + PS.esc(path.desc) + '</p>' +
-      '<div style="margin:12px 0">' +
-      '<div style="display:flex;justify-content:space-between;font-size:.82em;margin-bottom:4px">' +
-      '<span>' + (progress ? progress.completed + '/' + progress.total : '0/' + path.modules.length) + ' modules</span>' +
-      '<span>' + (progress ? progress.pct : 0) + '%</span>' +
-      '</div>' +
+      '<h2 class="path-card-title">' + PS.esc(path.title) + '</h2>' +
+      '<p class="path-card-desc">' + PS.esc(path.desc) + '</p>' +
+      '<div class="path-progress">' +
+      '<div class="path-progress-meta"><span>' + done + ' of ' + total + ' modules</span><span>' + (progress ? progress.pct : 0) + '%</span></div>' +
       '<div class="bar-track"><div class="bar-fill" style="background:' + path.color + ';width:' + (progress ? progress.pct : 0) + '%"></div></div>' +
       '</div>' +
-      '<div class="note" style="margin-bottom:8px"><strong>Skills:</strong> ' + PS.esc(path.skills.join(', ')) + '</div>' +
-      '<div class="note" style="margin-bottom:12px"><strong>Time:</strong> ' + PS.esc(path.duration) + '</div>' +
-      (nextFunc ? '<a class="btn btn-sm btn-primary" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">Next: ' + PS.esc(nextFunc.title) + '</a>' : '') +
+      '<div class="path-skills"><span class="path-label">What you will be able to do</span>' +
+      '<ul class="path-skill-list">' + path.skills.map(function (s) { return '<li>' + PS.esc(s) + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="path-meta-row"><span class="path-label">Time</span><span>' + PS.esc(path.duration) + '</span></div>' +
+      '<div class="path-card-foot">' +
+      (nextFunc
+        ? '<a class="btn btn-primary btn-block" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">' +
+          '<span class="btn-label">Start: ' + PS.esc(nextFunc.title) + '</span></a>'
+        : '<a class="btn btn-block" href="#/academy"><span class="btn-label">Open the Academy</span></a>') +
+      '</div>' +
       '</div>';
   });
 

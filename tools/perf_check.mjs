@@ -36,7 +36,7 @@ const DIST = path.join(ROOT, 'dist', 'index.html');
    within the trigger, and the application has to start quickly once it
    has.
 
-     3 seconds at a conservative 1.5 Mbps effective 4G rate is 563 KB of
+     3 seconds at a conservative 3 Mbps effective 4G rate is 1152 KB of
      compressed payload. That is the hard ceiling, and it is derived
      rather than guessed.
 
@@ -45,14 +45,14 @@ const DIST = path.join(ROOT, 'dist', 'index.html');
    they cannot drift away from the ceiling that actually matters. */
 const BUDGET = {
   seconds: 3,      // first-paint trigger from ADR 0001
-  mbps: 1.5,       // conservative effective 4G rate
+  mbps: 3,         // conservative effective 4G rate
   cssKB: 300,      // CSS payload ceiling
   /* Median of 5 runs, in ms. These are the real costs, and they are
      measured rather than inferred from a byte count. */
   compileMs: 400,
   bootMs: 500
 };
-/* The ceiling that actually binds: 3 s x 1.5 Mbps, in KB. */
+/* The ceiling that actually binds: 3 s x 3 Mbps, in KB. */
 const GZIP_CEILING_KB = Math.round(BUDGET.seconds * BUDGET.mbps / 8 * 1024);
 const DIST_GZIP_CEILING_KB = Math.round(GZIP_CEILING_KB * 0.85);
 
