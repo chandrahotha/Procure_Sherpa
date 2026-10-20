@@ -49,6 +49,32 @@ PS.learningPaths.PATHS = [
   }
 ];
 
+/* Each path is a sequence, and a sequence that goes 4, 10, 10, 10, 8,
+   8 is not a sequence. The expert path was authored that way: its
+   modules were listed in the order the topics appeared in the content
+   files rather than in curriculum order. Sorting here means the data
+   and the display can never disagree, and the authored order does not
+   matter. The sort is stable, so the order within a module is the
+   order the author chose. */
+PS.learningPaths.sortPaths = function () {
+  /* This has to run at render time, not at load time. The pages are
+     assembled before the content, so at the moment this module is
+     evaluated the Academy functions do not exist yet and every module
+     number resolves to zero. Sorting then does nothing and silently
+     leaves the expert path in the order it was authored. */
+  if (!PS.ACADEMY_FUNCTIONS || !PS.ACADEMY_FUNCTIONS.length) return;
+  (PS.learningPaths.PATHS || []).forEach(function (path) {
+    var mods = (path.modules || []).slice();
+    mods.sort(function (a, b) {
+      var fa = PS.byId('academy', a), fb = PS.byId('academy', b);
+      var na = fa ? (PS.academyModuleNumber(fa.module) || 0) : 0;
+      var nb = fb ? (PS.academyModuleNumber(fb.module) || 0) : 0;
+      return na - nb;
+    });
+    path.modules = mods;
+  });
+};
+PS.learningPaths.sortPaths();
 PS.learningPaths.getUserProgress = function (pathId) {
   var path = PS.learningPaths.PATHS.filter(function (p) { return p.id === pathId; })[0];
   if (!path) return null;
@@ -76,6 +102,7 @@ PS.learningPaths.getNextModule = function (pathId) {
 };
 
 PS.route('learning-paths', function () {
+  PS.learningPaths.sortPaths();
   PS.pageTitle = 'Learning paths';
   var assessment = PS.skillAssessment ? PS.skillAssessment.getLastResult() : null;
 
@@ -130,22 +157,38 @@ PS.route('learning-paths', function () {
 
   html += '<div class="card">' +
     '<h2>All modules</h2>' +
-    '<div class="table-wrap"><table><thead><tr><th>Module</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
+    '<div class="table-wrap"><table><thead><tr><th class="num">Module</th><th>Function</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
 
-  PS.learningPaths.PATHS.forEach(function (path) {
+  /* One row per function per path, sorted by module number so the table
+     reads in curriculum order rather than in track order. The path
+     column still says which journey a function belongs to. */
+  var rows = [];
+  PS.learningPaths.PATHS.forEach(function (path, pathIdx) {
     path.modules.forEach(function (modId, idx) {
       var func = PS.byId('academy', modId);
       if (!func) return;
-      var isComp = PS.academy.isCompleted(modId);
-      html += '<tr>' +
-        '<td><strong>' + PS.esc(func.title) + '</strong>' +
-        (idx === 0 ? ' <span class="level-pill" style="background:' + path.color + ';color:#fff">Start</span>' : '') +
-        '<br><small class="muted">' + PS.esc(func.module || '') + '</small></td>' +
-        '<td>' + PS.esc(path.title) + '</td>' +
-        '<td>' + (isComp ? '<span style="color:var(--ok);font-weight:600">Complete</span>' : '<span class="muted">Not started</span>') + '</td>' +
-        '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(func.id) + '">Open</a></td>' +
-        '</tr>';
+      rows.push({
+        func: func, path: path, pathIdx: pathIdx, idx: idx,
+        modNo: PS.academyModuleNumber(func.module) || 0
+      });
     });
+  });
+  rows.sort(function (a, b) {
+    if (a.modNo !== b.modNo) return a.modNo - b.modNo;
+    if (a.pathIdx !== b.pathIdx) return a.pathIdx - b.pathIdx;
+    return a.idx - b.idx;
+  });
+  rows.forEach(function (r) {
+    var isComp = PS.academy.isCompleted(r.func.id);
+    html += '<tr>' +
+      '<td class="num"><span class="level-pill">' + r.modNo + '</span></td>' +
+      '<td><strong>' + PS.esc(r.func.title) + '</strong>' +
+      (r.idx === 0 ? ' <span class="level-pill" style="background:' + r.path.color + ';color:#fff">Start</span>' : '') +
+      '<br><small class="muted">' + PS.esc(r.func.module || '') + '</small></td>' +
+      '<td>' + PS.esc(r.path.title) + '</td>' +
+      '<td>' + (isComp ? '<span style="color:var(--ok);font-weight:600">Complete</span>' : '<span class="muted">Not started</span>') + '</td>' +
+      '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(r.func.id) + '">Open</a></td>' +
+      '</tr>';
   });
 
   html += '</tbody></table></div></div>';

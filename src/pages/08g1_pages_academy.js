@@ -101,15 +101,19 @@ PS.renderAcademyHub = function () {
     '</div></div>';
 
   // Curriculum modules
+  html += PS.academyRoleRecommendation(funcs);
+
   html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2></div>';
 
   Object.keys(modules).forEach(function (modName, modIdx) {
     var modFuncs = modules[modName];
-    html += '<div class="module-group">' +
+    var modNo = PS.academyModuleNumber(modName) || (modIdx + 1);
+    html += '<div class="module-group" id="module-' + modNo + '">' +
       '<div class="module-head">' +
-      /* The badge is the module's own number, not its position in the
-         list: the list is ordered by the learner's role, so position
-         and module number are no longer the same thing. */
+      /* The badge is the module's own number. Position and module number
+         are the same thing now that the list is never reordered, but the
+         number is read from the data so that they cannot drift apart
+         again. */
       '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
       '</div>' +
@@ -263,6 +267,55 @@ PS.renderFuncTabLearn = function (f) {
     '</div>';
 
   return html;
+};
+
+/* ---------- Recommended for your role ----------
+   The role picks which modules carry your work. It never changes the
+   order they appear in: a numbered curriculum whose number is not its
+   position is broken, and a learner who sees 'Module 7' first has no
+   way to know whether that is deliberate. So the recommendation is a
+   panel that points at the modules, listed in module number order, and
+   the curriculum below it stays in sequence. */
+PS.academyRoleRecommendation = function (funcs) {
+  var allModules = [];
+  (funcs || []).forEach(function (f) {
+    if (f.module && allModules.indexOf(f.module) < 0) allModules.push(f.module);
+  });
+  allModules.sort(function (a, b) { return (PS.academyModuleNumber(a) || 0) - (PS.academyModuleNumber(b) || 0); });
+  if (!PS.user || typeof PS.user.recommendedModules !== 'function') return '';
+  var prof = PS.user.getProfile();
+  var roleMeta = PS.user.getRoleMeta(prof.role);
+  var mods = PS.user.recommendedModules(4);
+  if (!mods.length) return '';
+  /* The first recommended module that still has work in it is the one
+     to open: a recommendation to a module you have already finished
+     is not a recommendation. */
+  var target = null;
+  mods.forEach(function (name) {
+    if (target) return;
+    var inMod = (funcs || []).filter(function (f) { return f.module === name; });
+    var open = inMod.filter(function (f) { return !PS.academy.isCompleted(f.id); });
+    if (open.length) target = { mod: name, func: open[0] };
+  });
+  if (!target) {
+    var firstMod = (funcs || [])[0];
+    if (firstMod) target = { mod: firstMod.module, func: firstMod };
+  }
+  if (!target) return '';
+  return '<div class="card no-print academy-role-rec">' +
+    '<div class="card-head"><h2>Recommended for your role</h2><div class="spacer"></div>' +
+    '<span class="eyebrow">' + PS.esc(roleMeta.title) + '</span></div>' +
+    '<p class="card-sub">These are the modules that carry the work in your role, listed in curriculum order. The curriculum below runs Module 1 to Module ' +
+    (allModules.length || '') + ' in sequence, whatever your role.</p>' +
+    '<div class="hub-linked-row"><span class="hub-linked-label">Modules</span>' +
+    mods.map(function (name) {
+      var n = PS.academyModuleNumber(name);
+      return '<a class="chip" href="#module-' + n + '">Module ' + n + '</a>';
+    }).join('') + '</div>' +
+    '<div class="btn-row" style="margin-top:12px">' +
+    '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(target.func.id) + '">Start with ' +
+    PS.esc(target.func.title) + '</a>' +
+    '</div></div>';
 };
 
 /* ---------- Linked library: the Academy connected to the content library ----------

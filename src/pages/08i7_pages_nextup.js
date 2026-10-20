@@ -42,7 +42,8 @@ PS.nextUp.getRecommendation = function () {
     });
   } else {
     var nextModule = null;
-    var paths = PS.learningPaths ? PS.learningPaths.PATHS : [];
+    if (PS.learningPaths && PS.learningPaths.sortPaths) PS.learningPaths.sortPaths();
+  var paths = PS.learningPaths ? PS.learningPaths.PATHS : [];
     for (var p = 0; p < paths.length && !nextModule; p++) {
       nextModule = PS.learningPaths.getNextModule(paths[p].id);
     }

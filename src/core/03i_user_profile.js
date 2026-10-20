@@ -81,9 +81,11 @@ PS.user = {
     }
     
     this.updateTopbar();
-    if (PS.buildNav && PS.routeMeta && PS.routeMeta.name !== 'home') {
-      PS.buildNav();
-    }
+    /* The navigation is scoped by the track, so the track is now a
+       navigation input and the nav has to be rebuilt whenever the
+       profile changes. It used to be skipped on the landing page,
+       which is exactly the page where the sidebar is most visible. */
+    if (PS.buildNav) PS.buildNav();
     PS.audit('user-profile-updated', updated.name + ' (' + updated.role + ')');
     
     // Re-render home page if currently active
@@ -200,12 +202,21 @@ PS.user = {
 
 /* The role and the track used to be display-only: twenty-two places
    read them and every one of them was rendering the label. They now
-   decide what the product recommends, which is what a role and a track
-   are for. The role weights which kind of work the person does, and
-   the track decides whether the Academy or the Toolkit leads. */
-/* What each Academy module actually covers. A role does not
-   prefer a kind of learning, it prefers a kind of work, and this is
-   the mapping that turns a job title into an order. */
+   decide what the product recommends and how the navigation is
+   scoped, which is what a role and a track are for.
+
+   The first attempt at this reordered the curriculum itself, so that a
+   compliance officer met Module 4 before Module 1. That was wrong, and
+   the reason is worth recording: the module number IS the sequence. A
+   page whose first badge reads 'Module 7' tells the learner the page
+   is broken, whatever the pedagogical argument behind it. A role can
+   legitimately decide which modules matter most to your job; it
+   cannot decide the order of a numbered curriculum. So the role now
+   RECOMMENDS, and the curriculum keeps its sequence.
+
+   What each Academy module actually covers. A role does not prefer a
+   kind of learning, it prefers a kind of work, and this is the mapping
+   that turns a job title into a recommendation. */
 PS.ACADEMY_MODULE_TAGS = {
   'Module 1: Foundations, Strategy & Spend Intelligence': ['spend', 'strategy', 'learn'],
   'Module 2: Requirement Definition & Market Engagement': ['sourcing', 'learn'],
@@ -220,9 +231,7 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn']
 };
 
-/* The order a role should meet the curriculum in. The first tag that
-   matches wins; a module that matches nothing keeps its natural place
-   after the ones that do. */
+/* The kind of work each role leans on, most important first. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
   buyer: ['operations', 'sourcing', 'services', 'spend', 'learn'],
@@ -238,52 +247,37 @@ PS.academyModuleNumber = function (moduleName) {
   var m = /Module\s+(\d+)/.exec(moduleName || '');
   return m ? parseInt(m[1], 10) : 0;
 };
-PS.user.moduleRank = function (moduleName) {
-  var tags = PS.ACADEMY_MODULE_TAGS[moduleName] || ['learn'];
+/* The modules a role should be pointed at, always returned in module
+   number order. The role decides WHICH modules, never the order they
+   appear in. */
+PS.user.recommendedModules = function (limit) {
+  var max = limit || 4;
   var pri = this.rolePriority();
-  for (var i = 0; i < pri.length; i++) {
-    if (tags.indexOf(pri[i]) >= 0) return i;
+  var names = Object.keys(PS.ACADEMY_MODULE_TAGS);
+  var picked = [];
+  /* Walk the role's priority in order and take the first modules that
+     match each tag, so a compliance officer gets the risk module
+     before the contract module. The 'learn' tag is a fallback for
+     every module and would match everything, so it is only consulted
+     once nothing else has matched. */
+  pri.forEach(function (tag) {
+    if (tag === 'learn') return;
+    names.forEach(function (name) {
+      if (picked.length >= max) return;
+      if (picked.indexOf(name) >= 0) return;
+      var tags = PS.ACADEMY_MODULE_TAGS[name] || [];
+      if (tags.indexOf(tag) < 0) return;
+      picked.push(name);
+    });
+  });
+  if (!picked.length) {
+    names.slice(0, max).forEach(function (n) { picked.push(n); });
   }
-  return pri.length;
-};
-/* The order the Academy's modules should be presented in for this
-   person. The order is the role's priority on the kind of work the
-   module covers, and the track decides whether the Academy or the
-   Toolkit leads. The role used to be display-only: twenty-two places
-   read it and every one of them was rendering the label. */
-PS.user.moduleOrder = function (modules) {
-  /* The role always orders the curriculum: a compliance officer
-     wants the risk and contracting modules first whether they came here
-     to learn or to work. The track is not the same thing as the role -
-     the track decides where the product starts you and whether the
-     Toolkit leads, not what you need to know first. */
-  var list = (modules || []).slice();
-  var self = this;
-  list.sort(function (a, b) {
-    var ra = self.moduleRank(a.module);
-    var rb = self.moduleRank(b.module);
-    if (ra !== rb) return ra - rb;
-    return (PS.academyModuleNumber(a.module) || 0) - (PS.academyModuleNumber(b.module) || 0);
+  picked.sort(function (a, b) {
+    return (PS.academyModuleNumber(a) || 0) - (PS.academyModuleNumber(b) || 0);
   });
-  return list;
+  return picked;
 };
-/* The order the Toolkit's libraries should be presented in. */
-PS.user.toolOrder = function (tools) {
-  var p = this.getProfile();
-  var pri = this.rolePriority();
-  var list = (tools || []).slice();
-  if (p.track === 'academy') return list;
-  list.sort(function (a, b) {
-    var ia = pri.indexOf(a.type), ib = pri.indexOf(b.type);
-    if (ia < 0) ia = 90;
-    if (ib < 0) ib = 90;
-    if (ia !== ib) return ia - ib;
-    return 0;
-  });
-  return list;
-};
-
-
 /* Wire profile button in topbar on boot */
 PS.acts = PS.acts || {};
 PS.acts['user-profile-open'] = function () {

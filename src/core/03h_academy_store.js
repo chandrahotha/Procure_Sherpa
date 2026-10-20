@@ -160,6 +160,32 @@ PS.academy.checkBadges = function () {
   return newlyAwarded;
 };
 
+/* The function a learner should be sent back to. It used to be
+   'the last one you opened', which meant that after completing five
+   functions in a row the Academy and the Command Center both said
+   'Resume: The Procurement Mission & Value Creation' - the first
+   function, already done. The pointer has to move. */
+PS.academy.nextUncompleted = function () {
+  var data = PS.academy.getAll();
+  var comp = (data && data.completed) || {};
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  if (!funcs.length) return null;
+  /* Sequence order: module number first, then the order the functions
+     were authored in within the module. */
+  var ordered = funcs.slice().sort(function (a, b) {
+    var na = PS.academyModuleNumber(a.module) || 0;
+    var nb = PS.academyModuleNumber(b.module) || 0;
+    if (na !== nb) return na - nb;
+    return funcs.indexOf(a) - funcs.indexOf(b);
+  });
+  for (var i = 0; i < ordered.length; i++) {
+    if (!comp[ordered[i].id]) return ordered[i];
+  }
+  /* Everything is done. Point at the last function so there is
+     somewhere to go, and let the caller say so. */
+  return ordered[ordered.length - 1];
+};
+
 PS.academy.getStats = function () {
   var data = PS.academy.getAll();
   var allFunctions = (PS.ACADEMY_FUNCTIONS || []);
@@ -175,7 +201,7 @@ PS.academy.getStats = function () {
     pct: pct,
     badgesEarned: badgesEarned,
     badgesTotal: PS.academy.BADGES.length,
-    currentFunc: data.current || 'func-mission-value'
+    currentFunc: (PS.academy.nextUncompleted() || { id: data.current || 'func-mission-value' }).id
   };
 };
 

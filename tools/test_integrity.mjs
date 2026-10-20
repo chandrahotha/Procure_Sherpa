@@ -302,39 +302,100 @@ if (PS.wb) {
   PS.wb.remove('suppliers', 'probe');
 }
 
-/* ---------- G13: the role and the track must do something ---------- */
-console.log('\nG13  role and track');
-if (!PS.user || typeof PS.user.moduleOrder !== 'function') {
-  fail('G13', 'the role does not order the curriculum');
-} else {
-  const setUser = (role, track) => { PS.user._cache = { name: 'T', role, track, company: '', avatarBg: '#000', joinedDate: '' }; };
-  const order = () => {
-    w.location.hash = '#/academy';
-    PS.renderRoute();
-    return [...w.document.querySelectorAll('#main .module-group .module-badge')].map((e) => e.textContent.trim());
-  };
-  setUser('beginner', 'academy');
-  const base = order();
-  setUser('compliance', 'academy');
-  const compliance = order();
-  setUser('buyer', 'academy');
-  const buyer = order();
-  if (base.join() === compliance.join() || base.join() === buyer.join()) {
-    fail('G13', 'the role does not change the order the curriculum is presented in');
-  } else {
-    ok('G13', 'the role reorders the curriculum (' + base.length + ' modules, ' +
-      'compliance leads with ' + compliance[0] + ', buyer with ' + buyer[0] + ')');
-  }
-  setUser('beginner', 'operations');
-  w.location.hash = '#/home';
+/* ---------- G13: the curriculum is a sequence, and the role recommends ----------
+   This gate used to assert the opposite of the requirement. It checked
+   that the role REORDERED the curriculum, which is the thing that was
+   wrong: a numbered curriculum whose number is not its position is
+   broken. It now states the requirement in the requirement's words.
+   ------------------------------------------------------------------- */
+console.log('\nG13  curriculum sequence');
+const setUser = (role, track) => { PS.user._cache = { name: 'T', role, track, company: '', avatarBg: '#000', joinedDate: '' }; };
+const moduleBadges = () => {
+  w.location.hash = '#/academy';
   PS.renderRoute();
-  if (!/Start with the Operations Hub/.test(w.document.querySelector('#main').textContent)) {
-    fail('G13', 'the operations track does not change where the Command Center starts you');
-  } else {
-    ok('G13', 'the track changes where the product starts you');
-  }
-  setUser('beginner', 'academy');
+  return [...w.document.querySelectorAll('#main .module-group .module-badge')]
+    .map((e) => parseInt(String(e.textContent).replace(/\D+/g, ''), 10));
+};
+const ROLES = ['beginner', 'buyer', 'manager', 'finance', 'compliance'];
+let seqBad = 0;
+for (const role of ROLES) {
+  setUser(role, 'academy');
+  const nums = moduleBadges();
+  const ascending = nums.every((n, i) => i === 0 || nums[i - 1] < n);
+  if (!ascending) { fail('G13', 'the curriculum is not in module order for role ' + role + ': ' + nums.join(' ')); seqBad++; }
+  if (nums.length !== 11) { fail('G13', 'the curriculum shows ' + nums.length + ' modules for role ' + role + ', expected 11'); seqBad++; }
 }
+if (!seqBad) ok('G13', 'all ' + ROLES.length + ' roles see the curriculum in module order, 1 to 11');
+
+/* The role must still do something visible, and it must do it by
+   recommending rather than by moving. */
+setUser('compliance', 'academy');
+w.location.hash = '#/academy';
+PS.renderRoute();
+const recPanel = w.document.querySelector('#main .academy-role-rec');
+if (!recPanel) {
+  fail('G13', 'the role produces no recommendation');
+} else {
+  const recNums = [...recPanel.querySelectorAll('.chip')]
+    .map((c) => parseInt(String(c.textContent).replace(/\D+/g, ''), 10))
+    .filter((n) => !isNaN(n));
+  const recAsc = recNums.every((n, i) => i === 0 || recNums[i - 1] < n);
+  if (!recNums.length) fail('G13', 'the role recommendation names no modules');
+  else if (!recAsc) fail('G13', 'the role recommendation is not in module order: ' + recNums.join(' '));
+  else ok('G13', 'the role recommends modules in order (' + recNums.join(', ') + ')');
+}
+
+/* Resume must point at work that is actually left to do. */
+const probe = PS.academy.getAll();
+const saved = JSON.parse(JSON.stringify(probe.completed || {}));
+const firstFive = (PS.ACADEMY_FUNCTIONS || []).slice(0, 5).map((f) => f.id);
+firstFive.forEach((id) => { probe.completed[id] = { done: true }; });
+PS.academy.save(probe);
+const nextUp = PS.academy.nextUncompleted();
+if (!nextUp || firstFive.indexOf(nextUp.id) >= 0) {
+  fail('G13', 'resume still points at a function that is already finished');
+} else {
+  ok('G13', 'resume points at the first unfinished function (' + nextUp.id + ')');
+}
+probe.completed = saved;
+PS.academy.save(probe);
+
+/* Every learning path is a sequence. */
+if (PS.learningPaths && PS.learningPaths.sortPaths) PS.learningPaths.sortPaths();
+let pathBad = 0;
+(PS.learningPaths ? PS.learningPaths.PATHS : []).forEach((p) => {
+  const nums = p.modules.map((m) => {
+    const f = PS.byId('academy', m);
+    return f ? (PS.academyModuleNumber(f.module) || 0) : 0;
+  });
+  if (!nums.every((n, i) => i === 0 || nums[i - 1] <= n)) {
+    fail('G13', 'learning path ' + p.id + ' is not in module order: ' + nums.join(' '));
+    pathBad++;
+  }
+});
+if (!pathBad) ok('G13', 'every learning path is in module order');
+
+/* And the table that lists them all must be too. */
+w.location.hash = '#/learning-paths';
+PS.renderRoute();
+const tds = [...w.document.querySelectorAll('#main table tbody tr td:first-child')]
+  .map((td) => parseInt(String(td.textContent).replace(/\D+/g, ''), 10))
+  .filter((n) => !isNaN(n));
+if (!tds.length || !tds.every((n, i) => i === 0 || tds[i - 1] <= n)) {
+  fail('G13', 'the all-modules table is not in module order: ' + tds.join(' '));
+} else {
+  ok('G13', 'the all-modules table is in module order (' + tds.length + ' rows)');
+}
+
+setUser('beginner', 'operations');
+w.location.hash = '#/home';
+PS.renderRoute();
+if (!/Start with the Operations Hub/.test(w.document.querySelector('#main').textContent)) {
+  fail('G13', 'the operations track does not change where the Command Center starts you');
+} else {
+  ok('G13', 'the track changes where the product starts you');
+}
+setUser('beginner', 'academy');
 
 /* ---------- G14: the knowledge library's domain map must be coherent ---------- */
 console.log('\nG14  category map');
