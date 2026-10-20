@@ -535,11 +535,17 @@ if (navSecs().indexOf('Library') < 0) {
 }
 
 /* The current route always wins: a page outside the current view must
-   still have its section in the navigation, or the menu is a dead end. */
+   still have its section in the navigation, or the menu is a dead end.
+
+   This is checked through the real navigation path - set the hash and
+   let the router do the work - and NOT by calling buildNav() by hand.
+   The first version of this check called buildNav() explicitly, and
+   passed while the product was broken: the nav was built once at boot
+   for a default route and never rebuilt on navigation, so a first load
+   of any workbench page showed a menu that did not contain the page. */
 navSetView('operations');
 w.location.hash = '#/academy';
 PS.renderRoute();
-PS.buildNav();
 if (navSecs().indexOf('Learn') < 0) {
   fail('G16', 'an Academy page in the work view has no Learn section in the menu');
 } else {
@@ -548,11 +554,22 @@ if (navSecs().indexOf('Learn') < 0) {
 navSetView('academy');
 w.location.hash = '#/suppliers';
 PS.renderRoute();
-PS.buildNav();
 if (navSecs().indexOf('Workbench') < 0) {
   fail('G16', 'a Workbench page in the learn view has no Workbench section in the menu');
 } else {
   ok('G16', 'a working page in the learn view still shows its section');
+}
+
+/* A first load. The nav is built at boot for a default route, so the
+   first navigation has to correct it. This is the case that shipped
+   broken. */
+navSetView('academy');
+w.location.hash = '#/rfx';
+PS.renderRoute();
+if (navSecs().indexOf('Workbench') < 0) {
+  fail('G16', 'a first load of a workbench page does not bring its section into the menu');
+} else {
+  ok('G16', 'a first load of a workbench page brings its section into the menu');
 }
 
 /* The switch writes the profile field, and only the profile field. */

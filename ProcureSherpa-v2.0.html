@@ -6550,6 +6550,21 @@ PS.syncNavForRoute = function (r) {
   app.classList.remove('has-no-sidebar');
   app.classList.add('has-sidebar');
   PS.updateSidebarFoot(r);
+  /* The navigation is scoped by the track, and the current route always
+     wins: arriving at a page whose section the current view hides has
+     to bring that section back, or the menu is a dead end.
+
+     This used to happen only when the profile changed, because the nav
+     was built once at boot for a default route and never rebuilt on
+     navigation. A first load of any workbench page therefore showed a
+     menu that did not contain the page. The test for it called
+     buildNav() by hand, so it passed while the product was broken.
+
+     The nav is rebuilt only when the set of visible sections actually
+     changes, so ordinary navigation inside a view does not disturb the
+     filter box or the scroll position. */
+  var sig = PS.navVisibleSections().map(function (g) { return g.sec; }).join('|');
+  if (sig !== PS._navVisibleSig) PS.buildNav();
 };
 
 /* ---------- The view the navigation is scoped to ----------
@@ -6647,6 +6662,9 @@ PS.buildNav = function () {
   var currentName = (PS.routeMeta && PS.routeMeta.name) ? PS.routeMeta.name : 'home';
   var ownerSec = PS.navSectionFor(currentName) || PS.NAV_UNIFIED[0].sec;
   var visible = PS.navVisibleSections();
+  /* Remember what is on screen, so a route change can tell whether the
+     set of visible sections has actually changed. */
+  PS._navVisibleSig = visible.map(function (g) { return g.sec; }).join('|');
   root.innerHTML = visible.map(function (g) {
     var isOpen = open[g.sec] === undefined ? (g.sec === ownerSec) : !!open[g.sec];
     var secLabel = (PS.i18n && g.i18n) ? PS.i18n.t(g.i18n) : g.sec;
