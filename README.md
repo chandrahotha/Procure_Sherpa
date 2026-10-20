@@ -200,8 +200,8 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
 <https://procuresherpa.vercel.app> runs the current `main`. It behaves
 identically to the downloaded file - still no server-side state, no accounts
-and no telemetry - but it serves the **minified** build (~1.31 MB instead of
-~1.61 MB, and ~394 KB over the wire once gzipped) and adds transport-level
+and no telemetry - but it serves the **minified** build (~1.55 MB instead of
+~1.87 MB, and ~466 KB over the wire once gzipped) and adds transport-level
 hardening: HSTS, `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and a
 restrictive `Permissions-Policy`.
@@ -209,6 +209,50 @@ restrictive `Permissions-Policy`.
 Only the build output is served. `vercel.json` sets `outputDirectory` to
 `dist`, so `src/`, `package.json` and everything else in the repository
 return 404 - the deployment cannot serve source even by accident.
+
+#### Releasing to Vercel
+
+```bash
+npm run deploy              # build, run the full gate, deploy to production
+npm run deploy -- --dry     # do everything except the deploy
+npm run verify:deploy       # assert the live site is the build you expect
+```
+
+`npm run deploy` runs the whole QA gate first, so a release can never
+ship an artifact that has not passed the same checks CI runs. It then
+deploys from a staging copy of the working tree that has no `.git`
+directory, and `npm run verify:deploy` loads the **served** bytes and
+asserts the same things the local gate asserts: the content registries
+are populated, all 43 routes render real content with no sentinel
+leaks, every internal link resolves, the navigation has the expected
+shape and highlights correctly, and every cross-tool handoff still
+carries data.
+
+**Why the staging copy?** The Vercel project is connected to this
+repository, and Vercel creates a deployment for every push to `main`.
+On the Hobby plan every one of those deployments is blocked before a
+build starts:
+
+> The deployment was blocked because the commit author doesn't have
+> permission to create deployments for this project.
+> (`seatBlock: TEAM_ACCESS_REQUIRED`)
+
+Hobby teams may not have members at all - the API answers *"Team
+members are not permitted on the Hobby Plan"* - and the check Vercel
+runs is whether the **commit author** maps to an account with team
+access. A deployment pushed from a token is attributed to the token's
+owner, who is the team owner, so it is not subject to that check. The
+CLI picks the commit metadata up from the local Git repository, and
+that metadata is what re-triggers the check, so the release script
+deploys from a copy with no `.git` in it.
+
+To make the native Git integration work instead, link the GitHub
+account to the Vercel account (Vercel dashboard, **Account Settings ->
+Connections -> GitHub**). That is a one-time change and needs no
+workflow. The `Deploy` workflow in `.github/workflows/deploy.yml` is
+the other route: it runs the same release script from CI with a
+`VERCEL_TOKEN` repository secret, and is skipped rather than failed when
+that secret is not set.
 
 ### Option 4: Host it yourself
 
@@ -318,6 +362,7 @@ node tools/check_rels.mjs
 node tools/security_audit.mjs
 
 # Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs across 38 routes
+npm run test:integrity    # The integrity gate: registries, sentinel leaks, dead links, orphan content, handoff viability, route reachability
 npm run test:integrity      # The integrity gate: registries, sentinel leaks, dead links, orphan content, handoff viability
 node tools/a11y_audit.mjs
 
