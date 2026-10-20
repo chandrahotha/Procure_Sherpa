@@ -13,7 +13,8 @@ PS_CALC.push({
     'Savings % = (baseline - negotiated) / baseline x 100'],
   groups: [PS.G('Baseline definition', 'baselineType'),
     PS.G('Prices and volume', 'baselinePrice negotiatedPrice annualVolume years'),
-    PS.G('One-off items', 'oneOffBenefits implementationCost')],
+    PS.G('One-off items', 'oneOffBenefits implementationCost'),
+    PS.G('Attribution', 'supplier category')],
   fields: [
     PS.F('baselineType', 'Baseline definition', 'sel', 'opts=Last_paid_price;Current_contract_price;Budgeted_price;Market_benchmark;Last_competitive_bid|0'),
     PS.F('baselinePrice', 'Baseline unit price', 'curr', 'req,nn', '18.5'),
@@ -21,9 +22,11 @@ PS_CALC.push({
     PS.F('annualVolume', 'Annual volume', 'qty', 'req,pos', '10000'),
     PS.F('years', 'Contract years', 'years', 'req,pos,max=25|3'),
     PS.F('oneOffBenefits', 'One-off benefits (tooling, training, credits)', 'curr', 'nn', '4000'),
-    PS.F('implementationCost', 'Implementation / switching cost', 'curr', 'nn', '1500')
+    PS.F('implementationCost', 'Implementation / switching cost', 'curr', 'nn', '1500'),
+    PS.F('supplier', 'Supplier this saving relates to', 'text', '', ''),
+    PS.F('category', 'Category this saving belongs to', 'text', '', '')
   ],
-  example: { baselineType: 'Last_paid_price', baselinePrice: 18.5, negotiatedPrice: 16.2, annualVolume: 10000, years: 3, oneOffBenefits: 4000, implementationCost: 1500 },
+  example: { baselineType: 'Last_paid_price', baselinePrice: 18.5, negotiatedPrice: 16.2, annualVolume: 10000, years: 3, oneOffBenefits: 4000, implementationCost: 1500, supplier: 'Example supplier', category: 'Example category' },
   handoffTo: ['calc-savings-analysis', 'calc-multi-year-contract-cost', 'calc-price-increase'],
   rel: { sops: ['sop-negotiation-savings', 'sop-savings-calculation', 'sop-savings-validation'], cl: ['cl-negotiation-closeout', 'cl-savings-validation'], tpl: ['tpl-savings-calculation'], calc: ['calc-savings-analysis', 'calc-multi-year-contract-cost'], decisions: ['dec-negotiate-or-accept'], kpis: ['kpi-savings'] },
   run: function (v) { return PS.calcImpl.negotiationSavings(v); }

@@ -6,33 +6,19 @@ PS.acts['content-markdown'] = function () {
   var c = PS.currentItem;
   if (!c || !c.item) { PS.toast('Open a page before copying it as Markdown.'); return; }
   var it = c.item;
-  var md = ['# ' + (it.title || it.term || 'Untitled'), ''];
-  if (it.desc) md.push(it.desc, '');
-  if (it.purpose) md.push('**Purpose:** ' + it.purpose, '');
-  if (it.scope) md.push('**Scope:** ' + it.scope, '');
-  if (it.trigger) md.push('**Trigger:** ' + it.trigger, '');
-  if (it.def) md.push(it.def, '');
-  if (it.steps && it.steps.length) {
-    md.push('## Steps', '');
-    it.steps.forEach(function (s, i) {
-      md.push((i + 1) + '. ' + (s.s || s.title || s.label || ''));
-      if (s.d || s.desc || s.note) md.push('   ' + (s.d || s.desc || s.note));
-    });
-    md.push('');
+  var ctx = { id: c.id };
+  /* A calculator or a decision guide carries live state worth exporting
+     alongside the document. */
+  if (c.type === 'calc' && PS.calcState && PS.calcState.id === c.id) {
+    ctx.values = PS.calcState.values;
+    ctx.results = PS.calcState.result ? PS.calcState.result.results : null;
+    ctx.summaryText = PS.calcState.result ? PS.calcState.result.summaryText : '';
   }
-  if (it.sections && it.sections.length) {
-    it.sections.forEach(function (sec) {
-      md.push('## ' + (sec.g || sec.title || ''), '');
-      (sec.items || []).forEach(function (item) { md.push('- [ ] ' + item); });
-      md.push('');
-    });
+  if (c.type === 'dec' && PS.decisionResult) {
+    ctx.answers = PS.decisionResult.answers;
   }
-  if (it.why) md.push('**Why it matters:** ' + (Array.isArray(it.why) ? it.why.join('; ') : it.why), '');
-  if (it.when) md.push('**When to use:** ' + (Array.isArray(it.when) ? it.when.join('; ') : it.when), '');
-  if (it.how) md.push('**How:** ' + (Array.isArray(it.how) ? it.how.join('; ') : it.how), '');
-  md.push('---');
-  md.push('From Procure Sherpa v' + PS.VERSION + ' - ' + PS.dateTime());
-  PS.copy(md.join('\n'), (it.title || 'Content') + ' Markdown');
+  var md = PS.toMarkdown(c.type, it, ctx);
+  PS.copy(md, (it.title || it.term || 'Content') + ' Markdown');
   PS.audit('markdown-exported', it.title || it.id);
 };
 PS.acts.fav = function () {

@@ -107,7 +107,7 @@ PS.user = {
   openModal: function () {
     var self = this;
     var prof = self.getProfile();
-    var academyStats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 16, pct: 0, badgesEarned: 0 };
+    var academyStats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 19, pct: 0, badgesEarned: 0 };
     var savedCount = (PS.saved && PS.saved.list) ? PS.saved.list().length : 0;
     
     var roleOptions = PS.USER_ROLES.map(function (r) {

@@ -60,6 +60,40 @@ PS.copilot.buildIndex = function () {
   (PS.data.calc || []).forEach(function (x) {
     push('calc', x.id, x.title, x.cat, PS.routeFor('calc', x.id), [x.title, x.purpose, x.context, (x.fields || []).map(function (f) { return f.label; }).join(' ')].join(' '));
   });
+  /* The index covered only five of the nine content types, so the two
+     questions a practitioner asks most often came back empty: "which
+     template do I use for an award recommendation" and "which
+     checklist proves the contract review was done". */
+  (PS.data.tpl || []).forEach(function (x) {
+    push('tpl', x.id, x.title, x.cat, PS.routeFor('tpl', x.id),
+      [x.title, x.purpose, (x.sections || []).map(function (s) {
+        return s.g + ' ' + (s.fields || []).map(function (f) { return f.label + ' ' + (f.hint || ''); }).join(' ');
+      }).join(' '), (x.prompts || []).join(' ')].join(' '));
+  });
+  (PS.data.cl || []).forEach(function (x) {
+    push('cl', x.id, x.title, x.cat, PS.routeFor('cl', x.id),
+      [x.title, x.desc, (x.sections || []).map(function (s) {
+        return s.g + ' ' + (s.items || []).join(' ');
+      }).join(' ')].join(' '));
+  });
+  (PS.data.dec || []).forEach(function (x) {
+    push('dec', x.id, x.title, x.cat, PS.routeFor('dec', x.id),
+      [x.title, x.intro, x.question, x.explain, (x.factors || []).map(function (f) { return f.q + ' ' + (f.hint || ''); }).join(' '),
+        (x.options || []).map(function (o) { return o.label + ' ' + (o.desc || ''); }).join(' ')].join(' '));
+  });
+  (PS.data.kpi || []).forEach(function (x) {
+    push('kpi', x.id, x.title, x.cat, PS.routeFor('kpi', x.id),
+      [x.title, x.def, x.formula, x.formulaNote, (x.inputs || []).join(' '), (x.interp || []).join(' ')].join(' '));
+  });
+  /* The Academy curriculum: twenty-five functions and ten modules, the
+     largest body of procurement teaching in the product, and until now
+     invisible to the assistant. */
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    push('academy', f.id, f.title, f.module, '#/academy/' + encodeURIComponent(f.id),
+      [f.title, f.tagline, f.desc, f.what, f.lifecycleStage, (f.why || []).join(' '),
+        (f.terms || []).map(function (t) { return t.term + ' ' + t.def; }).join(' '),
+        (f.sopSteps || []).map(function (s) { return s.title + ' ' + s.desc; }).join(' ')].join(' '));
+  });
   PS.copilot._index = idx;
   return idx;
 };

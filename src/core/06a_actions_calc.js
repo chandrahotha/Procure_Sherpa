@@ -108,13 +108,102 @@ PS.acts['copy-share'] = function () {
   var t = PS.$('#shareUrl');
   if (t) PS.copy(t.value, 'Share link');
 };
+/* ---------- canonical commercial quantities ----------
+   The nineteen calculators share 110 distinct field keys and only six of
+   them matched between tools, so 27 of the 41 declared handoffs carried
+   nothing: the buyer pressed "Send to another tool" and was told that
+   none of the fields matched.
+
+   This map gives the calculators a shared vocabulary. A field names the
+   commercial quantity it holds, and a handoff matches on the quantity
+   rather than on the variable name, so a "Quantity required" of 2,500
+   travels to a tool that calls it "Annual Volume" and lands in the right
+   box. */
+PS.CALC_FIELD_CONCEPT = {
+  qty: ['quantity'], annualVolume: ['quantity'], volume: ['quantity'],
+  annualDemand: ['quantity'], annualOutput: ['quantity'], currentQty: ['quantity'],
+  unitPrice: ['unitPrice'], quotedPrice: ['unitPrice'], basePrice: ['unitPrice'],
+  currentPrice: ['unitPrice'], negotiatedPrice: ['unitPrice'], newPrice: ['unitPrice'],
+  baselinePrice: ['unitPrice'], matCost: ['unitPrice', 'material'], unitCost: ['unitPrice'],
+  buyPrice: ['unitPrice'], aPrice: ['unitPrice', 'priceA'], bPrice: ['unitPrice', 'priceB'],
+  cPrice: ['unitPrice', 'priceC'],
+  annualSpend: ['annualSpend', 'commitment'], poValue: ['commitment', 'annualSpend'],
+  amount: ['annualSpend'], foreignAmount: ['annualSpend'],
+  spend1: ['annualSpend'], spend2: ['annualSpend'], spend3: ['annualSpend'],
+  spend4: ['annualSpend'], spend5: ['annualSpend'],
+  baselineAnnual: ['annualSpend'], newAnnual: ['annualSpend'],
+  annualBudget: ['commitment', 'annualSpend'], actualToDate: ['annualSpend'],
+  priorYear: ['annualSpend'],
+  freight: ['freight'], logistics: ['freight'], buyLogistics: ['freight'],
+  aFreight: ['freight', 'freightA'], bFreight: ['freight', 'freightB'], cFreight: ['freight', 'freightC'],
+  dutyPct: ['duty'], aDuty: ['duty', 'dutyA'], bDuty: ['duty', 'dutyB'], cDuty: ['duty', 'dutyC'],
+  discount: ['discount'], discountPct: ['discount'],
+  aDiscount: ['discount', 'discountA'], bDiscount: ['discount', 'discountB'], cDiscount: ['discount', 'discountC'],
+  insurance: ['insurance'],
+  years: ['years'], termYears: ['years'], lifeYears: ['years'], contractMonths: ['months'],
+  discountRate: ['rate'], costOfCapital: ['rate'],
+  escalationPct: ['escalation'], indexRate: ['escalation'],
+  implementationCost: ['implementation'], oneOffCost: ['implementation'], fixedSetup: ['implementation'],
+  marginPct: ['margin'], taxRate: ['taxRate'],
+  material: ['material'], labour: ['labour'], labourCost: ['labour'],
+  overhead: ['overhead'], overheadCost: ['overhead'],
+  machine: ['machine'], packaging: ['packaging'], tooling: ['tooling'],
+  handling: ['handling'], otherCost: ['otherCost'], other: ['otherCost'], otherAnnual: ['otherCost'],
+  installCost: ['installCost'], energy: ['energy'], maintenance: ['maintenance'],
+  consumables: ['consumables'], downtime: ['downtime'],
+  disposalCost: ['disposalCost'], residualValue: ['residualValue'],
+  currentDays: ['currentDays'], netDays: ['currentDays'],
+  proposedDays: ['proposedDays'], discountDays: ['discountDays'],
+  orderCost: ['orderCost'], holdingCost: ['holdingCost'], supplierMOQ: ['supplierMOQ'],
+  exchangeRate: ['exchangeRate'], spreadPct: ['spreadPct'], feeFixed: ['feeFixed'],
+  year1Cost: ['year1Cost'], priorPeriod: ['priorPeriod'],
+  actual: ['actual'], target: ['target']
+};
+
+/* Carry a value from one calculator to another on the shared
+   vocabulary. Exact field-name matches win; concept matches fill the
+   gaps. */
+PS.mapHandoffValues = function (fromCalc, toCalc, values) {
+  var out = {};
+  var targetFields = toCalc.fields || [];
+  var sourceFields = fromCalc.fields || [];
+  if (!targetFields.length || !sourceFields.length) return out;
+  Object.keys(values || {}).forEach(function (k) {
+    for (var i = 0; i < targetFields.length; i++) {
+      if (targetFields[i].k === k) { out[k] = values[k]; return; }
+    }
+  });
+  sourceFields.forEach(function (f) {
+    if (out[f.k] !== undefined) return;
+    var v = values ? values[f.k] : undefined;
+    if (v === undefined || v === null || v === '') return;
+    var concepts = PS.CALC_FIELD_CONCEPT[f.k] || [];
+    if (!concepts.length) return;
+    for (var i = 0; i < targetFields.length; i++) {
+      var tf = targetFields[i];
+      if (out[tf.k] !== undefined) continue;
+      var tc = PS.CALC_FIELD_CONCEPT[tf.k] || [];
+      for (var c = 0; c < concepts.length; c++) {
+        if (tc.indexOf(concepts[c]) >= 0) { out[tf.k] = v; return; }
+      }
+    }
+  });
+  return out;
+};
+
 PS.acts.handoff = function (el) {
   var to = el.dataset.to;
   var calc = PS.byId('calc', PS.calcState.id);
   if (!calc || !to) return;
   var target = PS.byId('calc', to);
   if (!target) return;
-  PS.pendingPrefill = { to: to, from: calc.id, values: PS.readCalcInputs(), t: new Date().toISOString() };
+  var raw = PS.readCalcInputs();
+  var carried = PS.mapHandoffValues(calc, target, raw);
+  if (!Object.keys(carried).length) {
+    PS.toast('These two tools do not share a comparable input, so nothing can be carried across.', 'danger');
+    return;
+  }
+  PS.pendingPrefill = { to: to, from: calc.id, values: carried, t: new Date().toISOString() };
   PS.audit('cross-tool-handoff', calc.title + ' \u2192 ' + target.title);
   PS.go('calc', null, to);
 };

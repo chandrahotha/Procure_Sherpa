@@ -21,7 +21,7 @@ PS_CALC.push({
     PS.F('currentQty', 'Current order quantity', 'qty', 'nn,int', '1000')
   ],
   example: { annualDemand: 12000, orderCost: 150, holdingCost: 2.40, unitCost: 18.50, supplierMOQ: 2000, currentQty: 1000 },
-  handoffTo: ['calc-landed-cost', 'calc-budget-vs-actual'],
+  handoffTo: ['calc-landed-cost'],
   rel: { sops: ['sop-procurement-intake'], checklists: ['cl-procurement-intake'], calcs: ['calc-landed-cost', 'calc-budget-vs-actual'], decisions: ['unit-or-tco'], glossary: ['gloss-moq', 'gloss-eoq'], scenarios: ['scn-new-purchase'] },
   run: function (v) { return PS.calcImpl.moq(v); }
 });

@@ -144,6 +144,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Every concession must be a trade: give what is cheap to you and valuable to them, to get what is valuable to you and cheap to them.'
     }
   ],
+  relSop: 'sop-negotiation-preparation',
+  rel: {
+    concepts: ['negotiation-planning', 'batna', 'zopa', 'negotiation-leverage'],
+    sops: ['sop-negotiation-preparation'],
+    checklists: ['cl-negotiation', 'cl-negotiation-closeout'],
+    templates: ['tpl-negotiation-planner', 'tpl-negotiation-agenda', 'tpl-negotiation-concession-log'],
+    calcs: ['calc-negotiation-savings'],
+    decisions: ['negotiate-or-accept'],
+    kpis: ['kpi-savings']
+  },
   labMission: {
     title: 'Mission 12: Calculate Negotiation Savings & Concession Value',
     desc: 'Use the Negotiation Savings Calculator to model opening positions, target prices, and concession movements.',
@@ -300,6 +310,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Balance purchase price discounts against inventory carrying costs and product obsolescence lifespans.'
     }
   ],
+  relSop: 'sop-negotiation-preparation',
+  rel: {
+    concepts: ['payment-terms', 'working-capital', 'concession-management'],
+    sops: ['sop-negotiation-preparation'],
+    checklists: ['cl-negotiation-closeout'],
+    templates: ['tpl-negotiation-summary', 'tpl-negotiation-concession-log'],
+    calcs: ['calc-payment-terms', 'calc-moq', 'calc-multi-year-contract-cost'],
+    decisions: ['negotiate-or-accept'],
+    kpis: ['kpi-working-capital-impact']
+  },
   labMission: {
     title: 'Mission 13: Analyze Payment Terms & MOQ Breakeven',
     desc: 'Use the Payment Terms Calculator and MOQ Calculator to evaluate working capital value and inventory holding costs.',
@@ -454,6 +474,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Always negotiate Termination for Convenience to protect the enterprise from being trapped in obsolete multi-year commitments.'
     }
   ],
+  relSop: 'sop-contract-review',
+  rel: {
+    concepts: ['contract-structure', 'liability-indemnity', 'service-level-agreement', 'statement-of-work'],
+    sops: ['sop-contract-review'],
+    checklists: ['cl-contract-review'],
+    templates: ['tpl-contract-review-checklist', 'tpl-contract-review-checklist'],
+    calcs: ['calc-multi-year-contract-cost'],
+    decisions: ['renew-vs-resource'],
+    kpis: ['kpi-contract-compliance']
+  },
   labMission: {
     title: 'Mission 14: Review a Contract & SLA Checklist',
     desc: 'Use the Contract Review Checklist to audit key clauses before contract execution.',
@@ -608,6 +638,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Segregation of duties ensures that no single individual has total end-to-end control over committing funds and releasing payments.'
     }
   ],
+  relSop: 'sop-procurement-intake',
+  rel: {
+    concepts: ['delegation-of-authority', 'segregation-of-duties', 'conflict-of-interest', 'procurement-ethics'],
+    sops: ['sop-procurement-intake', 'sop-procurement-audit'],
+    checklists: ['cl-procurement-audit', 'cl-exception-approval'],
+    templates: ['tpl-exception-request', 'tpl-single-source'],
+    calcs: ['calc-po-value-check'],
+    decisions: ['approve-exception'],
+    kpis: ['kpi-maverick-spend', 'kpi-contract-compliance']
+  },
   labMission: {
     title: 'Mission 15: Run the PO Value Approval Check Tool',
     desc: 'Use the PO Value Check Calculator to verify approval authority, financial thresholds, and required documentation.',
@@ -762,6 +802,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Every Purchase Order must specify a precise, legally enforceable delivery date.'
     }
   ],
+  relSop: 'sop-procurement-intake',
+  rel: {
+    concepts: ['c-procure-to-pay', 'c-three-way-match', 'audit-trail'],
+    sops: ['sop-procurement-intake'],
+    checklists: ['cl-procurement-file-completeness', 'cl-procurement-intake'],
+    templates: ['tpl-business-case'],
+    calcs: ['calc-po-value-check', 'calc-moq'],
+    decisions: ['approve-exception'],
+    kpis: ['kpi-cycle-time', 'kpi-otif']
+  },
   labMission: {
     title: 'Mission 16: Review PO Execution Checklist & Templates',
     desc: 'Use the PO Execution Checklist and Template to ensure all required commercial terms and delivery dates are properly structured.',
@@ -916,6 +966,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Services require documented Service Entry Sheets to verify delivery before Accounts Payable releases funds.'
     }
   ],
+  relSop: 'sop-procurement-audit',
+  rel: {
+    concepts: ['c-three-way-match', 'audit-trail', 'segregation-of-duties'],
+    sops: ['sop-procurement-audit'],
+    checklists: ['cl-procurement-file-completeness', 'cl-procurement-audit'],
+    templates: ['tpl-exception-request'],
+    calcs: ['calc-po-value-check'],
+    decisions: ['approve-exception'],
+    kpis: ['kpi-contract-compliance', 'kpi-ppv']
+  },
   labMission: {
     title: 'Mission 17: Review P2P Operational Controls Checklist',
     desc: 'Use the Operational Checklists to audit receiving, invoice matching, and payment release controls.',
@@ -1070,6 +1130,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'High-performing supply chains require two-way accountability: fixing internal buyer dysfunction is often the fastest way to improve supplier performance.'
     }
   ],
+  relSop: 'sop-supplier-performance-management',
+  rel: {
+    concepts: ['supplier-performance', 'supplier-relationship-management', 'supplier-development', 'supplier-segmentation'],
+    sops: ['sop-supplier-performance-management'],
+    checklists: ['cl-supplier-performance-review'],
+    templates: ['tpl-supplier-scorecard', 'tpl-supplier-business-review'],
+    calcs: ['calc-supplier-scorecard', 'calc-supplier-concentration'],
+    decisions: ['dual-source', 're-source'],
+    kpis: ['kpi-otif', 'kpi-defect-rate']
+  },
   labMission: {
     title: 'Mission 18: Build & Evaluate a Supplier Performance Scorecard',
     desc: 'Use the Supplier Scorecard Calculator to evaluate real-world vendor delivery, quality, and commercial KPIs.',
@@ -1226,6 +1296,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Never conflate business demand reductions with procurement commercial savings.'
     }
   ],
+  relSop: 'sop-savings-calculation',
+  rel: {
+    concepts: ['savings-types', 'savings-measurement', 'savings-baseline', 'savings-realization', 'cost-avoidance'],
+    sops: ['sop-savings-calculation'],
+    checklists: ['cl-savings-validation'],
+    templates: ['tpl-savings-validation', 'tpl-cost-avoidance'],
+    calcs: ['calc-savings-analysis', 'calc-budget-vs-actual'],
+    decisions: ['accept-price-increase'],
+    kpis: ['kpi-savings', 'kpi-cost-avoidance', 'kpi-savings-realization']
+  },
   labMission: {
     title: 'Mission 19: Model Hard Savings & Build the Savings Dashboard',
     desc: 'Use the Savings Analysis Calculator to model cost reduction vs cost avoidance across category initiatives.',

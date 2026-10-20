@@ -25,13 +25,18 @@ src/
                         03j_charts          Zero-dependency inline SVG visual analytics
                                             (Waterfall, Kraljic, Pareto, Altman Z-Score)
                         04a_router          Hash router, active-link marking, breadcrumb dispatch
-                        04b1_navdata        PS.NAV_UNIFIED: the single 5-section sidebar data
+                        04b1_navdata        PS.NAV_UNIFIED + PS.NAV_FOOTER: the sidebar data
                         04b2_navbuild       Builds/refreshes the sidebar and its footer per route
                         04c..04d_*          Render helpers, list pages
                         05a..05d_*          Calculator forms, validation, result formatters
                         06a..06e_*          Action controllers, templates, backup archives,
                                             i18n, exams, copilot, spend model, docpack
                         07a..07b_*          Boot lifecycle and global event wiring
+                         06b1_actions_markdown Full-fidelity Markdown export for every content type
+                         08g1a_sandbox_models  The eleven crisis sandboxes as data, plus the
+                                              generic renderer that draws them
+                         90a_idmap.js        The one legacy id map, shared with tools/check_rels
+                         90b_link_completion.js The declared inbound links, shared with the checker
                         90_normalize.js     Content normalization and alias resolution
 
   pages/                Page View Controllers & Renderers
@@ -48,7 +53,7 @@ src/
 
   content/              Controlled Knowledge Libraries
                         09*..18*            Concepts, SOPs, checklists, templates, KPIs
-                        19a..19c_*          8 modules / 19 Academy digital procurement functions
+                        19a..19d_*          10 modules / 25 Academy digital procurement functions
 
   calcs/                Financial & Operational Calculators
                         20*..38*            19 paired calculator definitions and math algorithms
@@ -60,8 +65,10 @@ src/
 1. **Strict Execution Order**: Fragments execute in a shared single-script scope (`PS.*`). An individual fragment can only consume abstractions defined in preceding files. The sequence defined in `src/manifest.txt` governs the compilation order.
 2. **Single-Purpose Fragments**: Maintain small, focused files corresponding to distinct components, libraries, or action controllers.
 3. **Zero Dash Compliance**: Never introduce em dashes or en dashes into copy or source code. Use standard hyphens, colons, or commas.
-4. **One sidebar, one nav data source**: The sidebar is defined once in `PS.NAV_UNIFIED` (`04b1_navdata.js`) and rendered by `PS.buildNav` (`04b2_navbuild.js`) for every route except `#/home`. Do not reintroduce per-hub sidebars or a hub-switcher - that pattern was replaced deliberately because it made the Academy sidebar's module accordion overflow with no scroll affordance, and a CSS specificity bug (`.icon-btn` overriding `.sidebar-close`/`.menu-btn`) leaked mobile-only nav toggle buttons onto desktop.
+4. **One sidebar, one nav data source**: The sidebar is defined once in `PS.NAV_UNIFIED` (`04b1_navdata.js`) and rendered by `PS.buildNav` (`04b2_navbuild.js`) for **every** route, including `#/home`. The system pages live in a separate permanent footer strip, `PS.NAV_FOOTER`, outside the collapsible tree. Do not reintroduce per-hub sidebars or a hub-switcher - that pattern was replaced deliberately because it made the Academy sidebar's module accordion overflow with no scroll affordance, and a CSS specificity bug (`.icon-btn` overriding `.sidebar-close`/`.menu-btn`) leaked mobile-only nav toggle buttons onto desktop. The sidebar used to be hidden on `#/home` as well, which made the first item in the navigation the one item that removed the navigation, and left a phone user with no way to navigate at all; that is fixed and should stay fixed.
 5. **Validation Protocol**: After editing source fragments, run:
    * `node build.mjs` to assemble and perform AST syntax validation.
-   * `npm run qa` for the full gate: rels, calculators, interactive checks, content QA, smoke (63 routes), security, a11y, and perf.
+   * `npm run qa` for the full gate: rels, calculators, interactive checks,
+     content QA, smoke (43 routes), the integrity gate, security, a11y, and
+     the measured performance budget.
    * `node tools/check_rels.mjs` on its own to verify cross-reference relational integrity quickly.

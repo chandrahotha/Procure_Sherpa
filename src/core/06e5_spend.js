@@ -6,10 +6,20 @@
 
 PS.spendModel = PS.spendModel || {};
 
-PS.spendModel.KEY = 'ps_spend';
+PS.spendModel.KEY = PS.K.spend;
 
 PS.spendModel.all = function () {
   var s = PS.store.get(PS.spendModel.KEY, {});
+  if ((!s || !Object.keys(s).length) && PS.K.spendLegacy) {
+    /* One-time migration: a build that restored a backup wrote the model
+       to ps_spend_model, which this code never read. */
+    var legacy = PS.store.get(PS.K.spendLegacy, null);
+    if (legacy && typeof legacy === 'object' && Object.keys(legacy).length) {
+      PS.store.set(PS.spendModel.KEY, legacy);
+      PS.store.remove(PS.K.spendLegacy);
+      return legacy;
+    }
+  }
   return (s && typeof s === 'object') ? s : {};
 };
 PS.spendModel.save = function (s) { PS.store.set(PS.spendModel.KEY, s); };
@@ -57,22 +67,26 @@ PS.spendModel.total = function (m) {
 };
 
 /* ---------- editor page ---------- */
+/* Every mutation reads the live form first. These handlers used to load the
+   model back out of storage, which silently discarded any edit the user had
+   typed but not yet saved: adding a supplier reverted a renamed category and
+   a changed spend figure. */
 PS.acts['spend-add-cat'] = function () {
-  var m = PS.spendModel.load();
+  var m = PS.spendModel.collect();
   m.categories.push({ id: PS.uid('cat'), name: 'New category', suppliers: [], impact: 50, risk: 50 });
   PS.spendModel.save(m);
   PS.renderRoute();
 };
 PS.acts['spend-del-cat'] = function (el) {
   var id = el.dataset.id;
-  var m = PS.spendModel.load();
+  var m = PS.spendModel.collect();
   m.categories = m.categories.filter(function (c) { return c.id !== id; });
   PS.spendModel.save(m);
   PS.renderRoute();
 };
 PS.acts['spend-add-sup'] = function (el) {
   var catId = el.dataset.cat;
-  var m = PS.spendModel.load();
+  var m = PS.spendModel.collect();
   m.categories.forEach(function (c) {
     if (c.id === catId) c.suppliers.push({ id: PS.uid('sup'), name: 'New supplier', spend: 0 });
   });
@@ -81,7 +95,7 @@ PS.acts['spend-add-sup'] = function (el) {
 };
 PS.acts['spend-del-sup'] = function (el) {
   var supId = el.dataset.id;
-  var m = PS.spendModel.load();
+  var m = PS.spendModel.collect();
   m.categories.forEach(function (c) { c.suppliers = c.suppliers.filter(function (s) { return s.id !== supId; }); });
   PS.spendModel.save(m);
   PS.renderRoute();
@@ -153,7 +167,7 @@ PS.spendModel.wireDnD = function (root) {
     PS.spendModel._drag = null;
     var target = rowOf(e.target);
     if (!d || !target || target.dataset.sup === d.supId) return;
-    var m = PS.spendModel.load();
+    var m = PS.spendModel.collect();
     var moved = null;
     m.categories.forEach(function (c) {
       if (c.id === d.catId) {

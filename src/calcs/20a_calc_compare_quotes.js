@@ -36,7 +36,7 @@ PS_CALC.push({
     { k: 'cDiscount', label: 'C: discount %', unit: 'percent', min: 0, max: 100, def: 0 }
   ],
   example: { qty: 2500, insurance: 300, taxRecoverable: true, aPrice: 12.4, aFreight: 1800, aDuty: 6, aDiscount: 2, bPrice: 11.9, bFreight: 3200, bDuty: 6, bDiscount: 0, cPrice: 13.25, cFreight: 600, cDuty: 6, cDiscount: 5 },
-  handoffTo: ['calc-tco', 'calc-negotiation-savings', 'calc-savings-analysis'],
+  handoffTo: ['calc-tco', 'calc-negotiation-savings'],
   rel: { sops: ['sop-quote-comparison', 'sop-bid-normalization', 'sop-commercial-evaluation'], cl: ['cl-quote-comparison'], tpl: ['tpl-bid-comparison'], calc: ['calc-landed-cost', 'calc-tco'], decisions: ['dec-unit-price-vs-tco'] },
   run: function (v) { return PS.calcImpl.compareQuotes(v); }
 });

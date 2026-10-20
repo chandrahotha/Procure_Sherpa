@@ -62,7 +62,21 @@ PS.renderRoute = function () {
   document.title = (PS.pageTitle ? PS.pageTitle + ' | ' : '') + 'Procure Sherpa';
   PS.pageTitle = '';
   if (PS.pageInit) { try { PS.pageInit(); } catch (e) { PS.errPanel('initialise'); } }
-  try { window.scrollTo(0, 0); } catch (e) { }
+  /* Focus moves to the main region on a real navigation. The clicked link
+     is removed from the DOM when the route renders, so focus used to fall
+     back to <body>: screen readers announced nothing and Tab restarted
+     from the top of the document. */
+  if (PS._routeFocusPending) {
+    PS._routeFocusPending = false;
+    try { if (main && main.focus) main.focus({ preventScroll: true }); } catch (e) { }
+  }
+  /* Scroll to the top on a forward navigation, but restore the previous
+     position when the user goes Back. Forcing the top on every render
+     broke the browser's own scroll restoration. */
+  if (!PS._popState) {
+    try { window.scrollTo(0, 0); } catch (e) { }
+  }
+  PS._popState = false;
   if (PS.onRouteDone) { try { PS.onRouteDone(r); } catch (e) { } }
 };
 PS.errPanel = function (msg, e) {
@@ -96,20 +110,42 @@ PS.updateFavBtn = function (r) {
   btn.textContent = on ? '\u2605' : '\u2606';
   btn.title = on ? 'Remove from favorites' : 'Add to favorites';
 };
+/* Which sidebar entry owns which detail route. The library pages in the
+   sidebar are list routes (#/list/sop) but every item inside them opens a
+   detail route (#/sop/sop-rfq). The old matcher compared a list href to a
+   detail href, so that branch could never fire and 8 of the 37 navigation
+   items never lit up on the pages they lead to. */
+PS.NAV_ROUTE_OWNER = {
+  sop: '#/list/sop', calc: '#/list/calc', cl: '#/list/cl', tpl: '#/list/tpl',
+  k: '#/list/kb', kpi: '#/list/kpi', dec: '#/list/dec', scen: '#/scenarios',
+  glossary: '#/glossary', academy: '#/academy', 'academy-progress': '#/academy-progress',
+  exams: '#/exams', assessment: '#/assessment', 'learning-paths': '#/learning-paths',
+  labs: '#/labs', portfolio: '#/portfolio'
+};
 PS.markNav = function (r) {
-  var cur = '#/' + r.name;
+  var hash = (location.hash || '').split('?')[0];
+  var owner = PS.NAV_ROUTE_OWNER[r.name] || ('#/' + r.name);
+  var active = null;
   PS.$$('#navRoot a').forEach(function (a) {
-    var href = a.getAttribute('href') || '';
+    var href = (a.getAttribute('href') || '').split('?')[0];
     var isSame = false;
-    if (href === cur || href === location.hash) isSame = true;
-    else if (href === '#/list/' + r.name + '/' + r.arg) isSame = true;
-    else if (r.name === 'list' && href === '#/list/' + r.args.join('/')) isSame = true;
+    if (href === hash) isSame = true;
+    else if (href === owner) isSame = true;
+    else if (r.name === 'list' && r.args && r.args.length && href === '#/list/' + r.args[0]) isSame = true;
     a.classList.toggle('is-current', isSame);
     if (isSame && a.closest) {
       var sec = a.closest('.nav-sec');
-      if (sec) PS.setNavOpen(sec.dataset.sec, true, true);
+      if (sec) {
+        active = a;
+        /* Open the owning section and remember that, so the state the user
+           sees and the state stored in preferences never disagree. */
+        if (sec.dataset.open !== 'true') PS.setNavOpen(sec.dataset.sec, true, false);
+      }
     }
   });
+  if (active && active.scrollIntoView) {
+    try { active.scrollIntoView({ block: 'nearest' }); } catch (e) { }
+  }
 };
 PS.updateNavCounts = function () {
   PS.$$('#navRoot .nav-badge').forEach(function (b) {

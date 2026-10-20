@@ -9,7 +9,8 @@
 
 PS.route('home', function () {
   PS.pageTitle = 'Command Center';
-  return PS.homeWelcomeCard() +
+  return PS.homeStartHere() +
+    PS.homeWelcomeCard() +
     PS.homeDualHub() +
     PS.homeQuickCalc() +
     PS.homePhase11() +

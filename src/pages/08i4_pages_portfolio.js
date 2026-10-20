@@ -10,37 +10,43 @@ PS.skillPortfolio.SKILL_TREE = [
   {
     id: 'sourcing',
     name: 'Sourcing & supplier selection',
-    modules: ['func-mission-value', 'func-should-cost', 'func-supplier-eval', 'func-category-mgmt'],
+    modules: ['func-mission-value', 'func-should-cost', 'func-supplier-eval', 'func-category-mgmt', 'func-rfx-strategy', 'func-rfq-issuance'],
     description: 'Identify, evaluate and select suppliers through a structured process.'
   },
   {
     id: 'cost',
     name: 'Cost analysis & TCO',
-    modules: ['func-landed-cost-tco', 'func-should-cost', 'func-spend-analysis'],
+    modules: ['func-landed-cost-tco', 'func-should-cost', 'func-spend-analysis', 'func-quote-normalization'],
     description: 'True cost beyond the unit price, including hidden and lifecycle cost.'
   },
   {
     id: 'negotiation',
     name: 'Negotiation & commercial',
-    modules: ['func-landed-cost-tco', 'func-category-mgmt', 'func-contract-structuring'],
+    modules: ['func-negotiation-strategy', 'func-commercial-terms', 'func-landed-cost-tco', 'func-category-mgmt'],
     description: 'Preparation, anchoring and value creation at the table.'
   },
   {
     id: 'contracts',
-    name: 'Contract management',
-    modules: ['func-contract-structuring', 'func-supplier-risk'],
-    description: 'Structure, negotiate and manage contracts that protect the organization.'
+    name: 'Contract & order management',
+    modules: ['func-contract-structuring', 'func-doa-controls', 'func-threeway-matching', 'func-po-execution'],
+    description: 'Structure, negotiate and control the contracts and orders that protect the organization.'
   },
   {
     id: 'risk',
-    name: 'Risk management',
-    modules: ['func-supplier-risk', 'func-category-mgmt'],
-    description: 'Spot, assess and mitigate supplier and supply chain risk.'
+    name: 'Risk, ethics & resilience',
+    modules: ['func-supplier-risk', 'func-ethics-compliance', 'func-sustainability', 'func-resilience-continuity'],
+    description: 'Spot, assess and mitigate supplier risk, compliance exposure and supply disruption.'
+  },
+  {
+    id: 'services',
+    name: 'Services, software & indirect',
+    modules: ['func-indirect-sourcing', 'func-software-licensing', 'func-professional-services', 'func-requirement-scope'],
+    description: 'Buy services, software and indirect supply with the controls each one actually needs.'
   },
   {
     id: 'analytics',
-    name: 'Spend analytics',
-    modules: ['func-spend-analysis', 'func-should-cost'],
+    name: 'Spend analytics & value',
+    modules: ['func-spend-analysis', 'func-savings-reporting', 'func-srm-scorecards', 'func-category-mgmt'],
     description: 'Turn spend data into savings opportunities and decisions.'
   }
 ];

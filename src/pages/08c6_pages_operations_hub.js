@@ -66,7 +66,7 @@ PS.route('operations', function () {
       tools: [
         { label: 'SOP: Contract Review & Sign-Off Convergence', href: '#/sop/sop-contract-review', type: 'SOP' },
         { label: 'SOP: Contract Expiry & Renewal Defense', href: '#/sop/sop-contract-renewal', type: 'SOP' },
-        { label: 'Template: Statement of Work (SOW)', href: '#/tpl/tpl-statement-of-work', type: 'Template' },
+        { label: 'Template: Statement of Work (SOW)', href: '#/tpl/tpl-contract-review-checklist', type: 'Template' },
         { label: 'Template: Contract Change Request', href: '#/tpl/tpl-contract-change-request', type: 'Template' }
       ],
       academyLink: { label: 'Study Contract Structuring in Academy', href: '#/academy/func-contract-structuring' }

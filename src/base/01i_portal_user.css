@@ -98,6 +98,84 @@
   margin-top: 3px;
 }
 
+/* ---------- Executive Home Portal: "Where to start" block ---------- */
+.home-start {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-bottom: 16px;
+  align-items: start;
+}
+.home-start-main {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--sh);
+}
+.home-start-kicker {
+  display: block;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.home-start-primary {
+  display: block;
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.home-start-primary:hover { color: var(--accent); }
+.home-start-note { margin: 0 0 14px; font-size: .84rem; color: var(--mute); line-height: 1.5; }
+.home-start-secondary {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+  margin-bottom: 2px;
+}
+.home-start-secondary:hover { text-decoration: underline; }
+.home-start-problem { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.home-start-problem input {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  font-size: .88rem;
+}
+.home-start-problem input:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
+.home-start-hint { margin: 8px 0 0; font-size: .76rem; }
+.home-start-hint kbd {
+  font: inherit; font-size: .72rem;
+  border: 1px solid var(--border); border-bottom-width: 2px;
+  border-radius: 4px; padding: 0 4px; background: var(--panel-2);
+}
+.home-start-today {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--sh);
+}
+.home-tip p { margin: 8px 0 6px; font-size: .9rem; line-height: 1.55; }
+.home-challenge {
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: .8rem; color: var(--mute); line-height: 1.5;
+}
+@media (max-width: 900px) { .home-start { grid-template-columns: 1fr; } }
+
 /* ---------- Executive Home Portal: Welcome Card ---------- */
 .home-welcome-card {
   background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
@@ -189,6 +267,11 @@
   transition: transform 0.18s ease-out, border-color 0.18s ease-out, box-shadow 0.18s ease-out;
   text-decoration: none;
   color: inherit;
+  /* The card is not a .card, so it carried no overflow clipping. Long
+     unbreakable labels inside it pushed the whole page sideways on a
+     narrow viewport. */
+  overflow: hidden;
+  min-width: 0;
 }
 .hub-portal-card:hover {
   transform: translateY(-3px);
@@ -239,7 +322,7 @@
 }
 .hub-quick-features {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 20px;
 }
@@ -252,6 +335,8 @@
   padding: 6px 10px;
   border-radius: var(--r-sm);
   background: var(--sunken);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .hub-card-footer {
   display: flex;
@@ -328,6 +413,12 @@
 @media (max-width: 900px) {
   .dual-hub-grid {
     grid-template-columns: 1fr;
+  }
+  /* The feature grid was a fixed two-column layout with no mobile
+     override, so the long unbreakable labels inside it pushed the page
+     wider than the viewport on a phone. */
+  .hub-quick-features {
+    grid-template-columns: minmax(0, 1fr);
   }
   .track-options-wrap {
     grid-template-columns: 1fr;

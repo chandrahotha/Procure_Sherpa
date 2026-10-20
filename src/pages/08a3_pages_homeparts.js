@@ -7,6 +7,52 @@
    4. Featured Procurement Thinking Point
    ========================================================== */
 
+PS.homeStartHere = function () {
+  var stats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 19, pct: 0, currentFunc: 'func-mission-value' };
+  var saved = PS.saved && PS.saved.list ? PS.saved.list() : [];
+  var isNew = stats.completedCount === 0 && saved.length === 0;
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var curFunc = funcs.filter(function (f) { return f.id === stats.currentFunc; })[0] || funcs[0];
+  var tip = (PS.dailyTips && PS.dailyTips.getTipOfDay) ? PS.dailyTips.getTipOfDay() : null;
+  var challenge = (PS.dailyTips && PS.dailyTips.getChallengeOfWeek) ? PS.dailyTips.getChallengeOfWeek() : null;
+
+  var primary, secondary;
+  if (isNew) {
+    primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-five functions across ten modules, beginner to advanced, with a quiz and a sandbox in each.' };
+    secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
+  } else if (saved.length) {
+    primary = { href: '#/saved', label: 'Resume: ' + (saved[0].title || 'your saved work'), note: saved.length + ' item' + (saved.length === 1 ? '' : 's') + ' saved in this browser.' };
+    secondary = { href: curFunc ? '#/academy/' + encodeURIComponent(curFunc.id) : '#/next-up', label: 'Next lesson: ' + (curFunc ? curFunc.title : 'continue'), note: 'Pick up where the Academy left off.' };
+  } else {
+    primary = { href: curFunc ? '#/academy/' + encodeURIComponent(curFunc.id) : '#/next-up', label: 'Continue: ' + (curFunc ? curFunc.title : 'the Academy'), note: stats.completedCount + ' of ' + stats.totalCount + ' functions mastered so far.' };
+    secondary = { href: '#/next-up', label: 'What to learn next', note: 'A recommendation based on your quiz scores and open modules.' };
+  }
+
+  return '<section class="home-start no-print">' +
+    '<div class="home-start-main">' +
+    '<span class="home-start-kicker">' + (isNew ? 'Start here' : 'Pick up where you left off') + '</span>' +
+    '<a class="home-start-primary" href="' + primary.href + '">' + PS.esc(primary.label) + ' &rarr;</a>' +
+    '<p class="home-start-note">' + PS.esc(primary.note) + '</p>' +
+    '<a class="home-start-secondary" href="' + secondary.href + '">' + PS.esc(secondary.label) + '</a>' +
+    '<p class="home-start-note">' + PS.esc(secondary.note) + '</p>' +
+    '<form class="home-start-problem" id="homeProblemForm">' +
+    '<label class="sr-only" for="homeWhat">Describe the procurement problem you are working on</label>' +
+    '<input type="text" id="homeWhat" maxlength="200" placeholder="Describe a procurement problem in your own words, for example: my supplier raised prices 12 percent">' +
+    '<button type="button" class="btn btn-primary" data-act="home-what-run">Find the tools</button>' +
+    '</form>' +
+    '<p class="note home-start-hint">Or <a href="#/search">search everything</a>, or press <kbd>Ctrl</kbd>+<kbd>K</kbd>.</p>' +
+    '</div>' +
+    (tip ? '<div class="home-start-today">' +
+      '<span class="home-start-kicker">Today</span>' +
+      '<div class="home-tip"><span class="badge">' + PS.esc(tip.category) + '</span>' +
+      '<p>' + PS.esc(tip.tip) + '</p>' +
+      '<p class="note">Source: ' + PS.esc(tip.source) + ' &middot; <a href="#/daily-tip">more tips</a></p></div>' +
+      (challenge ? '<div class="home-challenge"><strong>This week</strong> ' + PS.esc(challenge.title) +
+        ' &middot; ' + PS.esc(challenge.desc) + ' <a href="#/labs">Open the labs</a></div>' : '') +
+      '</div>' : '') +
+    '</section>';
+};
+
 PS.homeWelcomeCard = function () {
   var prof = PS.user ? PS.user.getProfile() : { name: 'Procurement Specialist', role: 'beginner', track: 'academy', company: '' };
   var roleMeta = PS.user ? PS.user.getRoleMeta(prof.role) : { title: 'Procurement Beginner & Enthusiast' };
@@ -30,7 +76,7 @@ PS.homeWelcomeCard = function () {
 };
 
 PS.homeDualHub = function () {
-  var stats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 16, pct: 0, badgesEarned: 0 };
+  var stats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 19, pct: 0, badgesEarned: 0 };
   var allFuncs = PS.ACADEMY_FUNCTIONS || [];
   var curFunc = allFuncs.filter(function (f) { return f.id === stats.currentFunc; })[0] || allFuncs[0];
   var d = PS.data || {};

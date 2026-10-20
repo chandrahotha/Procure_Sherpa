@@ -37,6 +37,7 @@ src/core/05e_calcinit.js
 src/core/05f_calccompact.js
 src/core/06a_actions_calc.js
 src/core/06a1_i18n.js
+src/core/06b1_actions_markdown.js
 src/core/06b_actions_ui.js
 src/core/06c1_actions_tpl.js
 src/core/06c2_actions_dec.js
@@ -78,6 +79,7 @@ src/pages/08e2_pages_settings.js
 src/pages/08e3_pages_settings2.js
 src/pages/08f1_pages_help.js
 src/pages/08f2_pages_maturity.js
+src/core/08g1a_sandbox_models.js
 src/pages/08g1_pages_academy.js
 src/pages/08g2_pages_quiz_engine.js
 src/pages/08g3_pages_certificate.js
@@ -94,6 +96,7 @@ src/pages/08i6_pages_whatsnew.js
 src/pages/08i7_pages_nextup.js
 src/content/09a_data_init.js
 src/content/09b_expand.js
+src/content/09c_maturity_lifecycle.js
 src/content/10a_kb_fund1.js
 src/content/10a2_kb_fund2.js
 src/content/10b_kb_sourcing.js
@@ -122,6 +125,7 @@ src/content/18a_help_content.js
 src/content/19a_academy_functions_part1.js
 src/content/19b_academy_functions_part2.js
 src/content/19c_academy_functions_part3.js
+src/content/19d_academy_functions_part4.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js
@@ -161,5 +165,7 @@ src/calcs/37a_calc_fx.js
 src/calcs/37b_calcimpl_fx.js
 src/calcs/38a_calc_kpi.js
 src/calcs/38b_calcimpl_kpi.js
+src/core/90a_idmap.js
+src/core/90b_link_completion.js
 src/core/90_normalize.js
 src/base/99_tail.html

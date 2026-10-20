@@ -180,9 +180,15 @@ PS.skillAssessment.getCategoryScores = function (answers) {
 
 PS.skillAssessment.storeResult = function (score, level, categoryScores) {
   var data = PS.store.get('skill_assessment', {});
+  /* Both keys are written: `score` is what every consumer reads, `lastScore`
+     was what this function used to write. Writing only one of them left the
+     result card, Learning Paths and What to Learn Next all rendering
+     "undefined%" and "Level 1" for a genuine score of 80. */
   data.lastScore = score;
+  data.score = score;
   data.level = level;
   data.categoryScores = categoryScores;
+  data.recommendations = PS.skillAssessment.getRecommendations(score, categoryScores);
   data.date = new Date().toISOString();
   data.history = data.history || [];
   data.history.push({ score: score, level: level, date: data.date });
@@ -191,7 +197,14 @@ PS.skillAssessment.storeResult = function (score, level, categoryScores) {
 };
 
 PS.skillAssessment.getLastResult = function () {
-  return PS.store.get('skill_assessment', null);
+  var r = PS.store.get('skill_assessment', null);
+  /* Normalise results written by older builds, which stored `lastScore`
+     only, so the result card does not show "undefined%". */
+  if (r && r.score === undefined && r.lastScore !== undefined) r.score = r.lastScore;
+  if (r && r.recommendations === undefined && typeof r.score === 'number') {
+    r.recommendations = PS.skillAssessment.getRecommendations(r.score, r.categoryScores || []);
+  }
+  return r;
 };
 
 PS.route('assessment', function () {

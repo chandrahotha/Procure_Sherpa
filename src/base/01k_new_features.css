@@ -68,6 +68,17 @@
 .docpack-section { page-break-inside: avoid; margin-bottom: 18px; }
 .docpack-section h2 { border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; }
 .docpack-line { border-bottom: 1px dotted var(--border-2); margin: 14px 0 4px; height: 18px; }
+/* A document pack is evidence, so a completed field shows the value
+   the user entered and a ticked checklist item shows as complete. */
+.docpack-value { font-weight: 600; color: var(--text); }
+.docpack-box {
+  display: inline-block; width: 11px; height: 11px; min-width: 11px;
+  border: 1px solid var(--border-2); border-radius: 2px;
+  text-align: center; line-height: 9px; font-size: 9px; color: transparent;
+}
+.docpack-box.is-done {
+  border-color: var(--ok); background: var(--ok-soft); color: var(--ok); font-weight: 800;
+}
 
 /* ---------- What-if comparison ---------- */
 .whatif-panel { margin-top: 14px; }

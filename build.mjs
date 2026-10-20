@@ -65,8 +65,12 @@ execFileSync(process.execPath, [path.join(ROOT, 'validate.mjs'), OUT], { stdio: 
    failure, rather than the first sign being a blocked build. This
    is also the earliest, cheapest point to start a real conversation
    about code-splitting / lazy-loading if the single-file constraint
-   is going to be outgrown. */
-const BUDGET_KB = 1600;
+   is going to be outgrown.
+
+   The ceiling itself is set from measurement, not from a guess: what a
+   browser actually downloads is the gzipped form, and what it has to
+   parse and start is measured. See docs/adr/0002. */
+const BUDGET_KB = 1750;
 const WARN_AT_KB = Math.round(BUDGET_KB * 0.85);
 const sizeKB = fs.statSync(OUT).size / 1024;
 if (sizeKB > BUDGET_KB) {

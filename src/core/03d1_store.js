@@ -15,9 +15,18 @@ PS.K = {
   draft: 'ps_draft',
   maturity: 'ps_maturity',
   exams: 'ps_exams',
-  spend: 'ps_spend_model',
+  /* The live spend-model key is ps_spend (PS.spendModel.KEY). It used to be
+     ps_spend_model here, so a restored backup wrote the spend model to a
+     key nothing read and the page silently fell back to example data. */
+  spend: 'ps_spend',
+  spendLegacy: 'ps_spend_model',
   copilot: 'ps_copilot',
-  docpacks: 'ps_docpacks'
+  docpacks: 'ps_docpacks',
+  academy: 'academy_progress',
+  labs: 'practice_labs',
+  assessment: 'skill_assessment',
+  community: 'community_posts',
+  user: 'ps_user_profile'
 };
 /* legacy v1.1.0 keys inspected for migration (Section 55) */
 PS.LEGACY = ['ps_saved', 'ps_savedQuotes', 'ps_savedCalculations', 'ps_calculations',

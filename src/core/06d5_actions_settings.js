@@ -7,6 +7,15 @@ PS.acts['settings-save'] = function () {
     return { label: label, max: isFinite(max) ? max : 0 };
   }).filter(function (t) { return t.label; });
   var dec = PS.num(g('#setDecimals'));
+  /* The house rate defaults are now real settings: the calculators read
+     them, so they have to be editable and they have to be saved. */
+  var prevDefaults = PS.prefs().defaults || {};
+  var defaults = {
+    discountRate: PS.clamp(PS.num(g('#setDefaultDiscount')), 0, 100),
+    costOfCapital: PS.clamp(PS.num(g('#setDefaultCostOfCapital')), 0, 100),
+    holdingRate: PS.clamp(PS.num(g('#setDefaultHolding')), 0, 100),
+    inflation: prevDefaults.inflation === undefined ? 3 : prevDefaults.inflation
+  };
   PS.savePrefs({
     currency: g('#setCurrency') || PS.prefs().currency,
     orgName: PS.clean(g('#setOrg'), 120),
@@ -17,6 +26,7 @@ PS.acts['settings-save'] = function () {
     decimals: isFinite(dec) ? PS.clamp(dec, 0, 4) : 2,
     reportFooter: PS.clean(g('#setFooter'), 300),
     defaultAssumptions: PS.clean(g('#setAssumptions'), 1200),
+    defaults: defaults,
     theme: g('#setTheme') || PS.prefs().theme,
     themeSchedule: g('#setThemeSchedule') || PS.prefs().themeSchedule,
     themeAutoStart: g('#setThemeAutoStart') || PS.prefs().themeAutoStart,

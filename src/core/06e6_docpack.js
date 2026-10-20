@@ -36,35 +36,90 @@ PS.docpack.candidates = function () {
   return out;
 };
 
-/* Render one document's body inside a pack. */
+/* Render one document's body inside a pack.
+   A pack is evidence, so it must carry the evidence the user produced.
+   The pack used to render every template field as a blank ruled line
+   and every checklist item as an empty box, which made a "Document Pack
+   Builder" into a form printer: the document looked complete and
+   contained nothing. It now reads the workspace state. */
 PS.docpack.docBody = function (c) {
   if (c.type === 'tpl') {
     var tpl = PS.byId('tpl', c.id);
     if (!tpl) return '<p class="note">Template not found.</p>';
-    return (tpl.purpose ? '<p>' + PS.esc(tpl.purpose) + '</p>' : '') +
+    var st = PS.tplState.get(c.id);
+    var vals = (st && st.values) || {};
+    var filled = 0;
+    (tpl.sections || []).forEach(function (s) {
+      (s.fields || []).forEach(function (f) {
+        var v = vals[f.k];
+        if (v !== undefined && v !== null && String(v).length) filled++;
+      });
+    });
+    var outTpl = (tpl.purpose ? '<p>' + PS.esc(tpl.purpose) + '</p>' : '') +
+      (filled === 0 ? '<p class="note">No entries have been completed for this template in your workspace, so the fields below are blank.</p>' : '') +
       (tpl.sections || []).map(function (s) {
         return '<div class="docpack-section"><h3>' + PS.esc(s.g) + '</h3>' +
           (s.fields || []).map(function (f) {
-            return '<div><strong>' + PS.esc(f.label) + '</strong>' + (f.req ? ' *' : '') + ' &nbsp; <span class="docpack-line"></span></div>';
+            var v = vals[f.k];
+            var has = v !== undefined && v !== null && String(v).length;
+            return '<div><strong>' + PS.esc(f.label) + '</strong>' + (f.req ? ' *' : '') +
+              ' &nbsp; ' + (has ? '<span class="docpack-value">' + PS.esc(String(v)) + '</span>'
+                : '<span class="docpack-line"></span>') + '</div>';
           }).join('') + '</div>';
       }).join('');
+    if (st && st.notes) outTpl += '<div class="docpack-section"><h3>Notes</h3><p>' + PS.esc(st.notes) + '</p></div>';
+    return outTpl;
   }
   if (c.type === 'cl') {
     var cl = PS.byId('cl', c.id);
     if (!cl) return '<p class="note">Checklist not found.</p>';
-    return (cl.desc ? '<p>' + PS.esc(cl.desc) + '</p>' : '') +
+    var cst = PS.clState.get(c.id);
+    var checked = (cst && cst.checked) || {};
+    var done = 0, total = 0;
+    (cl.sections || []).forEach(function (s) {
+      (s.items || []).forEach(function (it, i) {
+        total++;
+        if (checked[s.g + '|' + i]) done++;
+      });
+    });
+    var outCl = (cl.desc ? '<p>' + PS.esc(cl.desc) + '</p>' : '') +
+      '<p class="note">Completion: ' + done + ' of ' + total + ' items (' + (total ? Math.round(done / total * 100) : 0) + '%)' +
+      (done === 0 ? '. No items have been ticked in your workspace.' : '.') + '</p>' +
       (cl.sections || []).map(function (s) {
         return '<div class="docpack-section"><h3>' + PS.esc(s.g) + '</h3>' +
-          (s.items || []).map(function (it) { return '<div><label><input type="checkbox"> ' + PS.esc(it) + '</label></div>'; }).join('') +
+          (s.items || []).map(function (it, i) {
+            var on = !!checked[s.g + '|' + i];
+            return '<div><span class="docpack-box' + (on ? ' is-done' : '') + '">' + (on ? '&#10003;' : '') + '</span> ' +
+              PS.esc(it) + (on ? ' <span class="muted">(complete)</span>' : '') + '</div>';
+          }).join('') +
           '</div>';
       }).join('');
+    if (cst && cst.notes) outCl += '<div class="docpack-section"><h3>Notes and evidence</h3><p>' + PS.esc(cst.notes) + '</p></div>';
+    return outCl;
   }
   if (c.type === 'dec') {
     var dec = PS.byId('dec', c.id);
     if (!dec) return '<p class="note">Decision guide not found.</p>';
-    return (dec.intro ? '<p>' + PS.esc(dec.intro) + '</p>' : '') +
-      (dec.question ? '<div class="alert alert-info"><strong>Decision question:</strong> ' + PS.esc(dec.question) + '</div>' : '') +
-      (dec.options || []).map(function (o) { return '<div><label><input type="radio" name="dec_' + PS.esc(dec.id) + '"> <strong>' + PS.esc(o.label) + '</strong> - ' + PS.esc(o.desc || '') + '</label></div>'; }).join('');
+    var res = PS.decisionResult && PS.decisionResult.dec === dec.id ? PS.decisionResult : null;
+    var outDec = (dec.intro ? '<p>' + PS.esc(dec.intro) + '</p>' : '') +
+      (dec.question ? '<div class="alert alert-info"><strong>Decision question:</strong> ' + PS.esc(dec.question) + '</div>' : '');
+    if (res && res.out && res.out.top) {
+      outDec += '<div class="docpack-section"><h3>Outcome</h3>' +
+        '<p><strong>' + PS.esc(res.out.top.label) + '</strong> - ' + PS.esc(res.out.top.desc || '') + '</p></div>';
+    }
+    outDec += (dec.options || []).map(function (o) {
+      var on = res && res.out && res.out.top && res.out.top.k === o.k;
+      return '<div><span class="docpack-box' + (on ? ' is-done' : '') + '">' + (on ? '&#10003;' : '') + '</span> <strong>' +
+        PS.esc(o.label) + '</strong> - ' + PS.esc(o.desc || '') + '</div>';
+    }).join('');
+    if (res && res.answers) {
+      outDec += '<div class="docpack-section"><h3>Answers recorded</h3>' +
+        (dec.factors || []).map(function (f, i) {
+          var a = res.answers['f' + i];
+          return '<div><strong>' + PS.esc(f.q) + '</strong>: ' + PS.esc(a || 'not sure') + '</div>';
+        }).join('') + '</div>';
+    }
+    return outDec;
   }
   if (c.type === 'scen') {
     var sc = PS.byId('scen', c.id);

@@ -146,6 +146,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Payment terms carry significant risk and working capital value. Never accept advance payment terms without security instruments.'
     }
   ],
+  relSop: 'sop-rfq',
+  rel: {
+    concepts: ['evaluation-criteria', 'rfi-rfq-rfp'],
+    sops: ['sop-rfq'],
+    checklists: ['cl-quote-comparison'],
+    templates: ['tpl-bid-comparison'],
+    calcs: ['calc-compare-quotes', 'calc-landed-cost'],
+    decisions: ['unit-or-tco'],
+    kpis: ['kpi-ppv']
+  },
   labMission: {
     title: 'Mission 7: Compare Supplier Quotations in the Tool',
     desc: 'Use the Quote Comparison Calculator to normalize unit prices, freight, warranty adjustments, and payment terms across 3 competing suppliers.',
@@ -303,6 +313,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Beware of "free" or subsidized capital equipment that locks the enterprise into proprietary, high-margin consumables or replacement parts.'
     }
   ],
+  relSop: 'sop-supplier-evaluation',
+  rel: {
+    concepts: ['total-cost-of-ownership', 'cost-breakdown', 'incoterms'],
+    sops: ['sop-supplier-evaluation'],
+    checklists: ['cl-commercial-evaluation'],
+    templates: ['tpl-business-case'],
+    calcs: ['calc-tco', 'calc-landed-cost', 'calc-should-cost'],
+    decisions: ['unit-or-tco'],
+    kpis: ['kpi-ppv', 'kpi-working-capital-impact']
+  },
   labMission: {
     title: 'Mission 8: Build a 5-Year TCO Lifecycle Model',
     desc: 'Use the Total Cost of Ownership (TCO) Calculator to model acquisition, maintenance, energy, and disposal costs for equipment.',
@@ -458,6 +478,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Cost transparency transforms negotiation from an emotional argument into an objective joint problem-solving exercise.'
     }
   ],
+  relSop: 'sop-supplier-evaluation',
+  rel: {
+    concepts: ['should-cost', 'cost-breakdown', 'price-vs-cost'],
+    sops: ['sop-supplier-evaluation'],
+    checklists: ['cl-commercial-evaluation'],
+    templates: ['tpl-commercial-evaluation'],
+    calcs: ['calc-should-cost', 'calc-tco'],
+    decisions: ['unit-or-tco'],
+    kpis: ['kpi-ppv']
+  },
   labMission: {
     title: 'Mission 9: Test Price Escalation & Should-Cost Formulas',
     desc: 'Use the Price Escalation Calculator to calculate fair cost adjustments when labor, material, and fuel indices change.',
@@ -613,6 +643,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Evaluation scores must reflect factual evidence submitted within the tender documents, never undocumented personal relationships.'
     }
   ],
+  relSop: 'sop-supplier-evaluation',
+  rel: {
+    concepts: ['supplier-qualification', 'supplier-segmentation', 'evaluation-criteria'],
+    sops: ['sop-supplier-evaluation'],
+    checklists: ['cl-supplier-evaluation', 'cl-supplier-due-diligence'],
+    templates: ['tpl-supplier-evaluation', 'tpl-weighted-scoring', 'tpl-supplier-scorecard'],
+    calcs: ['calc-supplier-scorecard'],
+    decisions: ['competitive-or-single'],
+    kpis: ['kpi-otif', 'kpi-defect-rate']
+  },
   labMission: {
     title: 'Mission 10: Build a Weighted Supplier Scorecard',
     desc: 'Use the Supplier Scorecard Calculator to configure evaluation criteria, assign percentage weights, and score competing suppliers.',
@@ -767,6 +807,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Dual-sourcing is an active insurance policy: volume allocation creates healthy competitive pressure and instantaneous supply redundancy.'
     }
   ],
+  relSop: 'sop-supplier-evaluation',
+  rel: {
+    concepts: ['supplier-qualification', 'supplier-financial-risk', 'concentration-risk', 'supply-chain-risk'],
+    sops: ['sop-supplier-evaluation'],
+    checklists: ['cl-supplier-due-diligence', 'cl-supplier-risk-review'],
+    templates: ['tpl-supplier-due-diligence', 'tpl-supplier-risk-assessment'],
+    calcs: ['calc-supplier-concentration'],
+    decisions: ['supplier-financial-risk', 'dual-source'],
+    kpis: ['kpi-supplier-concentration']
+  },
   labMission: {
     title: 'Mission 11: Evaluate Single vs Dual Sourcing Strategy',
     desc: 'Use the Sourcing Strategy Decision Guide to evaluate whether a critical item should be single-sourced or dual-sourced.',

@@ -18,11 +18,18 @@ PS.settingsAssumptionCard = function (p) {
     '<textarea id="setAssumptions" rows="4" maxlength="1200" placeholder="Example: default cost of capital 9% per annum; freight quoted ex-works; volumes per current forecast; no currency hedging.">' + PS.esc(p.defaultAssumptions) + '</textarea>' +
     '<span class="hint">Free text, shown with your settings and available to quote in reports.</span></div>' +
     '<div class="grid grid-3">' +
-    '<div class="stat"><div class="s-lab">Default discount rate</div><div class="s-val">' + PS.esc(p.defaults.discountRate) + '%</div></div>' +
-    '<div class="stat"><div class="s-lab">Default cost of capital</div><div class="s-val">' + PS.esc(p.defaults.costOfCapital) + '%</div></div>' +
-    '<div class="stat"><div class="s-lab">Default holding rate</div><div class="s-val">' + PS.esc(p.defaults.holdingRate) + '%</div></div>' +
+    '<div class="field"><label for="setDefaultDiscount">Default discount rate (%)</label>' +
+    '<input type="number" step="any" min="0" max="100" id="setDefaultDiscount" value="' + PS.esc(p.defaults.discountRate) + '">' +
+    '<span class="hint">Used as the starting value in Total Cost of Ownership and Multi-Year Contract Cost.</span></div>' +
+    '<div class="field"><label for="setDefaultCostOfCapital">Default cost of capital (%)</label>' +
+    '<input type="number" step="any" min="0" max="100" id="setDefaultCostOfCapital" value="' + PS.esc(p.defaults.costOfCapital) + '">' +
+    '<span class="hint">Used as the starting value in Payment Terms and Working Capital.</span></div>' +
+    '<div class="field"><label for="setDefaultHolding">Default holding rate (% p.a.)</label>' +
+    '<input type="number" step="any" min="0" max="100" id="setDefaultHolding" value="' + PS.esc(p.defaults.holdingRate) + '">' +
+    '<span class="hint">Annual carrying cost as a percentage of unit value.</span></div>' +
     '</div>' +
-    '<p class="note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters.</p></div>';
+    '<p class="note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters. ' +
+    'Every calculator that uses them starts with your figure; the value is always editable on the calculator itself.</p></div>';
 };
 
 PS.initThemeScheduleOptions = function () {

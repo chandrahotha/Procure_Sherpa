@@ -45,6 +45,20 @@ PS.calcImpl.savingsAnalysis = function (v) {
       'Net over term: ' + PS.moneyR(net) + ' (' + PS.moneyR(netAnn) + ' annualised)',
       'Payback: ' + (isFinite(payback) ? PS.qty(payback) + ' months' : ': ') + ' :  report net, track in actuals'],
     s: 'Net saving ' + PS.moneyR(net) + ' over ' + v.contractMonths + ' months (' + PS.moneyR(netAnn) + ' annualised), payback ' + (isFinite(payback) ? PS.qty(payback) + ' months' : ': ') + '.',
-    d: { gross: gross, grossPct: grossPct, net: net, netAnn: netAnn, payback: payback }
+    d: {
+      /* The savings dashboard reads this. Without it, a saved Savings
+         Analysis produced an empty dashboard, and the dashboard's own
+         empty-state text told the user to run this calculator. */
+      initiatives: [{
+        name: (v.supplier ? v.supplier + ' ' : '') + 'savings analysis',
+        baseline: v.baselineAnnual, newCost: v.newAnnual,
+        savings: gross > 0 ? gross : 0,
+        avoidance: gross < 0 ? -gross : 0,
+        category: v.category || 'Uncategorised savings',
+        supplier: v.supplier || 'Unspecified supplier',
+        kind: gross >= 0 ? 'Savings' : 'Cost avoidance'
+      }],
+      gross: gross, grossPct: grossPct, net: net, netAnn: netAnn, payback: payback
+    }
   });
 };

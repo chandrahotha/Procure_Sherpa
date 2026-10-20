@@ -11,6 +11,14 @@ PS.route('help', function (arg) {
       return '<a class="chip' + (t.id === sel ? ' is-on' : '') + '" href="#/help/' + encodeURIComponent(t.id) + '">' + PS.esc(t.title) + '</a>';
     }).join('') + '</div>' +
     '<p class="note">Shortcuts: <kbd>Ctrl</kbd>+<kbd>K</kbd> search, <kbd>/</kbd> focus search, <kbd>Esc</kbd> close the sidebar. Print any page with the printer button - navigation and controls are removed automatically.</p>' +
+    /* Quick Start was a sidebar item once. It duplicated the Command
+       Center getting-started card, so it came out of the tree rather
+       than being left as a page nothing links to. */
+    '<div class="chips no-print" style="margin-top:10px">' +
+    '<a class="chip" href="#/quickstart">Quick Start: the five-minute orientation</a>' +
+    '<a class="chip" href="#/what">Help me with a live problem</a>' +
+    '<a class="chip" href="#/maturity">Maturity Check</a>' +
+    '</div>' +
     '</div>';
   if (chosen) {
     html += '<div class="card" id="helpTopic"><h2>' + PS.esc(chosen.title) + '</h2>' + PS.helpBody(chosen) + '</div>';

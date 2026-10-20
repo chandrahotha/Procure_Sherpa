@@ -1,13 +1,19 @@
 /* ---------- quick start, favorites, recently used (Section 8, 49) ---------- */
-PS.acts['home-what'] = function (el) { };
+PS.acts['home-what'] = function () {
+  var el = PS.$('#homeWhat');
+  if (!el) return;
+  el.focus();
+  if (el.select) el.select();
+};
 PS.acts['home-what-run'] = function () {
-  var v = PS.clean(PS.$('#homeWhat') ? PS.$('#homeWhat').value : '', 160);
+  var v = PS.clean(PS.$('#homeWhat') ? PS.$('#homeWhat').value : '', 200);
   if (!v) { PS.toast('Describe what you need to do first, or pick an example below.'); return; }
   PS.go('what', { q: v });
 };
 PS.acts['home-search'] = function () {
   var v = PS.clean(PS.$('#homeQ') ? PS.$('#homeQ').value : '', 120);
-  PS.go('search', { q: v });
+  if (v) { PS.go('search', { q: v }); return; }
+  if (PS.cmdPalette) PS.cmdPalette.open();
 };
 PS.acts['prefill-what'] = function (el) {
   if (PS.$('#whatQ')) PS.$('#whatQ').value = el.dataset.q || '';
@@ -76,11 +82,11 @@ PS.route('recent', function () {
   var r = PS.recent.list();
   var html = '<div class="card"><div class="card-head"><h1>Recently Used</h1><div class="spacer"></div>' +
     (r.length ? '<button type="button" class="btn btn-sm" data-act="recent-clear">Clear list</button>' : '') + '</div>' +
-    '<p class="card-sub">The last ' + r.length + ' operational tools and learning modules accessed in your active session.</p>' +
+    '<p class="card-sub">The last ' + r.length + ' operational tools and learning modules you opened, most recent first.</p>' +
     (r.length ? '<ul class="res-list">' + r.map(function (x) {
       return '<li>' + PS.badge(x.type) + '<span><a class="res-title" href="' + PS.routeFor(x.type, x.id) + '">' + PS.esc(x.title || x.id) + '</a>' +
         '<div class="res-desc">' + PS.esc(PS.dateTime(x.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<div class="empty">No recent activity recorded in this session.</div>') + '</div>';
+    }).join('') + '</ul>' : '<div class="empty">Nothing opened yet. Pages you visit are listed here.</div>') + '</div>';
   return html;
 });
 PS.route('list', function (arg, params) {

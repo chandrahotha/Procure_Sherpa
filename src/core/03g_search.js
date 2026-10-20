@@ -100,7 +100,7 @@ PS.buildIndex = function () {
 
   // 12. Core Platform Gateways & Direct Commands
   var coreCommands = [
-    { id: 'cmd-academy', title: 'Procurement Academy Hub', cat: 'Learning Platform', desc: 'Browse all 16 strategic procurement competency modules.', route: '#/academy', tags: ['learning', 'course', 'curriculum'] },
+    { id: 'cmd-academy', title: 'Procurement Academy Hub', cat: 'Learning Platform', desc: 'Browse every strategic procurement competency function, module by module.', route: '#/academy', tags: ['learning', 'course', 'curriculum'] },
     { id: 'cmd-ops-hub', title: 'Operational Practice Hub', cat: 'Operations', desc: 'Access end-to-end execution tools: SOPs, calculators, checklists, and templates.', route: '#/operations', tags: ['tools', 'gateway', 'daily'] },
     { id: 'cmd-transcript', title: 'Academy Progress & Transcript', cat: 'Learning Platform', desc: 'View complete module completion record and assessment scores.', route: '#/academy-progress', tags: ['grades', 'status', 'badges'] },
     { id: 'cmd-cert', title: 'Credential Transcript (Future)', cat: 'Certification', desc: 'Not available yet - planned as a future feature, not a legally issued credential.', route: '#/certificate', tags: ['diploma', 'future', 'cips', 'ism'] },
@@ -125,13 +125,102 @@ PS.invalidateIndex = function () {
   PS._index = null;
 };
 
+/* Words that carry no procurement meaning. A buyer types a sentence,
+   not a query, and every one of these words was a token that had to
+   match before the search returned anything. */
+PS.SEARCH_STOPWORDS = ('a an the and or of for to in on at by with from into over under ' +
+  'is are was were be been being do does did have has had it its this that these those ' +
+  'i me my we us our you your they them their he she his her him hers mine ours yours ' +
+  'but not as how what when where why which who whom can could should would will shall ' +
+  'may might if then than so such very just also more most some any all each both few ' +
+  'other same too only up down out off again further once here there about').split(' ');
+
+/* Light stemmer: strip the endings that stop a buyer from finding the
+   right page because they said "increased" and the page says "increase",
+   or "suppliers" and the page says "supplier". */
+PS.stemToken = function (t) {
+  if (!t || t.length < 5) return t;
+  if (/ies$/.test(t)) return t.slice(0, -3) + 'y';
+  if (/(sses|shes|ches|xes)$/.test(t)) return t.slice(0, -2);
+  if (/s$/.test(t) && !/(ss|us|is)$/.test(t)) return t.slice(0, -1);
+  if (/ing$/.test(t) && t.length > 6) return t.slice(0, -3);
+  if (/ed$/.test(t) && t.length > 5) return t.slice(0, -2);
+  return t;
+};
+
+/* All the forms worth trying for one token. "raised" has to find
+   "raise" as well as "rais", because the page says "raise". */
+PS.tokenVariants = function (t) {
+  var out = [t];
+  var stem = PS.stemToken(t);
+  if (stem && stem !== t) {
+    out.push(stem);
+    /* raised -> rais -> raise; increased -> increas -> increase */
+    if (/ed$|ing$/.test(t) && !/e$/.test(stem)) out.push(stem + 'e');
+  }
+  return out;
+};
+
+/* Turn a typed question into the tokens worth searching for. */
+PS.searchTokens = function (q) {
+  var raw = PS.clean(q, 160).toLowerCase();
+  if (!raw) return [];
+  var parts = raw.split(/[^a-z0-9%.-]+/);
+  var out = [];
+  parts.forEach(function (p) {
+    if (!p) return;
+    /* "12%" and "12" are the same token for our purposes */
+    p = p.replace(/%$/, '').replace(/[.-]+$/, '');
+    if (p.length < 2) return;
+    if (PS.SEARCH_STOPWORDS.indexOf(p) >= 0) return;
+    out.push(p);
+  });
+  return out;
+};
+
 PS.search = function (q, opts) {
   opts = opts || {};
   var idx = PS.buildIndex();
   var raw = PS.clean(q, 120).toLowerCase();
   if (!raw) return { query: '', results: [], total: 0 };
-  var tokens = raw.split(/[\s,;]+/).filter(function (t) { return t.length > 0; });
+  var tokens = PS.searchTokens(q);
+  if (!tokens.length) {
+    /* Everything the user typed was a stop word. Fall back to the raw
+       words rather than returning nothing. */
+    tokens = raw.split(/[\s,;]+/).filter(function (t) { return t.length > 1; });
+  }
+  if (!tokens.length) return { query: '', results: [], total: 0 };
   var out = [];
+
+  /* First pass: score every token by how much of the library it
+     actually reaches, and drop the ones that reach almost nothing.
+     "price went up" was finding nothing because the word "went"
+     appears in a handful of records, so a record had to contain both
+     "price" and "went" to qualify. A word that only a few documents
+     contain is noise in a sentence, not a filter. */
+  var reach = {};
+  idx.forEach(function (rec) {
+    var rl = rec.text;
+    for (var ti = 0; ti < tokens.length; ti++) {
+      if (reach[tokens[ti]] === undefined) reach[tokens[ti]] = 0;
+      var vs = PS.tokenVariants(tokens[ti]);
+      for (var vi = 0; vi < vs.length; vi++) {
+        var v = vs[vi];
+        if (rec.title.toLowerCase().indexOf(v) >= 0 || rec.tags.indexOf(v) >= 0 ||
+          rec.cat.toLowerCase().indexOf(v) >= 0 || rl.indexOf(v) >= 0) { reach[tokens[ti]]++; break; }
+      }
+    }
+  });
+  var NOISE = 3;
+  var usable = tokens.filter(function (t) { return reach[t] >= NOISE; });
+  if (!usable.length) {
+    /* Nothing reached broadly. Keep the token that reaches most, so a
+       rare but exact term still finds its page. */
+    var best = tokens[0];
+    tokens.forEach(function (t) { if (reach[t] > reach[best]) best = t; });
+    usable = [best];
+  }
+  tokens = usable;
 
   idx.forEach(function (rec) {
     if (opts.type && opts.type !== 'all') {
@@ -142,25 +231,37 @@ PS.search = function (q, opts) {
 
     var score = 0;
     var title = rec.title.toLowerCase();
-    var allHit = true;
+    var hitCount = 0;
 
     tokens.forEach(function (t) {
       var hit = 0;
-      if (title === t) hit = 160;
-      else if (title.indexOf(t) === 0) hit = 100;
-      else if (title.indexOf(' ' + t) >= 0) hit = 75;
-      else if (title.indexOf(t) > 0) hit = 55;
-      else if (rec.type === t) hit = 50;
-      else if (rec.tags.indexOf(t) >= 0) hit = 42;
-      else if (rec.cat.toLowerCase().indexOf(t) >= 0) hit = 32;
-      else if (rec.text.indexOf(t) >= 0) hit = 18;
-      else if (t.length > 4 && rec.text.indexOf(t.slice(0, Math.max(4, t.length - 2))) >= 0) hit = 10;
-
-      if (!hit) allHit = false;
+      /* The stem is a fallback: "increased" must find "increase". */
+      var variants = PS.tokenVariants(t);
+      for (var vi = 0; vi < variants.length && !hit; vi++) {
+        var v = variants[vi];
+        if (title === v) hit = 160;
+        else if (title.indexOf(v) === 0) hit = 100;
+        else if (title.indexOf(' ' + v) >= 0) hit = 75;
+        else if (title.indexOf(v) > 0) hit = 55;
+        else if (rec.type === v) hit = 50;
+        else if (rec.tags.indexOf(v) >= 0) hit = 42;
+        else if (rec.cat.toLowerCase().indexOf(v) >= 0) hit = 32;
+        else if (rec.text.indexOf(v) >= 0) hit = 18;
+        else if (v.length > 4 && rec.text.indexOf(v.slice(0, Math.max(4, v.length - 2))) >= 0) hit = 10;
+      }
+      if (hit) hitCount++;
       score += hit;
     });
 
-    if (!allHit) return;
+    /* The old rule was "every token must hit", which made a natural
+       sentence almost impossible to search for: "my supplier increased
+       prices by 12 percent" needed the word "by" and the number "12"
+       to appear in the same page. A record now qualifies on a majority
+       of the meaningful tokens, and the score still rewards matching
+       more of them, so the best answer stays at the top. */
+    var needed = tokens.length <= 2 ? tokens.length : Math.max(2, Math.ceil(tokens.length * 0.5));
+    if (hitCount < needed) return;
+    score += hitCount * 12;
 
     // Small boost for Academy modules and core commands when relevant
     if (rec.type === 'academy') score += 12;
@@ -489,6 +590,8 @@ PS.cmdPalette = {
       return;
     }
 
+    var html = '';
+
     // Also show suggestions inline if few results
     if (showSuggestions) {
       html += '<div class="cmd-suggestions" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">' +
@@ -500,7 +603,6 @@ PS.cmdPalette = {
         '</div></div>';
     }
 
-    var html = '';
     self.lastResults.forEach(function (item, idx) {
       var isSel = idx === self.activeIdx;
       var typeName = self.typeLabels[item.type] || item.type.toUpperCase();

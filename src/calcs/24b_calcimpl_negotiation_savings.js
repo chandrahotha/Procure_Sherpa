@@ -47,6 +47,6 @@ PS.calcImpl.negotiationSavings = function (v) {
       'Total value over the term: ' + PS.moneyR(total),
       'Report recurring and one-off elements separately; classify savings versus cost avoidance explicitly'],
     s: 'Negotiation saving ' + PS.moneyR(annual) + ' per year (' + PS.pct(pctSave) + ' against baseline), ' + PS.moneyR(total) + ' across the term.',
-    d: { initiatives: [{ name: (PS.prefs().orgName ? PS.prefs().orgName + ' ' : '') + 'Negotiation saving', baseline: v.baselinePrice * v.annualVolume, newCost: v.negotiatedPrice * v.annualVolume, savings: annual, avoidance: 0, category: 'Negotiated savings', supplier: 'Negotiated supplier', kind: 'Savings' }], annual: annual, total: total, baselineType: type }
+    d: { initiatives: [{ name: (PS.prefs().orgName ? PS.prefs().orgName + ' ' : '') + 'Negotiation saving', baseline: v.baselinePrice * v.annualVolume, newCost: v.negotiatedPrice * v.annualVolume, savings: annual, avoidance: 0, category: v.category || 'Negotiated savings', supplier: v.supplier || 'Unspecified supplier', kind: 'Savings' }], annual: annual, total: total, baselineType: type }
   });
 };

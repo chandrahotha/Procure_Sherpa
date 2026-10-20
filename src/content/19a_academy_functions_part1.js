@@ -149,6 +149,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Without a disciplined S2C contract in place, P2P simply automates the payment of uncompetitive, unvetted invoices.'
     }
   ],
+  relSop: 'sop-procurement-lifecycle',
+  rel: {
+    concepts: ['c-procurement-lifecycle', 'c-procurement', 'c-spend-management'],
+    sops: ['sop-procurement-lifecycle'],
+    checklists: ['cl-procurement-intake'],
+    templates: ['tpl-business-case'],
+    calcs: ['calc-budget-vs-actual'],
+    decisions: ['sourcing-method'],
+    kpis: ['kpi-sum', 'kpi-roi']
+  },
   labMission: {
     title: 'Mission 1: Conduct a Procurement Maturity & Lifecycle Diagnosis',
     desc: 'Use the Procurement Maturity Assessment tool to diagnose where an organization sits on the journey from ad-hoc buying to world-class value generation.',
@@ -305,6 +315,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Differentiate your strategy: manage the head of spend with deep strategic rigor; manage the tail of spend with process efficiency and automation.'
     }
   ],
+  relSop: 'sop-savings-calculation',
+  rel: {
+    concepts: ['spend-analysis', 'c-spend-management', 'direct-indirect-spend'],
+    sops: ['sop-savings-calculation'],
+    checklists: ['cl-savings-validation'],
+    templates: ['tpl-savings-calculation'],
+    calcs: ['calc-savings-analysis', 'calc-supplier-concentration'],
+    decisions: ['consolidate-suppliers'],
+    kpis: ['kpi-sum', 'kpi-savings']
+  },
   labMission: {
     title: 'Mission 2: Analyze Supplier Spend Concentration (HHI)',
     desc: 'Use the Spend Concentration Calculator to calculate market concentration and measure supplier dependency risk.',
@@ -459,6 +479,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Leverage exists only when the buyer has significant volume AND the credible ability to switch suppliers.'
     }
   ],
+  relSop: 'sop-procurement-lifecycle',
+  rel: {
+    concepts: ['category-management', 'c-spend-management'],
+    sops: ['sop-procurement-lifecycle'],
+    checklists: ['cl-sourcing-strategy'],
+    templates: ['tpl-business-case'],
+    calcs: ['calc-supplier-concentration', 'calc-make-vs-buy'],
+    decisions: ['make-or-buy', 'sourcing-method'],
+    kpis: ['kpi-sum']
+  },
   labMission: {
     title: 'Mission 3: Evaluate Make-or-Buy Category Strategy',
     desc: 'Use the Make-or-Buy Decision Calculator to evaluate whether a category component should be insourced or outsourced.',
@@ -614,6 +644,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Convert brand-name requisitions into functional specifications to invite competition while preserving technical integrity.'
     }
   ],
+  relSop: 'sop-procurement-intake',
+  rel: {
+    concepts: ['specification', 'c-procurement-lifecycle'],
+    sops: ['sop-procurement-intake'],
+    checklists: ['cl-requirement-definition'],
+    templates: ['tpl-rfq'],
+    calcs: ['calc-po-value-check'],
+    decisions: ['make-or-buy'],
+    kpis: ['kpi-cycle-time']
+  },
   labMission: {
     title: 'Mission 4: Complete an Intake & Requirement Checklist',
     desc: 'Use the Procurement Intake Checklist to review an incoming purchase request and ensure all specifications are clear.',
@@ -769,6 +809,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'All bidders must compete on a strictly level playing field: identical information, identical deadlines, identical rules.'
     }
   ],
+  relSop: 'sop-rfq',
+  rel: {
+    concepts: ['rfi-rfq-rfp', 'sourcing-strategy', 'competitive-tension'],
+    sops: ['sop-rfq', 'sop-rfp'],
+    checklists: ['cl-sourcing-strategy', 'cl-rfq-preparation'],
+    templates: ['tpl-rfq', 'tpl-rfp'],
+    calcs: ['calc-po-value-check'],
+    decisions: ['rfq-or-rfp', 'rfi-or-rfq', 'competitive-or-single'],
+    kpis: ['kpi-bid-rate', 'kpi-sourcing-coverage']
+  },
   labMission: {
     title: 'Mission 5: Test Sourcing Channel Selection Guide',
     desc: 'Use the Sourcing Decision Guide to evaluate project scenarios and determine whether to use an RFI, RFP, RFQ, or Auction.',
@@ -925,6 +975,16 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Procedural integrity and fairness protect the organization from procurement corruption, bid-rigging, and legal liability.'
     }
   ],
+  relSop: 'sop-rfq',
+  rel: {
+    concepts: ['rfi-rfq-rfp', 'evaluation-criteria'],
+    sops: ['sop-rfq'],
+    checklists: ['cl-rfq-preparation', 'cl-quote-collection'],
+    templates: ['tpl-rfq', 'tpl-bid-instructions', 'tpl-supplier-invitation'],
+    calcs: ['calc-po-value-check'],
+    decisions: ['rfq-or-rfp'],
+    kpis: ['kpi-rfq-cycle']
+  },
   labMission: {
     title: 'Mission 6: Draft & Customize an RFQ Package',
     desc: 'Use the RFQ Template to build a professional Request for Quotation complete with instructions, specifications, and commercial schedules.',

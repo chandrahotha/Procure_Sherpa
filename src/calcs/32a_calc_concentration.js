@@ -19,7 +19,7 @@ PS_CALC.push({
     PS.F('spend5', 'Supplier 5 spend', 'curr', 'nn', '60000')
   ],
   example: { spend1: 850000, spend2: 420000, spend3: 180000, spend4: 90000, spend5: 60000 },
-  handoffTo: ['calc-supplier-scorecard'],
+  handoffTo: [],
   rel: { sops: ['sop-supplier-performance-management', 'sop-supplier-evaluation'], decisions: ['supplier-concentration', 'dual-source'], kpis: ['kpi-supplier-concentration'], glossary: ['gloss-hhi'], scenarios: ['scn-supplier-risk'] },
   run: function (v) { return PS.calcImpl.concentration(v); }
 });

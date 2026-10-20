@@ -1,6 +1,34 @@
 /* ---------- calculator page initialisation, guidance, examples ---------- */
+/* Restore a saved calculation. PS.pendingSaved was written by the
+   "saved-open" action in three places and read in none, so opening a saved
+   calculation showed the tool's defaults with an empty results panel. */
+PS.applyPendingSaved = function (calc) {
+  var rec = PS.pendingSaved;
+  if (!rec || !calc) return false;
+  var d = rec.data || {};
+  var targetId = d.calc || (rec.type === 'quote-comparison' ? 'calc-compare-quotes' : null);
+  if (targetId !== calc.id) return false;
+  PS.pendingSaved = null;
+  if (!d.values || typeof d.values !== 'object') return false;
+  PS.setCalcInputs(d.values);
+  PS.runCalc(true);
+  var note = document.createElement('div');
+  note.className = 'alert alert-info no-print';
+  note.innerHTML = '<strong>Reopened from your saved work: ' + PS.esc(rec.title) + '</strong>' +
+    'The values you saved are back in the form and the result has been recalculated. ' +
+    'Nothing was overwritten in your workspace - use Save again if you want a new copy.';
+  var anchor = PS.$('#calcForm');
+  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(note, anchor);
+  PS.toast('Saved calculation reopened.', 'ok');
+  return true;
+};
+
 PS.calcPageInit = function (calc, params) {
   var prefill = PS.pendingPrefill;
+  /* A reopened saved calculation takes priority over a cross-tool handoff:
+     it carries the user's own prior work, not another tool's values. */
+  var restored = PS.applyPendingSaved(calc);
+  if (restored) prefill = null;
   if (prefill && prefill.to === calc.id) {
     var applied = [];
     (calc.fields || []).forEach(function (f) {

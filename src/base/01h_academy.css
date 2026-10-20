@@ -76,6 +76,25 @@
   transition: width 0.4s ease;
 }
 
+/* ---------- Academy: linked library strip ----------
+   Connects a function to the content library: the concepts that explain
+   it, the SOP that governs it, the checklist that evidences it, the
+   template that records it, the calculator that quantifies it, the
+   decision guide that frames it and the KPI that measures it. */
+.hub-linked { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.hub-linked-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.hub-linked-label {
+  flex: 0 0 190px;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  min-width: 0;
+}
+.hub-linked-row .chip { flex: 0 1 auto; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 700px) { .hub-linked-label { flex: 1 1 100%; } }
+
 /* ---------- Procurement Thinking Points ---------- */
 .thinking-point-card {
   background: var(--panel);

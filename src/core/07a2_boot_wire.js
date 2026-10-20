@@ -72,6 +72,22 @@ PS.wireEvents = function () {
   PS.on('#favBtn', 'click', function () { PS.acts.fav(); });
   PS.on('#userProfileBtn', 'click', function () { if (PS.user) PS.user.openModal(); });
   window.addEventListener('hashchange', function () { PS.renderRoute(); });
+  /* A click on an in-app link is a deliberate navigation, so focus should
+     follow to the new page. A back/forward move should not steal focus. */
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href^="#/"]') : null;
+    if (!a) return;
+    if (a.getAttribute('target') === '_blank') return;
+    PS._routeFocusPending = true;
+  });
+  /* Back and Forward are distinguishable from an ordinary navigation:
+     the browser has already restored the scroll position, so the router
+     must not force the page back to the top. */
+  window.addEventListener('popstate', function () {
+    PS._popState = true;
+    PS._routeFocusPending = false;
+    PS.renderRoute();
+  });
   window.addEventListener('beforeprint', function () {
     if (PS.calcState && PS.calcState.result && PS.$('#calcForm')) PS.runCalc(true);
   });

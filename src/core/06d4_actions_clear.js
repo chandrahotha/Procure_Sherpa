@@ -12,6 +12,8 @@ PS.acts['storage-info'] = function () {
 };
 PS.acts['clear-data'] = function () {
   var n = PS.saved.count();
+  var labs = Object.keys(PS.store.get(PS.K.labs, {})).length;
+  var packs = (PS.docpack && PS.docpack.list) ? PS.docpack.list().length : 0;
   PS.modal({
     title: 'Purge Workspace Session Data', wide: true,
     body: '<p>This permanently clears the following enterprise records from your <strong>active single-tenant workspace</strong>:</p>' +
@@ -20,6 +22,14 @@ PS.acts['clear-data'] = function () {
       '<tr><td>Checklist progress (' + Object.keys(PS.clState.all()).length + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Template entries (' + Object.keys(PS.tplState.all()).length + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Favorites (' + PS.fav.list().length + ') and recently used (' + PS.recent.list().length + ')</td><td>Deleted</td></tr>' +
+      '<tr><td>Academy progress and badges</td><td>Deleted</td></tr>' +
+      '<tr><td>Skill assessment results (' + (PS.store.get(PS.K.assessment, null) ? 1 : 0) + ')</td><td>Deleted</td></tr>' +
+      '<tr><td>Certification exam history</td><td>Deleted</td></tr>' +
+      '<tr><td>Practice lab progress (' + labs + ')</td><td>Deleted</td></tr>' +
+      '<tr><td>Spend data model</td><td>Deleted</td></tr>' +
+      '<tr><td>Copilot transcript</td><td>Deleted</td></tr>' +
+      '<tr><td>Document packs (' + packs + ')</td><td>Deleted</td></tr>' +
+      '<tr><td>Community notes</td><td>Deleted</td></tr>' +
       '<tr><td>Audit log (' + PS.auditList().length + ' events)</td><td>Deleted</td></tr>' +
       '<tr><td>Settings</td><td>Reset to defaults</td></tr>' +
       '</tbody></table></div>' +
@@ -29,7 +39,13 @@ PS.acts['clear-data'] = function () {
     okLabel: 'Purge Session Data', danger: true,
     onOk: function (root) {
       if (!PS.$('#clearConfirm', root).checked) { PS.toast('Tick the confirmation box to continue.', 'danger'); return false; }
-      [PS.K.saved, PS.K.cl, PS.K.tpl, PS.K.fav, PS.K.recent, PS.K.audit, PS.K.prefs, PS.K.draft, PS.K.maturity].forEach(function (k) { PS.store.remove(k); });
+      /* Every key the app writes must be listed here. The list used to omit
+         the spend model, the copilot transcript, exam results and document
+         packs, so "Purge Session Data" left them behind. */
+      [PS.K.saved, PS.K.cl, PS.K.tpl, PS.K.fav, PS.K.recent, PS.K.audit, PS.K.prefs, PS.K.draft,
+        PS.K.maturity, PS.K.exams, PS.K.spend, PS.K.spendLegacy, PS.K.copilot, PS.K.docpacks,
+        PS.K.academy, PS.K.labs, PS.K.assessment, PS.K.community, PS.K.schema, PS.K.user]
+        .forEach(function (k) { PS.store.remove(k); });
       PS._prefsCache = null;
       PS.audit('data-cleared', 'All local Procure Sherpa data removed by user');
       PS.applyTheme();

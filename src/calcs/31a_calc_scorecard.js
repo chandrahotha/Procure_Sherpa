@@ -30,7 +30,7 @@ PS_CALC.push({
     PS.F('bRisk', 'B: risk (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3')
   ],
   example: { wQuality: 30, wDelivery: 25, wPrice: 20, wService: 15, wRisk: 10, aQuality: 4, aDelivery: 4, aPrice: 3, aService: 5, aRisk: 3, bQuality: 3, bDelivery: 4, bPrice: 4, bService: 3, bRisk: 3 },
-  handoffTo: ['calc-supplier-concentration'],
+  handoffTo: [],
   rel: { sops: ['sop-supplier-evaluation'], checklists: ['cl-supplier-evaluation'], templates: ['tpl-supplier-evaluation'], calcs: ['calc-supplier-concentration'], decisions: ['competitive-or-single'], scenarios: ['scn-supplier-risk'] },
   run: function (v) { return PS.calcImpl.scorecard(v); }
 });

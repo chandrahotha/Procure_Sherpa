@@ -202,17 +202,9 @@ PS.bindGlobalKeys = function () {
     // Ignore when in input/textarea/select
     var target = e.target;
     var isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
-    var isInModal = document.querySelector('.modal-backdrop:not([hidden])') || document.querySelector('.cmd-palette-backdrop:not([hidden])');
 
-    // Ctrl+K / / - Command Palette
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      if (!isInput) PS.cmdPalette.open();
-    }
-    if (e.key === '/' && !isInput && !isInModal) {
-      e.preventDefault();
-      PS.cmdPalette.open();
-    }
+    /* Ctrl+K and "/" are handled once, in the boot wiring (07a2). Two
+       independent listeners opened the command palette twice per press. */
 
     // Ctrl+Shift+K - Keyboard shortcuts help
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
@@ -230,8 +222,10 @@ PS.bindGlobalKeys = function () {
     // Ctrl+B - Toggle sidebar
     if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
       e.preventDefault();
-      var app = PS.$('.app');
-      if (app) app.classList.toggle('nav-open');
+      /* Go through PS.toggleNav so the scrim and aria-expanded stay in
+         step. Toggling the class alone left the scrim hidden and the
+         button's state stale, and did nothing at all on desktop. */
+      PS.toggleNav();
     }
 
     // Quick Go shortcuts (G + key) - only when not in input

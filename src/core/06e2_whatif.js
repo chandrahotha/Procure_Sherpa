@@ -13,7 +13,12 @@ PS.whatif.DEFAULT_DELTAS = [-10, -5, 0, 5, 10, 20];
 PS.whatif.variableKeys = function (calc) {
   var out = [];
   (calc.fields || []).forEach(function (f) {
-    if (f.type === 'number') out.push(f.k);
+    /* Numeric fields are identified by the absence of a non-numeric control
+       type, not by an explicit type:'number'. No calculator field ever
+       declared that, so this test matched nothing and What-If was dead for
+       all 19 calculators. PS.isNumField is the same predicate the
+       validator uses, so the two cannot disagree. */
+    if (PS.isNumField && PS.isNumField(f)) out.push(f.k);
   });
   return out;
 };

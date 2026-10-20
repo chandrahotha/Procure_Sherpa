@@ -2,7 +2,84 @@
 
 **Current Version:** 2.0 (post-UX improvements)  
 **Baseline Tag:** `HUBCHANGED`  
-**Last Updated:** 2026-09-18
+**Last Updated:** 2026-10-20
+
+---
+
+## Shipped in the v2.4 revamp (2026-10-20)
+
+The phases below are the original plan. This section records what was
+actually built, because a large part of it was not in the plan at all:
+it came out of an audit that found the application was telling the
+truth badly in a dozen places.
+
+### The application was lying, and that was fixed
+
+| Defect | Was | Now |
+|---|---|---|
+| Procurement Maturity Check | Rendered **zero** rating fields, then threw an uncaught `TypeError` on submit | 9 assessed areas, a scored profile, a weakest-area focus list |
+| Procurement Lifecycle | Promised "twenty-one stages" and rendered **none** | 21 stages, each linked to its concept, SOP and calculator |
+| Academy function lookup | `PS.byId('academy', id)` always returned null, so Portfolio, Learning Paths and two of six "What to Learn Next" cards rendered **empty** | Resolves; all four surfaces work |
+| Skill assessment result | Stored `lastScore`, read `.score` - every consumer showed **"undefined%"** and "Level 1" for a score of 80 | Stores and reads both; recommendations are persisted and shown |
+| Select-field defaults | Six fields across five calculators matched no option, so **Reset blanked them** and the KPI tool **inverted its RAG band** (Amber 96.4% became Green 103.7%) and the tax tool flipped exclusive to inclusive | Defaults resolve by index; the RAG and the tax split are correct |
+| What-If analysis | 100% dead: the numeric test could never match, so the button always said "no numeric inputs to vary" | Works on all 19 calculators |
+| Saved work reopen | `PS.pendingSaved` was written in three places and **read in none** - a saved calculation reopened as defaults, a saved decision guide as "not sure" everywhere | Values and answers are restored and recalculated |
+| Spend data model | Restored under the wrong storage key, so a restored backup **silently reverted to the example data**; unsaved edits were lost on every add, remove and drag | Restores correctly, edits are collected before every mutation |
+| "Clear local data" | Left the spend model, copilot transcript, exam results and document packs **behind** | Clears every key the app writes |
+| Cross-tool handoff | 27 of 41 links carried **no data**; 11 more could never | 30 links, every one carries values on a shared commercial vocabulary |
+| Markdown export | An SOP export dropped RACI, gates, controls, records, KPIs, risks, exceptions, mistakes, references and revision history; a checklist export **erased every tick** | Full-fidelity export for all nine content types, with live workspace state |
+| Document pack | Rendered every template field blank and every checklist unticked - a pack with no evidence in it | Carries the values, ticks, notes and decision outcome |
+| Copilot | Indexed 5 of 9 content types, so "which template do I use for an award recommendation" returned nothing | Indexes all nine types plus the 25-function Academy |
+| Search | The app's **own documented example** ("supplier increased price by 12%") returned zero results | 14 of 14 realistic queries return results, 10 with the right top hit |
+| Relationship checker | The runtime and the static checker had **different id maps**, so three live links were being pruned at boot while the gate reported "broken refs: 0" | One shared map; the gate is a hard failure |
+
+### The navigation was rebuilt
+
+The sidebar was hiding itself on the landing page, failing to light up on
+8 of its 37 items, and pointing at a page that said "not available yet".
+It is now **five sections of 33 items plus a permanent footer strip**:
+Start, Learn, Do the Work, Look It Up, My Work. Four orphan routes were
+rescued (`#/operations`, `#/dash`, `#/audit`, `#/career-paths`), four
+dead ends were removed with a stated reason, and every one of the
+previous 37 items is accounted for in a ledger in `04b1_navdata.js`. The
+Command Center gained a state-aware "where to start" block and a Today
+strip, and the layout no longer overflows on a phone.
+
+### The curriculum grew, and it grew connected
+
+| | Before | After |
+|---|---|---|
+| Academy modules | 8 | **10** |
+| Academy functions | 19 | **25** |
+| Functions with a library link | 0 | **25** |
+| Content items with no inbound link | 201 | **0** |
+| Learning paths | 3, covering 8 functions | 4, covering all 25 |
+| Skill portfolio areas | 6, covering 8 functions | 7, covering all 25 |
+| Badges | 8, with 7 of 19 functions earning none | 13, with every function covered |
+
+The two new modules are **Services, Software and Indirect Procurement**
+(indirect and MRO, software and SaaS licensing, professional services)
+and **Risk, Compliance, Ethics and Sustainability** (sustainable
+procurement, anti-bribery and third-party due diligence, supplier
+resilience). They are grounded in ISO 20400:2017, the CIPS Procurement
+and Supply Cycle, the OECD Guidelines for Multinational Enterprises, the
+UK Bribery Act 2010 section 7, the FCPA books-and-records provisions
+and the GHG Protocol Scope 3 standard.
+
+### Two engineering decisions were written down
+
+- **ADR 0002** replaces the guessed byte ceilings with measured ones.
+  The script compiles in 21 ms, the application boots to a rendered first
+  page in 244 ms, and 446 KB reaches a browser once gzipped. The gate now
+  measures all three, because the previous 1300 KB "JS payload ceiling"
+  was never derived from anything and had quietly become the rule
+  instead of the reason.
+- **The integrity gate** (`npm run test:integrity`) asserts what the
+  other tests could not: that no route leaks `undefined`, that every
+  internal link resolves, that every control has a handler, that every
+  content item has an inbound link, that every handoff can carry a
+  value, and that the Academy links into the library. It exists because
+  the suite was green while the application was broken in a dozen places.
 
 ---
 

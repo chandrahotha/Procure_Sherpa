@@ -46,6 +46,21 @@ PS.calcImpl.budgetActual = function (v) {
       'Forecast outturn: ' + PS.moneyR(forecast) + ' :  ' + (status[0] || 'unknown').toLowerCase(),
       'Split variance into price, volume and phasing before acting'],
     s: 'Spend is ' + PS.moneyR(Math.abs(variance)) + ' ' + (variance >= 0 ? 'over' : 'under') + ' pro-rata; run-rate forecasts ' + PS.moneyR(forecast) + ' (' + (status[0] || 'unknown').toLowerCase() + ').',
-    d: { variance: variance, varPct: varPct, forecast: forecast, forecastVar: forecastVar, status: status[0] }
+    d: {
+      /* A favourable variance is a saving signal, and an overspend is a
+         cost-avoidance gap. Both belong on the savings dashboard, or
+         the dashboard only ever shows negotiated savings and never the
+         money the budget position itself revealed. */
+      initiatives: [{
+        name: 'Budget position',
+        baseline: v.annualBudget, newCost: isFinite(forecast) ? forecast : v.annualBudget,
+        savings: variance < 0 ? -variance : 0,
+        avoidance: variance > 0 ? variance : 0,
+        category: 'Budget control',
+        supplier: 'Portfolio',
+        kind: variance < 0 ? 'Savings' : 'Cost avoidance'
+      }],
+      variance: variance, varPct: varPct, forecast: forecast, forecastVar: forecastVar, status: status[0]
+    }
   });
 };

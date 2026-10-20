@@ -32,6 +32,17 @@ PS.register = function (type, item) {
 PS.byId = function (type, id) {
   if (!id) return null;
   var idn = String(id);
+  /* Academy functions live in their own registry (PS.ACADEMY_FUNCTIONS),
+     not in PS.data, so they were invisible to byId(). Learning Paths, the
+     Skill Portfolio and two of the six "What to Learn Next" recommendations
+     all resolve through here, so they were silently rendering empty. */
+  if (type === 'academy') {
+    var afs = PS.ACADEMY_FUNCTIONS || [];
+    for (var a = 0; a < afs.length; a++) {
+      if (afs[a].id === idn) return afs[a];
+    }
+    return null;
+  }
   var list = PS.data[type] || [];
   for (var i = 0; i < list.length; i++) {
     if (list[i].id === idn) return list[i];

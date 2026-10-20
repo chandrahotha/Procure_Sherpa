@@ -36,6 +36,30 @@ PS.route('dec', function (id) {
     '</div></div></div>' +
     PS.relatedCard('dec', it) +
     PS.disclaimer(it.disclaimerKind || 'policy');
+  /* Restore a saved assessment. The saved answers were written but never
+     re-applied, so reopening a decision guide reset every question to
+     "Not sure" and produced a different (and wrong) recommendation. */
+  PS.pageInit = function () {
+    var rec = PS.pendingSaved;
+    if (!rec || rec.type !== 'decision') return;
+    var d = rec.data || {};
+    if (d.decision !== id || !d.answers) return;
+    PS.pendingSaved = null;
+    var answers = d.answers;
+    PS.$$('#decForm input[type=radio]').forEach(function (r) {
+      if (answers[r.name] !== undefined) r.checked = (r.value === answers[r.name]);
+    });
+    PS.acts['dec-run']();
+    var box = PS.$('#decResult');
+    if (box) {
+      var note = document.createElement('div');
+      note.className = 'alert alert-info no-print';
+      note.innerHTML = '<strong>Reopened from your saved work: ' + PS.esc(rec.title) + '</strong>' +
+        'Your saved answers have been restored and the guidance recalculated.';
+      box.parentNode.insertBefore(note, box);
+    }
+    PS.toast('Saved assessment reopened.', 'ok');
+  };
   return html;
 });
 PS.renderDecisionResult = function (dec, out, answers) {

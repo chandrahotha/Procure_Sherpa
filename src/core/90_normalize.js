@@ -35,59 +35,21 @@ PS.validateCalculators = function () {
 /* ---------- hardening: prune dead relationship links at boot ----------
    Content authors may reference items planned for future releases.
    Rather than rendering dead chips, drop unresolvable refs (keeping
-   '!'-prefixed forward references) and surface one console warning. */
+   '!'-prefixed forward references) and surface one console warning.
+
+   The legacy id translations live in one place, PS.LEGACY_ID_MAP
+   (src/core/90a_idmap.js), which tools/check_rels.mjs also reads. The two
+   used to be separate maps: the checker knew about translations the
+   runtime did not, so it reported "broken refs: 0" while the app pruned
+   three live links at boot. */
 PS.normRelId = function (t, id) {
   if (typeof id !== 'string' || !id) return id;
-  if (t === 'calc') {
-    var CALC_LEGACY = /^(calc-)?(savings-analysis|budget-vs-actual|supplier-scorecard|supplier-concentration|make-vs-buy|moq|multi-year-contract|gst|currency|kpi-calculator)$/i;
-    var CALC_MAP = {
-      'savings-analysis': 'calc-savings-analysis', 'budget-vs-actual': 'calc-budget-vs-actual',
-      'supplier-scorecard': 'calc-supplier-scorecard', 'supplier-concentration': 'calc-supplier-concentration',
-      'make-vs-buy': 'calc-make-vs-buy', 'moq': 'calc-moq', 'multi-year-contract': 'calc-multi-year-contract-cost',
-      'gst': 'calc-gst-tax', 'currency': 'calc-fx-currency', 'kpi-calculator': 'calc-kpi-calculator'
-    };
-    var m = CALC_LEGACY.exec(id);
-    if (m) return CALC_MAP[m[2].toLowerCase()] || id;
-  }
-  var SOP_MAP = {
-    'sop-quote-comparison': 'sop-rfq', 'sop-bid-normalization': 'sop-rfq',
-    'sop-commercial-evaluation': 'sop-supplier-evaluation', 'sop-award-recommendation': 'sop-rfp',
-    'sop-negotiation-savings': 'sop-savings-calculation', 'sop-savings-validation': 'sop-savings-calculation',
-    'sop-price-escalation-review': 'sop-supplier-price-increase-review', 'sop-purchase-requisition': 'sop-procurement-intake',
-    'sop-purchase-order': 'sop-procurement-intake', 'sop-single-source': 'sop-procurement-intake',
-    'sop-procurement-exception': 'sop-emergency-procurement', 'sop-requirement-definition': 'sop-procurement-intake',
-    'sop-sourcing-strategy': 'sop-rfq', 'sop-supplier-identification': 'sop-supplier-evaluation',
-    'sop-rfi': 'sop-rfp', 'sop-competitive-bid': 'sop-rfq', 'sop-contract-award': 'sop-contract-review',
-    'sop-supplier-prequalification': 'sop-supplier-evaluation', 'sop-supplier-due-diligence': 'sop-supplier-evaluation',
-    'sop-supplier-segmentation': 'sop-supplier-performance-management', 'sop-supplier-corrective-action': 'sop-supplier-performance-management',
-    'sop-negotiation-execution': 'sop-negotiation-preparation', 'sop-contract-performance-review': 'sop-supplier-performance-management',
-    'sop-landed-cost': 'sop-supplier-price-increase-review', 'sop-contract-change-control': 'sop-contract-review',
-    'sop-compliance-review': 'sop-procurement-audit', 'sop-documentation': 'sop-procurement-audit',
-    'sop-supplier-exit': 'sop-contract-renewal', 'sop-supplier-qualification': 'sop-supplier-evaluation'
-  };
-  if (t === 'sop') return SOP_MAP[id] || id;
-  if (t === 'dec') return (id.indexOf('dec-') === 0) ? id.slice(4) : id;
-  if (t === 'kpi') {
-    if (id === 'kpi-payment-terms' || id === 'kpi-working-capital') return 'kpi-working-capital-impact';
-    if (id === 'kpi-supplier-performance') return 'kpi-otif';
-  }
-  if (t === 'kb') {
-    if (id === 'kb-cost-drivers') return 'cost-breakdown';
-    if (id === 'kb-price-escalation') return 'should-cost';
-    if (id === 'kb-indexation') return 'currency-fx';
-    if (id === 'kb-delegation-of-authority' || id === 'kb-approval-matrix') return 'delegation-of-authority';
-    if (id.indexOf('kb-') === 0) return id.slice(3);
-  }
-  if (t === 'tpl') {
-    if (id === 'tpl-price-increase-assessment') return 'tpl-contract-change-request';
-    if (id === 'tpl-single-source-justification') return 'tpl-single-source';
-    if (id === 'tpl-statement-of-work') return 'tpl-contract-review-checklist';
-  }
-  if (t === 'cl') {
-    if (id === 'cl-negotiation-preparation') return 'cl-negotiation';
-    if (id === 'cl-price-increase-review') return 'cl-contract-renewal';
-    if (id === 'cl-supplier-qualification') return 'cl-supplier-evaluation';
-  }
+  var hit = PS.LEGACY_ID_MAP ? PS.LEGACY_ID_MAP[t + ':' + id] : null;
+  if (hit) return hit;
+  /* Generic prefix fallbacks for ids that were only ever written with a
+     type prefix attached. */
+  if (t === 'dec' && id.indexOf('dec-') === 0) return id.slice(4);
+  if (t === 'kb' && id.indexOf('kb-') === 0) return id.slice(3);
   return id;
 };
 
@@ -187,6 +149,7 @@ PS.contentQA = function () {
   return problems;
 };
 PS.normalizeContent();
+if (PS.completeLinks) PS.completeLinks();
 PS.pruneRels();
 PS.CONTENT_STATUS = PS.contentReport();
 /* IIFE, not bare statements: every fragment in this build shares one

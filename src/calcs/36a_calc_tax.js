@@ -15,7 +15,7 @@ PS_CALC.push({
     PS.F('taxMode', 'The amount entered is', 'sel', 'opts=Tax_exclusive_add_tax_on_top;Tax_inclusive_extract_the_tax|0')
   ],
   example: { amount: 10000, taxRate: 10, taxMode: 'Tax exclusive add tax on top' },
-  handoffTo: ['calc-landed-cost'],
+  handoffTo: [],
   rel: { sops: ['sop-procurement-intake'], checklists: ['cl-procurement-file-completeness'], calcs: ['calc-landed-cost'] },
   run: function (v) { return PS.calcImpl.gstTax(v); }
 });

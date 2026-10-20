@@ -46,7 +46,31 @@ PS.F = function (spec, label, unit, flags, def) {
   });
   if (p[4] !== undefined && p[4] !== '') {
     if (f.type === 'check') f.def = (p[4] === '1' || p[4] === 'true');
-    else if (f.type === 'select' || f.unit === undefined && f.type === 'text') f.def = p[4];
+    else if (f.type === 'select') {
+      /* A select default is declared as an option INDEX (e.g. "|2" means the
+         third option), or as the literal option value. Reading it as a
+         literal is what broke six fields: "|0" matched no option, so
+         nothing was pre-selected, Reset blanked the control entirely, and
+         two calculators silently produced the wrong answer - the KPI tool
+         inverted its RAG band and the tax tool flipped exclusive to
+         inclusive. Index first, literal second, first option as fallback. */
+      var raw = String(p[4]);
+      var norm = raw.replace(/_/g, ' ');
+      var opts = f.options || [];
+      var match = null;
+      for (var oi = 0; oi < opts.length; oi++) {
+        var ov = typeof opts[oi] === 'string' ? opts[oi] : (opts[oi] && opts[oi].v);
+        if (String(ov) === raw || String(ov) === norm) { match = ov; break; }
+      }
+      if (match === null && /^\d+$/.test(raw)) {
+        var idx = parseInt(raw, 10);
+        if (idx >= 0 && idx < opts.length) {
+          match = typeof opts[idx] === 'string' ? opts[idx] : (opts[idx] && opts[idx].v);
+        }
+      }
+      f.def = match === null ? (opts.length ? (typeof opts[0] === 'string' ? opts[0] : opts[0].v) : raw) : match;
+    }
+    else if (f.unit === undefined && f.type === 'text') f.def = p[4];
     else f.def = PS.num(p[4]);
   }
   if (f.type === 'sel') f.type = 'select';

@@ -64,69 +64,45 @@ for (const f of files) {
 const ALIAS = { concepts:'concepts', kb:'concepts', concept:'concepts', sops:'sops', sop:'sops', checklists:'checklists', checklist:'checklists', cl:'checklists', templates:'templates', template:'templates', tpl:'templates', calcs:'calcs', calc:'calcs', calculator:'calcs', decisions:'decisions', decision:'decisions', dec:'decisions', kpis:'kpis', kpi:'kpis', scenarios:'scenarios', scenario:'scenarios', scen:'scenarios', glossary:'glossary', gloss:'glossary', term:'glossary' };
 const KEY = { concepts: 'kb', sops: 'sop', checklists: 'cl', templates: 'tpl', calcs: 'calc', decisions: 'dec', kpis: 'kpi', scenarios: 'scen', glossary: 'gloss' };
 const canon = (k) => ALIAS[k] || k;
-/* translate legacy ids into v2 ids before resolving */
-const CALC_LEGACY = /^(calc-)?(savings-analysis|budget-vs-actual|supplier-scorecard|supplier-concentration|make-vs-buy|moq|multi-year-contract|gst|currency|kpi-calculator)$/i;
-const CALC_MAP = {
-  'savings-analysis': 'calc-savings-analysis', 'budget-vs-actual': 'calc-budget-vs-actual',
-  'supplier-scorecard': 'calc-supplier-scorecard', 'supplier-concentration': 'calc-supplier-concentration',
-  'make-vs-buy': 'calc-make-vs-buy', 'moq': 'calc-moq', 'multi-year-contract': 'calc-multi-year-contract-cost',
-  'gst': 'calc-gst-tax', 'currency': 'calc-fx-currency', 'kpi-calculator': 'calc-kpi-calculator'
-};
-const SOP_MAP = {
-  'sop-quote-comparison': 'sop-rfq', 'sop-bid-normalization': 'sop-rfq',
-  'sop-commercial-evaluation': 'sop-supplier-evaluation', 'sop-award-recommendation': 'sop-rfp',
-  'sop-negotiation-savings': 'sop-savings-calculation', 'sop-savings-validation': 'sop-savings-calculation',
-  'sop-price-escalation-review': 'sop-supplier-price-increase-review', 'sop-purchase-requisition': 'sop-procurement-intake',
-  'sop-purchase-order': 'sop-procurement-intake', 'sop-single-source': 'sop-procurement-intake',
-  'sop-procurement-exception': 'sop-emergency-procurement', 'sop-requirement-definition': 'sop-procurement-intake',
-  'sop-sourcing-strategy': 'sop-rfq', 'sop-supplier-identification': 'sop-supplier-evaluation',
-  'sop-rfi': 'sop-rfp', 'sop-competitive-bid': 'sop-rfq', 'sop-contract-award': 'sop-contract-review',
-  'sop-supplier-prequalification': 'sop-supplier-evaluation', 'sop-supplier-due-diligence': 'sop-supplier-evaluation',
-  'sop-supplier-segmentation': 'sop-supplier-performance-management', 'sop-supplier-corrective-action': 'sop-supplier-performance-management',
-  'sop-negotiation-execution': 'sop-negotiation-preparation', 'sop-contract-performance-review': 'sop-supplier-performance-management',
-  'sop-landed-cost': 'sop-supplier-price-increase-review', 'sop-contract-change-control': 'sop-contract-review',
-  'sop-compliance-review': 'sop-procurement-audit', 'sop-documentation': 'sop-procurement-audit',
-  'sop-supplier-exit': 'sop-contract-renewal', 'sop-supplier-qualification': 'sop-supplier-evaluation'
-};
-const DEC_MAP = {
-  'dec-unit-price-vs-tco': 'unit-or-tco', 'dec-unit-or-tco': 'unit-or-tco',
-  'dec-negotiate-or-accept': 'negotiate-or-accept', 'dec-accept-price-increase': 'accept-price-increase',
-  'dec-renew-vs-resource': 'renew-vs-resource', 'dec-approve-exception': 'approve-exception',
-  'dec-competitive-vs-single': 'competitive-vs-single', 'dec-make-or-buy': 'make-or-buy',
-  'dec-rfq-or-rfp': 'rfq-or-rfp', 'dec-rfi-or-rfq': 'rfi-or-rfq',
-  'dec-competitive-or-single': 'competitive-or-single', 'dec-framework-agreement': 'framework-agreement',
-  'dec-consolidate-suppliers': 'consolidate-suppliers', 'dec-re-source': 're-source',
-  'dec-supplier-concentration': 'supplier-concentration', 'dec-dual-source': 'dual-source',
-  'dec-supplier-financial-risk': 'supplier-financial-risk'
-};
-const KPI_MAP = {
-  'kpi-payment-terms': 'kpi-working-capital-impact', 'kpi-working-capital': 'kpi-working-capital-impact',
-  'kpi-supplier-performance': 'kpi-otif'
-};
-const KB_MAP = {
-  'kb-cost-drivers': 'cost-breakdown', 'kb-price-escalation': 'should-cost',
-  'kb-indexation': 'currency-fx', 'kb-delegation-of-authority': 'delegation-of-authority',
-  'kb-approval-matrix': 'delegation-of-authority'
-};
-const TPL_MAP = {
-  'tpl-price-increase-assessment': 'tpl-contract-change-request', 'tpl-single-source-justification': 'tpl-single-source',
-  'tpl-statement-of-work': 'tpl-contract-review-checklist'
-};
-const CL_MAP = {
-  'cl-negotiation-preparation': 'cl-negotiation', 'cl-price-increase-review': 'cl-contract-renewal',
-  'cl-supplier-qualification': 'cl-supplier-evaluation'
-};
-
+/* The legacy id translations live in exactly one place:
+   src/core/90a_idmap.js, which the runtime also reads. This checker used
+   to carry its own, richer copy, so it reported "broken refs: 0" while the
+   app silently pruned three live links at boot. Both sides read the same
+   JSON object now, so a divergence is impossible. */
+const LEGACY_MAP = (() => {
+  const src = readSrc('core/90a_idmap.js');
+  const m = src.match(/PS\.LEGACY_ID_MAP\s*=\s*(\{[\s\S]*?\n\});/);
+  if (!m) { console.error('FAIL: could not find PS.LEGACY_ID_MAP in core/90a_idmap.js'); process.exit(1); }
+  return JSON.parse(m[1]);
+})();
 const norm = (ty, id) => {
-  if (ty === 'calc') { const m = CALC_LEGACY.exec(id); return m ? (CALC_MAP[m[2].toLowerCase()] || id) : id; }
-  if (ty === 'sop') { return SOP_MAP[id] || id; }
-  if (ty === 'dec') { return DEC_MAP[id] || (id.startsWith('dec-') ? id.slice(4) : id); }
-  if (ty === 'kpi') { return KPI_MAP[id] || id; }
-  if (ty === 'kb') { return KB_MAP[id] || (id.startsWith('kb-') ? id.slice(3) : id); }
-  if (ty === 'tpl') { return TPL_MAP[id] || id; }
-  if (ty === 'cl') { return CL_MAP[id] || id; }
+  const hit = LEGACY_MAP[ty + ':' + id];
+  if (hit) return hit;
+  if (ty === 'dec' && id.startsWith('dec-')) return id.slice(4);
+  if (ty === 'kb' && id.startsWith('kb-')) return id.slice(3);
   return id;
 };
+
+/* The link-completion declarations live in one place, and the runtime
+   applies them. The checker applies them too, so the static view and
+   the shipped view cannot disagree. */
+const LINK_COMPLETION = (() => {
+  const src = readSrc('core/90b_link_completion.js');
+  const m = src.match(/PS\.LINK_COMPLETION\s*=\s*(\{[\s\S]*?\n\});/);
+  if (!m) { console.error('FAIL: could not find PS.LINK_COMPLETION in core/90b_link_completion.js'); process.exit(1); }
+  /* The declaration is written with single quotes for consistency with
+     the rest of the source, and with bare inner keys. JSON needs
+     double quotes and quoted keys. */
+  const asJson = m[1].replace(/'/g, '"').replace(/([{,]\s*)([a-zA-Z_][\w]*)\s*:/g, '$1"$2":');
+  return JSON.parse(asJson);
+})();
+for (const [, rel] of Object.entries(LINK_COMPLETION)) {
+  for (const [k, list] of Object.entries(rel)) {
+    const ty = KEY[canon(k)];
+    if (!ty) continue;
+    rels.push({ f: 'core/90b_link_completion.js', rel: { [k]: list } });
+  }
+}
 const broken = {};
 let bad = 0;
 for (const r of rels) {
@@ -147,3 +123,8 @@ for (const r of rels) {
 for (const [k, from] of Object.entries(broken)) console.log('BROKEN', k, '<-', [...from].join(','));
 console.log('registered:', Object.entries(ids).map(([k, v]) => k + '=' + v.size).join(' '));
 console.log('checked', rels.length, 'rel objects; broken refs:', bad);
+/* A broken relation is a build failure, not a console note. The app prunes
+   unresolvable references at boot, so a broken id is a link that silently
+   does not exist in the shipped product. */
+if (bad) { console.log('RELATIONSHIP CHECK: FAIL'); process.exit(1); }
+console.log('RELATIONSHIP CHECK: PASS');

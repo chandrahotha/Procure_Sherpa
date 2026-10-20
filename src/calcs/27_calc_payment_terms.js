@@ -23,7 +23,7 @@ PS_CALC.push({
     PS.F('netDays', 'Otherwise payable within', 'days', 'nn|30')
   ],
   example: { annualSpend: 2400000, currentDays: 30, proposedDays: 60, costOfCapital: 9, discountPct: 2, discountDays: 10, netDays: 30 },
-  handoffTo: ['calc-tco', 'calc-negotiation-savings'],
+  handoffTo: ['calc-tco'],
   rel: { sops: ['sop-negotiation-preparation', 'sop-contract-review'], cl: ['cl-negotiation-preparation'], tpl: ['tpl-negotiation-planner'], calc: ['calc-tco', 'calc-negotiation-savings'], decisions: ['dec-negotiate-or-accept'], kpis: ['kpi-payment-terms', 'kpi-working-capital'] },
   run: function (v) { return PS.calcImpl.paymentTerms(v); }
 });

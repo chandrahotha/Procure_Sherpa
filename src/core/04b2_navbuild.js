@@ -2,20 +2,41 @@
    footer's progress line (Mastered count vs Saved Drafts count). */
 PS.ACADEMY_ROUTE_NAMES = { academy: 1, 'academy-progress': 1, exams: 1, certificate: 1 };
 
+/* This fragment loads before the action-controller fragment that creates
+   PS.acts, so the namespace has to be created here too. Without it the
+   assignment below threw and the rest of the file, including the whole
+   sidebar build, never ran. */
+PS.acts = PS.acts || {};
+
 PS.syncNavForRoute = function (r) {
   var app = PS.$('#app');
   if (!app) return;
-  var name = (r && r.name) || 'home';
 
-  if (name === 'home') {
-    app.classList.add('has-no-sidebar');
-    app.classList.remove('has-sidebar');
-    return;
-  }
-
+  /* The Command Center used to hide the entire sidebar. That made the
+     first item in the navigation the one item that removed the
+     navigation, and on a phone it left no way to navigate at all,
+     because the mobile menu button was hidden by the same rule. The
+     sidebar is now present on every route, including the landing page. */
   app.classList.remove('has-no-sidebar');
   app.classList.add('has-sidebar');
   PS.updateSidebarFoot(r);
+};
+
+/* Which section owns a given route. Used to open only the relevant
+   section by default, instead of expanding all thirty-three items on
+   every page. */
+PS.navHrefForRoute = function (name) {
+  return PS.NAV_ROUTE_OWNER[name] || ('#/' + name);
+};
+PS.navSectionFor = function (name) {
+  var href = PS.navHrefForRoute(name);
+  for (var i = 0; i < PS.NAV_UNIFIED.length; i++) {
+    var items = PS.NAV_UNIFIED[i].items || [];
+    for (var j = 0; j < items.length; j++) {
+      if (items[j].href === href) return PS.NAV_UNIFIED[i].sec;
+    }
+  }
+  return null;
 };
 
 /* One persistent sidebar, built once (see PS.boot) and refreshed only
@@ -40,16 +61,22 @@ PS.buildNav = function () {
   if (bVer) bVer.textContent = 'Navigation';
 
   var open = PS.prefs().navOpen || {};
+  /* Default: only the section that owns the current route is open. The
+     previous build opened all five sections on every page, which put
+     thirty-three items in a column that is roughly a viewport tall. */
+  var currentName = (PS.routeMeta && PS.routeMeta.name) ? PS.routeMeta.name : 'home';
+  var ownerSec = PS.navSectionFor(currentName) || PS.NAV_UNIFIED[0].sec;
   root.innerHTML = PS.NAV_UNIFIED.map(function (g) {
-    var isOpen = open[g.sec] === undefined ? (g.defaultClosed ? false : true) : !!open[g.sec];
+    var isOpen = open[g.sec] === undefined ? (g.sec === ownerSec) : !!open[g.sec];
     var secLabel = (PS.i18n && g.i18n) ? PS.i18n.t(g.i18n) : g.sec;
+    var listId = 'navlist-' + g.sec.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     return '<div class="nav-sec" data-sec="' + PS.esc(g.sec) + '" data-open="' + (isOpen ? 'true' : 'false') + '">' +
-      '<button type="button" class="nav-sec-head" data-navsec="' + PS.esc(g.sec) + '" aria-expanded="' + isOpen + '">' +
+      '<button type="button" class="nav-sec-head" data-navsec="' + PS.esc(g.sec) + '" aria-expanded="' + isOpen + '" aria-controls="' + listId + '">' +
       '<span class="sec-ico" aria-hidden="true">' + PS.esc(g.ico || '') + '</span>' +
       '<span>' + PS.esc(secLabel) + '</span>' +
       '<span class="sec-count">' + g.items.length + '</span>' +
       '<span class="chev" aria-hidden="true">▾</span></button>' +
-      '<ul class="nav-list">' + g.items.map(function (it) {
+      '<ul class="nav-list" id="' + listId + '">' + g.items.map(function (it) {
         var itLabel = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
         return '<li data-label="' + PS.esc((itLabel + ' ' + secLabel).toLowerCase()) + '">' +
           '<a href="' + PS.esc(it.href) + '"' + (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(itLabel) +
@@ -60,6 +87,25 @@ PS.buildNav = function () {
 
   PS.updateNavCounts();
   PS.wireNavFilter();
+  PS.syncNavToggle();
+};
+
+/* The collapse/expand control reflects the current state of the tree. */
+PS.syncNavToggle = function () {
+  var btn = PS.$('#navToggleAll');
+  if (!btn) return;
+  var open = PS.prefs().navOpen || {};
+  var anyClosed = PS.NAV_UNIFIED.some(function (g) { return open[g.sec] === false; });
+  btn.textContent = anyClosed ? 'Expand all' : 'Collapse all';
+  btn.setAttribute('aria-label', anyClosed ? 'Expand every navigation section' : 'Collapse every navigation section');
+};
+PS.acts['nav-toggle-all'] = function () {
+  var open = PS.prefs().navOpen || {};
+  var anyClosed = PS.NAV_UNIFIED.some(function (g) { return open[g.sec] === false; });
+  var next = {};
+  PS.NAV_UNIFIED.forEach(function (g) { next[g.sec] = anyClosed; });
+  PS.savePrefs({ navOpen: next }, true);
+  PS.buildNav();
 };
 
 /* Sidebar footer (account + progress line) - refreshed on every route
@@ -75,7 +121,20 @@ PS.updateSidebarFoot = function (r) {
     (academyStats.completedCount + ' of ' + academyStats.totalCount + ' Mastered') :
     (savedCount + ' Saved Draft' + (savedCount === 1 ? '' : 's'));
 
-  foot.innerHTML = '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
+  /* The system pages live in a permanent footer strip, outside the
+     collapsible tree: Settings, Help, Backup and the changelog are
+     always one click away and never mixed in with working content. */
+  var curHash = '#/' + ((r && r.name) || 'home');
+  var footLinks = (PS.NAV_FOOTER || []).map(function (it) {
+    var lbl = (PS.i18n && it.i18n) ? PS.i18n.t(it.i18n) : it.label;
+    var isCur = it.href.split('?')[0] === curHash;
+    return '<a class="sidebar-foot-link' + (isCur ? ' is-current' : '') + '" href="' + PS.esc(it.href) + '"' +
+      (isCur ? ' aria-current="page"' : '') +
+      (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(lbl) + '</a>';
+  }).join('');
+
+  foot.innerHTML = '<div class="sidebar-foot-links">' + footLinks + '</div>' +
+    '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
     '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' +
     PS.esc(PS.user.getInitials(prof.name)) + '</div>' +
     '<div class="sidebar-foot-meta">' +
@@ -193,16 +252,39 @@ PS.wireNavFilter = function () {
   var box = PS.$('#navFilter');
   if (!box || box.dataset.wired) return;
   box.dataset.wired = '1';
+  /* The filter forces matching sections open so the hits are visible.
+     The state it displaced is remembered, so clearing the filter puts the
+     tree back the way the user left it rather than leaving every section
+     expanded for good. */
+  var preFilter = null;
   box.addEventListener('input', PS.debounce(function () {
     var q = PS.clean(box.value, 60).toLowerCase();
     var root = PS.$('#navRoot');
     if (!root) return;
     if (!q) {
-      PS.$$('.nav-sec', root).forEach(function (sec) { sec.style.display = ''; });
+      PS.$$('.nav-sec', root).forEach(function (sec) {
+        sec.style.display = '';
+        if (preFilter && preFilter[sec.dataset.sec] !== undefined) {
+          sec.dataset.open = preFilter[sec.dataset.sec] ? 'true' : 'false';
+          var hb = sec.querySelector('.nav-sec-head');
+          if (hb) hb.setAttribute('aria-expanded', preFilter[sec.dataset.sec] ? 'true' : 'false');
+        }
+      });
       PS.$$('.nav-list li', root).forEach(function (li) { li.style.display = ''; });
+      PS.$$('.sec-count', root).forEach(function (c) {
+        var sec = c.closest('.nav-sec');
+        if (!sec) return;
+        var all = PS.NAV_UNIFIED.filter(function (g) { return g.sec === sec.dataset.sec; })[0];
+        if (all) c.textContent = all.items.length;
+      });
       var emp = PS.$('.nav-empty', root);
       if (emp) emp.remove();
+      preFilter = null;
       return;
+    }
+    if (!preFilter) {
+      preFilter = {};
+      PS.$$('.nav-sec', root).forEach(function (sec) { preFilter[sec.dataset.sec] = sec.dataset.open === 'true'; });
     }
     var anyVisible = false;
     PS.$$('.nav-sec', root).forEach(function (sec) {
@@ -214,9 +296,13 @@ PS.wireNavFilter = function () {
         if (show) hits++;
       });
       sec.style.display = hits ? '' : 'none';
+      var cnt = sec.querySelector('.sec-count');
+      if (cnt) cnt.textContent = hits;
       if (hits) {
         anyVisible = true;
         sec.dataset.open = 'true';
+        var hb = sec.querySelector('.nav-sec-head');
+        if (hb) hb.setAttribute('aria-expanded', 'true');
       }
     });
     var old = PS.$('.nav-empty', root);

@@ -64,9 +64,26 @@ PS.setCalcInputs = function (values) {
     else el.value = (values[k] === null || values[k] === undefined) ? '' : values[k];
   });
 };
+/* Calculator fields that take their default from a value the user has
+   configured in Settings. The Settings screen presented these as
+   configurable house defaults, and the TCO and Payment Terms calculators
+   tell the user to set them there, but nothing read them: every value was
+   hardcoded in the calculator definition. */
+PS.CALC_PREF_DEFAULT = {
+  discountRate: 'discountRate',
+  costOfCapital: 'costOfCapital',
+  indexRate: 'inflation'
+};
 PS.calcDefaults = function (calc) {
   var v = {};
+  var p = PS.prefs ? PS.prefs() : null;
+  var pd = (p && p.defaults) || {};
   (calc.fields || []).forEach(function (f) {
+    var prefKey = PS.CALC_PREF_DEFAULT[f.k];
+    if (prefKey && pd[prefKey] !== undefined && pd[prefKey] !== null && pd[prefKey] !== '') {
+      v[f.k] = PS.num(pd[prefKey]);
+      return;
+    }
     if (f.def !== undefined && f.def !== null) v[f.k] = f.def;
     else if (f.type === 'check') v[f.k] = false;
     else v[f.k] = null;

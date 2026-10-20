@@ -46,6 +46,21 @@ PS.calcImpl.priceIncrease = function (v) {
       'Justifiable at ' + PS.pct(v.indexRate) + ': ' + PS.moneyR(justifiedAnnual),
       'Negotiation target (unjustified element): ' + PS.moneyR(unjustifiedAnnual) + ' at a target price of ' + PS.money(target, 2)],
     s: 'Price increase of ' + PS.pct(incPct) + ' (' + PS.moneyR(annual) + ' a year), of which ' + PS.moneyR(unjustifiedAnnual) + ' is not justified by the index position.',
-    d: { increasePct: incPct, annualImpact: annual, justifiedAnnual: justifiedAnnual, unjustifiedAnnual: unjustifiedAnnual, targetPrice: target }
+    d: {
+      /* A price increase that has been reduced is a saving; the part you
+         conceded is cost avoidance. Recording both here means the
+         savings dashboard reflects price management, not only
+         negotiated savings. */
+      initiatives: [{
+        name: 'Price increase defence',
+        baseline: currentSpend, newCost: currentSpend + justifiedAnnual,
+        savings: unjustifiedAnnual > 0 ? unjustifiedAnnual : 0,
+        avoidance: justifiedAnnual,
+        category: 'Price management',
+        supplier: 'Incumbent supplier',
+        kind: unjustifiedAnnual > 0 ? 'Savings' : 'Cost avoidance'
+      }],
+      increasePct: incPct, annualImpact: annual, justifiedAnnual: justifiedAnnual, unjustifiedAnnual: unjustifiedAnnual, targetPrice: target
+    }
   });
 };

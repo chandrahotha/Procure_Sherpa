@@ -25,8 +25,7 @@ PS.route('academy-progress', function () {
     '<div class="stat"><span class="s-val">' + stats.pct + '%</span><span class="s-lab">Academy Completion</span></div>' +
     '<div class="stat"><span class="s-val">' + stats.badgesEarned + '/' + stats.badgesTotal + '</span><span class="s-lab">Badges Earned</span></div>' +
     '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-ghost" data-act="academy-mark-all">Mark all complete (testing shortcut)</button>' +
-    '<button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
+    '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
     '<div class="table-wrap"><table><thead><tr>' +
     '<th>Module & Function</th><th>Lifecycle Fit</th><th>Assessment Score</th><th>Status</th><th>Action</th>' +
     '</tr></thead><tbody>' +
@@ -250,11 +249,52 @@ PS.renderFuncTabLearn = function (f) {
       }).join('') + '</div></div>';
   }
 
+  html += PS.academyLinkedTools(f);
+
   html += '<div class="btn-row no-print" style="margin-top:16px">' +
     '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(f.id) + '?tab=think">Next: Procurement Thinking Points &rarr;</a>' +
     '</div>';
 
   return html;
+};
+
+/* ---------- Linked library: the Academy connected to the content library ----------
+   Every Academy function links out to the concepts that explain it, the
+   SOP that governs it, the checklist that evidences it, the template
+   that records it, the calculator that quantifies it, the decision guide
+   that frames it and the KPI that measures it. Before this existed the
+   Academy was a content silo: 95 tabs, and not one link out of them. */
+PS.academyLinkedTools = function (f) {
+  var rel = f.rel || {};
+  var groups = [
+    { key: 'concepts', label: 'Concepts that explain this', type: 'kb' },
+    { key: 'sops', label: 'Controlled procedures', type: 'sop' },
+    { key: 'checklists', label: 'Execution checklists', type: 'cl' },
+    { key: 'templates', label: 'Templates and forms', type: 'tpl' },
+    { key: 'calcs', label: 'Calculators', type: 'calc' },
+    { key: 'decisions', label: 'Decision guides', type: 'dec' },
+    { key: 'kpis', label: 'KPIs that measure it', type: 'kpi' }
+  ];
+  var blocks = [];
+  groups.forEach(function (g) {
+    var ids = rel[g.key] || [];
+    if (!ids.length) return;
+    var chips = ids.map(function (id) {
+      var item = g.type === 'kb' ? PS.byId('kb', id) : PS.byId(g.type, id);
+      if (!item) return '';
+      var title = item.title || item.term || id;
+      return '<a class="chip" href="' + PS.routeFor(g.type, id) + '">' + PS.esc(title) + '</a>';
+    }).filter(Boolean).join('');
+    if (!chips) return;
+    blocks.push('<div class="hub-linked-row"><span class="hub-linked-label">' + PS.esc(g.label) + '</span>' + chips + '</div>');
+  });
+  if (!blocks.length) return '';
+  return '<div class="card no-print">' +
+    '<div class="card-head"><h2>Apply this in the library</h2><div class="spacer"></div>' +
+    '<span class="eyebrow">Linked tools</span></div>' +
+    '<p class="card-sub">The reading, the procedure, the evidence, the document, the numbers, the fork in the road and the measure. This function is the entry point, not the whole job.</p>' +
+    '<div class="hub-linked">' + blocks.join('') + '</div>' +
+    '</div>';
 };
 
 /* ---------- Tab 2: Think ---------- */
@@ -283,6 +323,21 @@ PS.renderFuncTabThink = function (f) {
       '<div class="alert alert-info"><strong>The Dilemma:</strong> ' + PS.esc(f.realScenario.dilemma) + '</div>' +
       '<h3>How an Expert Procurement Professional Solved It</h3>' +
       '<p>' + PS.esc(f.realScenario.resolution) + '</p>' +
+      '</div>';
+  } else if (thinkingPoints.length && thinkingPoints[0].realWorldExample) {
+    /* The Academy never carried a separate case study, so the section
+       never rendered. The thinking point already carries a worked
+       enterprise situation, which is the case study, and it is presented
+       here as one rather than left as an extra paragraph. */
+    html += '<div class="card">' +
+      '<div class="card-head"><h2>Deep-Dive Case Study</h2><div class="spacer"></div>' +
+      '<span class="eyebrow">Worked Situation</span></div>' +
+      '<h3>The situation</h3>' +
+      '<p>' + PS.esc(thinkingPoints[0].realWorldExample) + '</p>' +
+      '<h3>What the decision turned on</h3>' +
+      '<p>' + PS.esc(thinkingPoints[0].explanation) + '</p>' +
+      '<div class="alert alert-info"><strong>What to take away:</strong> ' + PS.esc(thinkingPoints[0].quote) + '</div>' +
+      (thinkingPoints[0].reflectionPrompt ? '<h3>Ask yourself</h3><p>' + PS.esc(thinkingPoints[0].reflectionPrompt) + '</p>' : '') +
       '</div>';
   }
 
@@ -388,7 +443,7 @@ PS.renderFuncTabApply = function (f) {
     '<a class="btn btn-primary" href="' + PS.esc(lab.ctaHref) + '">' + PS.esc(lab.ctaLabel || 'Launch Tool in Laboratory') + ' &rarr;</a>' +
     (lab.secondaryHref ? '<a class="btn" href="' + PS.esc(lab.secondaryHref) + '">' + PS.esc(lab.secondaryLabel || 'Open Supporting Template') + '</a>' : '') +
     '<button type="button" class="btn ' + (isComp ? 'btn-ghost' : 'btn-primary') + '" data-act="academy-mark-done" data-func="' + PS.esc(f.id) + '">' +
-    (isComp ? '✓ Mastered &amp; Completed' : 'Mark Function Complete &amp; Claim Mastery') + '</button>' +
+    (isComp ? '✓ Mastered &amp; Completed' : 'Mark as studied (not yet mastered)') + '</button>' +
     '</div>' +
     '</div>';
 
@@ -406,215 +461,7 @@ PS.renderAcademySandbox = function (type, f) {
     '<span class="badge badge-primary">Hands-on Decision Sandbox</span>' +
     '</div>';
 
-  if (type === 'spend_analysis') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Spend Fragmentation &amp; Tail Spend Dissipation</h4>' +
-      '<p>Spend is heavily fragmented across 185 suppliers, causing margin leakage and excessive accounts payable overhead. Quantify spend concentration using the Pareto 80/20 principle, isolate the critical Class A supplier core, and model cash savings from tail spend consolidation.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Top Supplier 1 Spend ($)</label><input type="number" id="sb_sp_v1" value="3400000" step="100000"></div>' +
-      '<div class="sandbox-field"><label>Top Supplier 2 Spend ($)</label><input type="number" id="sb_sp_v2" value="2100000" step="100000"></div>' +
-      '<div class="sandbox-field"><label>Top Supplier 3 Spend ($)</label><input type="number" id="sb_sp_v3" value="1200000" step="50000"></div>' +
-      '<div class="sandbox-field"><label>Top Supplier 4 Spend ($)</label><input type="number" id="sb_sp_v4" value="650000" step="25000"></div>' +
-      '<div class="sandbox-field"><label>Top Supplier 5 Spend ($)</label><input type="number" id="sb_sp_v5" value="450000" step="25000"></div>' +
-      '<div class="sandbox-field"><label>Remaining Tail Spend ($)</label><input type="number" id="sb_sp_tail" value="1200000" step="50000"></div>' +
-      '<div class="sandbox-field"><label>Number of Tail Vendors</label><input type="number" id="sb_sp_tail_count" value="180" step="10"></div>' +
-      '<div class="sandbox-field"><label>Consolidation Rebate Target (%)</label><input type="number" id="sb_sp_rebate" value="5.0" step="0.5"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Run Pareto Spend Analysis &amp; Generate Curve &rarr;</button>' +
-      '</div>';
-  } else if (type === 'kraljic_matrix') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Kraljic Sourcing Portfolio Segmentation</h4>' +
-      '<p>Commercial strategy misalignment creates critical supply disruptions and uncompetitive margins. Position category spend across the 2x2 Kraljic Matrix to align commercial posture (Strategic Alliances, Competitive Tendering, Risk Buffering, or Transaction Automation).</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Strategic Item (Custom ASICs) Impact (0-100)</label><input type="number" id="sb_kr_s_imp" value="88" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Strategic Item Risk (0-100)</label><input type="number" id="sb_kr_s_risk" value="85" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Leverage Item (Packaging) Impact (0-100)</label><input type="number" id="sb_kr_l_imp" value="75" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Leverage Item Risk (0-100)</label><input type="number" id="sb_kr_l_risk" value="20" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Bottleneck Item (Resins) Impact (0-100)</label><input type="number" id="sb_kr_b_imp" value="25" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Bottleneck Item Risk (0-100)</label><input type="number" id="sb_kr_b_risk" value="85" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Non-Critical (Office Supplies) Impact</label><input type="number" id="sb_kr_n_imp" value="18" min="0" max="100"></div>' +
-      '<div class="sandbox-field"><label>Non-Critical Item Risk</label><input type="number" id="sb_kr_n_risk" value="15" min="0" max="100"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Render Kraljic Portfolio 2x2 Matrix &rarr;</button>' +
-      '</div>';
-  } else if (type === 'should_cost') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Bottom-Up Should-Cost Margin Padding Audit</h4>' +
-      '<p>A sole-source precision machining vendor quotes $89.00/unit for automotive brackets, citing severe raw material increases. Build a bottom-up should-cost model (raw materials, direct labor, machine cycle, SG&A, and fair margin) to uncover margin padding before negotiating.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Raw Material Cost ($/unit)</label><input type="number" id="sb_sc_mat" value="38.50" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Direct Labor Hours / Unit</label><input type="number" id="sb_sc_hrs" value="0.40" step="0.05"></div>' +
-      '<div class="sandbox-field"><label>Shop Labor Rate ($/hr)</label><input type="number" id="sb_sc_rate" value="35.00" step="1.0"></div>' +
-      '<div class="sandbox-field"><label>Machine Overhead ($/unit)</label><input type="number" id="sb_sc_over" value="8.50" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>SG&amp;A Overhead Allocation (%)</label><input type="number" id="sb_sc_sga" value="10.0" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Fair Supplier Margin Target (%)</label><input type="number" id="sb_sc_margin" value="12.0" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier Quoted Unit Price ($)</label><input type="number" id="sb_sc_quote" value="89.00" step="1.0"></div>' +
-      '<div class="sandbox-field"><label>Annual Sourcing Volume (Units)</label><input type="number" id="sb_sc_vol" value="20000" step="1000"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Construct Should-Cost Waterfall &amp; Expose Margin &rarr;</button>' +
-      '</div>';
-  } else if (type === 'supplier_risk') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Critical Supplier Solvency &amp; Altman Z-Score Stress Test</h4>' +
-      '<p>A critical components vendor delays production shipments. Trade rumors cite liquidity shortages. Audit balance sheet ratios through the Altman Z-Score manufacturing solvency model before releasing major advance cash deposits.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Working Capital ($)</label><input type="number" id="sb_zr_wc" value="180000" step="10000"></div>' +
-      '<div class="sandbox-field"><label>Retained Earnings ($)</label><input type="number" id="sb_zr_re" value="110000" step="10000"></div>' +
-      '<div class="sandbox-field"><label>Operating EBIT ($)</label><input type="number" id="sb_zr_ebit" value="85000" step="5000"></div>' +
-      '<div class="sandbox-field"><label>Market / Book Equity ($)</label><input type="number" id="sb_zr_eq" value="320000" step="10000"></div>' +
-      '<div class="sandbox-field"><label>Total Liabilities ($)</label><input type="number" id="sb_zr_liab" value="780000" step="10000"></div>' +
-      '<div class="sandbox-field"><label>Annual Sales Revenue ($)</label><input type="number" id="sb_zr_sales" value="1500000" step="50000"></div>' +
-      '<div class="sandbox-field"><label>Total Assets ($)</label><input type="number" id="sb_zr_assets" value="1100000" step="50000"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Audit Financial Solvency &amp; Gauge Dial &rarr;</button>' +
-      '</div>';
-  } else if (type === 'contract_redline') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: High-Stakes Contract Clause Redline Auditing</h4>' +
-      '<p>A strategic vendor submits their standard supplier contract containing aggressive liability exclusions, punitive late payment fees, and proprietary IP claims. Select your commercial redline stance across 4 critical risk clauses to protect corporate balance sheets.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field" style="grid-column: span 2;"><label>1. Limitation of Liability &amp; Consequential Damages</label>' +
-      '<select id="sb_cr_liability">' +
-      '<option value="vendor">Accept Vendor Paper: 1x Annual spend cap, excludes all data breach and gross negligence indemnity</option>' +
-      '<option value="fallback" selected>Commercially Balanced: 3x Annual spend cap, with $5M super-cap for data breach and IP infringement</option>' +
-      '<option value="redline">Enterprise Redline: Uncapped for confidentiality, data breaches, and IP indemnity; 5x standard cap</option>' +
-      '</select></div>' +
-      '<div class="sandbox-field" style="grid-column: span 2;"><label>2. Payment Terms &amp; Dispute Withholding</label>' +
-      '<select id="sb_cr_payment">' +
-      '<option value="vendor">Accept Vendor Paper: Net 15 advance billing, 2.5%/month late penalty, no dispute withholding</option>' +
-      '<option value="fallback" selected>Commercially Balanced: Net 45 from valid invoice, statutory interest only, withholding allowed for disputes</option>' +
-      '<option value="redline">Enterprise Redline: Net 60 End-of-Month, 0% penalty on disputed amounts, performance continuity mandated</option>' +
-      '</select></div>' +
-      '<div class="sandbox-field" style="grid-column: span 2;"><label>3. Warranty &amp; SLA Service Credits</label>' +
-      '<select id="sb_cr_warranty">' +
-      '<option value="vendor">Accept Vendor Paper: 14 days as-is, repair sole remedy at vendor discretion, no SLA penalties</option>' +
-      '<option value="fallback" selected>Commercially Balanced: 12 months comprehensive, 48h swap, 10% monthly service credits</option>' +
-      '<option value="redline">Enterprise Redline: 24 months full warranty, 99.9% uptime with 25% liquidated damages and termination exit rights</option>' +
-      '</select></div>' +
-      '<div class="sandbox-field" style="grid-column: span 2;"><label>4. Intellectual Property &amp; Deliverables Ownership</label>' +
-      '<select id="sb_cr_ip">' +
-      '<option value="vendor">Accept Vendor Paper: Vendor owns all bespoke tooling, code, and custom CAD deliverables</option>' +
-      '<option value="fallback" selected>Commercially Balanced: Buyer owns bespoke deliverables; vendor retains pre-existing background IP</option>' +
-      '<option value="redline">Enterprise Redline: Complete assignment of all work product, source code, and tooling upon creation</option>' +
-      '</select></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Audit Contract Legal Exposure &amp; Redline Scorecard &rarr;</button>' +
-      '</div>';
-  } else if (type === 'supplier_eval') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Multi-Criteria Sourcing Evaluation (MCDA)</h4>' +
-      '<p>Two finalists submitted bids for an enterprise facility operations contract. Supplier A is the premium quality incumbent with higher pricing; Supplier B is an aggressive challenger offering significant cost savings with unproven resilience. Run a weighted Multi-Criteria Decision Analysis.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Supplier A Technical Quality (1-10)</label><input type="number" id="sb_ev_a_qual" value="9.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier A Commercial Price (1-10)</label><input type="number" id="sb_ev_a_price" value="6.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier A Delivery Resilience (1-10)</label><input type="number" id="sb_ev_a_deliv" value="8.5" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier A ESG Compliance (1-10)</label><input type="number" id="sb_ev_a_esg" value="8.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier A Solvency Score (1-10)</label><input type="number" id="sb_ev_a_fin" value="8.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier B Technical Quality (1-10)</label><input type="number" id="sb_ev_b_qual" value="7.5" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier B Commercial Price (1-10)</label><input type="number" id="sb_ev_b_price" value="9.2" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier B Delivery Resilience (1-10)</label><input type="number" id="sb_ev_b_deliv" value="7.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier B ESG Compliance (1-10)</label><input type="number" id="sb_ev_b_esg" value="7.0" min="1" max="10" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Supplier B Solvency Score (1-10)</label><input type="number" id="sb_ev_b_fin" value="6.5" min="1" max="10" step="0.5"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Calculate Weighted MCDA Decision Score &rarr;</button>' +
-      '</div>';
-  } else if (type === 'incoterms') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Global Incoterms Landed Cost Discrepancy</h4>' +
-      '<p>An overseas vendor offers an attractive unit price under EXW (Ex Works), claiming a $27/unit discount over a domestic vendor offering DDP. Test the real Total Landed Cost (TLC) including ocean freight, customs tariffs, terminal port handling, and demurrage risk buffers.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Overseas EXW Price ($)</label><input type="number" id="sb_exw_price" value="85" step="1"></div>' +
-      '<div class="sandbox-field"><label>Ocean Freight / Unit ($)</label><input type="number" id="sb_ocean_freight" value="14" step="1"></div>' +
-      '<div class="sandbox-field"><label>Tariff / Customs Duty (%)</label><input type="number" id="sb_duty_pct" value="6.5" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Port Handling &amp; Drayage ($)</label><input type="number" id="sb_port_cost" value="5.5" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Port Demurrage Risk Buffer ($)</label><input type="number" id="sb_demurrage" value="3.5" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Domestic DDP Quote ($)</label><input type="number" id="sb_ddp_price" value="112" step="1"></div>' +
-      '<div class="sandbox-field"><label>Annual Volume (Units)</label><input type="number" id="sb_volume" value="5000" step="500"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Run Commercial Landed Cost Audit &rarr;</button>' +
-      '</div>';
-  } else if (type === 'tco') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Capex vs Opex Life-Cycle TCO Trade-Off</h4>' +
-      '<p>The operations manager demands Model A because it is $40,000 cheaper up front. However, engineering notes that Model B uses 55% less electrical power and requires half the scheduled maintenance over its 5-year operating life. Test the true 5-year Total Cost of Ownership.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Model A Initial Capex ($)</label><input type="number" id="sb_ca_price" value="90000" step="5000"></div>' +
-      '<div class="sandbox-field"><label>Model A Annual Energy ($/yr)</label><input type="number" id="sb_ca_energy" value="26000" step="1000"></div>' +
-      '<div class="sandbox-field"><label>Model A Annual Maintenance ($/yr)</label><input type="number" id="sb_ca_maint" value="11000" step="1000"></div>' +
-      '<div class="sandbox-field"><label>Model B Initial Capex ($)</label><input type="number" id="sb_cb_price" value="130000" step="5000"></div>' +
-      '<div class="sandbox-field"><label>Model B Annual Energy ($/yr)</label><input type="number" id="sb_cb_energy" value="11500" step="500"></div>' +
-      '<div class="sandbox-field"><label>Model B Annual Maintenance ($/yr)</label><input type="number" id="sb_cb_maint" value="4500" step="500"></div>' +
-      '<div class="sandbox-field"><label>Operating Lifespan (Years)</label><input type="number" id="sb_lifespan" value="5" step="1"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Evaluate 5-Year Life Cycle Model &rarr;</button>' +
-      '</div>';
-  } else if (type === 'matching') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Three-Way Match Forensic Leakage Audit</h4>' +
-      '<p>Accounts Payable flags a supplier invoice for $57,000 that failed automated 3-way matching against a Purchase Order of $51,000 and Goods Receipt Note. Unbundle the unapproved price variance, unverified backorders, and unauthorized freight additions before funds are released.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>PO Contracted Price ($/unit)</label><input type="number" id="sb_po_rate" value="85" step="1"></div>' +
-      '<div class="sandbox-field"><label>PO Authorized Quantity</label><input type="number" id="sb_po_qty" value="600" step="10"></div>' +
-      '<div class="sandbox-field"><label>Physically Received Quantity (GRN)</label><input type="number" id="sb_grn_qty" value="480" step="10"></div>' +
-      '<div class="sandbox-field"><label>Invoiced Unit Price ($/unit)</label><input type="number" id="sb_inv_rate" value="92" step="1"></div>' +
-      '<div class="sandbox-field"><label>Invoiced Quantity Billed</label><input type="number" id="sb_inv_qty" value="600" step="10"></div>' +
-      '<div class="sandbox-field"><label>Uncontracted Freight Billed ($)</label><input type="number" id="sb_inv_freight" value="1800" step="100"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Audit 3-Way Discrepancy &amp; Authorize Payment &rarr;</button>' +
-      '</div>';
-  } else if (type === 'negotiation') {
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Monopoly Renewal &amp; Multi-Variable Concession Trading</h4>' +
-      '<p>A critical enterprise software vendor refuses any baseline price reduction on a $250,000 renewal. Trade non-cash commercial variables (term length, prompt payment, marketing logo rights, and strict SLA service credits) to extract commercial value without compromising scope.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Annual Baseline Spend ($)</label><input type="number" id="sb_neg_spend" value="250000" step="10000"></div>' +
-      '<div class="sandbox-field"><label>Multi-Year Term Commitment</label><select id="sb_neg_term"><option value="1">1-Year Renewal (0% discount)</option><option value="3" selected>3-Year Agreement (8.0% discount)</option><option value="5">5-Year Agreement (12.0% discount)</option></select></div>' +
-      '<div class="sandbox-field"><label>Payment Terms Concession</label><select id="sb_neg_pay"><option value="0">Standard Net 30 (0% discount)</option><option value="1.5" selected>2/10 Net 30 Prompt Pay (1.5% value)</option><option value="2.5">Annual Upfront Advance (2.5% value)</option></select></div>' +
-      '<div class="sandbox-field"><label>Co-Marketing Case Study</label><select id="sb_neg_case"><option value="0">No Public Logo Rights</option><option value="2.0" selected>Published Enterprise Case Study (2.0% value)</option></select></div>' +
-      '<div class="sandbox-field"><label>SLA Service Credit Penalties</label><select id="sb_neg_sla"><option value="0">Standard Best-Effort</option><option value="1.5" selected>99.9% Uptime with 10% Monthly Rebates (1.5% risk value)</option></select></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Calculate Concession Package Value &rarr;</button>' +
-      '</div>';
-  } else {
-    // Default / Price Increase Defense
-    html += '<div class="sandbox-crisis-banner">' +
-      '<h4>Enterprise Crisis: Emergency Supplier Price Increase Defense</h4>' +
-      '<p>A strategic supplier demands an urgent +18.5% price hike citing general market inflation. Unbundle their direct materials and labor cost composition, apply verifiable PPI economic indices, and compute the cost-justified counter-offer.</p>' +
-      '</div>' +
-      '<div class="sandbox-form">' +
-      '<div class="sandbox-input-grid">' +
-      '<div class="sandbox-field"><label>Current Baseline Unit Price ($)</label><input type="number" id="sb_base_price" value="100" step="5"></div>' +
-      '<div class="sandbox-field"><label>Supplier Demanded Price ($)</label><input type="number" id="sb_demanded_price" value="118.5" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Raw Material Share (%)</label><input type="number" id="sb_mat_share" value="45" step="5"></div>' +
-      '<div class="sandbox-field"><label>Official Material PPI Change (%)</label><input type="number" id="sb_mat_ppi" value="8.0" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Direct Labor Share (%)</label><input type="number" id="sb_lab_share" value="25" step="5"></div>' +
-      '<div class="sandbox-field"><label>Official Labor Wage Index (%)</label><input type="number" id="sb_lab_wage" value="3.0" step="0.5"></div>' +
-      '<div class="sandbox-field"><label>Annual Volume (Units)</label><input type="number" id="sb_volume" value="10000" step="1000"></div>' +
-      '</div>' +
-      '<button type="button" class="btn btn-primary" data-act="academy-sandbox-run">Audit Cost Breakdown &amp; Compute Counter-Offer &rarr;</button>' +
-      '</div>';
-  }
+  html += PS.renderSandboxForm(type);
 
   html += '<div class="sandbox-result-box" id="academySandboxResult">' +
     '<div class="t-dim t-sm">Loading initial commercial model evaluation...</div>' +
@@ -1096,30 +943,14 @@ PS.acts['academy-sandbox-run'] = function (el) {
 
 PS.acts['academy-mark-done'] = function (el) {
   var funcId = el.dataset.func;
-  var newlyAwarded = PS.academy.markCompleted(funcId);
-  if (newlyAwarded && newlyAwarded.length) {
-    newlyAwarded.forEach(function (bId) {
-      var badge = PS.academy.BADGES.filter(function (b) { return b.id === bId; })[0];
-      if (badge) PS.toast('🏆 Badge Unlocked: ' + badge.name + '!', 'ok');
-    });
-  } else {
-    PS.toast('Function marked as Mastered!', 'ok');
-  }
+  /* This records study, not mastery. It used to set the completed flag
+     and award badges without any quiz being taken, so a learner could
+     claim every badge in one click and the transcript showed a mastered
+     tick next to "Not taken". Mastery is earned by passing the quiz. */
+  PS.academy.markStudied(funcId);
+  PS.toast('Marked as studied. Take the quiz to record mastery.', 'ok');
+  PS.audit('academy-marked-studied', funcId);
   PS.renderRoute();
-};
-
-PS.acts['academy-mark-all'] = function () {
-  PS.confirm({
-    title: 'Mark every function complete?',
-    body: '<p>This is a testing shortcut that marks all Academy functions as mastered and awards badges. It is not a real achievement record.</p>',
-    okLabel: 'Mark all complete', danger: false,
-    onOk: function () {
-      (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { PS.academy.markCompleted(f.id); });
-      PS.toast('All ' + (PS.ACADEMY_FUNCTIONS || []).length + ' functions marked complete for testing.', 'ok');
-      PS.audit('academy-marked-all', 'testing shortcut used');
-      PS.renderRoute();
-    }
-  });
 };
 
 PS.acts['academy-reset-all'] = function () {

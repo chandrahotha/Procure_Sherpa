@@ -17,7 +17,7 @@ PS_CALC.push({
     PS.F('feeFixed', 'Fixed fee (home currency)', 'curr', 'nn', '350')
   ],
   example: { foreignAmount: 250000, exchangeRate: 0.62, spreadPct: 1.20, feeFixed: 350 },
-  handoffTo: ['calc-landed-cost', 'calc-tco'],
+  handoffTo: [],
   rel: { sops: ['sop-contract-review'], calcs: ['calc-landed-cost', 'calc-tco'], glossary: ['gloss-fx'] },
   run: function (v) { return PS.calcImpl.fxConvert(v); }
 });

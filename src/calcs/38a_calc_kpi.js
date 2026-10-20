@@ -19,7 +19,7 @@ PS_CALC.push({
     PS.F('kpiDirection', 'Better direction', 'sel', 'opts=Higher_is_better;Lower_is_better|0')
   ],
   example: { kpiName: 'On-time delivery %', actual: 94.50, target: 98, priorPeriod: 92, kpiDirection: 'Higher is better' },
-  handoffTo: ['calc-savings-analysis', 'calc-budget-vs-actual'],
+  handoffTo: [],
   rel: { sops: ['sop-supplier-performance-management'], kpis: ['kpi-savings', 'kpi-otd', 'kpi-contract-compliance'] },
   run: function (v) { return PS.calcImpl.kpiQuick(v); }
 });

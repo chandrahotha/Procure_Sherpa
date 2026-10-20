@@ -40,6 +40,10 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.exams) PS.store.set(PS.K.exams, c.exams);
       if (c.spend) PS.store.set(PS.K.spend, c.spend);
       if (c.copilot) PS.store.set(PS.K.copilot, c.copilot);
+      if (c.docpacks) PS.store.set(PS.K.docpacks, c.docpacks);
+      if (c.labs) PS.store.set(PS.K.labs, c.labs);
+      if (c.assessment) PS.store.set(PS.K.assessment, c.assessment);
+      if (c.community) PS.store.set(PS.K.community, c.community);
     } else {
       var ids = {};
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
@@ -66,6 +70,10 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.exams) { var curE = PS.store.get(PS.K.exams, {}); PS.store.set(PS.K.exams, Object.assign({}, curE, c.exams)); }
       if (c.spend) { var curS = PS.store.get(PS.K.spend, {}); PS.store.set(PS.K.spend, Object.assign({}, curS, c.spend)); }
       if (c.copilot) { var curC = PS.store.get(PS.K.copilot, {}); PS.store.set(PS.K.copilot, Object.assign({}, curC, c.copilot)); }
+      if (c.docpacks) { var curD = PS.store.get(PS.K.docpacks, {}); PS.store.set(PS.K.docpacks, Object.assign({}, curD, c.docpacks)); }
+      if (c.labs) { var curL = PS.store.get(PS.K.labs, {}); PS.store.set(PS.K.labs, Object.assign({}, curL, c.labs)); }
+      if (c.assessment) { PS.store.set(PS.K.assessment, c.assessment); }
+      if (c.community) { var curC2 = PS.store.get(PS.K.community, []); PS.store.set(PS.K.community, curC2.concat(c.community).slice(-50)); }
     }
     PS.audit('backup-restored', (mode === 'replace' ? 'replace' : 'merge') + ' from ' + PS.clean(filename || 'backup', 80));
     PS.applyTheme();

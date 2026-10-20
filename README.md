@@ -72,24 +72,25 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 ```
                     ┌──────────────────────────────────────────────┐
                     │      Executive Command Center (#/home)       │
-                    │  Clean Full-Width Portal & Account Hub        │
-                    │        (distraction-free, no sidebar)         │
+                    │  Personal start point · Today · Account Hub    │
+                    │        (persistent sidebar, always open)      │
                     └──────────────────────┬───────────────────────┘
                                            │
              ┌─────────────────────────────┴─────────────────────────────┐
              ▼                                                           ▼
 ┌─────────────────────────────────────────┐ ┌─────────────────────────────────────────┐
 │     Procurement Academy (#/academy)     │ │        Operations Hub (#/operations)    │
-│  8 Modules · 19 Functions · 5-Tab       │ │  19 Financial Calculators · 13 SOPs     │
+│  10 Modules · 25 Functions · 5-Tab      │ │  19 Financial Calculators · 13 SOPs     │
 │  Pedagogy · Digital SOPs · Crisis       │ │  27 Compliance Checklists · 33 Templates│
-│  Sandboxes · Progress Transcript        │ │  20 Decision Guides · 18 KPIs           │
+│  Sandboxes · Progress Transcript        │ │  17 Decision Guides · 18 KPIs           │
 │  (Certificates: future feature)         │ │                                          │
 └─────────────────────────────────────────┘ └─────────────────────────────────────────┘
              │                                                           │
              └─────────────────────────────┬─────────────────────────────┘
                                             ▼
-                    One persistent sidebar everywhere else:
-                    Overview · Learn · Execute · Reference · Workspace
+                    One persistent sidebar, on every route:
+                    Start · Learn · Do the Work · Look It Up · My Work
+                    (plus a permanent footer strip: Settings, Help, Backup, Changelog)
 ```
 
 ---
@@ -99,7 +100,7 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 | # | Capability | Summary |
 |---|---|---|
 | 1 | Command Center & Unified Navigation | Distraction-free home, one 5-section sidebar everywhere else |
-| 2 | Procurement Academy | 8 modules, 19 functions, 5-tab pedagogy, certification exams |
+| 2 | Procurement Academy | 10 modules, 25 functions, 5-tab pedagogy, certification exams |
 | 3 | Visual Analytics Engine | Waterfall, Kraljic matrix, Pareto curve, Altman Z-Score, all inline SVG |
 | 4 | Crisis Simulation Sandboxes | 10 hands-on commercial scenarios with live calculation models |
 | 5 | Credential Transcript | Deliberately disabled — see below |
@@ -115,7 +116,7 @@ Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day o
 
 ### 2. Procurement Academy & Competency Curriculum
 
-* **8 Modules, 19 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), and Supplier Management & Value Realization.
+* **10 Modules, 25 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), Supplier Management & Value Realization, Services/Software/Indirect Procurement, and Risk/Compliance/Ethics/Sustainability.
 * **Disciplined 5-Tab Learning Pedagogy** per function:
   1. **Core Concept**: Theoretical foundation, commercial relevance, process walkthroughs, common failure modes, and governance rules.
   2. **Procurement Mindset**: Executive perspective, commercial thinking points, and enterprise case studies.
@@ -199,8 +200,9 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
 <https://procuresherpa.vercel.app> runs the current `main`. It behaves
 identically to the downloaded file - still no server-side state, no accounts
-and no telemetry - but it serves the **minified** build (~1.05 MB instead of
-~1.26 MB) and adds transport-level hardening: HSTS, `X-Frame-Options: DENY`,
+and no telemetry - but it serves the **minified** build (~1.31 MB instead of
+~1.61 MB, and ~394 KB over the wire once gzipped) and adds transport-level
+hardening: HSTS, `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and a
 restrictive `Permissions-Policy`.
 
@@ -270,6 +272,7 @@ tools/
   test_quiz_tips.mjs             # Content integrity gate + Academy quiz engine assertions
   security_audit.mjs             # CSP / eval / inline-handler / credential scan
   a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes (visibility-aware)
+  test_integrity.mjs             # Integrity gate: what the other tests cannot see (see below)
   perf_check.mjs                 # Single-file payload budget checker (hard + soft thresholds)
   i18n_audit.mjs                 # Catalog-keys-vs-DOM-usage coverage count (informational)
   setup_hooks.mjs                # Wires .githooks/ on `npm install` via the "prepare" script
@@ -305,7 +308,7 @@ npm run verify:min
 # Calculator correctness: asserts every calcImpl produces well-formed, finite output
 node tools/test_calcs.mjs
 
-# Run full route smoke tests across all 63 routes
+# Run full route smoke tests across all 43 routes
 node tools/smoke.mjs
 
 # Validate cross-reference referential integrity
@@ -315,6 +318,7 @@ node tools/check_rels.mjs
 node tools/security_audit.mjs
 
 # Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs across 38 routes
+npm run test:integrity      # The integrity gate: registries, sentinel leaks, dead links, orphan content, handoff viability
 node tools/a11y_audit.mjs
 
 # Responsive layout & dynamic UI structure verification
@@ -324,7 +328,7 @@ node tools/test_layout.mjs
 node tools/perf_check.mjs
 ```
 
-`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1013 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (63 routes), responsive layout & dynamic UI verification (15 assertions), AST-based security scan (Espree traversal), accessibility scan (38 routes), performance budget, the i18n coverage audit (100% shell catalog keys wired across English and Spanish), and finally the minified deploy build re-verified with the smoke, calculator, accessibility, and layout suites.
+`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1021 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (43 routes), responsive layout & dynamic UI verification (15 assertions), AST-based security scan (Espree traversal), accessibility scan (38 routes), the integrity gate, the measured performance budget, the i18n coverage audit (100% shell catalog keys wired across English and Spanish), and finally the minified deploy build re-verified with the smoke, calculator, accessibility, and layout suites.
 
 `npm run qa:ci` is what CI actually runs. It prefixes the suite with `npm run check:drift`, which must happen *before* anything rebuilds: `npm run qa` starts with `node build.mjs`, so running the drift check after it would regenerate the artifact and erase the very mismatch the check exists to find.
 
@@ -375,7 +379,8 @@ Documented here deliberately, rather than left for someone to discover:
 * **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
 * **This is a single-user tool, not an enterprise system.** There is no server, no database, no account, no authentication and no multi-user state. Everything you enter lives in one browser's `localStorage` and disappears if that storage is cleared — use `#/backup` to export. The audit trail is a local convenience log, not a tamper-evident record, and nothing here is a system of record.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
-* **The single-file design has a ceiling, and it is visible.** The readable artifact is ~1.26 MB against a hard 1.6 MB build budget, all parsed before first paint, with no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.05 MB) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the decision, the trigger conditions for revisiting it, and what the alternatives would actually cost.
+* **The single-file design has a ceiling, and it is now measured rather than guessed.** The readable artifact is ~1.61 MB, of which ~446 KB reaches a browser once gzipped. All of it is parsed before first paint, and there is no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.31 MB, ~394 KB gzipped) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the architecture decision, the trigger conditions for revisiting it, and what the alternatives would actually cost. [`docs/adr/0002-measured-performance-budget.md`](docs/adr/0002-measured-performance-budget.md) replaces the guessed byte ceilings with measured ones: script compile time (21 ms, full V8 parse), application boot to first rendered page (244 ms), and transferred size (gzip) are all hard gates in `npm run perf`.
+* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` renders all 43 routes and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control has a handler; that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; and that the assessment result reads back correctly. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
 
 ---
 

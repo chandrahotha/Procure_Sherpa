@@ -23,7 +23,7 @@ PS_CALC.push({
     PS.F('riskLevel', 'Assessed risk level', 'sel', 'opts=Low;Medium;High|1')
   ],
   example: { poValue: 74000, spendType: 'Indirect_goods_or_services', supplier: 'Northwind Supplies', quotesObtained: 2, soleSource: false, contractInPlace: false, budgetApproved: true, riskLevel: 'Medium' },
-  handoffTo: ['calc-budget-vs-actual', 'calc-compare-quotes'],
+  handoffTo: ['calc-budget-vs-actual'],
   rel: { sops: ['sop-purchase-requisition', 'sop-purchase-order', 'sop-single-source', 'sop-procurement-exception'], cl: ['cl-single-source-justification', 'cl-exception-approval'], tpl: ['tpl-single-source-justification', 'tpl-exception-request'], calc: ['calc-compare-quotes'], decisions: ['dec-approve-exception', 'dec-competitive-vs-single'], kb: ['kb-delegation-of-authority', 'kb-approval-matrix'] },
   run: function (v) { return PS.calcImpl.poValueCheck(v); }
 });

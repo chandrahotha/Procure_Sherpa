@@ -14,6 +14,10 @@ PS.backupObject = function () {
     exams: PS.exams ? PS.exams.all() : null,
     spend: PS.spendModel ? PS.spendModel.all() : null,
     copilot: PS.copilot ? PS.copilot.all() : null,
+    docpacks: PS.docpack ? PS.docpack.all() : null,
+    labs: PS.store.get(PS.K.labs, {}),
+    assessment: PS.store.get(PS.K.assessment, null),
+    community: PS.store.get(PS.K.community, []),
     counts: PS.registrySummary()
   };
 };
@@ -57,6 +61,10 @@ PS.validateBackup = function (obj) {
       exams: (obj.exams && typeof obj.exams === 'object') ? obj.exams : null,
       spend: (obj.spend && typeof obj.spend === 'object') ? obj.spend : null,
       copilot: (obj.copilot && typeof obj.copilot === 'object') ? obj.copilot : null,
+      docpacks: (obj.docpacks && typeof obj.docpacks === 'object') ? obj.docpacks : null,
+      labs: (obj.labs && typeof obj.labs === 'object') ? obj.labs : null,
+      assessment: (obj.assessment && typeof obj.assessment === 'object') ? obj.assessment : null,
+      community: Array.isArray(obj.community) ? obj.community : null,
       audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
     }
   };
