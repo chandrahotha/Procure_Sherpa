@@ -12,6 +12,12 @@
    correctly, the Academy is the expected size, and the cross-tool
    handoffs still carry data. */
 import { JSDOM, VirtualConsole } from 'jsdom';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { stampFor, readStamp } from './build_stamp.mjs';
+
+const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 const URL = process.argv[2] || 'https://procuresherpa.vercel.app';
 let failures = 0;
@@ -26,12 +32,34 @@ if (!res.ok) { console.log('  the site is not serving'); process.exit(1); }
 const html = await res.text();
 console.log('  served bytes: ' + html.length.toLocaleString());
 
+/* The identity check. The served application carries a hash of the
+   sources it was built from, so this can answer the only question that
+   matters about a deployment: is the site serving the build I think it
+   is? Everything else below checks that the build is correct; this
+   checks that the build is the right one. */
+const expectedStamp = (() => {
+  try {
+    const manifest = fs.readFileSync(path.join(ROOT, 'src', 'manifest.txt'), 'utf8')
+      .split(/\r?\n/).map((s) => s.trim()).filter((s) => s && !s.startsWith('#'));
+    const toCRLF = (s) => s.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+    return stampFor(manifest.map((rel) => toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8'))));
+  } catch (e) {
+    return null;
+  }
+})();
+const servedStamp = readStamp(html);
+
 const vc = new VirtualConsole();
 const dom = new JSDOM(html, { runScripts: 'dangerously', url: 'https://localhost/', virtualConsole: vc, pretendToBeVisual: true });
 const w = dom.window;
 const PS = w.PS;
 await new Promise((r) => setTimeout(r, 400));
 if (!PS) { console.log('  the application did not initialise'); process.exit(1); }
+
+console.log('\nIdentity');
+ok('the served build carries a build stamp', !!servedStamp, servedStamp || 'none');
+ok('the served build is the build from this source tree', !!servedStamp && !!expectedStamp && servedStamp === expectedStamp,
+  'served=' + (servedStamp || 'none') + ' expected=' + (expectedStamp || 'none'));
 
 console.log('\nContent');
 ok('content library loaded', (PS.data.kb || []).length > 60, 'kb=' + (PS.data.kb || []).length);

@@ -12,6 +12,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { stampFor, applyStamp } from './tools/build_stamp.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(ROOT, 'src');
@@ -46,8 +47,13 @@ const parts = manifest.map((rel) => {
   }
   return toCRLF(fs.readFileSync(p, 'utf8'));
 });
-fs.writeFileSync(OUT, parts.join('\r\n') + '\r\n');
-console.log('assembled ' + parts.length + ' fragments -> ' + path.basename(OUT));
+/* The stamp is a hash of the source fragments, not of the artifact and
+   not of the commit, so it is stable across rebuilds and identical on
+   every machine. See tools/build_stamp.mjs. */
+const stamp = stampFor(parts);
+const assembled = applyStamp(parts.join('\r\n') + '\r\n', stamp);
+fs.writeFileSync(OUT, assembled);
+console.log('assembled ' + parts.length + ' fragments -> ' + path.basename(OUT) + ' (build ' + stamp + ')');
 
 const html = fs.readFileSync(OUT, 'utf8');
 const m = html.match(/<script>([\s\S]*?)<\/script>/);

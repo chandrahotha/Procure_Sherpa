@@ -377,6 +377,10 @@ node tools/test_calcs.mjs
 # Run full route smoke tests across all 52 routes
 node tools/smoke.mjs
 
+# Validate the GitHub workflow files (a job-level `if` may not use `secrets`;
+# a workflow that breaks this rule fails to compile and never runs a job)
+npm run check:workflows
+
 # Validate cross-reference referential integrity
 node tools/check_rels.mjs
 

@@ -2,47 +2,83 @@ name: Deploy
 
 # The Vercel Git integration is connected to this repository, and Vercel
 # creates a deployment for every push to main. On the Hobby plan every one
-# of them is blocked before a build starts:
+# of them used to be blocked before a build started:
 #
 #   "The deployment was blocked because the commit author doesn't have
 #    permission to create deployments for this project."
 #   (seatBlock: TEAM_ACCESS_REQUIRED)
 #
-# The cause is the plan, not the repository. Hobby teams may not have
+# The cause was the plan, not the repository. Hobby teams may not have
 # members, and the check Vercel runs on a Git-triggered deployment is
-# whether the commit author maps to an account with team access. A
-# deployment pushed from a token is attributed to the token's owner, who
-# is the team owner, so it is not subject to that check.
+# whether the *commit author* maps to an account with team access. The
+# Vercel account that owns the team had no linked GitHub account, and
+# the commit author had no Vercel account, so the check could never pass.
+# Inviting the commit author is not an option either: the API answers
+# "Team members are not permitted on the Hobby Plan."
 #
-# This workflow is the release path. It needs one repository secret:
+# The repository is now public and the Git integration deploys on every
+# push, so this workflow is no longer the only way to publish. It is the
+# way to publish *knowingly*, and it only runs once the gate has passed.
 #
-#   VERCEL_TOKEN  a Vercel API token scoped to the Digi Tracks team
-#                 (Vercel dashboard, Settings, Tokens, Create Token)
+# It is triggered by `workflow_run` on the QA workflow rather than by
+# the push itself, so it starts only when QA has finished successfully.
+# A commit that fails the gate is never published. That is the whole
+# point: a badge that says "passing" and a live site that is three
+# commits behind are the same failure in two places.
 #
-# The job is skipped rather than failed when the secret is not set, so
-# the repository stays usable without one, and a release can still be
-# made from a workstation with `npm run deploy`.
+# Two modes, chosen by whether a VERCEL_TOKEN secret is configured:
 #
-# To make the native Git integration work instead, link the GitHub
-# account to the Vercel account (Vercel dashboard, Account Settings,
-# Connections, GitHub). That is a one-time change and needs no workflow.
+#   publish  A token is present, so this workflow builds the release,
+#            runs the full gate and publishes it. The script refuses to
+#            publish an artifact that has not passed the same checks the
+#            local gate runs.
+#   verify   No token, so the Vercel Git integration published main on
+#            its own and this workflow checks that it did: it loads the
+#            served bytes and asserts that the live site is serving the
+#            build produced from the commit that was tested, and that
+#            the build itself is correct.
+#
+# The mode is decided in a STEP, not in a job-level condition. `secrets`
+# is not an allowed context in `jobs.<id>.if`, and a workflow that uses
+# it there fails to compile before a job is ever created. That is why
+# this file failed on every single push, carrying the misleading
+# annotation about account payments: the job was never created at all,
+# so there was nothing for the billing message to be about.
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["QA"]
+    types: [completed]
   workflow_dispatch: {}
 
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  deploy:
-    # Skipped, not failed, when no token is configured.
-    if: ${{ secrets.VERCEL_TOKEN != '' }}
+  publish:
+    name: Publish and verify
+    # Only after the gate has passed. A manual run is allowed because
+    # sometimes you want to re-verify or re-publish a commit that is
+    # already green.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      # Read at the job level, where `secrets` is allowed. A token is a
+      # credential and stays a secret; the project identifiers are not
+      # credentials and live in the repository variables.
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # For a workflow_run event, github.sha is the head of the
+          # default branch, which is not necessarily the commit that was
+          # tested. The tested commit is in the event payload.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: actions/setup-node@v4
         with:
@@ -52,19 +88,37 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Decide the release path
+        id: path
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "mode=publish" >> "$GITHUB_OUTPUT"
+            echo "A Vercel token is configured: this workflow will publish and verify."
+          else
+            echo "mode=verify" >> "$GITHUB_OUTPUT"
+            echo "No Vercel token is configured: the Vercel Git integration publishes main,"
+            echo "and this workflow will verify that it published the build from this commit."
+          fi
+
       # The deploy script runs the full gate itself: build, lint,
       # referential integrity, calculator assertions, content and quiz
       # gates, route smoke, the integrity gate, security, accessibility
       # and the measured performance budget, then the minified build
       # verified with the same suite. A release can never ship an
       # artifact that has not passed the same checks.
-      - name: Build, verify and deploy
+      - name: Build, verify and publish
+        if: steps.path.outputs.mode == 'publish'
         run: node tools/deploy.mjs
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
 
-      - name: Verify the production URL
+      # In verify mode the site was published by the Git integration.
+      # This asserts the two things that matter about that: the live
+      # bytes are the build from the tested commit, and the build itself
+      # passes the same checks the local gate runs.
+      - name: Verify the published deployment
+        if: steps.path.outputs.mode == 'verify'
         run: |
+          node tools/verify_deploy.mjs
           curl -fsS -o /dev/null -w "procuresherpa.vercel.app -> HTTP %{http_code}\n" https://procuresherpa.vercel.app

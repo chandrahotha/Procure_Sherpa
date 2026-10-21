@@ -3,7 +3,12 @@ var PS = window.PS = window.PS || {};
 PS.APP = 'Procure Sherpa';
 PS.VERSION = '2.0';
 PS.SCHEMA = 2;
-PS.BUILD = '2026-09-16';
+/* Replaced at build time with a hash of the source fragments, so the
+   running application can say which sources it was built from. See
+   tools/build_stamp.mjs. The placeholder is what makes the build
+   reproducible: the same sources always produce the same stamp, so
+   the committed artifact always matches a rebuild. */
+PS.BUILD = '__BUILD_STAMP__';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;

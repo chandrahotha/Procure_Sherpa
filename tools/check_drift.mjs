@@ -25,6 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { stampFor, applyStamp } from './build_stamp.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const OUT = path.join(ROOT, 'ProcureSherpa-v2.0.html');
@@ -55,7 +56,13 @@ if (missing.length) {
   process.exit(1);
 }
 
-const fresh = manifest.map((rel) => toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8'))).join('\r\n') + '\r\n';
+const parts = manifest.map((rel) => toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8')));
+/* The same stamp the build applies, so the comparison is between two
+   identically stamped artifacts rather than between a stamped one and
+   an unstamped one. This is the coupling that matters: build.mjs and
+   this file agree because they call one function, not because two
+   copies of the same idea happen to match. */
+const fresh = applyStamp(parts.join('\r\n') + '\r\n', stampFor(parts));
 const committed = fs.readFileSync(OUT, 'utf8');
 
 const sha = (s) => crypto.createHash('sha256').update(s, 'utf8').digest('hex').slice(0, 12);

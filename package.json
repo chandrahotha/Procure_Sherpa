@@ -33,12 +33,13 @@
     "audit:a11y": "node tools/a11y_audit.mjs",
     "audit:i18n": "node tools/i18n_audit.mjs",
     "perf": "node tools/perf_check.mjs",
-    "qa": "node build.mjs && eslint . && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs && npm run verify:min",
-    "test": "node build.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs",
+    "qa": "node build.mjs && eslint . && node tools/check_workflows.mjs && node tools/check_rels.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/test_interactive.mjs && node tools/test_quiz_tips.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs && node tools/security_audit.mjs && node tools/a11y_audit.mjs && node tools/perf_check.mjs && node tools/i18n_audit.mjs && npm run verify:min",
+    "test": "node build.mjs && node tools/check_workflows.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs",
     "qa:ci": "node tools/check_drift.mjs && npm run qa",
     "verify:min": "node tools/build_min.mjs && node tools/smoke.mjs dist/index.html && node tools/test_calcs.mjs dist/index.html && node tools/test_calc_values.mjs dist/index.html && node tools/a11y_audit.mjs dist/index.html && node tools/test_layout.mjs dist/index.html",
     "deploy": "node tools/deploy.mjs",
-    "verify:deploy": "node tools/verify_deploy.mjs"
+    "verify:deploy": "node tools/verify_deploy.mjs",
+    "check:workflows": "node tools/check_workflows.mjs"
   },
   "repository": {
     "type": "git",
