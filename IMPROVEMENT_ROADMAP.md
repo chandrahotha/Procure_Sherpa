@@ -161,6 +161,23 @@ the part worth recording.
   gained a Random values button, so the numbers can be varied rather
   than only read.
 
+### The CI was failing for a different reason than it said
+
+The Actions tab was red on every push, carrying an annotation about
+failed account payments. That annotation was true, and it is what
+everybody expected to see, so nobody looked past it. The Deploy
+workflow had in fact never compiled: it used `secrets` in a
+job-level `if`, which is not an allowed context there, so the
+workflow failed before a job was created and reported itself as a
+workflow file issue. The job that never existed was the reason the
+run showed a billing message.
+
+The token check moved to a step, there is a new gate
+(`npm run check:workflows`) so it cannot happen again, the deploy
+now runs only after the gate has passed, and the build carries a
+hash of its own sources so that a deployment can be checked for
+identity rather than merely for correctness.
+
 ### Two engineering decisions were written down
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
