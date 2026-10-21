@@ -54,8 +54,20 @@ jobs:
       - name: Full QA suite
         run: npm run qa
 
+      # The artifact is a convenience: a copy of the deploy build for
+      # anyone who wants to look at it without building it. It is NOT
+      # part of the gate, and it must not be able to fail the gate.
+      #
+      # It was able to, and it did: GitHub's artifact storage quota is
+      # tied to the same account billing that intermittently blocks
+      # hosted runner allocation, and when the quota is exhausted the
+      # upload fails with "Artifact storage quota has been hit" - after
+      # the whole suite has passed. A storage quota is an account
+      # condition, not a code condition, so it is reported and not
+      # enforced.
       - name: Upload deploy build
         if: success()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: procure-sherpa-dist
