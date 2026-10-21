@@ -58,6 +58,14 @@ concurrency:
 permissions:
   contents: read
 
+# Every `run:` block is bash, on every runner. A self-hosted Windows
+# runner defaults to PowerShell, which cannot read the shell syntax
+# the hosted Linux runner was happy with, and the failure looked like
+# a script error rather than a shell mismatch.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   publish:
     name: Publish and verify
@@ -128,4 +136,4 @@ jobs:
           # of the build that is on its way. It waits up to three minutes
           # for the served build to become the one expected.
           node tools/verify_deploy.mjs --wait 180
-          curl -fsS -o /dev/null -w "procuresherpa.vercel.app -> HTTP %{http_code}\n" https://procuresherpa.vercel.app
+          node -e "fetch('https://procuresherpa.vercel.app').then(r => { console.log('procuresherpa.vercel.app -> HTTP ' + r.status); process.exit(r.ok ? 0 : 1); }).catch(e => { console.error(e.message); process.exit(1); })"

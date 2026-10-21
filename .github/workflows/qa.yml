@@ -27,6 +27,14 @@ concurrency:
   group: qa-${{ github.ref }}
   cancel-in-progress: true
 
+# Every `run:` block is bash, on every runner. A self-hosted Windows
+# runner defaults to PowerShell, which cannot read the shell syntax
+# the hosted Linux runner was happy with, and the failure looked like
+# a script error rather than a shell mismatch.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   qa:
     # # The runner is a self-hosted one, on the workstation that develops the
