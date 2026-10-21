@@ -178,6 +178,15 @@ now runs only after the gate has passed, and the build carries a
 hash of its own sources so that a deployment can be checked for
 identity rather than merely for correctness.
 
+The account's block is intermittent rather than permanent, and it
+came back two minutes after it cleared. So the suite runs on a
+**self-hosted runner** - the workstation that develops the project,
+registered against this repository only and started on login. A
+self-hosted runner does not consume hosted minutes, so it is not
+subject to the block. The trade is that CI needs that machine to be
+awake, and the way back to a hosted runner is one line in each workflow
+once the billing is fixed.
+
 ### Two engineering decisions were written down
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
