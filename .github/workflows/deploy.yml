@@ -65,7 +65,8 @@ jobs:
     # sometimes you want to re-verify or re-publish a commit that is
     # already green.
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    # # The runner is a self-hosted one, for the same reason as the QA
+    runs-on: [self-hosted, Windows, X64, procure-sherpa]
     environment: production
     env:
       # Read at the job level, where `secrets` is allowed. A token is a

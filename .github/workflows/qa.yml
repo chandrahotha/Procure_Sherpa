@@ -29,7 +29,8 @@ concurrency:
 
 jobs:
   qa:
-    runs-on: ubuntu-latest
+    # # The runner is a self-hosted one, on the workstation that develops the
+    runs-on: [self-hosted, Windows, X64, procure-sherpa]
     steps:
       - uses: actions/checkout@v4
 

@@ -96,6 +96,9 @@ for (const file of files) {
 
   let inJobs = false;
   let jobsIndent = 0;
+  let currentJob = null;
+  const jobsWithoutRunner = [];
+  const jobNames = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (/^jobs:\s*$/.test(line)) { inJobs = true; jobsIndent = 0; continue; }
@@ -104,6 +107,16 @@ for (const file of files) {
     if (/^[a-zA-Z]/.test(line) && line.indexOf('jobs:') !== 0) { inJobs = false; continue; }
 
     const indent = line.length - line.trimStart().length;
+    /* A job id is two spaces in under `jobs:`. The keys under `on:` are
+       also two spaces in, so this only counts inside the jobs block. */
+    if (indent === 2 && /^ {2}[a-zA-Z0-9_-]+:\s*$/.test(line)) {
+      currentJob = /^ {2}([a-zA-Z0-9_-]+):/.exec(line)[1];
+      jobNames.push(currentJob);
+      jobsWithoutRunner.push(currentJob);
+    }
+    if (indent === 4 && /^ {4}runs-on:\s*\S/.test(line)) {
+      if (currentJob) jobsWithoutRunner.splice(jobsWithoutRunner.indexOf(currentJob), 1);
+    }
     const m = /^\s*if:\s*(.+)$/.exec(line);
     if (!m) continue;
     const expr = m[1];
@@ -138,8 +151,25 @@ for (const file of files) {
   if (!/^jobs:\s*$/m.test(raw)) {
     problems.push('no `jobs:` block');
   }
-  if (/\bruns-on:\s*\[/.test(raw)) {
-    problems.push('a matrix `runs-on: [ ... ]` is used; a job-level `if` cannot be used to choose between them here');
+  /* Every job needs somewhere to run. A `runs-on: [ ... ]` is a list of
+   LABELS, which is how a self-hosted runner is selected - it is not a
+   matrix, and it is perfectly valid. The matrix is `strategy.matrix`,
+   and a job-level `if` may reference matrix values there. An earlier
+   version of this rule flagged every label array as a matrix, which
+   would have forbidden the only way to select a self-hosted runner. */
+  /* Every job needs somewhere to run. A `runs-on: [ ... ]` is a list of
+   LABELS, which is how a self-hosted runner is selected - it is not a
+   matrix, and it is perfectly valid. The matrix is `strategy.matrix`,
+   and a job-level `if` may reference matrix values there. An earlier
+   version of this rule flagged every label array as a matrix, which
+   would have forbidden the only way to select a self-hosted runner.
+
+   The count is done by scanning indentation, not by parsing YAML, so it
+   does not need a parser and cannot be fooled by one. */
+
+
+  for (const j of jobsWithoutRunner) {
+    problems.push('the job "' + j + '" has no runs-on, so there is nowhere for it to run');
   }
 
   if (problems.length) {
