@@ -58,14 +58,6 @@ concurrency:
 permissions:
   contents: read
 
-# Every `run:` block is bash, on every runner. A self-hosted Windows
-# runner defaults to PowerShell, which cannot read the shell syntax
-# the hosted Linux runner was happy with, and the failure looked like
-# a script error rather than a shell mismatch.
-defaults:
-  run:
-    shell: bash
-
 jobs:
   publish:
     name: Publish and verify
@@ -97,17 +89,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The decision is made in Node, not in a shell conditional. The two
+      # runners do not agree on what a shell is: a hosted Linux runner
+      # runs bash, a self-hosted Windows runner runs PowerShell, and
+      # asking for bash on the Windows runner finds the WSL shim in
+      # System32 and fails with "execvpe(/bin/bash) failed" if WSL is
+      # not installed. Node is on the PATH of every runner, so the
+      # decision is made there and written to the step output.
       - name: Decide the release path
         id: path
-        run: |
-          if [ -n "$VERCEL_TOKEN" ]; then
-            echo "mode=publish" >> "$GITHUB_OUTPUT"
-            echo "A Vercel token is configured: this workflow will publish and verify."
-          else
-            echo "mode=verify" >> "$GITHUB_OUTPUT"
-            echo "No Vercel token is configured: the Vercel Git integration publishes main,"
-            echo "and this workflow will verify that it published the build from this commit."
-          fi
+        run: node tools/ci_release_path.mjs
 
       # The deploy script runs the full gate itself: build, lint,
       # referential integrity, calculator assertions, content and quiz
@@ -128,12 +119,12 @@ jobs:
       # passes the same checks the local gate runs.
       - name: Verify the published deployment
         if: steps.path.outputs.mode == 'verify'
-        run: |
-          # --wait because a deployment is not live the instant the gate
-          # finishes. The build takes about twenty seconds and the
-          # alias moves after that, so a check that runs immediately
-          # finds the PREVIOUS deployment and reports it as a failure
-          # of the build that is on its way. It waits up to three minutes
-          # for the served build to become the one expected.
-          node tools/verify_deploy.mjs --wait 180
-          node -e "fetch('https://procuresherpa.vercel.app').then(r => { console.log('procuresherpa.vercel.app -> HTTP ' + r.status); process.exit(r.ok ? 0 : 1); }).catch(e => { console.error(e.message); process.exit(1); })"
+        # --wait because a deployment is not live the instant the gate
+        # finishes. The build takes about twenty seconds and the alias
+        # moves after that, so a check that runs immediately finds the
+        # PREVIOUS deployment and reports it as a failure of the build
+        # that is on its way. It waits up to three minutes for the served
+        # build to become the one expected. The script also checks the
+        # HTTP status and exits non-zero if the site is not serving, so
+        # there is no second command needed here.
+        run: node tools/verify_deploy.mjs --wait 180
