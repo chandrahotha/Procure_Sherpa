@@ -698,6 +698,54 @@ if (navAgree.length) {
   ok('G19', 'every page is in the menu while you are on it, in both views');
 }
 
+/* ---------- G20: the build carries a stamp that can be read back ---------- */
+console.log('\nG20  build stamp');
+/* The stamp is what makes a deployment checkable: the served bytes
+   carry a hash of the sources they were built from, so 'is the live
+   site the build I think it is?' has an answer. It only works if the
+   stamp survives minification, and the minifier rewrites string
+   literals, so the readable form and the minified form have to be read
+   back differently. Both are checked here. */
+const stampOf = (html) => {
+  const m = /PS\.BUILD\s*=\s*(['"])([^'"]*)\1/.exec(String(html));
+  return m ? m[2] : null;
+};
+const stampSrc = stampOf(fs.readFileSync(path.join(ROOT, 'ProcureSherpa-v2.0.html'), 'utf8'));
+if (!stampSrc) {
+  fail('G20', 'the readable artifact carries no build stamp');
+} else {
+  ok('G20', 'the readable artifact carries a build stamp (' + stampSrc + ')');
+}
+const distPath = path.join(ROOT, 'dist', 'index.html');
+if (fs.existsSync(distPath)) {
+  const stampDist = stampOf(fs.readFileSync(distPath, 'utf8'));
+  if (!stampDist) {
+    fail('G20', 'the minified deploy build carries no build stamp, so a deployment cannot be identified');
+  } else if (stampSrc && stampDist !== stampSrc) {
+    fail('G20', 'the minified build has a different stamp than the readable one (' + stampDist + ' vs ' + stampSrc + ')');
+  } else {
+    ok('G20', 'the minified deploy build carries the same stamp (' + stampDist + ')');
+  }
+}
+/* And the stamp has to be a hash of the sources, not a constant, so
+   that a change to the source really does change the identity of the
+   build. */
+try {
+  const manifest = fs.readFileSync(path.join(ROOT, 'src', 'manifest.txt'), 'utf8')
+    .split(/\r?\n/).map((s) => s.trim()).filter((s) => s && !s.startsWith('#'));
+  const toCRLF = (s) => s.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+  const parts = manifest.map((rel) => toCRLF(fs.readFileSync(path.join(ROOT, rel), 'utf8')));
+  const crypto = await import('node:crypto');
+  const expected = crypto.createHash('sha256').update(parts.join(''), 'utf8').digest('hex').slice(0, 12);
+  if (stampSrc && stampSrc !== expected) {
+    fail('G20', 'the stamp is not the hash of the sources (' + stampSrc + ' vs ' + expected + ')');
+  } else {
+    ok('G20', 'the stamp is the hash of the sources');
+  }
+} catch (e) {
+  fail('G20', 'could not recompute the source hash: ' + e.message);
+}
+
 w.close();
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

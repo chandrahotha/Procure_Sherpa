@@ -120,5 +120,11 @@ jobs:
       - name: Verify the published deployment
         if: steps.path.outputs.mode == 'verify'
         run: |
-          node tools/verify_deploy.mjs
+          # --wait because a deployment is not live the instant the gate
+          # finishes. The build takes about twenty seconds and the
+          # alias moves after that, so a check that runs immediately
+          # finds the PREVIOUS deployment and reports it as a failure
+          # of the build that is on its way. It waits up to three minutes
+          # for the served build to become the one expected.
+          node tools/verify_deploy.mjs --wait 180
           curl -fsS -o /dev/null -w "procuresherpa.vercel.app -> HTTP %{http_code}\n" https://procuresherpa.vercel.app

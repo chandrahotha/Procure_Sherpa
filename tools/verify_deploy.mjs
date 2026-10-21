@@ -19,18 +19,20 @@ import { stampFor, readStamp } from './build_stamp.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
-const URL = process.argv[2] || 'https://procuresherpa.vercel.app';
+/* --wait <seconds> polls until the served build is the one expected.
+   A deployment is not live the instant the gate finishes: the build
+   takes about twenty seconds and the alias moves after that, so a
+   check that runs immediately finds the previous deployment and
+   reports it as a failure of the build that is actually on its way. */
+const argv = process.argv.slice(2);
+const waitIdx = argv.indexOf('--wait');
+const WAIT_SECONDS = waitIdx >= 0 ? parseInt(argv[waitIdx + 1], 10) || 0 : 0;
+const URL = argv.find((a) => !a.startsWith('--') && a !== String(WAIT_SECONDS)) || 'https://procuresherpa.vercel.app';
 let failures = 0;
 const ok = (label, cond, extra) => {
   console.log((cond ? '  PASS  ' : '  FAIL  ') + label + (extra ? '  [' + extra + ']' : ''));
   if (!cond) failures++;
 };
-
-const res = await fetch(URL, { headers: { 'user-agent': 'procure-sherpa-verify' } });
-console.log('\n' + URL + '  ->  HTTP ' + res.status);
-if (!res.ok) { console.log('  the site is not serving'); process.exit(1); }
-const html = await res.text();
-console.log('  served bytes: ' + html.length.toLocaleString());
 
 /* The identity check. The served application carries a hash of the
    sources it was built from, so this can answer the only question that
@@ -47,7 +49,36 @@ const expectedStamp = (() => {
     return null;
   }
 })();
-const servedStamp = readStamp(html);
+const fetchHtml = async () => {
+  const res = await fetch(URL, { headers: { 'user-agent': 'procure-sherpa-verify', 'cache-control': 'no-cache' } });
+  if (!res.ok) return { status: res.status, html: null };
+  return { status: res.status, html: await res.text() };
+};
+
+
+
+let html = null;
+let servedStamp = null;
+let httpStatus = 0;
+const deadline = Date.now() + WAIT_SECONDS * 1000;
+let attempt = 0;
+for (;;) {
+  attempt++;
+  const r = await fetchHtml();
+  httpStatus = r.status;
+  html = r.html;
+  servedStamp = html ? readStamp(html) : null;
+  if (html && (!expectedStamp || servedStamp === expectedStamp)) break;
+  if (!WAIT_SECONDS || Date.now() >= deadline) break;
+  if (attempt === 1) {
+    console.log('  waiting for the deployment to land' +
+      (expectedStamp ? ' (expecting build ' + expectedStamp + ', serving ' + (servedStamp || 'none') + ')' : '') + '...');
+  }
+  await new Promise((r2) => setTimeout(r2, 5000));
+}
+console.log('\n' + URL + '  ->  HTTP ' + httpStatus + (attempt > 1 ? '  (' + attempt + ' attempts)' : ''));
+if (!html) { console.log('  the site is not serving'); process.exit(1); }
+console.log('  served bytes: ' + html.length.toLocaleString());
 
 const vc = new VirtualConsole();
 const dom = new JSDOM(html, { runScripts: 'dangerously', url: 'https://localhost/', virtualConsole: vc, pretendToBeVisual: true });

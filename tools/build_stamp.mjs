@@ -27,7 +27,13 @@
 import crypto from 'node:crypto';
 
 /* The placeholder lives in src/core/03a_util.js. */
-export const STAMP_PATTERN = /PS\.BUILD\s*=\s*'[^']*'/;
+/* The pattern has to accept both quote styles. The readable artifact
+   uses single quotes, and the minified deploy build uses double,
+   because the minifier rewrites string literals. Reading the stamp out
+   of the served bytes means reading the MINIFIED form, so a
+   single-quote-only pattern would find nothing in the one artifact
+   that matters most. */
+export const STAMP_PATTERN = /PS\.BUILD\s*=\s*(['"])[^'"]*\1/;
 export const STAMP_PLACEHOLDER = "PS.BUILD = '__BUILD_STAMP__'";
 
 /* The same normalisation the build uses, so a Windows checkout and a
@@ -48,5 +54,7 @@ export function applyStamp(assembled, stamp) {
 /* Read the stamp back out of an artifact. */
 export function readStamp(artifact) {
   const m = STAMP_PATTERN.exec(String(artifact));
-  return m ? /'([^']*)'/.exec(m[0])[1] : null;
+  if (!m) return null;
+  const q = /['"]([^'"]*)['"]/.exec(m[0]);
+  return q ? q[1] : null;
 }
