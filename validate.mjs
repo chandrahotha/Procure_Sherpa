@@ -1,7 +1,7 @@
-/* Procure Sherpa build validator
-   Usage: node validate.mjs "path\to\ProcureSherpa-v2.0.html"
-   Compiles the inline script (syntax only, safe: no execution),
-   reports registrations and checks the document skeleton.        */
+/* Procurement 360 build validator
+   Usage: node validate.mjs "path\to\Procurement360.html"
+   Validates the SPA bundle: syntax, registrations, routes, and structure.
+   The app renders into #app at runtime — no static HTML shell required. */
 import fs from 'node:fs';
 import vm from 'node:vm';
 
@@ -17,15 +17,16 @@ const js = m[1];
 try { new vm.Script(js, { filename: 'inline.js' }); console.log('OK   JS syntax compiles (' + js.length + ' chars)'); }
 catch (e) { console.error('FAIL JS syntax: ' + e.message); fail = 1; }
 
-const need = ['<!DOCTYPE html>', '<html lang="en"', '<title>', '</style>', '<body>', 'id="navRoot"',
-  'id="main"', 'id="toastContainer"', 'id="modalRoot"', '</script>', '</body>', '</html>'];
+/* SPA shell: the app mounts into #app and builds the DOM at runtime */
+const need = ['<!DOCTYPE html>', '<html lang="en"', '<title>', '</style>', '<body>', 'id="app"', '</script>', '</body>', '</html>'];
 need.forEach(function (s) { if (src.indexOf(s) < 0) { console.error('FAIL missing document part: ' + s); fail = 1; } });
 console.log('OK   document skeleton present (' + (src.length / 1024).toFixed(1) + ' KB)');
 
 const counts = {};
-['PS_KB', 'PS_SOPS', 'PS_CL', 'PS_TPL', 'PS_DEC', 'PS_KPI', 'PS_GLOSS', 'PS_SCEN', 'PS_CALC', 'PS_HELP']
+['PS.KB', 'PS.SOPS', 'PS.CL', 'PS.TPL', 'PS.DEC', 'PS.KPI', 'PS.GLOSS', 'PS.SCEN', 'PS.CALC', 'PS.HELP']
   .forEach(function (t) {
-    counts[t] = (js.match(new RegExp('\\b' + t + '\\.push\\(', 'g')) || []).length;
+    const key = t.replace('.', '_');
+    counts[key] = (js.match(new RegExp('\\b' + t.replace('.', '\\.') + '\\.push\\(', 'g')) || []).length;
   });
 console.log('INFO content registrations: ' + JSON.stringify(counts));
 

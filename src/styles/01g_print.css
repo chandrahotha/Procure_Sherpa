@@ -1,0 +1,47 @@
+/* ==========================================================
+   Section 7: print & report styles.
+   Print is a first-class target here, not a fallback: module cases,
+   doc packs and certificates are read on paper. The chrome is stripped,
+   rules become hairlines, and headings never split from their content.
+   (global responsive styles live in 01j_global_extras.css)
+   ========================================================== */
+.report-head{display:none}
+.print-only{display:none}
+@media print{
+  @page{size:auto;margin:14mm 12mm}
+  html,body{background:#fff!important;color:#000!important}
+  body{font-family:Georgia,"Times New Roman",serif;font-size:10.5pt;line-height:1.45}
+  .sidebar,.topbar,.crumb,.footer,.scrim,.no-print,.toast,.toast-container,.modal-backdrop,.kbd-help-panel,.kbd-help-backdrop,.cmd-palette-backdrop,.nav-sec-head,.dash-head .btn-row,.dash-search{display:none!important}
+  .app{display:block;min-height:0}
+  .app.has-no-sidebar .sidebar,.app.has-no-sidebar #scrim{display:none!important}
+  .content{display:block}
+  .main{padding:0;max-width:none;animation:none}
+  .dash-head,.page-head{background:#fff!important;color:#000!important;border:0;border-bottom:2px solid #000;border-radius:0;padding:0 0 8px;margin-bottom:10px;box-shadow:none!important}
+  .dash-head h1,.dash-head .dash-sub,.dash-head .dash-date{color:#000!important}
+  .card,.tile,.stat,.results,.res-item,.table-wrap,details.acc,.fieldset{
+    box-shadow:none!important;border:1px solid #999!important;border-radius:0!important;background:#fff!important;break-inside:avoid;
+  }
+  .report-head{display:block;border-bottom:2px solid #000;margin-bottom:10px;padding-bottom:6px}
+  .report-head h1{font-size:1.15rem;margin:0}
+  .report-head .rh-meta{font-size:.78rem;color:#333}
+  .print-only{display:block}
+  /* Never split a heading from what it introduces, or a table from its rows. */
+  h1,h2,h3,h4{break-after:avoid-page;break-inside:avoid}
+  figure,table,pre,blockquote{break-inside:avoid}
+  table{font-size:.75rem;page-break-inside:auto}
+  thead th{background:#eee!important;color:#000!important;position:static}
+  tr{page-break-inside:avoid}
+  .badge,.tag{border:1px solid #767676!important;background:#fff!important;color:#000!important}
+  .alert{border:1px solid #767676!important;background:#fff!important;padding-left:13px;border-left-width:1px!important}
+  .alert::before{display:none}
+  a{color:#000!important;text-decoration:none}
+  /* A reader cannot click paper: show where a link goes. */
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#444;word-break:break-all}
+  details.acc>summary{list-style:none}
+  details.acc>summary::after{display:none}
+  details.acc{page-break-inside:avoid}
+  details.acc .acc-body{display:block!important}
+  .mono,.num{font-family:Consolas,"Courier New",monospace}
+}
+</style>
+</head>

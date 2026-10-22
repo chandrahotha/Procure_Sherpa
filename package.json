@@ -30,5 +30,8 @@
   "homepage": "https://github.com/chandrahotha/Procure_Sherpa#readme",
   "dependencies": {
     "jsdom": "^30.0.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

@@ -1,0 +1,36 @@
+/* ============ Calc: Supplier Scorecard ============ */
+PS.CALC.push({
+  id: 'calc-supplier-scorecard', title: 'Supplier Scorecard', cat: 'Supplier Tools', tags: ['scorecard', 'evaluation', 'weighted score', 'supplier selection'],
+  purpose: 'Score two suppliers on the same five weighted criteria so the recommendation rests on arithmetic anyone can audit, not on the loudest voice in the room.',
+  desc: 'Weighted 1-to-5 scoring across quality, delivery, price, service and risk.',
+  disclaimerKind: 'finance',
+  assumptions: ['Scores are judgement calls on a 1-to-5 scale: the maths is exact, the inputs are opinions that must be evidenced.',
+    'Weights are normalised, so they express relative importance even when they do not sum to exactly 100.',
+    'Price is scored as competitiveness (5 = best value), not as raw currency.'],
+  formula: ['Weighted score = sum(weight x score) / sum(weights), on a 1-to-5 scale',
+    'Maximum gap per criterion = weight x 4 / sum(weights)'],
+  groups: [PS.G('Criterion weights (%)', 'wQuality wDelivery wPrice wService wRisk'),
+    PS.G('Supplier A scores (1-5)', 'aQuality aDelivery aPrice aService aRisk'),
+    PS.G('Supplier B scores (1-5)', 'bQuality bDelivery bPrice bService bRisk')],
+  fields: [
+    PS.F('wQuality', 'Quality weight %', 'pct', 'nn,max=100', '30'),
+    PS.F('wDelivery', 'Delivery weight %', 'pct', 'nn,max=100', '25'),
+    PS.F('wPrice', 'Price weight %', 'pct', 'nn,max=100', '20'),
+    PS.F('wService', 'Service weight %', 'pct', 'nn,max=100', '15'),
+    PS.F('wRisk', 'Risk weight %', 'pct', 'nn,max=100', '10'),
+    PS.F('aQuality', 'A: quality (1-5)', 'qty', 'req,nn,int,min=1,max=5', '4'),
+    PS.F('aDelivery', 'A: delivery (1-5)', 'qty', 'req,nn,int,min=1,max=5', '4'),
+    PS.F('aPrice', 'A: price (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3'),
+    PS.F('aService', 'A: service (1-5)', 'qty', 'req,nn,int,min=1,max=5', '5'),
+    PS.F('aRisk', 'A: risk (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3'),
+    PS.F('bQuality', 'B: quality (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3'),
+    PS.F('bDelivery', 'B: delivery (1-5)', 'qty', 'req,nn,int,min=1,max=5', '4'),
+    PS.F('bPrice', 'B: price (1-5)', 'qty', 'req,nn,int,min=1,max=5', '4'),
+    PS.F('bService', 'B: service (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3'),
+    PS.F('bRisk', 'B: risk (1-5)', 'qty', 'req,nn,int,min=1,max=5', '3')
+  ],
+  example: { wQuality: 30, wDelivery: 25, wPrice: 20, wService: 15, wRisk: 10, aQuality: 4, aDelivery: 4, aPrice: 3, aService: 5, aRisk: 3, bQuality: 3, bDelivery: 4, bPrice: 4, bService: 3, bRisk: 3 },
+  handoffTo: ['calc-supplier-concentration'],
+  rel: { sops: ['sop-supplier-evaluation'], checklists: ['cl-supplier-evaluation'], templates: ['tpl-supplier-evaluation'], calcs: ['calc-supplier-concentration'], decisions: ['competitive-or-single'], scenarios: ['scn-supplier-risk'] },
+  run: function (v) { return PS.calcImpl.scorecard(v); }
+});
