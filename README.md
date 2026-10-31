@@ -349,6 +349,7 @@ LICENSE                          # ISC license
 CONTRIBUTING.md                  # Dev setup, the CI's real state, the rules that exist for a reason
 SECURITY.md                      # Threat model, dependency status, what's audited, how to report
 docs/v2.4-delivery-report.md     # What shipped, what it cost, what is still open
+docs/completion-ledger.md        # Every requirement and roadmap item, rated GREEN/YELLOW/RED against the code
 docs/adr/                        # Architecture decision records
   0001-single-file-architecture.md   # Why one file, and the triggers for revisiting it
   0002-measured-performance-budget.md # The measured budgets that replaced the guessed ones

@@ -358,9 +358,20 @@ marked is actually shipped:
 | 🚧 Partial / scaffolding | Real infrastructure exists but coverage is narrow (see the item's note) |
 | 📋 Proposed | Not started — an idea, not a plan with a date |
 
-Everything in **Phase 11** is ✅ shipped (it was added after the original
-10 phases and built out immediately — see the Decision Log). Everything
-in **Phases 1-10** is 📋 proposed unless called out otherwise inline.
+Everything in **Phase 11** was built out immediately after it was
+proposed, and most of it is real. An audit of all 26 Phase 11 bullets
+against the code and the gate output
+(`docs/completion-ledger.md`, Part 3) found **20 present but asserted by
+nothing and 6 absent outright** — 11.1d context awareness, 11.3d scenario
+-tree export, 11.4b adaptive question length, 11.4c configurable pass
+threshold wired to certificates, 11.5c spend period snapshots, and 11.5d
+the CSV/JSON round trip. "Shipped" and "verified" are different claims,
+and only the first was ever checked. Everything in **Phases 1-10** is
+📋 proposed unless called out otherwise inline; 105 of its 149
+capabilities are buildable inside the product's constraints, and 44 need
+a decision from the owner because they collide with the single-file,
+zero-dependency, offline and transfer-budget rules — the ledger names
+each one and the constraint it breaks.
 Two items already have partial infrastructure worth knowing about:
 
 * 🚧 **i18n architecture** (Phase 6.2) — `PS.i18n` (`t()`, plural-safe
