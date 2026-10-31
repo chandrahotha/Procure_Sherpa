@@ -25,8 +25,15 @@ let failures = 0;
    Now the suite says what it ran, and the docs point at it. */
 let assertions = 0;
 const gateLabels = new Set();
-const fail = (gate, msg) => { assertions++; gateLabels.add(gate); failures++; console.log('  FAIL [' + gate + '] ' + msg); };
-const ok = (gate, msg) => { assertions++; gateLabels.add(gate); console.log('  ok   [' + gate + '] ' + msg); };
+/* Several assertions are legitimately credited to more than one gate, and
+   the label is then written as one string ("G2/G3"). Counting those strings
+   as the gate inventory under-reported it: the summary said 19 gates while
+   the file defines G1 to G20, which is the kind of number a document then
+   quotes and nobody can reconcile. Split the label so the inventory counts
+   gates, not label spellings. */
+const mark = (gate) => String(gate).split('/').forEach((g) => gateLabels.add(g.trim()));
+const fail = (gate, msg) => { assertions++; mark(gate); failures++; console.log('  FAIL [' + gate + '] ' + msg); };
+const ok = (gate, msg) => { assertions++; mark(gate); console.log('  ok   [' + gate + '] ' + msg); };
 
 /* ---------- load the artifact ---------- */
 const vc = new VirtualConsole();
@@ -815,7 +822,8 @@ try {
 
 w.close();
 console.log('\n--- summary ---');
-console.log('gate labels:  ' + gateLabels.size + ' (' + [...gateLabels].sort().join(', ') + ')');
+const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));
+console.log('gates exercised: ' + gateLabels.size + ' (' + [...gateLabels].sort(byGate).join(', ') + ')');
 console.log('assertions:   ' + assertions + ' run, ' + failures + ' failed');
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);
