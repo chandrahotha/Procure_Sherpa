@@ -28,6 +28,23 @@
    a workflow named in a `workflow_run` trigger actually exists, which
    is the other way a workflow can silently never run.
 
+   Three more rules were added after the runner went quiet, because the
+   same class of failure - a workflow that reports nothing - came back
+   from a different direction:
+
+     * every job declares `timeout-minutes`, so a hung step cannot run to
+       GitHub's six-hour default;
+     * a workflow on a `schedule` trigger declares a `concurrency` group,
+       so queued runs cannot pile up behind one another;
+     * the Node that `setup-node` installs is at least the Node that
+       `engines.node` declares, so CI never tests a toolchain that nobody
+       uses locally.
+
+   What it still cannot check is the thing a workflow file has no word
+   for: whether a runner is actually awake. A job that cannot get one
+   simply queues, and the run looks neither red nor green. That part is
+   operational and is written up in CONTRIBUTING.md.
+
    Usage: node tools/check_workflows.mjs
    ========================================================== */
 import fs from 'node:fs';
@@ -79,6 +96,17 @@ const rootContexts = (expr) => {
 
 const names = new Set();
 
+/* What the package declares, so a workflow cannot quietly test a
+   different toolchain than the one `package.json` promises. Read once,
+   outside the per-file loop. */
+let enginesDeclared = '';
+try {
+  enginesDeclared = (JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).engines || {}).node || '';
+} catch {
+  enginesDeclared = '';
+}
+const enginesMajor = Number((enginesDeclared.match(/\d+/) || [])[0]) || 0;
+
 for (const file of files) {
   const raw = fs.readFileSync(path.join(DIR, file), 'utf8');
   const lines = raw.split(/\r?\n/);
@@ -99,6 +127,8 @@ for (const file of files) {
   let currentJob = null;
   const jobsWithoutRunner = [];
   const jobNames = [];
+  const jobTimeouts = {};
+  const jobsWithTimeout = new Set();
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (/^jobs:\s*$/.test(line)) { inJobs = true; jobsIndent = 0; continue; }
@@ -116,6 +146,16 @@ for (const file of files) {
     }
     if (indent === 4 && /^ {4}runs-on:\s*\S/.test(line)) {
       if (currentJob) jobsWithoutRunner.splice(jobsWithoutRunner.indexOf(currentJob), 1);
+    }
+    /* A job-level `timeout-minutes`. Steps can declare it too, at a deeper
+       indent, and those are the ones that bound a single command; the job
+       one is what stops the whole run from reaching GitHub's default. */
+    if (indent === 4 && currentJob) {
+      const tm = /^ {4}timeout-minutes:\s*(\d+)\s*$/.exec(line);
+      if (tm) {
+        jobsWithTimeout.add(currentJob);
+        jobTimeouts[currentJob] = Number(tm[1]);
+      }
     }
     const m = /^\s*if:\s*(.+)$/.exec(line);
     if (!m) continue;
@@ -156,12 +196,6 @@ for (const file of files) {
    matrix, and it is perfectly valid. The matrix is `strategy.matrix`,
    and a job-level `if` may reference matrix values there. An earlier
    version of this rule flagged every label array as a matrix, which
-   would have forbidden the only way to select a self-hosted runner. */
-  /* Every job needs somewhere to run. A `runs-on: [ ... ]` is a list of
-   LABELS, which is how a self-hosted runner is selected - it is not a
-   matrix, and it is perfectly valid. The matrix is `strategy.matrix`,
-   and a job-level `if` may reference matrix values there. An earlier
-   version of this rule flagged every label array as a matrix, which
    would have forbidden the only way to select a self-hosted runner.
 
    The count is done by scanning indentation, not by parsing YAML, so it
@@ -171,6 +205,42 @@ for (const file of files) {
   for (const j of jobsWithoutRunner) {
     problems.push('the job "' + j + '" has no runs-on, so there is nowhere for it to run');
   }
+
+  /* Bounded jobs. Two runs of this repo burned GitHub's whole limit: a
+     scheduled QA run that sat queued against an offline runner and was
+     cancelled at 24h0m2s, and the six-hour default every job gets if it
+     does not say otherwise. `timeout-minutes` is the one bound a workflow
+     file can actually impose, so the gate requires it rather than trusting
+     that whoever edits this file remembered.
+
+     A queued job is NOT covered by it - nothing a workflow file can do
+     shortens the wait for a runner that is switched off. That half is
+     operational, and it is written up in CONTRIBUTING.md. */
+  for (const j of jobNames) {
+    if (!jobsWithTimeout.has(j)) {
+      problems.push('the job "' + j + '" declares no timeout-minutes, so a hung step runs until GitHub\'s six-hour default cancels it');
+    } else if (jobTimeouts[j] > 60) {
+      problems.push('the job "' + j + '" declares timeout-minutes: ' + jobTimeouts[j] + ', which is longer than one minute per step of work this suite does; bound it');
+    }
+  }
+
+  /* A scheduled workflow stacks. Without a concurrency group, every
+     schedule that cannot get a runner stays queued, and the next week's
+     run queues behind it. */
+  if (/^\s{4}schedule:\s*$/m.test(raw) && !/^concurrency:/m.test(raw)) {
+    problems.push('the workflow is triggered on a schedule but declares no concurrency group, so queued runs pile up');
+  }
+
+  /* The Node the CI installs has to be the Node the package declares. A
+     workflow that tests a different toolchain than the one contributors
+     run verifies something nobody uses. */
+  const nodeVersions = raw.match(/node-version:\s*['"]?(\d+)/g) || [];
+  nodeVersions.forEach((line) => {
+    const v = Number(line.replace(/[^\d]/g, ''));
+    if (enginesMajor && v < enginesMajor) {
+      problems.push('setup-node installs Node ' + v + ' but package.json declares engines.node "' + enginesDeclared + '"');
+    }
+  });
 
   if (problems.length) {
     problems.forEach((p) => fail(file + ': ' + p));

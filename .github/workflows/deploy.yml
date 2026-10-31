@@ -51,6 +51,12 @@ on:
     types: [completed]
   workflow_dispatch: {}
 
+# One publish at a time per ref, and a newer main makes an in-flight
+# publish obsolete. `workflow_run` fires on the *completion* of a QA run,
+# so without this two pushes in quick succession can start two publishes
+# of two different commits, and which one wins is whichever finishes
+# last. That is how a live site ends up behind main while the badge is
+# green.
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
@@ -67,6 +73,17 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     # # The runner is a self-hosted one, for the same reason as the QA
     runs-on: [self-hosted, Windows, X64, procure-sherpa]
+    # Bounded, for the same reason as the QA job: a run that cannot get a
+    # runner sits until GitHub's own limit, and a run that has one should
+    # not be able to hang for six hours. The publish path runs the whole
+    # gate itself, so 30 minutes is the same headroom qa.yml uses.
+    #
+    # One thing this cannot bound: `environment: production` below. If that
+    # environment is configured with required reviewers, the job waits for a
+    # human before it starts, and a waiting job is not running, so
+    # timeout-minutes does not apply to it. That is an owner setting on the
+    # repository's Environments page, and it is written up in CONTRIBUTING.md.
+    timeout-minutes: 30
     environment: production
     env:
       # Read at the job level, where `secrets` is allowed. A token is a
@@ -87,7 +104,14 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        timeout-minutes: 10
         run: npm ci
+
+      # Same reason as in qa.yml: on a runner with a stale Node or an
+      # incomplete install, every symptom downstream points at the wrong
+      # thing. Fail here, with the fix in the message.
+      - name: Preflight the toolchain
+        run: node tools/preflight.mjs
 
       # The decision is made in Node, not in a shell conditional. The two
       # runners do not agree on what a shell is: a hosted Linux runner

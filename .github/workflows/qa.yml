@@ -7,12 +7,40 @@ name: QA
 # generated HTML file and the full gate is a release concern. That reasoning
 # did not survive contact with the failure mode it allowed: a broken commit
 # could sit on main for up to seven days, and the badge said "passing" the
-# whole time. The suite takes a couple of minutes; a week of unverified main
-# is not worth saving them.
+# whole time. The suite takes a few minutes; a week of unverified main is not
+# worth saving them.
 #
 # The weekly run is kept for a different purpose: it catches environment
 # drift (a new Node minor, a transitive dev-dependency change) on a
 # codebase that may not have been touched in a while.
+#
+# ---------------------------------------------------------------------------
+# HOW THIS WORKFLOW FAILS, AND WHAT EACH FAILURE MEANS
+# ---------------------------------------------------------------------------
+# It runs on a self-hosted runner: the labels below select the workstation
+# that develops this project. A self-hosted runner does not consume hosted
+# minutes, so it is not subject to the account-spending block that stopped
+# hosted jobs from being allocated at all. The trade is that CI needs that
+# machine to be awake with its listener running.
+#
+# A run whose job never starts therefore looks like a run that is simply
+# queued, and it can sit that way until GitHub's own 24-hour limit cancels
+# it. That has happened: the scheduled run of 2026-10-26 was cancelled after
+# 24h0m2s with nothing having executed. A queued job is not a passing job and
+# it is not a failing one either, which is the worst of the three, because
+# the badge reads green while nobody has verified anything.
+#
+# `timeout-minutes` below bounds the part this file can control: once a job
+# has a runner, it cannot run for more than 30 minutes. The full gate takes a
+# few minutes on that machine, so 30 is generous headroom and still an order
+# of magnitude below GitHub's six-hour job default. The queue wait in front
+# of the job is not something a workflow file can bound; it is an operational
+# condition of the runner, and the owner steps are recorded in
+# CONTRIBUTING.md under "CI is green because nothing ran".
+#
+# Steps that are not part of the gate are marked as such, so an account
+# condition (an artifact storage quota, say) cannot turn a verified commit
+# into a red run.
 on:
   push:
     branches: [main]
@@ -22,37 +50,52 @@ on:
     - cron: '0 6 * * 1'
   workflow_dispatch: {}
 
-# A newer push to the same branch makes an in-flight run obsolete.
+# A newer push to the same branch makes an in-flight run obsolete. Scheduled
+# runs share the group, so a weekly drift check that is still queued when
+# somebody pushes is cancelled rather than left to stack up behind it.
 concurrency:
   group: qa-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   qa:
-    # # The runner is a self-hosted one, on the workstation that develops the
+    # A self-hosted runner is selected by LABELS, not by a name.
+    # `procure-sherpa-workstation` is the machine; os and arch keep a
+    # differently-labelled runner from picking this job up and failing on a
+    # shell it does not have.
     runs-on: [self-hosted, Windows, X64, procure-sherpa]
+    # Bounded: a hung step fails the run instead of eating the 24-hour limit.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
+          # Must match engines.node and .nvmrc. tools/check_workflows.mjs
+          # fails the local gate if the pin and the declared engine diverge.
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        timeout-minutes: 10
         run: npm ci
 
-      # Must run before anything rebuilds the artifact. `npm run qa` starts
-      # with `node build.mjs`, which would regenerate ProcureSherpa-v2.0.html
-      # and silently erase exactly the mismatch this step exists to catch.
-      - name: Check the committed artifact matches src/
-        run: npm run check:drift
+      # Deliberately before anything that could fail for the wrong reason.
+      # On a runner whose Node is stale, or whose node_modules did not
+      # install, the suite's first symptom is a stack trace from inside
+      # node_modules or "ESLint couldn't find a configuration file" from a
+      # system ESLint 6 on PATH. This step says what is actually wrong.
+      - name: Preflight the toolchain
+        run: node tools/preflight.mjs
 
-      # Lint, cross-reference integrity, 1000+ calculator assertions, content
-      # and quiz gates, route smoke tests, security/a11y/perf/i18n audits, and
-      # the minified deploy build verified with the same suite.
+      # qa:ci is preflight -> check:drift -> qa, in that order, and the order
+      # matters: `npm run qa` starts with `node build.mjs`, which would
+      # regenerate ProcureSherpa-v2.0.html and silently erase exactly the
+      # mismatch the drift check exists to catch. Calling `npm run qa`
+      # directly from a workflow is the mistake this file has made before,
+      # which is why the step name and the tool are both spelled out.
       - name: Full QA suite
-        run: npm run qa
+        run: npm run qa:ci
 
       # The artifact is a convenience: a copy of the deploy build for
       # anyone who wants to look at it without building it. It is NOT
