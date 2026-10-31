@@ -1,5 +1,6 @@
 /* ---------- checklist pages (Section 22, 70) ---------- */
-PS.route('cl', function (id) {
+PS.route('cl', function (id, params) {
+  if (!id) return PS.sectionIndex('cl', params);
   var it = PS.byId('cl', id);
   if (!it) return PS.notFound('checklist', id);
   PS.currentItem = { type: 'cl', id: id, item: it };

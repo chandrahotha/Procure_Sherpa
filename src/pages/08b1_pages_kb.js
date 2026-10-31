@@ -1,5 +1,6 @@
 /* ---------- knowledge concept pages (Section 10, 38, 61) ---------- */
-PS.route('k', function (id) {
+PS.route('k', function (id, params) {
+  if (!id) return PS.sectionIndex('k', params);
   var it = PS.byId('kb', id);
   if (!it) return PS.notFound('concept', id);
   PS.currentItem = { type: 'kb', id: id, item: it };

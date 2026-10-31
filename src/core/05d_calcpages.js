@@ -2,6 +2,7 @@
 PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
 PS.calcPage = function (id, params) {
+  if (!id) return PS.sectionIndex('calc', params);
   var calc = PS.byId('calc', id);
   if (!calc) return PS.notFound('calculator', id);
   PS.calcState.id = id; PS.calcState.result = null;

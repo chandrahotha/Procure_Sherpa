@@ -2,7 +2,8 @@
    An SOP is a controlled procedure, not a checklist. Execution evidence
    lives in the Checklist library; the SOP page links to it instead of
    embedding it. */
-PS.route('sop', function (id) {
+PS.route('sop', function (id, params) {
+  if (!id) return PS.sectionIndex('sop', params);
   var it = PS.byId('sop', id);
   if (!it) return PS.notFound('SOP', id);
   PS.currentItem = { type: 'sop', id: id, item: it };

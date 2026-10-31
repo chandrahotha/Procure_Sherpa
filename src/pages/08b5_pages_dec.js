@@ -1,5 +1,6 @@
 /* ---------- decision guide pages (Section 21, 39) ---------- */
-PS.route('dec', function (id) {
+PS.route('dec', function (id, params) {
+  if (!id) return PS.sectionIndex('dec', params);
   var it = PS.byId('dec', id);
   if (!it) return PS.notFound('decision guide', id);
   PS.currentItem = { type: 'dec', id: id, item: it };

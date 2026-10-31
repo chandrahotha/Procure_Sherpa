@@ -45,6 +45,20 @@ PS.listItemsHtml = function (type, items, groupByCat) {
       '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>';
   }).join('');
 };
+/* A section URL with no reference is the section, not a dead end.
+   #/dec, #/sop, #/calc, #/k, #/cl, #/tpl and #/kpi are the addresses the
+   information architecture names in master §7, and a reader who types one
+   (or follows an old bookmark) was landing on the not-found card, because
+   the detail handler called PS.byId('dec', '') and got nothing back. Only
+   an unrecognised *reference* (#/sop/sop-that-does-not-exist) is a genuine
+   not-found; §48 asks that a page never force the user back to Home.
+   Master §81 also lists each of these as a deliverable, so the index of
+   the deliverable is real content, not an error state. */
+PS.sectionIndex = function (name, params) {
+  var type = name === 'k' ? 'kb' : name;
+  if (type === 'scen') return (PS.routes.scenarios || function () { return ''; })();
+  return PS.listPage(type, '', params || {});
+};
 PS.listPage = function (type, cat, params) {
   var meta = PS.LIST_META[type] || { title: PS.typeLabel(type) + ' library', desc: '' };
   var items = (PS.data[type] || []).filter(function (x) { return PS.inCat(x, cat); });

@@ -1,5 +1,6 @@
 /* ---------- KPI pages (Section 30) ---------- */
-PS.route('kpi', function (id) {
+PS.route('kpi', function (id, params) {
+  if (!id) return PS.sectionIndex('kpi', params);
   var it = PS.byId('kpi', id);
   if (!it) return PS.notFound('KPI', id);
   PS.currentItem = { type: 'kpi', id: id, item: it };

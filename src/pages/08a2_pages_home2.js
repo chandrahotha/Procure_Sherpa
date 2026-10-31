@@ -68,7 +68,24 @@ PS.route('fav', function () {
         '<span><a class="res-title" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || (o ? (o.title || o.term) : f.id)) + '</a>' +
         '<div class="res-desc">' + PS.esc(o ? (o.desc || o.def || '') : 'This item is no longer in the content set.') + '</div></span>' +
         '<button type="button" class="btn btn-sm" data-act="fav-remove" data-type="' + PS.esc(f.type) + '" data-id="' + PS.esc(f.id) + '">Remove</button></li>';
-    }).join('') + '</ul>' : '<div class="empty">No favorites yet. Open a page and use the &#9734; star in the top bar to pin it here.</div>') +
+    }).join('') + '</ul>'
+      /* An empty list is an honest state, but it still has to be a page.
+         §81 names "Workspace: saved local work" as a deliverable and §49
+         names the six kinds that can be pinned, so the empty state says
+         how a favourite is made and links to every library a favourite
+         can come from. Before this, the page rendered 178 characters with
+         no link and no control on it at all: nothing a reader could do.
+         tools/smoke.mjs now fails a WORKSPACE page with no way in. */
+      : '<div class="empty"><p><strong>Nothing pinned yet.</strong> Open any page and use the &#9734; star in the top bar. Pins are kept in this browser, and they travel with your backup file.</p>' +
+        '<p class="note">Pin the tools you reach for every week:</p>' +
+        '<div class="btn-row">' +
+        '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
+        '<a class="btn btn-sm" href="#/list/sop">SOPs</a>' +
+        '<a class="btn btn-sm" href="#/list/cl">Checklists</a>' +
+        '<a class="btn btn-sm" href="#/list/tpl">Templates</a>' +
+        '<a class="btn btn-sm" href="#/list/kb">Concepts</a>' +
+        '<a class="btn btn-sm" href="#/list/dec">Decision guides</a>' +
+        '</div></div>') +
     '</div>';
   return html;
 });
@@ -86,7 +103,18 @@ PS.route('recent', function () {
     (r.length ? '<ul class="res-list">' + r.map(function (x) {
       return '<li>' + PS.badge(x.type) + '<span><a class="res-title" href="' + PS.routeFor(x.type, x.id) + '">' + PS.esc(x.title || x.id) + '</a>' +
         '<div class="res-desc">' + PS.esc(PS.dateTime(x.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<div class="empty">Nothing opened yet. Pages you visit are listed here.</div>') + '</div>';
+    }).join('') + '</ul>'
+      /* Same rule as Favorites (§49): a list of nothing still has to be a
+         page you can act on. This one rendered 145 characters with no link
+         and no control on it. */
+      : '<div class="empty"><p><strong>Nothing opened yet.</strong> Pages you visit are listed here, most recent first, and the list is kept in this browser only. It clears when you clear local data.</p>' +
+        '<div class="btn-row">' +
+        '<a class="btn btn-sm" href="#/what">What should I do?</a>' +
+        '<a class="btn btn-sm" href="#/quickstart">Quick start</a>' +
+        '<a class="btn btn-sm" href="#/academy">Academy</a>' +
+        '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
+        '<a class="btn btn-sm" href="#/lifecycle">Process map</a>' +
+        '</div></div>') + '</div>';
   return html;
 });
 PS.route('list', function (arg, params) {

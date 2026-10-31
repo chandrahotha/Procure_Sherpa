@@ -19,7 +19,8 @@ PS.templateFieldHtml = function (f, value) {
   return '<div class="field' + (f.type === 'textarea' ? '' : '') + '"><label for="' + id + '">' + PS.esc(f.label) + '</label>' +
     control + (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') + '</div>';
 };
-PS.route('tpl', function (id) {
+PS.route('tpl', function (id, params) {
+  if (!id) return PS.sectionIndex('tpl', params);
   var it = PS.byId('tpl', id);
   if (!it) return PS.notFound('template', id);
   PS.currentItem = { type: 'tpl', id: id, item: it };

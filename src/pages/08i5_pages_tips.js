@@ -158,6 +158,26 @@ PS.route('community', function () {
     '<div class="card-head"><h1>Community</h1><div class="spacer"></div>' +
     '<button type="button" class="btn btn-primary btn-sm" data-act="community-new">New post</button></div>' +
     '<p class="lead">Notes, questions and wins. Posts are stored in this browser only; nothing is uploaded.</p>' +
+    /* Say what this is not. Procure Sherpa has no server (master §3 excludes
+       portals and cloud, §33 keeps every byte on the device, and the CSP
+       sets connect-src 'none'), so there is no other user's post to read
+       and calling this screen a "community" on its own would be a claim the
+       build cannot support. The honest treatment is the one the disabled
+       certificate page already uses: state the reason, keep the part that
+       is real, and give the way back into the product. */
+    '<div class="alert alert-info"><strong>This is a local notes board, not a forum</strong>' +
+    'There is no server, so nothing here is shared with anyone else and no one replies. ' +
+    'It is a place to write down a sourcing question, a negotiation you want to remember, ' +
+    'or a win worth reviewing - stored in this browser, included in your backup file.</div>' +
+    '<p class="note">Where the answers actually are in this application:</p>' +
+    '<div class="btn-row">' +
+    '<a class="btn btn-sm" href="#/academy">Academy: the 28 procurement functions</a>' +
+    '<a class="btn btn-sm" href="#/what">What should I do?</a>' +
+    '<a class="btn btn-sm" href="#/scenarios">Worked scenarios</a>' +
+    '<a class="btn btn-sm" href="#/exams">Certification exams</a>' +
+    '<a class="btn btn-sm" href="#/glossary">Glossary</a>' +
+    '<a class="btn btn-sm" href="#/backup">Back up these notes</a>' +
+    '</div>' +
     '</div>';
 
   html += '<div class="card" id="communityList">';

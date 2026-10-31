@@ -11,7 +11,8 @@ PS.route('scenarios', function () {
     }).join('') + '</div>' : PS.empty('Scenario library is loading.')) +
     PS.disclaimer('data');
 });
-PS.route('scen', function (id) {
+PS.route('scen', function (id, params) {
+  if (!id) return PS.sectionIndex('scen', params);
   var it = PS.byId('scen', id);
   if (!it) return PS.notFound('scenario', id);
   PS.currentItem = { type: 'scen', id: id, item: it };
