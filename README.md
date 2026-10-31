@@ -1,8 +1,16 @@
-# Procure Sherpa v2.0
+# Procure Sherpa v2.4
 
 **An enterprise procurement learning and operations platform, compiled into a single offline HTML file.**
 
 Competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics — no server, no database, no build step for end users, no telemetry.
+
+The version of record is `2.4.0` in `package.json`; the running application
+calls itself `2.4` (`PS.VERSION`), which is what the What's New page marks as
+"Your version", what the audit log writes and what a backup envelope carries.
+The artifact keeps the filename `ProcureSherpa-v2.0.html`: that name is fixed
+by the master requirements and by every download link below, it is a product
+name rather than a version, and the tools read the version out of the file
+instead of out of its name.
 
 [![License: ISC](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
 [![Dependencies: zero runtime](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](#repository-structure--source-code)
@@ -10,7 +18,17 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 [![Single file](https://img.shields.io/badge/deploy-single%20HTML%20file-lightgrey.svg)](#operating-instructions)
 [![QA](https://github.com/chandrahotha/Procure_Sherpa/actions/workflows/qa.yml/badge.svg)](.github/workflows/qa.yml)
 
-> These badges describe static, verifiable facts about this repository (license file present, an empty `dependencies` block in `package.json`, no network calls at runtime). The QA badge reflects `.github/workflows/qa.yml`, which runs the full `npm run qa` gate **on every push and pull request to `main`**, plus a weekly scheduled run to catch environment drift. Earlier releases ran it weekly only and this note said so; that gap is now closed.
+> These badges describe static, verifiable facts about this repository (license file present, an empty `dependencies` block in `package.json`, no network calls at runtime). The QA badge covers `.github/workflows/qa.yml`, which is configured to run the full `npm run qa` gate **on every push and pull request to `main`**, plus a weekly scheduled run to catch environment drift. Earlier releases ran it weekly only and this note said so; that gap is now closed.
+>
+> **Read the badge with that in mind, though: it is not proof that this
+> commit was verified.** Both workflows run on one self-hosted Windows
+> runner, and it is **offline** right now, so the badge currently reports a
+> cancelled scheduled run while the commit it points at passed its push run
+> on 2026-10-21. A job with no runner available sits *queued* - it is
+> neither red nor green until GitHub's 24-hour limit cancels it - and the
+> badge reports the most recent attempt, not the state of the code. The
+> gate that is honest about this is `npm run qa`, run locally or from the
+> pre-push hook. See [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran).
 
 ---
 
@@ -22,11 +40,22 @@ Competency curriculum, digital SOPs, compliance checklists, operational template
 ```bash
 git clone https://github.com/chandrahotha/Procure_Sherpa.git
 cd Procure_Sherpa
-npm install        # dev-only: jsdom (tests), eslint (lint), terser (deploy build).
+
+nvm use 22         # the toolchain needs Node 22+; .nvmrc carries the pin
+npm ci             # dev-only: jsdom (tests), eslint (lint), terser (deploy build).
                    # `dependencies` is empty - nothing ships to a user.
+                   # engine-strict in .npmrc makes this refuse on an older Node
                    # Also wires the pre-push safety hook.
-npm run qa         # build + lint + the full test/audit suite - run this before every PR
+node tools/preflight.mjs   # says so plainly if Node or the install is wrong
+npm run qa         # build + lint + the full test/audit suite - run this before every push
 ```
+`npm audit fix --force` is not a fix here: it proposes `eslint@4`, which
+cannot read the flat config, and the lint step would stop being a check.
+`npm audit` currently reports **0 vulnerabilities**; how that was reached,
+which override holds it there, and what `tools/preflight.mjs` checks to
+keep it from silently reverting is in
+[SECURITY.md](SECURITY.md#dependency-status).
+
 Then see [Repository Structure & Source Code](#repository-structure--source-code) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
@@ -67,7 +96,7 @@ Then see [Repository Structure & Source Code](#repository-structure--source-code
 
 ## Architecture Overview
 
-Procure Sherpa v2.0 separates strategic competency acquisition from day-to-day operational execution, while keeping navigation consistent everywhere through one unified sidebar.
+Procure Sherpa separates strategic competency acquisition from day-to-day operational execution, while keeping navigation consistent everywhere through one unified sidebar.
 
 ```
                     ┌──────────────────────────────────────────────┐
@@ -222,9 +251,10 @@ Open `http://localhost:8080/ProcureSherpa-v2.0.html` in your browser.
 
 <https://procuresherpa.vercel.app> runs the current `main`. It behaves
 identically to the downloaded file - still no server-side state, no accounts
-and no telemetry - but it serves the **minified** build (~1.55 MB instead of
-~1.98 MB, and ~546 KB over the wire once gzipped) and adds transport-level
-hardening: HSTS, `X-Frame-Options: DENY`,
+and no telemetry - but it serves the **minified** build: `dist/index.html`
+is 1,620 KB against the readable artifact's 1,978 KB, and it crosses the
+wire at ~485 KB gzipped (~547 KB for the readable file) under the same
+transport-level hardening: HSTS, `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and a
 restrictive `Permissions-Policy`.
 
@@ -245,10 +275,11 @@ ship an artifact that has not passed the same checks CI runs. It then
 deploys from a staging copy of the working tree that has no `.git`
 directory, and `npm run verify:deploy` loads the **served** bytes and
 asserts the same things the local gate asserts: the content registries
-are populated, all 52 routes render real content with no sentinel
-leaks, every internal link resolves, the navigation has the expected
-shape and highlights correctly, and every cross-tool handoff still
-carries data.
+are populated, every route the deployed build registers renders real
+content with no sentinel leaks (all 52 registered, the `#/notfound` page
+excluded, so the tool reports 51), every internal link resolves, the
+navigation has the expected shape and highlights correctly, and every
+cross-tool handoff still carries data.
 
 **Why the staging copy?** The Vercel project is connected to this
 repository, and Vercel creates a deployment for every push to `main`.
@@ -296,9 +327,9 @@ node build.mjs && node tools/build_min.mjs  # readable artifact, then dist/
 `--include=dev` is explicit because a build agent may set
 `NODE_ENV=production`, under which a bare `npm ci` would omit the dev
 dependencies the build needs. Minification is verified rather than trusted:
-`npm run verify:min` re-runs the route smoke, both calculator suites and the
-accessibility audit against `dist/index.html` before it is considered
-shippable.
+`npm run verify:min` re-runs the utility unit tests, the route smoke, both
+calculator suites, the accessibility audit and the layout audit against
+`dist/index.html` before it is considered shippable.
 
 ---
 
@@ -309,38 +340,48 @@ shippable.
 ```
 ProcureSherpa-v2.0.html          # Compiled release artifact - readable, committed, downloadable
 dist/                            # Minified deploy build (generated, gitignored, never committed)
-build.mjs                        # Assembly + syntax + validation + performance budget gate
+.nvmrc / .node-version / .npmrc  # Node 22 pin and engine-strict, enforced by tools/preflight.mjs
+build.mjs                        # Assembly + syntax + validation + transfer-budget gate
 validate.mjs                     # Structural and syntax integrity validator
 eslint.config.mjs                # Two lint configs: ES5 browser fragments, modern Node tooling
 robots.txt                       # Crawl policy (see SEO note below)
 LICENSE                          # ISC license
-CONTRIBUTING.md                  # Dev setup, PR checklist, the rules that exist for a reason
-SECURITY.md                      # Threat model, what's audited, how to report an issue
+CONTRIBUTING.md                  # Dev setup, the CI's real state, the rules that exist for a reason
+SECURITY.md                      # Threat model, dependency status, what's audited, how to report
+docs/v2.4-delivery-report.md     # What shipped, what it cost, what is still open
 docs/adr/                        # Architecture decision records
   0001-single-file-architecture.md   # Why one file, and the triggers for revisiting it
+  0002-measured-performance-budget.md # The measured budgets that replaced the guessed ones
 .github/workflows/qa.yml         # CI: full gate on every push and PR, plus weekly
-.githooks/pre-push               # Local safety net: drift check + fast tests before every push
+.github/workflows/deploy.yml     # Release, gated on the QA run passing
+.githooks/pre-push               # Local safety net: preflight + drift check + fast tests
 src/
-  manifest.txt                   # Linear assembly sequence (155 fragments)
+  manifest.txt                   # Linear assembly sequence (177 fragments)
   base/                          # Design tokens, CSS stylesheets, shell markup
   core/                          # Runtime engine, state stores, charts, router, search, i18n
   pages/                         # Page view renderers and interactive controllers
   content/                       # Controlled content libraries, SOPs, checklists, templates
   calcs/                         # Calculator definitions and implementation algorithms
 tools/
+  preflight.mjs                  # Fails loudly on the wrong Node or a missing install, first
   build_min.mjs                  # Minified deploy build -> dist/ (see ADR 0001)
-  check_drift.mjs                # Asserts the committed artifact still matches src/
-  smoke.mjs                      # Headless route test suite covering all 63 paths
+  build_stamp.mjs                # PS.BUILD: a hash of the source fragments, shared by build + checks
+  check_drift.mjs                # Asserts the artifact matches src/ and the docs match the tools
+  check_workflows.mjs            # Workflow-file gate: contexts, timeouts, concurrency, Node pin
   check_rels.mjs                 # Cross-reference referential integrity validator
+  smoke.mjs                      # Headless route test suite covering all 72 routes
+  test_unit.mjs                  # 22 utility assertions run against the built artifact, not a copy
   test_calcs.mjs                 # Calculator correctness harness (all 19 calculators)
   test_calc_values.mjs           # Expected-value fixtures: hand-computed math assertions
   test_interactive.mjs           # Click-through checks: search, palette, backup, prefs
   test_quiz_tips.mjs             # Content integrity gate + Academy quiz engine assertions
-  security_audit.mjs             # CSP / eval / inline-handler / credential scan
-  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes (visibility-aware)
+  test_layout.mjs                # Responsive layout and dynamic UI structure checks
   test_integrity.mjs             # Integrity gate: what the other tests cannot see (see below)
-  perf_check.mjs                 # Single-file payload budget checker (hard + soft thresholds)
-  i18n_audit.mjs                 # Catalog-keys-vs-DOM-usage coverage count (informational)
+  security_audit.mjs             # Espree AST + DOM scan: CSP, eval, handlers, network, credentials
+  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes (visibility-aware)
+  perf_check.mjs                 # Measured payload, compile and boot budget checker
+  i18n_audit.mjs                 # Catalog keys vs DOM usage - a hard gate, not a report
+  deploy.mjs / verify_deploy.mjs # Release to Vercel, then assert the served bytes are the build
   setup_hooks.mjs                # Wires .githooks/ on `npm install` via the "prepare" script
   print_ids.mjs                  # Content registration ID inspector
   convert_v1.mjs, debug_calc.mjs, dump_index.mjs, inventory.mjs, probe_v1.mjs, lib.mjs
@@ -371,10 +412,11 @@ npm run check:drift
 # Minified deploy build -> dist/, then the same tests against it
 npm run verify:min
 
-# Calculator correctness: asserts every calcImpl produces well-formed, finite output
+# Calculator correctness: asserts every calcImpl produces well-formed,
+# finite output, and that nothing throws on a calculator route
 node tools/test_calcs.mjs
 
-# Run full route smoke tests across all 52 routes
+# Run the full route smoke test across all 72 routes
 node tools/smoke.mjs
 
 # Validate the GitHub workflow files (a job-level `if` may not use `secrets`;
@@ -384,32 +426,40 @@ npm run check:workflows
 # Validate cross-reference referential integrity
 node tools/check_rels.mjs
 
-# Security audit: eval/new Function/inline handlers/javascript: URLs/CSP hygiene
+# Security audit: Espree AST walk (eval, new Function, string timers,
+# document.write, fetch/WebSocket/XHR/EventSource) plus DOM checks for inline
+# handlers and javascript: URLs, CSP integrity and a credential pattern scan
 node tools/security_audit.mjs
 
 # Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs across 38 routes
-npm run test:integrity    # The integrity gate: registries, sentinel leaks, dead links, orphan content, handoff viability, route reachability
-npm run test:integrity      # The integrity gate: registries, sentinel leaks, dead links, orphan content, handoff viability
 node tools/a11y_audit.mjs
+
+# The integrity gate: registries, sentinel leaks, dead links, orphan content,
+# handler coverage, handoff viability, route reachability, the build stamp
+npm run test:integrity
 
 # Responsive layout & dynamic UI structure verification
 node tools/test_layout.mjs
 
-# Performance budget check (HTML/JS/CSS payload ceilings)
+# Measured budget check: compressed transfer, CSS payload, V8 compile time,
+# boot-to-rendered-page time - each against a stated ceiling
 node tools/perf_check.mjs
+
+# i18n coverage: catalog keys defined vs keys that reach the screen, per locale
+npm run audit:i18n
 ```
 
-`npm run qa` runs, in order: build, lint, referential integrity, calculator correctness (1021 structural assertions), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (72 route renders across both navigation views), responsive layout & dynamic UI verification (29 assertions), the integrity gate (19 gates, 46 assertions), AST-based security scan (Espree traversal), accessibility scan (38 routes), the measured performance budget, the i18n coverage audit (100% shell catalog keys wired across English and Spanish), and finally the minified deploy build re-verified with the smoke, calculator, accessibility, and layout suites.
+`npm run qa` runs, in order: preflight, build and validate, lint, the workflow-file gate, cross-reference integrity, the 22 utility unit tests against the built artifact, calculator correctness (1,021 structural assertions over the 19 calculators), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (72 routes), responsive layout & dynamic UI verification (29 checks), the integrity gate (19 gate labels, 50 assertions, over 59 rendered route instances in both navigation views), the AST security scan (Espree traversal), the accessibility scan (38 routes), the measured performance budget, the i18n coverage audit (44 catalog keys, all 44 wired, across `en` and `es`), and finally the minified deploy build re-verified with the unit, smoke, both calculator, accessibility and layout suites. Every step is a hard gate: `npm run qa` exits non-zero if any of them fails.
 
-`npm run qa:ci` is what CI actually runs. It prefixes the suite with `npm run check:drift`, which must happen *before* anything rebuilds: `npm run qa` starts with `node build.mjs`, so running the drift check after it would regenerate the artifact and erase the very mismatch the check exists to find.
+`npm run qa:ci` is what CI actually runs. It prefixes the suite with `node tools/preflight.mjs` and `node tools/check_drift.mjs`, and the order matters twice over: the drift check must run *before* anything rebuilds - `npm run qa` starts with `node build.mjs`, so running it afterwards would regenerate the artifact and erase the very mismatch the check exists to find - and preflight has to fail before a stale toolchain can produce an error message that blames the code. The drift check no longer stops at the artifact: it also measures the documents against the source (the version of record, the Node pin, the locales the catalog registers, the dev-dependency count, and the route count the smoke table actually has) and fails on a claim that has gone stale.
 
-**A GitHub Actions workflow runs `qa:ci` on every push and pull request to `main`** (`.github/workflows/qa.yml`), plus weekly to catch environment drift. A **local pre-push git hook** runs the drift check and the fast test subset first, so the common mistakes fail in seconds on your machine rather than minutes later in Actions.
+**A GitHub Actions workflow runs `qa:ci` on every push and pull request to `main`** (`.github/workflows/qa.yml`), plus weekly to catch environment drift. A **local pre-push git hook** runs preflight, the drift check and the fast test subset first, so the common mistakes fail in seconds on your machine rather than minutes later in Actions. Both workflows depend on a self-hosted runner that is **currently offline**, so a green badge is not evidence this commit was verified - see [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran).
 
 ### Why the generated artifact is committed, and how it stays honest
 
 `ProcureSherpa-v2.0.html` is both a build output *and* the product — "download one file and double-click it" only works if the file is in the tree. That creates exactly one failure mode: editing `src/` and committing without rebuilding, which would leave every test in this repo asserting against an artifact that is no longer the source of truth, and passing.
 
-`tools/check_drift.mjs` closes it. It re-assembles the fragments in memory exactly as `build.mjs` does, byte-compares the result with the committed file, and on a mismatch names the first fragment that diverged. It writes nothing. It runs first in CI and in the pre-push hook.
+`tools/check_drift.mjs` closes it. It re-assembles the fragments in memory exactly as `build.mjs` does, byte-compares the result with the committed file, and on a mismatch names the first fragment that diverged. It writes nothing. It runs first in CI and in the pre-push hook. Where it cannot measure something at run time - assertion counts, wall-clock timings - the documents quote the tool that prints it rather than a remembered number.
 
 ### Expected-Value Calculator Fixtures
 
@@ -419,7 +469,7 @@ node tools/perf_check.mjs
 
 ## Governance & Standards Alignment
 
-Procure Sherpa v2.0 content and calculation models are aligned with international procurement standards:
+Procure Sherpa's content and calculation models are aligned with international procurement standards:
 
 * **Chartered Institute of Procurement & Supply (CIPS)**: Procurement lifecycle stages, sourcing ethics, and supplier relationship management.
 * **Institute for Supply Management (ISM)**: Category management, cost modeling, and strategic sourcing methodologies.
@@ -443,25 +493,25 @@ CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is writt
 
 Documented here deliberately, rather than left for someone to discover:
 
-* **Multi-locale UI chrome is fully wired across English and Spanish (100% of shell catalog keys wired).** `PS.i18n` (`t()`, plural-safe substitution, locale persistence via preferences, and a working Settings language switcher) translates the persistent application shell, navigation sections, topbar search, modal dialogs, and calculator action bars across English (`en`) and Spanish (`es`) (`npm run audit:i18n` confirms 100% catalog key coverage). Detailed curriculum text, SOP long-form steps, and operational templates remain authored in English.
-* **The i18n audit tracks catalog key and locale coverage.** It reports live statistics (`npm run audit:i18n`) to prevent catalog key drift. Every other check in `npm run qa` is a hard gate: lint, build drift, referential integrity, calculator correctness, content integrity, the quiz engine, route smoke, layout verification, AST security, accessibility and the performance budget all exit non-zero on failure.
+* **Two locales, and the shell only.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence via preferences, and a working Settings language switcher) translates the persistent application shell - navigation sections, topbar and its search field, modal dialogs, and calculator action bars - across English (`en`) and Spanish (`es`). Wiring is not the weak point: `npm run audit:i18n` reports 44 catalog keys defined and **44 wired (100%), 0 unused**, and it fails the build if a key is defined but never reaches the screen, if the UI references a key no catalog defines, or if a registered locale is missing a key the English catalog has. **The weak point is breadth.** Those 44 keys are roughly one kilobyte of English text, while everything a user actually reads is outside them: the 234 records the content libraries register (`node tools/inventory.mjs` prints 66 concepts, 13 SOPs, 27 checklists, 33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6 scenarios, 19 calculators), plus the 28 Academy functions and their 112 quiz questions, all authored in English. In other words this is one translated shell around an English product, and the Spanish is real but thin.
+* **Every check in `npm run qa` is a hard gate, including i18n.** Lint, the workflow-file gate, referential integrity, the unit tests, calculator correctness, the expected-value fixtures, interactive checks, content integrity, the quiz engine, route smoke, layout verification, the integrity gate, AST security, accessibility, the measured performance budget and the i18n coverage audit all exit non-zero on failure, and the i18n audit is what keeps the 44/44 figure above from becoming a claim nobody can check. (The i18n audit used to print its coverage and exit `0` whatever it saw - that is how a document could describe it as 20% wired for months.)
 * **Search engines see almost nothing.** The served markup is ~8 KB of shell; every page is rendered client-side behind a hash route (`#/academy`, `#/calc/...`), and fragments are never sent to the server, so there are no distinct indexable URLs. `sitemap.xml` therefore lists exactly one entry, and the canonical/Open Graph/JSON-LD tags describe the app as a whole rather than its pages. This is a straightforward consequence of the single-file architecture; making the content indexable would mean prerendering each route as a real URL, which is a different product. A `<noscript>` block gives crawlers and JS-disabled visitors a real description instead of a blank page, but it is a floor, not an SEO strategy.
 * **No `og:image`.** Facebook, LinkedIn and Twitter require a real raster asset for a large link preview. Generating a 1200×630 PNG honestly would mean adding a rasterizer dependency for one image, which is not a trade this project wants to make. The exact tags to add, once such an asset exists, are written out in a comment in `src/base/01a_head.html`.
 * **Certificates are intentionally disabled** (see [Section 5](#5-credential-transcript-certificate--disabled-future-feature)). This is a product decision, not a bug: the platform has no legal authority to issue procurement credentials, so it says so instead of pretending otherwise.
 * **This is a single-user tool, not an enterprise system.** There is no server, no database, no account, no authentication and no multi-user state. Everything you enter lives in one browser's `localStorage` and disappears if that storage is cleared — use `#/backup` to export, which now carries the workbench records with it. The audit trail is a local convenience log, not a tamper-evident record, and nothing here is a system of record.
 * **The workbenches are workpapers, not a system of record.** The eight workbenches hold your own suppliers, contracts, catalogue, budgets, bids, receipts and approvals, and they compute real answers from them: a landed cost, a weighted score, a three-way-match variance, a budget position, a pipeline. What they do not do is the things only a system of record can do. The receipt workpaper finds the variance and does not release a payment. The approvals workbench records a delegation of authority and does not route an approval, notify anyone, or block a purchase. The RFx workbench produces an award recommendation and does not constitute a tender. A sign-off is evidence that a named person took a decision, and it is worth exactly as much as that person is.
 * **This is not an ERP.** Approval thresholds, tax treatment, and legal/compliance requirements vary by organization and jurisdiction. Configure `#/settings` and verify locally before relying on any output operationally.
-* **The single-file design has a ceiling, and it is now measured rather than guessed.** The readable artifact is ~1.98 MB, of which ~546 KB reaches a browser once gzipped. All of it is parsed before first paint, and there is no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (~1.62 MB, ~484 KB gzipped) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the architecture decision, the trigger conditions for revisiting it, and what the alternatives would actually cost. [`docs/adr/0002-measured-performance-budget.md`](docs/adr/0002-measured-performance-budget.md) replaces the guessed byte ceilings with measured ones: script compile time (65 ms, full V8 parse), application boot to first rendered page (104 ms), and transferred size (546 KB gzipped, 1.46 s at 3 Mbps) are all hard gates in `npm run perf`. The timing budgets are measured twice before they fail, because a wall-clock measurement on a machine that is also running something else is a measurement of the machine as much as of the build; the size budgets are never retried, because they are facts about the file.
-* **The build carries a stamp, so a deployment can be identified.** `PS.BUILD` is a hash of the source fragments rather than a date. A hash of the commit could not work, because committing the artifact changes the commit; a hash of the artifact would be circular. A hash of the sources is stable, so the committed artifact always matches a rebuild, and the live site can be asked whether it is serving the build it is supposed to be. `npm run verify:deploy` answers that question, and the Deploy workflow waits for the deployment to land before it asks.
-* **The CI runs on a self-hosted runner, not a hosted one.** This account's GitHub-hosted runner allocation is intermittently blocked with *"recent account payments have failed or your spending limit needs to be increased"* (Settings -> Billing and plans), and the block is not permanent: a push-triggered run passed and the next one was blocked two minutes later. A self-hosted runner does not consume hosted minutes, so it is not subject to that block, and the suite runs on the same machine that already runs it locally. The runner lives in `C:Usershotha\_actions\runner`, is registered against this repository only, and starts on login. **CI needs that machine to be awake.** To go back to a hosted runner once the billing is fixed, change one line in each workflow to `runs-on: ubuntu-latest`; nothing else depends on it.
+* **The single-file design has a ceiling, and it is now measured rather than guessed.** The readable artifact is 1,978 KB, of which 547 KB reaches a browser once gzipped. All of it is parsed before first paint, and there is no code-splitting escape hatch — that constraint is the product, not an oversight. The deployment serves a minified variant (1,620 KB, 485 KB gzipped, an 18.1% reduction) that buys headroom without making the committed artifact unreviewable. [`docs/adr/0001-single-file-architecture.md`](docs/adr/0001-single-file-architecture.md) records the architecture decision, the trigger conditions for revisiting it, and what the alternatives would actually cost. [`docs/adr/0002-measured-performance-budget.md`](docs/adr/0002-measured-performance-budget.md) replaces the guessed byte ceilings with measured ones, and the three gates it sets are: transferred size against 1,152 KB compressed (the byte cost of 3 seconds at a conservative 3 Mbps effective 4G rate - today's figure is 547 KB, 1.46 s), script compile against 400 ms, and application boot to a rendered first page against 500 ms. `npm run perf` prints the live numbers; the two timings are wall-clock and belong to the machine that took them, which is why they are gated rather than quoted as properties of the build. The timing budgets are measured twice before they fail, because a wall-clock measurement on a machine that is also running something else is a measurement of the machine as much as of the build; the size budgets are never retried, because they are facts about the file.
+* **The build carries a stamp, so a deployment can be identified.** `PS.BUILD` is a hash of the source fragments rather than a date. A hash of the commit could not work, because committing the artifact changes the commit; a hash of the artifact would be circular. A hash of the sources is stable, so the committed artifact always matches a rebuild, and the live site can be asked whether it is serving the build it is supposed to be. `npm run verify:deploy` answers that question, and the Deploy workflow waits for the deployment to land before it asks. `npm run test:integrity` (G20) asserts the readable and the minified builds carry the same stamp, because a stamp that survives one and dies in the other works in development and not in production.
+* **The CI runs on a self-hosted runner, and right now that runner is offline.** This account's GitHub-hosted runner allocation is intermittently blocked with *"recent account payments have failed or your spending limit needs to be increased"* (Settings -> Billing and plans), and the block is not permanent: a push-triggered run passed and the next one was blocked two minutes later. A self-hosted runner does not consume hosted minutes, so it is not subject to that block, and the suite runs on the same machine that already runs it locally. The cost is availability, and it has already been paid: `gh api repos/chandrahotha/Procure_Sherpa/actions/runners` reports the only runner, `procure-sherpa-workstation` (Windows, self-hosted), as **offline**; the scheduled run of 2026-10-26 never started and was cancelled at 24h0m2s by GitHub's own limit; the Deploy run of 2026-10-27 was skipped because the QA run it waits for never completed; and the last push that CI actually verified was on 2026-10-21. **CI needs that machine to be awake**, and a badge cannot tell you whether it was. To go back to a hosted runner once the billing is fixed, change one line in each workflow to `runs-on: ubuntu-latest`; nothing else depends on it. The runner-side steps are in [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran).
 * **The Deploy workflow is gated by the QA workflow, not by the push.** It triggers on `workflow_run` and only proceeds if the gate passed, so a commit that fails QA is never published. It then checks that the live site is serving the build from the commit that was tested, and waits up to three minutes for the deployment to land, because a deployment is not live the instant the gate finishes.
 * **The same gate runs locally with `npm run qa`**, which is what `npm run deploy` uses before it will publish anything, so a release never depends on any runner being available.
-* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 19 gates, 46 assertions. It renders all 52 routes in both navigation views and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control has a handler; that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the curriculum is in module order for every role and the role recommends rather than rearranges; that resume points at unfinished work; that every learning path is ascending; that every function shows a worked example and every calculator carries example data; that the menu is scoped to the track and the page you are on is in the menu; that no symbol has been mangled; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
+* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 19 gate labels carrying 50 assertions, and prints both numbers on its summary line. It renders 59 route instances in both navigation views - the 52 registered routes with the parameterised library, SOP and calculator routes expanded - and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control on every rendered route has a handler (89 distinct `data-act` values); that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the curriculum is in module order for every role and the role recommends rather than rearranges; that resume points at unfinished work; that every learning path is ascending; that every function shows a worked example and every calculator carries example data; that the menu is scoped to the track and the page you are on is in the menu; that no symbol has been mangled; that the build stamp survives minification; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
 
 ---
 
 ## Contributing & Security
 
-* **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) — dev setup, the PR checklist (`npm run qa`), the local pre-push hook, and the small set of rules (no invented accreditation claims, no new runtime dependencies, stay inside the performance budget) that exist for reasons documented elsewhere in this README.
+* **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) — the Node 22 pin and why `npm ci` refuses without it, the actual gate (`npm run qa`), the local pre-push hook, what the version of record is, the real state of CI, and the small set of rules (no invented accreditation claims, no new runtime dependencies, stay inside the transfer budget, every gate must be able to fail) that exist for reasons documented elsewhere in this README. The repository works on `main`; there is no feature-branch flow or PR queue in practice.
 * **Security:** see [SECURITY.md](SECURITY.md) — threat model for a client-only offline app, what `npm run qa`'s security audit actually checks, and how to report an issue.
 * **Original product spec:** [`Procure_Sherpa_v2_Master_Requirements.md`](Procure_Sherpa_v2_Master_Requirements.md) is the founding requirements document this build was implemented against.

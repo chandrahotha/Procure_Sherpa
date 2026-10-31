@@ -11,10 +11,13 @@ src/
 
   base/                 Document Shell & Design System
                         01a_head.html       Design tokens, CSS variables, typography
-                        01b..01g_*.css      Reset, layout, components, forms, print styles
+                        01b..01g_*.css      Reset, layout, components, forms, print, UI styles
                         01h_academy.css     Academy curriculum, quiz cards, crisis sandboxes
                         01i_portal_user.css Command Center portal, user badge
                         01j_global_extras   Responsive breakpoints, mobile nav, toasts
+                        01k_new_features    Share/what-if/exam/doc-pack surfaces
+                        01l_logo.css        The brand mark
+                        01m_hub.css         Hub gateway cards
                         02_shell.html       Application topbar, one persistent sidebar, layout shell
                         99_tail.html        Closing body and html tags
 

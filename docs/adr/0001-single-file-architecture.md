@@ -5,7 +5,7 @@
 
 ## Context
 
-Procure Sherpa ships as one HTML file. Everything — 155 source fragments of
+Procure Sherpa ships as one HTML file. Everything — 177 source fragments of
 markup, CSS, application code and content — is concatenated by `build.mjs`
 into `ProcureSherpa-v2.0.html`, which is committed to the repository and is
 what a user downloads.
@@ -30,19 +30,29 @@ paint. There is no lazy loading, no code splitting and no route-level
 chunking, because all three require more than one file — which is the one
 thing this design does not permit.
 
-`build.mjs` enforces a hard budget of **1600 KB**, with a warning at 85%
-(1360 KB). Current state:
+At the time this ADR was written, `build.mjs` enforced a hard budget of
+**1600 KB** on the uncompressed artifact, with a warning at 85% (1360 KB).
+The state then:
 
-| Artifact | Size | Headroom |
+| Artifact | Size (2026-09-20) | Headroom against 1600 KB |
 |---|---|---|
 | `ProcureSherpa-v2.0.html` (readable, committed) | ~1.26 MB | ~340 KB |
 | `dist/index.html` (minified, deployed) | ~1.05 MB | ~550 KB |
 
-So the budget is roughly 79% spent on the readable artifact, and the
+So the budget was roughly 79% spent on the readable artifact, and the
 trajectory is upward: nearly all growth is content (curriculum, SOPs,
 templates), which is the product's reason to exist. The ceiling is real and
 approaching, and the previous state of this repository had no written answer
 for what to do when it arrives.
+
+**That ceiling has since been replaced, and this paragraph is kept as the
+context that produced the decision rather than as a description of the
+build.** ADR 0002 supersedes both byte ceilings here: `build.mjs` no longer
+gates the uncompressed size at all. It gates the *compressed* artifact
+against a ceiling derived from the trigger in section 3 below - 3 seconds
+at a conservative 3 Mbps effective 4G rate, which is 1152 KB gzipped - and
+warns at 85% of that (979 KB). The current position is in the Consequences
+section at the end of this document.
 
 ## Decision
 
@@ -60,28 +70,37 @@ break them). It is generated at deploy time, is listed in `.gitignore`, and
 is never committed. `vercel.json` builds and serves it.
 
 Minification is only worth having if the minified output is the same
-program, so `npm run verify:min` re-runs the route smoke suite, both
-calculator suites and the accessibility audit **against `dist/index.html`**,
-not just against the readable build. `npm run qa` ends with that step.
+program, so `npm run verify:min` re-runs the utility unit tests, the route
+smoke suite, both calculator suites, the accessibility audit and the layout
+audit **against `dist/index.html`**, not just against the readable build.
+`npm run qa` ends with that step.
 
-This is deliberately not a code-splitting scheme. It buys headroom (~210 KB
-today, and it scales with the code) without giving up any of the four
-properties above, and it costs one dev-dependency that never reaches a user.
+This is deliberately not a code-splitting scheme. It buys headroom - 18.1%
+of the payload on the current build, 1,978 KB down to 1,620 KB, and it
+scales with the code - without giving up any of the four properties above,
+and it costs one dev-dependency that never reaches a user. (`terser` is the
+dependency this decision added; `package.json` also carries `eslint` and
+`jsdom` for the gate. All three are dev-only: `dependencies` is empty.)
 
 ## Trigger conditions for revisiting this
 
 This decision should be reopened when **any** of the following becomes true.
 They are written down so the first sign of trouble is not a blocked build.
 
-1. **The readable artifact passes 1360 KB** (the 85% soft warning). The
-   build already prints a warning here. Treat it as the start of the
-   conversation, not a nuisance. The artifact was 1271 KB when this ADR
-   was written and is 1976 KB now, after the v2.4 revamp added eight
-   workbenches and three Academy modules. It is still inside the ceiling,
-   and the ceiling was raised on a measured basis rather than to fit
-   whatever the content happened to be.
-2. **The minified artifact passes 1360 KB.** At that point compression has
-   stopped being an answer and the payload is genuinely too large.
+1. **The compressed artifact passes 979 KB**, the 85% soft threshold on the
+   1152 KB transfer ceiling that `build.mjs` prints a warning at. Treat it
+   as the start of the conversation, not a nuisance. (This trigger used to
+   read "the readable artifact passes 1360 KB", the 85% point of the
+   uncompressed 1600 KB ceiling ADR 0002 retired; nothing warns there any
+   more, because the uncompressed size is reported and not gated.) The
+   artifact was 1271 KB when this ADR was written and is 1,978 KB now,
+   which gzips to 547 KB - 47% of the ceiling that actually binds. It is
+   still inside the ceiling, and the ceiling was raised on a measured
+   basis rather than to fit whatever the content happened to be.
+2. **The minified artifact passes 979 KB gzipped**, which is the ceiling
+   `tools/perf_check.mjs` holds the deployed build to (it is 485 KB now).
+   At that point compression has stopped being an answer and the payload is
+   genuinely too large.
 3. **First-paint time on a mid-range phone on 4G exceeds ~3 seconds.**
    Bundle size is a proxy; this is the thing actually being protected.
 4. **A requirement arrives that needs a server** — shared state between
@@ -119,7 +138,7 @@ primary strategy.
 
 ## Consequences
 
-- The deployed payload drops ~17% with no behavioural change, verified by
+- The deployed payload drops 18.1% with no behavioural change, verified by
   running the real test suites against the minified output rather than
   assuming terser is safe.
 - Two artifacts now exist, so "the build" is ambiguous in conversation.
@@ -129,11 +148,14 @@ primary strategy.
   "zero runtime dependencies" badge stays literally true.
 - If terser is ever unavailable, `npm run build` still produces a complete,
   working, deployable artifact. This degrades; it does not block.
-- The ceiling has not been removed — it has been pushed out and, more
-- The current position: 1976 KB readable, 1620 KB minified, 546 KB
-  gzipped. The transfer ceiling derived in ADR 0002 is 1152 KB gzipped, so
-  there is 606 KB of headroom, which is roughly 2.1 MB of further source.
-  That is enough for the workbenches already built and for a good deal
-  more content. The honest constraint on this product is now the reader's
-  time and the maintainability of the code, not the byte ceiling.
-  importantly, written down with the conditions that mean it is time to act.
+- The ceiling has not been removed - it has been pushed out and, more
+  importantly, written down with the conditions that mean it is time to
+  act.
+- The current position, as re-measured on 2026-11-01: 1,978 KB readable,
+  1,620 KB minified, 547 KB gzipped for the readable artifact and 485 KB
+  for the deployed one. The transfer ceiling derived in ADR 0002 is 1,152
+  KB gzipped, so there is 605 KB of headroom on what a browser actually
+  receives, which is roughly 2.1 MB of further source. That is enough for
+  the workbenches already built and for a good deal more content. The
+  honest constraint on this product is now the reader's time and the
+  maintainability of the code, not the byte ceiling.

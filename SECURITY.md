@@ -19,19 +19,30 @@ description and reproduction steps are enough.
 
 ## What's already enforced (checked on every `npm run qa`)
 
-`tools/security_audit.mjs` scans the built `ProcureSherpa-v2.0.html` and
-fails the build on:
+`tools/security_audit.mjs` parses the inline script of the built
+`ProcureSherpa-v2.0.html` into an ECMAScript AST with Espree, walks it,
+and combines that with a structural scan of the markup. It fails the
+build on:
 
-* `eval()` or `new Function()` usage
-* `javascript:` URLs
-* inline event-handler attributes (`onclick=`, etc.)
+* `eval()` calls
+* `new Function()` dynamic evaluation
+* `setTimeout`/`setInterval` called with a string literal (eval-equivalent)
+* `document.write` / `document.writeln`
+* runtime network client instantiation: `fetch()`, `new WebSocket`,
+  `new XMLHttpRequest`, `new EventSource`
+* `javascript:` URLs in markup
+* inline event-handler attributes (`onclick=`, etc.) in markup
+* a missing Content-Security-Policy, or one that has dropped
+  `default-src 'none'` or `connect-src 'none'`
+* a script that will not parse at all
 
-It also reports (informationally) every dynamic `innerHTML` assignment
-and `document.write` call so they can be spot-checked for escaping. In
-practice, every dynamic string reaching `innerHTML` in this codebase is
-run through `PS.esc()`/`PS.escAttr()` first — this was hand-verified
-across the profile, copilot, spend-model, doc-pack, and exam modules and
-should hold as a hard rule for any new code.
+It also reports (informationally, not blocking) every dynamic `innerHTML`
+assignment it finds, so they can be spot-checked for escaping; the audit
+prints the count on its own line. In practice, every dynamic string
+reaching `innerHTML` in this codebase is run through
+`PS.esc()`/`PS.escAttr()` first - this was hand-verified across the
+profile, copilot, spend-model, doc-pack, and exam modules and should hold
+as a hard rule for any new code.
 
 ## Browser compatibility floor
 
@@ -60,19 +71,63 @@ versions). Internet Explorer is not supported.
   `=`, `+`, `-`, `@` characters that spreadsheet software would
   otherwise interpret as formulas.
 
+## Dependency status
+
+Nothing in this project reaches a user's browser from npm. `dependencies`
+in `package.json` is **empty and stays empty**; the three dev packages are
+`eslint` (lint), `jsdom` (the headless tests) and `terser` (the minified
+deploy build), and all three run on a build machine.
+
+The supply-chain question that is still real is the build machine:
+`terser` produces the artifact that is actually deployed, and `jsdom`
+runs the suite that decides whether a change ships.
+
+* **`npm audit` reports 0 vulnerabilities.** That is the current state;
+  it was reached in two steps. `GHSA-g3hv-75wg-m249` sits in
+  `minimatch`, which arrives through the eslint chain, and eslint does not
+  depend on a fixed enough version to exclude it, so `package.json` now
+  carries an `overrides: { "minimatch": "^11.0.1" }` entry that resolves
+  the advisory outright. The undici advisory went the same way once the
+  lockfile was re-resolved rather than inherited.
+* **`node tools/preflight.mjs` guards the mitigation.** It is the first
+  step of `npm run qa`, `npm run test` and `npm run qa:ci`, and it fails
+  if `minimatch` resolves to a vulnerable version while no override is
+  declared. Without that, the fix could quietly disappear from a future
+  lockfile and nobody would notice until `npm audit` rediscovered it and
+  "fixed" it by downgrading eslint.
+* **Do not run `npm audit fix --force`.** It proposes installing
+  `eslint@4.0.0`, which cannot read `eslint.config.mjs` (flat config), so
+  the lint step would stop being a check.
+* **Updates are automated and every one is gated.**
+  `.github/dependabot.yml` raises monthly PRs for the three dev packages
+  and for the pinned GitHub Actions, and each has to pass the full QA
+  gate before it can merge.
+* **The install is pinned and the runtime is pinned to it.**
+  `npm ci` installs exactly what `package-lock.json` declares, and
+  `.npmrc` sets `engine-strict=true` so an install on a Node older than
+  the `>=22.0.0` the toolchain genuinely needs refuses on the spot instead
+  of failing later from inside `node_modules/undici`.
+* **A compromised dev dependency is still assumed possible**, which is
+  why `npm run verify:min` re-runs the unit, route, both calculator,
+  accessibility and layout suites against the minified output rather than
+  trusting the minifier, and why the deployed build is checked by
+  `npm run verify:deploy` against the bytes the site actually serves.
+
 ## Known limitations
 
-* The security audit is pattern-based (regex over the built file), not
-  a full static analysis tool or a third-party pen test. It catches the
-  specific classes of bug listed above; it does not guarantee the
-  absence of all XSS vectors.
-* Dependency updates are automated but not audited by a scanner.
-  `dependencies` in `package.json` is empty, so nothing reaches a user's
-  browser: `jsdom` (tests), `eslint` (lint) and `terser` (the minified
-  deploy build) are all dev-only and run on a build machine.
-  `.github/dependabot.yml` raises monthly PRs for those and for the
-  pinned GitHub Actions, and every one has to pass the full QA gate
-  before it can merge. A compromised dev dependency could still affect
-  the deploy build, which is why `npm run verify:min` re-runs the route,
-  calculator and accessibility suites against the minified output rather
-  than trusting the minifier.
+* The security audit is an AST traversal (Espree) plus a structural scan
+  of the markup, not a full static-analysis tool, a symbolic executor or
+  a third-party penetration test. It proves the specific classes of bug
+  listed above are absent - an `eval()` at any depth in the bundle, a
+  string timer, a live network client, a `javascript:` URL, an inline
+  handler, a weakened CSP - and it cannot prove the absence of every XSS
+  vector. Escaping of `innerHTML` writes is a convention this project
+  holds and the audit reports the sinks for a human to check; it does not
+  verify the escaping.
+* There is no runtime dependency to patch, but there is also no runtime
+  isolation: the CSP, the browser's same-origin rules and `localStorage`
+  segregation are the whole defence, because there is no server to hold
+  anything back. A user who opens a tampered copy of the file gets
+  whatever that file does; nothing in the product can tell them it is not
+  the published one, which is why `PS.BUILD` stamps the build with a hash
+  of its sources.

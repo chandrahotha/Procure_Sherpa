@@ -1,8 +1,14 @@
-# Procure Sherpa v2.0 - Improvement Roadmap
+# Procure Sherpa - Improvement Roadmap
 
-**Current Version:** 2.0 (post-UX improvements)  
+**Current Version:** 2.4 (`package.json` carries `2.4.0`, `PS.VERSION` carries `2.4`, and the application prints `Procure Sherpa v2.4` when it loads)  
 **Baseline Tag:** `HUBCHANGED`  
-**Last Updated:** 2026-10-20
+**Last Updated:** 2026-11-01
+
+The committed artifact keeps the name `ProcureSherpa-v2.0.html`. That
+filename is fixed by the master requirements (sections 4.1 and 81) and by
+every download link in the README; it is a product name, not the version,
+and `tools/check_drift.mjs` reads the version out of `package.json` and
+`PS.VERSION` rather than out of the file name.
 
 ---
 
@@ -29,7 +35,7 @@ truth badly in a dozen places.
 | Cross-tool handoff | 27 of 41 links carried **no data**; 11 more could never | 30 links, every one carries values on a shared commercial vocabulary |
 | Markdown export | An SOP export dropped RACI, gates, controls, records, KPIs, risks, exceptions, mistakes, references and revision history; a checklist export **erased every tick** | Full-fidelity export for all nine content types, with live workspace state |
 | Document pack | Rendered every template field blank and every checklist unticked - a pack with no evidence in it | Carries the values, ticks, notes and decision outcome |
-| Copilot | Indexed 5 of 9 content types, so "which template do I use for an award recommendation" returned nothing | Indexes all nine types plus the 25-function Academy |
+| Copilot | Indexed 5 of 9 content types, so "which template do I use for an award recommendation" returned nothing | Indexes all nine types plus the 28-function Academy |
 | Search | The app's **own documented example** ("supplier increased price by 12%") returned zero results | 14 of 14 realistic queries return results, 10 with the right top hit |
 | Relationship checker | The runtime and the static checker had **different id maps**, so three live links were being pruned at boot while the gate reported "broken refs: 0" | One shared map; the gate is a hard failure |
 
@@ -187,16 +193,33 @@ subject to the block. The trade is that CI needs that machine to be
 awake, and the way back to a hosted runner is one line in each workflow
 once the billing is fixed.
 
+**The trade has already been paid.** The runner
+(`procure-sherpa-workstation`) is **offline** as of 2026-11-01
+(`gh api repos/chandrahotha/Procure_Sherpa/actions/runners`), the
+scheduled run of 2026-10-26 sat queued and was cancelled by GitHub's own
+24-hour limit at 24h0m2s without starting, the Deploy run of 2026-10-27
+was skipped because the QA run it waits for never completed, and the last
+green push run was 2026-10-21. A queued job is neither red nor green, and
+the badge reports the most recent *attempt*, not the state of the code.
+The owner steps - wake the listener, register a Linux runner, or go back
+to `ubuntu-latest` - are in CONTRIBUTING.md, "CI is green because nothing
+ran".
+
 ### Two engineering decisions were written down
 
 - **ADR 0002** replaces the guessed byte ceilings with measured ones.
-  The script compiles in 21 ms, the application boots to a rendered first
-  page in 104 ms, and 546 KB reaches a browser once gzipped. The gate now
-  measures all three, because the previous 1300 KB "JS payload ceiling"
-  was never derived from anything and had quietly become the rule
-  instead of the reason. The transfer ceiling is derived from "3 seconds
-  on 4G" at 3 Mbps, so it is 1152 KB gzipped and cannot drift away from
-  the reason it exists the way a hand-picked number can.
+  The gate now measures three things: the compressed download against a
+  ceiling derived from "3 seconds at 3 Mbps" (1152 KB), the script's full
+  V8 compile against a 400 ms budget, and the application boot to a
+  rendered first page against a 500 ms budget. `npm run perf` prints the
+  live figures - the size is a fact about the file (547 KB gzipped,
+  1.46 s at 3 Mbps), the two timings are wall-clock and belong to the
+  machine that took them, which is why ADR 0002 keeps its measurement
+  dated instead of asserting it as a property of the build. The previous
+  1300 KB "JS payload ceiling" was never derived from anything and had
+  quietly become the rule instead of the reason. Deriving the ceiling
+  from seconds and a rate means it cannot drift away from the reason it
+  exists the way a hand-picked number can.
 - **The integrity gate** (`npm run test:integrity`) asserts what the
   other tests could not: that no route leaks `undefined`, that every
   internal link resolves, that every control has a handler, that every
@@ -342,15 +365,36 @@ Two items already have partial infrastructure worth knowing about:
 
 * 🚧 **i18n architecture** (Phase 6.2) — `PS.i18n` (`t()`, plural-safe
   substitution, locale persistence, live DOM re-apply) is real and
-  working, but only 1 locale (`en`) is registered and only the
-  persistent shell chrome (~20% of catalog keys) is actually wired to
-  it — run `npm run audit:i18n` for the live count. Route/page content
-  (calculators, Academy, SOPs, checklists, templates, KB) is still
-  hardcoded English throughout.
-* 🚧 **CI** (not in the original 10 phases, added later) — a weekly
-  GitHub Actions run of the full `npm run qa` gate exists
-  (`.github/workflows/qa.yml`) plus a local pre-push hook for the fast
-  test subset. It is not a per-commit/per-PR gate.
+  working. `PS.i18n.CATALOG` registers **2 locales** (`en`, `es`) and
+  **every key in it is wired**: `npm run audit:i18n` reports 44 keys
+  defined, 44 reaching the screen (100%), 0 unused, and it fails the gate
+  if either catalog is missing a key the other has. So the complaint
+  about this item is **not** about wiring percentage — it is about
+  breadth. The catalog carries 44 short strings, roughly 1 KB of English
+  text, and it covers the persistent shell: navigation sections, the
+  topbar and its search field, modal dialogs, and the calculator action
+  bars. Everything a user actually reads is outside it: the 234 records
+  the content libraries register (66 concepts, 13 SOPs, 27 checklists,
+  33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6
+  scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
+  plus the 28 Academy functions and their 112 quiz questions. Counting
+  quoted string literals, `src/content` alone holds about 0.8 MB of
+  English against the catalog's 1 KB. **The honest limit is one translated
+  shell around an English product**, and the Spanish half is real but
+  thin. Phase 6.2 as written (seven locale files, RTL, `Intl` formatting)
+  is still 📋 proposed; what shipped is the mechanism and the shell.
+* 🚧 **CI** (not in the original 10 phases, added later) — the full
+  `npm run qa` gate runs on **every push and every pull request to
+  `main`**, plus a weekly scheduled run and a manual dispatch
+  (`.github/workflows/qa.yml`), and a local pre-push hook runs the drift
+  check and the fast subset first. It is a per-commit gate now; it used
+  to be weekly-only. What is not solved is *availability*: both workflows
+  run on one self-hosted Windows runner, `procure-sherpa-workstation`,
+  which is **offline** as this was last checked
+  (`gh api repos/chandrahotha/Procure_Sherpa/actions/runners`). A run on
+  a sleeping runner queues rather than fails, and the badge does not
+  distinguish the two. See CONTRIBUTING.md, "CI is green because nothing
+  ran", for the incident, the runner's state and the owner steps.
 
 If you're deciding what to build next, treat this document as a menu,
 not a schedule.
@@ -666,6 +710,17 @@ not a schedule.
 
 ### Certification Credibility Plan (added 2026-09-19)
 
+> **Status correction (2026-11-01):** the certificate feature is
+> **disabled** - see "Certificates (deferred)" near the top of this file.
+> `#/certificate` renders an honest "not available yet" placeholder, so
+> the rules below describe the reference design preserved in that section,
+> not behaviour running in the shipped artifact. Rule 4 in particular
+> ("the verification hash ... so a forged certificate does not verify")
+> cannot be claimed as enforced: the disable note records that the hash
+> was a client-side FNV with a salt shipped in the same file, which is
+> forgeable by design. What *is* enforced in code today is rule 1 and
+> rule 3 - no invented authority appears anywhere in the product.
+
 **Problem:** The v2.0 certificate printed invented honors ("Executive Certificate",
 "accredited transcript", "Examination Board", "Master of Strategic Procurement").
 As a new LMS we have no accreditation authority, so those titles read as fake to
@@ -710,14 +765,30 @@ what it does not claim*. No invented authority, no borrowed accreditation.
 | Security | CSP-compatible, no eval, sanitized inputs |
 
 ### Development Workflow
-1. **Create feature branch** from `main`
-2. **Modify source fragments** in `src/`
-3. **Run `node build.mjs`** to compile
-4. **Run `node tools/smoke.mjs`** - all 63 routes must pass
-5. **Run `node tools/check_rels.mjs`** - zero broken cross-refs
-6. **Run `node validate.mjs`** - syntax + skeleton check
-7. **PR with screenshots** - desktop + mobile
-8. **Tag release** - `v2.1.0`, `v2.2.0`, etc.
+
+This is the workflow the repository actually runs today; the
+authoritative version is CONTRIBUTING.md, and where this list and that
+file disagree, that file is the one CI and the git hook enforce.
+
+1. **Work on `main`.** There is no feature-branch flow and no PR queue in
+   practice; the branch-and-PR workflow this list used to describe was
+   never enforced by anything in the repo.
+2. **Install on Node 22+** - `nvm use 22` (`.nvmrc`) then `npm ci`, which
+   refuses on an older Node because `.npmrc` sets `engine-strict=true`.
+   `node tools/preflight.mjs` says plainly if the toolchain is wrong.
+3. **Modify source fragments** in `src/`, then rebuild with
+   `npm run build` - the committed `ProcureSherpa-v2.0.html` must land in
+   the same commit as the fragments that produced it.
+4. **Run `npm run qa`** before pushing. That is the real bar, and it runs
+   the smoke test (all 72 routes in `tools/smoke.mjs`), the relationship
+   checker (zero broken cross-refs), `validate.mjs`, the layout,
+   integrity, security, accessibility and performance gates, and finally
+   re-runs the suite against the minified deploy build.
+   `npm run qa:ci` is the same plus the drift check first, which is what
+   CI runs and what the pre-push hook runs.
+5. **Tag a release** with the version in `package.json`; `PS.VERSION` and
+   the newest `PS.whatsNew.CHANGES` entry have to name the same release,
+   or the drift check fails.
 
 ### Prioritization Framework
 ```
@@ -730,46 +801,69 @@ Score = (User Impact × 0.4) + (Strategic Alignment × 0.3) + (Effort⁻¹ × 0.
 
 ---
 
-## Quick Wins (Can Ship in v2.1)
+## Quick Wins (proposed for v2.1 - status checked against the build on 2026-11-01)
 
-| Feature | Effort | Impact | Files |
-|---------|--------|--------|-------|
-| Keyboard shortcuts cheat sheet (printable) | 1 day | High | `01g_print.css`, `03c_ui.js` |
-| Calculator "Copy as Markdown" | 1 day | High | `05c_calcresult.js` |
-| Search "Did you mean?" | 2 days | Medium | `03g_search.js` |
-| Dark mode scheduler (sunset/sunrise) | 1 day | Medium | `03d2_prefs.js` |
-| Export chart as SVG button | 1 day | High | `03j_charts.js` |
-| Saved items bulk actions (delete, tag) | 2 days | Medium | `08d1_pages_saved.js` |
-| Academy "Mark all complete" for testing | 0.5 day | Low | `03h_academy_store.js` |
+The heading said "Can Ship in v2.1", and v2.1 is long past: the build is
+2.4. Five of the seven shipped, so they are marked as such rather than
+left sitting in a backlog nobody re-reads.
+
+| Feature | Effort | Impact | Files | Status |
+|---------|--------|--------|-------|--------|
+| Keyboard shortcuts cheat sheet (printable) | 1 day | High | `01g_print.css`, `03c_ui.js` | ✅ shipped - `03c_ui.js` carries the printable cheat sheet |
+| Calculator "Copy as Markdown" | 1 day | High | `05c_calcresult.js` | ✅ shipped - `PS.calcMarkdown()` in `05c_calcresult.js`, and the KB/SOP/checklist pages carry the same button |
+| Search "Did you mean?" | 2 days | Medium | `03g_search.js` | ✅ shipped - the suggestion label is in `03g_search.js` |
+| Dark mode scheduler (sunset/sunrise) | 1 day | Medium | `03d2_prefs.js` | 📋 not built - dark mode exists and is switchable; nothing derives the theme from the clock |
+| Export chart as SVG button | 1 day | High | `03j_charts.js` | ✅ shipped - every chart renders an "Export SVG" button |
+| Saved items bulk actions (delete, tag) | 2 days | Medium | `08d2_pages_savedlist.js` | ✅ shipped for export and delete; tagging is not part of the bulk bar |
+| Academy "Mark all complete" for testing | 0.5 day | Low | `03h_academy_store.js` | 📋 not built - "Mark all" exists on checklists, not in the Academy store |
 
 ---
 
 ## Version Targets
 
-| Version | Target Date | Theme |
-|---------|-------------|-------|
-| v2.1 | Q4 2026 | Quick wins + Academy polish |
-| v2.2 | Q1 2027 | Calculator power features |
-| v2.3 | Q2 2027 | Search intelligence + Dashboard builder |
-| v3.0 | Q4 2027 | Collaboration + i18n + PWA maturity |
-| v3.1 | Q1 2028 | Phase 11: Offline AI copilot, static share pages, what-if branching |
-| v3.2 | Q2 2028 | Phase 11: Certification exams, spend data model, doc pack builder |
+The dates below were the plan written in September 2026, and they did not
+survive contact with the build. The releases that actually shipped, taken
+from `PS.whatsNew.CHANGES` (the list the What's New page renders, and the
+one `tools/check_drift.mjs` compares against `package.json` and
+`PS.VERSION`):
+
+| Version | Shipped | What it was |
+|---------|---------|-------------|
+| 2.0 | 2026-09-16 | The single-file platform baseline |
+| 2.1 | 2026-09-20 | Quick wins, and the Phase 11 capabilities below |
+| 2.2 | 2026-09-28 | - |
+| 2.3 | 2026-10-08 | - |
+| 2.4 | 2026-10-20 | The revamp recorded in `docs/v2.4-delivery-report.md` |
+
+The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
+in Q2 2027. All three shipped inside four weeks of being planned, in
+September and October 2026. It also parked the Phase 11 items at v3.1
+(Q1 2028) and v3.2 (Q2 2028); the offline copilot, static share pages,
+what-if branching, certification exams, spend data model and doc pack
+builder are all **shipped today** - the status legend at the top of this
+file marks all of Phase 11 as shipped. Anything still numbered v3.x here
+is a placeholder for work that has not been scoped, not a promise with a
+date attached.
 
 ---
 
 ## Success Metrics
 
-| Metric | Current | Target (v3.0) |
-|--------|---------|---------------|
-| Routes passing smoke test | 63/63 | 80+/80+ |
-| Cross-ref integrity | 0 broken | 0 broken |
-| HTML size | 1.23 MB (1261 KB, 79% of the 1600 KB build budget) | <2 MB |
-| Load time (offline) | ~800ms | <500ms |
-| Accessibility score (`npm run audit:a11y`) | 0 issues / 38 routes | 0 issues, all routes |
-| PWA score (Lighthouse) | not yet measured | 100 |
-| Supported languages | 1 (EN); i18n scaffolding covers ~20% of catalog keys - see status legend above | 7+ |
+Re-measured against the build on 2026-11-01. Every "Current" figure below
+is one a tool prints; where the tool disagrees with this table, the tool
+is right and this table is the thing to fix.
+
+| Metric | Current | Target |
+|--------|---------|--------|
+| Routes passing smoke test | 72 of 72 (`node tools/smoke.mjs` - "routes: 72 failing: 0") | 80+ |
+| Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 239 rel objects; broken refs: 0") | 0 broken |
+| Payload | 1,978 KB readable, 1,620 KB minified, 547 KB gzipped | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
+| Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
+| Accessibility (`npm run audit:a11y`) | 0 issues, across the 38 routes the audit enumerates | 0 issues across all 52 registered routes |
+| PWA score (Lighthouse) | **not measurable as things stand** - the artifact has no web manifest and no service worker (`serviceWorker` appears nowhere in `src/` or the built file), so there is no install surface for Lighthouse to score. This is Phase 7 work, not a missing measurement | decide first whether the product wants to be installable at all |
+| Supported languages | 2 registered (`en`, `es`), 44 of 44 shell catalog keys wired - `npm run audit:i18n`. The authored content is English-only; see the i18n entry in the status legend | 7+ |
 | Calculator count | 19 | 25+ |
-| Academy functions | 19 | 24+ |
+| Academy functions | 28 (the original 24+ target is already exceeded) | re-baseline the target |
 
 ---
 

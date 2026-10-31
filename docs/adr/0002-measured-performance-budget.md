@@ -58,13 +58,18 @@ reproducible on any machine with the dev dependencies installed:
 2. **Application boot time.** The artifact is loaded into jsdom and the
    wall time is taken from just before the document is constructed to
    just after `PS.boot()` returns. That covers HTML parsing, executing
-   the inline script (building 234 content records, registering 43
+   the inline script (building 234 content records and registering 52
    routes) and rendering the first page. It is the application-side
    share of first paint; transfer is covered by the byte budget.
 
 Measured on the artifact as it stands at the end of the v2.4 revamp
-(2026-10-20). The ceilings are derived, not chosen, so they move with
-the reason they exist rather than with the content.
+(2026-10-20), on the workstation that develops the project. The ceilings
+are derived, not chosen, so they move with the reason they exist rather
+than with the content. The two timings below are wall-clock and belong to
+that machine and that moment - `npm run perf` prints the live figures on
+every build, and on a quiet run of the same shape of build they come out
+roughly half these values. The sizes are facts about the file and are
+quoted as of this date.
 
 | Measurement | Measured | Ceiling | Headroom |
 |---|---|---|---|
@@ -122,7 +127,7 @@ picked can.
 
 **What this means for content.** Depth is data, and data is what the
 user downloads. The 3 second trigger is the real constraint on how much
-knowledge this product can carry, and at 1.38 s the artifact is
+knowledge this product can carry, and at 1.46 s the artifact is
 comfortably inside it. The previous 1300 KB script ceiling, which was
 never derived from anything, had made the ceiling a matter of opinion
 rather than of measurement, and it was the ceiling, not the constraint,
@@ -169,10 +174,15 @@ entire value is its content.
 
 ## Trigger conditions for revisiting this
 
-1. **Transfer time exceeds 2.9 s** at 1.5 Mbps. The artifact is at the
-   ADR 0001 trigger, and the honest options are to reduce the content
-   or to move the curriculum out of the inline script. The build gate
-   fires before this point, so it is a warning rather than a surprise.
+1. **Transfer time exceeds 2.9 s** at the 3 Mbps rate the ceiling is
+   derived from. The artifact is at the ADR 0001 trigger, and the honest
+   options are to reduce the content or to move the curriculum out of the
+   inline script. `build.mjs` already warns at 979 KB compressed - about
+   2.6 s at that rate - so this trigger has a stated early warning in
+   front of it rather than arriving as a surprise. This line previously
+   read "at 1.5 Mbps", which is the rate this ADR's own Decision section
+   rejects; leaving it there would have made the trigger tighter than the
+   ceiling it warns about.
 2. **Boot time exceeds 150 ms.** The application would have stopped
    being instant, which is the property the single file buys. The boot
    path builds every content record eagerly, so this is the number that
