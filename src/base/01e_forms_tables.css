@@ -11,7 +11,7 @@ input[type=text],input[type=number],input[type=search],input[type=date],select,t
 }
 input:hover,select:hover,textarea:hover{border-color:var(--dim)}
 textarea{min-height:80px;resize:vertical;line-height:1.6}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+input:focus,select:focus,textarea:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 input::placeholder,textarea::placeholder{color:var(--mute)}
 input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:var(--danger);background:var(--danger-soft)}
 input.is-invalid:focus,select.is-invalid:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 18%,transparent)}

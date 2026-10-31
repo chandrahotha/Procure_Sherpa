@@ -103,14 +103,14 @@
   padding:6px 8px;white-space:nowrap;
 }
 .nav-toggle-all:hover{background:var(--panel);color:var(--accent);border-color:var(--border-2)}
-.nav-toggle-all:focus-visible{outline:none;box-shadow:var(--ring)}
+.nav-toggle-all:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-filter input{
   flex:1 1 auto;min-width:0;padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:var(--r-sm);
   background:var(--panel-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236b7a90" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 12px center;
   color:var(--text);font:inherit;font-size:.83rem;transition:border-color .13s,box-shadow .13s,background .13s;
 }
 .nav-filter input:hover{border-color:var(--border-2)}
-.nav-filter input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+.nav-filter input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 .nav-filter input::placeholder{color:var(--mute)}
 .nav{
   flex:1;overflow-y:auto;padding:2px 12px 20px;scrollbar-width:thin;
@@ -162,7 +162,7 @@
   transition:background .13s,color .13s,border-color .13s;
 }
 .nav-view-btn:hover{border-color:var(--border-2);color:var(--text);background:var(--sunken)}
-.nav-view-btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.nav-view-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent)}
 .nav-view-btn.is-on{
   background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
   box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
@@ -222,7 +222,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   transition:border-color .13s,box-shadow .13s,background .13s;
 }
 .search-mini input:hover{border-color:var(--border-2)}
-.search-mini input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+.search-mini input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 .search-mini input::placeholder{color:var(--mute)}
 .search-kbd{
   position:absolute;right:11px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:.66rem;font-weight:700;

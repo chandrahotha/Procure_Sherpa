@@ -17,13 +17,13 @@ li::marker{color:var(--mute)}
 small{font-size:.8rem}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
-a:focus-visible{outline:none}
+a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:4px;text-decoration:underline}
 code,kbd,samp,pre{font-family:var(--mono);font-size:.85em}
 code{background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:.08em .4em;color:var(--dim)}
 pre{background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;overflow:auto;margin:0 0 12px;line-height:1.55}
 hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 ::selection{background:var(--accent-soft)}
-:focus-visible{outline:none;box-shadow:var(--ring);border-radius:6px}
+:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:6px}
 button{font-family:inherit}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--bg)}

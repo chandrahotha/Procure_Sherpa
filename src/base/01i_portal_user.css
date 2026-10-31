@@ -154,7 +154,7 @@
   font: inherit;
   font-size: .88rem;
 }
-.home-start-problem input:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
+.home-start-problem input:focus { outline: var(--focus-outline); outline-offset: var(--focus-offset); border-color: var(--accent); box-shadow: var(--ring); }
 .home-start-hint { margin: 8px 0 0; font-size: .76rem; }
 .home-start-hint kbd {
   font: inherit; font-size: .72rem;

@@ -98,9 +98,14 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- Focus states (single definition) ---------- */
-:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
-.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+/* ---------- Focus states (single definition) ----------
+   The indicator is a real `outline` in both themes, not `outline:none` with a
+   shadow. A shadow-only indicator disappears in forced-colors mode and is the
+   thing that left anchors with no visible focus at all (master §47; WCAG 2.1
+   SC 2.4.7). tools/a11y_audit.mjs fails the build if any focus rule removes
+   the outline without replacing it. */
+:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); box-shadow: var(--ring); border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); box-shadow: var(--ring); border-radius: 6px; }
 
 /* ---------- Skip link ---------- */
 .skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }

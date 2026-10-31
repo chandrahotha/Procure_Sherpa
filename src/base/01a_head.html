@@ -75,6 +75,12 @@
 
   --accent:#5346f5; --accent-2:#4331d8; --accent-3:#8b5cf6; --accent-ink:#ffffff; --accent-soft:#eeeffe;
   --ring:0 0 0 3px rgba(83,70,245,.20);
+  /* Visible keyboard focus (WCAG 2.1 SC 2.4.7; master §47 names both keyboard
+     navigation and visible focus states). The indicator is an `outline`, not
+     a `box-shadow` on its own, because forced-colors / Windows high-contrast
+     mode drops shadows but keeps outlines. Declared in both themes so the
+     focus colour follows the theme; tools/a11y_audit.mjs asserts it. */
+  --focus-outline:2px solid var(--accent); --focus-offset:2px;
   --ok:#047857; --ok-2:#059669; --ok-soft:#e3f6ec;
   --warn:#b45309; --warn-2:#d97706; --warn-soft:#fdf0dd;
   --danger:#dc2626; --danger-2:#ef4444; --danger-soft:#fdecec;
@@ -108,6 +114,9 @@ html[data-theme="dark"]{
   --border:#223050; --border-2:#35496f;
   --accent:#8b93ff; --accent-2:#6d78f8; --accent-3:#a78bfa; --accent-ink:#0b1020; --accent-soft:rgba(139,147,255,.15);
   --ring:0 0 0 3px rgba(139,147,255,.25);
+  /* The focus ring has to be readable on a dark canvas too, so the token is
+     re-declared here rather than inherited from :root. */
+  --focus-outline:2px solid var(--accent); --focus-offset:2px;
   --ok:#34d399; --ok-2:#6ee7b7; --ok-soft:#0f2a20;
   --warn:#fbbf24; --warn-2:#fde047; --warn-soft:#2b2113;
   --danger:#f87171; --danger-2:#fca5a5; --danger-soft:#2d1614;
