@@ -19,8 +19,14 @@ const ROOT = process.cwd();
 const HTML = path.join(ROOT, 'ProcureSherpa-v2.0.html');
 
 let failures = 0;
-const fail = (gate, msg) => { failures++; console.log('  FAIL [' + gate + '] ' + msg); };
-const ok = (gate, msg) => console.log('  ok   [' + gate + '] ' + msg);
+/* The two counters the summary prints. They exist because every document
+   in this repo that describes this suite quotes a number - "19 gates, 46
+   assertions" - and nothing measured it, so the prose could only drift.
+   Now the suite says what it ran, and the docs point at it. */
+let assertions = 0;
+const gateLabels = new Set();
+const fail = (gate, msg) => { assertions++; gateLabels.add(gate); failures++; console.log('  FAIL [' + gate + '] ' + msg); };
+const ok = (gate, msg) => { assertions++; gateLabels.add(gate); console.log('  ok   [' + gate + '] ' + msg); };
 
 /* ---------- load the artifact ---------- */
 const vc = new VirtualConsole();
@@ -71,6 +77,11 @@ const allHrefs = new Set();
 const sentinelHits = [];
 const emptyRoutes = [];
 const seenRoutes = new Set();
+/* The controls every page renders. Collected during the sweep and read
+   by G4: the static shell only carries five data-act values, so a gate
+   that looked at the shell alone was reporting "5 controls checked" for
+   an application with 146 action handlers. */
+const renderedActs = new Set();
 
 /* Some routes only render their content when they have a query, so a
    sweep with no query never sees the links inside them. The "what should
@@ -122,6 +133,12 @@ for (const hash of ROUTE_VISITS) {
         }
       }
     });
+    /* Collect the controls every page renders, not just the ones present
+       in the static shell. G4 reads this set. */
+    main.querySelectorAll('[data-act]').forEach((el) => {
+      const v = el.getAttribute('data-act');
+      if (v) renderedActs.add(v);
+    });
   }
 }
 if (sentinelHits.length) {
@@ -136,10 +153,19 @@ else ok('G7', 'every visited route rendered real content');
 /* ---------- G4: every data-act has a handler ---------- */
 console.log('\nG4  action handlers');
 const acts = new Set();
-w.document.querySelectorAll('[data-act]').forEach((el) => acts.add(el.getAttribute('data-act')));
+w.document.querySelectorAll('[data-act]').forEach((el) => {
+  const v = el.getAttribute('data-act');
+  if (v) acts.add(v);
+});
+/* The controls rendered by the route sweep count too. Before this, G4
+   looked only at the static shell, so it reported "5 distinct data-act
+   values all have handlers" for an application that wires 146 handlers
+   and renders 86 distinct controls: a button on any page other than the
+   shell could point at nothing and the gate would not have known. */
+renderedActs.forEach((a) => acts.add(a));
 const orphanActs = [...acts].filter((a) => typeof PS.acts[a] !== 'function');
 if (orphanActs.length) fail('G4', 'controls with no handler: ' + orphanActs.join(', '));
-else ok('G4', acts.size + ' distinct data-act values all have handlers');
+else ok('G4', acts.size + ' distinct data-act values, across the shell and every rendered route, all have handlers');
 
 /* ---------- G5: no orphan content ---------- */
 console.log('\nG5  knowledge graph');
@@ -200,6 +226,39 @@ if (deadEdges.length) {
   deadEdges.forEach((d) => fail('G6', 'handoff edge can never carry data: ' + d));
 } else {
   ok('G6', 'all ' + edges + ' handoff edges carry at least one field');
+}
+/* The floor. Without it this gate could not fail: delete every
+   `handoffTo` in the registry and `deadEdges` stays empty, so the gate
+   prints "all 0 handoff edges carry at least one field" and passes.
+   Requirement section 26 names six source tools and the destinations
+   each must send to; of those, the calculator-to-calculator legs are the
+   ones that can prepopulate a field, and they are listed here so a
+   regression that drops one of them is a build failure rather than a
+   quieter product.
+   This is a floor and not the requirement: section 26 also asks for
+   handoffs into non-calculator destinations (the Award Recommendation
+   template, the Contract Renewal SOP, the Savings Dashboard, supplier
+   risk), which today are links rather than data handoffs, and which are
+   recorded in docs/completion-ledger.md against section 26. */
+const REQUIRED_EDGES = [
+  ['calc-compare-quotes', 'calc-negotiation-savings'],
+  ['calc-compare-quotes', 'calc-tco'],
+  ['calc-price-increase', 'calc-negotiation-savings'],
+  ['calc-price-increase', 'calc-price-escalation'],
+  ['calc-price-increase', 'calc-tco'],
+  ['calc-tco', 'calc-make-vs-buy'],
+  ['calc-savings-analysis', 'calc-budget-vs-actual'],
+  ['calc-budget-vs-actual', 'calc-savings-analysis']
+];
+const edgeSet = new Set();
+for (const c of PS.data.calc || []) {
+  for (const t of c.handoffTo || []) edgeSet.add(c.id + '->' + t);
+}
+const missingEdges = REQUIRED_EDGES.filter(([from, to]) => !edgeSet.has(from + '->' + to));
+if (missingEdges.length) {
+  missingEdges.forEach(([from, to]) => fail('G6', 'required handoff (section 26) is gone: ' + from + ' -> ' + to));
+} else {
+  ok('G6', 'the ' + REQUIRED_EDGES.length + ' handoff legs the requirements name between calculators are all declared');
 }
 
 /* ---------- G8: the Academy must link into the content library ---------- */
@@ -726,6 +785,14 @@ if (fs.existsSync(distPath)) {
   } else {
     ok('G20', 'the minified deploy build carries the same stamp (' + stampDist + ')');
   }
+} else {
+  /* Say so out loud. `npm run qa` runs this suite before `verify:min`
+     builds dist/, so on a clean tree there is nothing to read yet, and a
+     silent skip here once let a broken minifier path look like a passing
+     stamp gate. verify:min re-runs the suites that matter against the
+     real dist build; this line records that the check was skipped, not
+     that it passed. */
+  console.log('  skip [G20] no dist/index.html yet in this run, so the minified stamp was not checked here');
 }
 /* And the stamp has to be a hash of the sources, not a constant, so
    that a change to the source really does change the identity of the
@@ -747,5 +814,8 @@ try {
 }
 
 w.close();
+console.log('\n--- summary ---');
+console.log('gate labels:  ' + gateLabels.size + ' (' + [...gateLabels].sort().join(', ') + ')');
+console.log('assertions:   ' + assertions + ' run, ' + failures + ' failed');
 console.log('\n' + (failures ? 'INTEGRITY GATE: FAIL (' + failures + ' failures)' : 'INTEGRITY GATE: PASS'));
 process.exit(failures ? 1 : 0);

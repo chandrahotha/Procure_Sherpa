@@ -130,4 +130,10 @@ console.log('assertions passed: ' + pass);
 console.log('assertions failed: ' + fail);
 console.log('runtime errors:', errors.length);
 if (errors.length) console.log('first runtime errors:\n' + errors.slice(0, 6).join('\n'));
-process.exit(fail ? 1 : 0);
+/* Runtime errors fail the gate. This line used to read
+   `process.exit(fail ? 1 : 0)`, so a calculator that threw inside a
+   try/catch, or logged a console.error on every route, printed
+   "runtime errors: 3" and then passed. smoke.mjs already treats them as
+   a failure; the calculator suite must not be laxer than the smoke test
+   it runs next to. */
+process.exit(fail || errors.length ? 1 : 0);
