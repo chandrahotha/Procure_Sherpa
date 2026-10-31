@@ -75,6 +75,12 @@
 
   --accent:#5346f5; --accent-2:#4331d8; --accent-3:#8b5cf6; --accent-ink:#ffffff; --accent-soft:#eeeffe;
   --ring:0 0 0 3px rgba(83,70,245,.20);
+  /* Visible keyboard focus (WCAG 2.1 SC 2.4.7; master §47 names both keyboard
+     navigation and visible focus states). The indicator is an `outline`, not
+     a `box-shadow` on its own, because forced-colors / Windows high-contrast
+     mode drops shadows but keeps outlines. Declared in both themes so the
+     focus colour follows the theme; tools/a11y_audit.mjs asserts it. */
+  --focus-outline:2px solid var(--accent); --focus-offset:2px;
   --ok:#047857; --ok-2:#059669; --ok-soft:#e3f6ec;
   --warn:#b45309; --warn-2:#d97706; --warn-soft:#fdf0dd;
   --danger:#dc2626; --danger-2:#ef4444; --danger-soft:#fdecec;
@@ -108,6 +114,9 @@ html[data-theme="dark"]{
   --border:#223050; --border-2:#35496f;
   --accent:#8b93ff; --accent-2:#6d78f8; --accent-3:#a78bfa; --accent-ink:#0b1020; --accent-soft:rgba(139,147,255,.15);
   --ring:0 0 0 3px rgba(139,147,255,.25);
+  /* The focus ring has to be readable on a dark canvas too, so the token is
+     re-declared here rather than inherited from :root. */
+  --focus-outline:2px solid var(--accent); --focus-offset:2px;
   --ok:#34d399; --ok-2:#6ee7b7; --ok-soft:#0f2a20;
   --warn:#fbbf24; --warn-2:#fde047; --warn-soft:#2b2113;
   --danger:#f87171; --danger-2:#fca5a5; --danger-soft:#2d1614;
@@ -150,13 +159,13 @@ li::marker{color:var(--mute)}
 small{font-size:.8rem}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
-a:focus-visible{outline:none}
+a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:4px;text-decoration:underline}
 code,kbd,samp,pre{font-family:var(--mono);font-size:.85em}
 code{background:var(--sunken);border:1px solid var(--border);border-radius:6px;padding:.08em .4em;color:var(--dim)}
 pre{background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;overflow:auto;margin:0 0 12px;line-height:1.55}
 hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 ::selection{background:var(--accent-soft)}
-:focus-visible{outline:none;box-shadow:var(--ring);border-radius:6px}
+:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:6px}
 button{font-family:inherit}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--bg)}
@@ -291,14 +300,14 @@ button{font-family:inherit}
   padding:6px 8px;white-space:nowrap;
 }
 .nav-toggle-all:hover{background:var(--panel);color:var(--accent);border-color:var(--border-2)}
-.nav-toggle-all:focus-visible{outline:none;box-shadow:var(--ring)}
+.nav-toggle-all:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-filter input{
   flex:1 1 auto;min-width:0;padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:var(--r-sm);
   background:var(--panel-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236b7a90" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 12px center;
   color:var(--text);font:inherit;font-size:.83rem;transition:border-color .13s,box-shadow .13s,background .13s;
 }
 .nav-filter input:hover{border-color:var(--border-2)}
-.nav-filter input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+.nav-filter input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 .nav-filter input::placeholder{color:var(--mute)}
 .nav{
   flex:1;overflow-y:auto;padding:2px 12px 20px;scrollbar-width:thin;
@@ -350,7 +359,7 @@ button{font-family:inherit}
   transition:background .13s,color .13s,border-color .13s;
 }
 .nav-view-btn:hover{border-color:var(--border-2);color:var(--text);background:var(--sunken)}
-.nav-view-btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.nav-view-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent)}
 .nav-view-btn.is-on{
   background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
   box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
@@ -410,7 +419,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   transition:border-color .13s,box-shadow .13s,background .13s;
 }
 .search-mini input:hover{border-color:var(--border-2)}
-.search-mini input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+.search-mini input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 .search-mini input::placeholder{color:var(--mute)}
 .search-kbd{
   position:absolute;right:11px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:.66rem;font-weight:700;
@@ -444,7 +453,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 }
 .btn:hover{background:var(--panel-2);border-color:var(--dim);text-decoration:none}
 .btn:active{transform:translateY(1px)}
-.btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent)}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 32%,transparent)}
 .btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink)}
@@ -485,7 +494,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   transition:background .12s,color .12s,border-color .12s,box-shadow .12s;
 }
 .icon-btn:hover{background:var(--panel-2);color:var(--text);text-decoration:none;border-color:var(--border);box-shadow:var(--sh)}
-.icon-btn:focus-visible{outline:none;box-shadow:var(--ring)}
+.icon-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .icon-btn.is-on{color:var(--warn);background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 32%,transparent)}
 .icon-btn[disabled]{opacity:.4;cursor:default;box-shadow:none}
 .hide-sm{font-size:.82rem;font-weight:650}
@@ -690,7 +699,7 @@ input[type=text],input[type=number],input[type=search],input[type=date],select,t
 }
 input:hover,select:hover,textarea:hover{border-color:var(--dim)}
 textarea{min-height:80px;resize:vertical;line-height:1.6}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
+input:focus,select:focus,textarea:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
 input::placeholder,textarea::placeholder{color:var(--mute)}
 input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:var(--danger);background:var(--danger-soft)}
 input.is-invalid:focus,select.is-invalid:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 18%,transparent)}
@@ -2287,7 +2296,7 @@ html[data-theme="dark"] .quiz-tip-cta {
   font: inherit;
   font-size: .88rem;
 }
-.home-start-problem input:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
+.home-start-problem input:focus { outline: var(--focus-outline); outline-offset: var(--focus-offset); border-color: var(--accent); box-shadow: var(--ring); }
 .home-start-hint { margin: 8px 0 0; font-size: .76rem; }
 .home-start-hint kbd {
   font: inherit; font-size: .72rem;
@@ -2948,9 +2957,14 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .calc-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- Focus states (single definition) ---------- */
-:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
-.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+/* ---------- Focus states (single definition) ----------
+   The indicator is a real `outline` in both themes, not `outline:none` with a
+   shadow. A shadow-only indicator disappears in forced-colors mode and is the
+   thing that left anchors with no visible focus at all (master §47; WCAG 2.1
+   SC 2.4.7). tools/a11y_audit.mjs fails the build if any focus rule removes
+   the outline without replacing it. */
+:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); box-shadow: var(--ring); border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .nav-list a:focus-visible, .tile:focus-visible, .stat:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); box-shadow: var(--ring); border-radius: 6px; }
 
 /* ---------- Skip link ---------- */
 .skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
@@ -3392,7 +3406,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '47ac14587fdd';
+PS.BUILD = 'ba086e8548df';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -7174,6 +7188,20 @@ PS.listItemsHtml = function (type, items, groupByCat) {
       '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>';
   }).join('');
 };
+/* A section URL with no reference is the section, not a dead end.
+   #/dec, #/sop, #/calc, #/k, #/cl, #/tpl and #/kpi are the addresses the
+   information architecture names in master §7, and a reader who types one
+   (or follows an old bookmark) was landing on the not-found card, because
+   the detail handler called PS.byId('dec', '') and got nothing back. Only
+   an unrecognised *reference* (#/sop/sop-that-does-not-exist) is a genuine
+   not-found; §48 asks that a page never force the user back to Home.
+   Master §81 also lists each of these as a deliverable, so the index of
+   the deliverable is real content, not an error state. */
+PS.sectionIndex = function (name, params) {
+  var type = name === 'k' ? 'kb' : name;
+  if (type === 'scen') return (PS.routes.scenarios || function () { return ''; })();
+  return PS.listPage(type, '', params || {});
+};
 PS.listPage = function (type, cat, params) {
   var meta = PS.LIST_META[type] || { title: PS.typeLabel(type) + ' library', desc: '' };
   var items = (PS.data[type] || []).filter(function (x) { return PS.inCat(x, cat); });
@@ -7534,6 +7562,7 @@ PS.calcMarkdown = function (calc, values, out) {
 PS.route('calc', function (id, params) { return PS.calcPage(id, params); });
 PS.pendingPrefill = null;
 PS.calcPage = function (id, params) {
+  if (!id) return PS.sectionIndex('calc', params);
   var calc = PS.byId('calc', id);
   if (!calc) return PS.notFound('calculator', id);
   PS.calcState.id = id; PS.calcState.result = null;
@@ -11462,7 +11491,24 @@ PS.route('fav', function () {
         '<span><a class="res-title" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || (o ? (o.title || o.term) : f.id)) + '</a>' +
         '<div class="res-desc">' + PS.esc(o ? (o.desc || o.def || '') : 'This item is no longer in the content set.') + '</div></span>' +
         '<button type="button" class="btn btn-sm" data-act="fav-remove" data-type="' + PS.esc(f.type) + '" data-id="' + PS.esc(f.id) + '">Remove</button></li>';
-    }).join('') + '</ul>' : '<div class="empty">No favorites yet. Open a page and use the &#9734; star in the top bar to pin it here.</div>') +
+    }).join('') + '</ul>'
+      /* An empty list is an honest state, but it still has to be a page.
+         §81 names "Workspace: saved local work" as a deliverable and §49
+         names the six kinds that can be pinned, so the empty state says
+         how a favourite is made and links to every library a favourite
+         can come from. Before this, the page rendered 178 characters with
+         no link and no control on it at all: nothing a reader could do.
+         tools/smoke.mjs now fails a WORKSPACE page with no way in. */
+      : '<div class="empty"><p><strong>Nothing pinned yet.</strong> Open any page and use the &#9734; star in the top bar. Pins are kept in this browser, and they travel with your backup file.</p>' +
+        '<p class="note">Pin the tools you reach for every week:</p>' +
+        '<div class="btn-row">' +
+        '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
+        '<a class="btn btn-sm" href="#/list/sop">SOPs</a>' +
+        '<a class="btn btn-sm" href="#/list/cl">Checklists</a>' +
+        '<a class="btn btn-sm" href="#/list/tpl">Templates</a>' +
+        '<a class="btn btn-sm" href="#/list/kb">Concepts</a>' +
+        '<a class="btn btn-sm" href="#/list/dec">Decision guides</a>' +
+        '</div></div>') +
     '</div>';
   return html;
 });
@@ -11480,7 +11526,18 @@ PS.route('recent', function () {
     (r.length ? '<ul class="res-list">' + r.map(function (x) {
       return '<li>' + PS.badge(x.type) + '<span><a class="res-title" href="' + PS.routeFor(x.type, x.id) + '">' + PS.esc(x.title || x.id) + '</a>' +
         '<div class="res-desc">' + PS.esc(PS.dateTime(x.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<div class="empty">Nothing opened yet. Pages you visit are listed here.</div>') + '</div>';
+    }).join('') + '</ul>'
+      /* Same rule as Favorites (§49): a list of nothing still has to be a
+         page you can act on. This one rendered 145 characters with no link
+         and no control on it. */
+      : '<div class="empty"><p><strong>Nothing opened yet.</strong> Pages you visit are listed here, most recent first, and the list is kept in this browser only. It clears when you clear local data.</p>' +
+        '<div class="btn-row">' +
+        '<a class="btn btn-sm" href="#/what">What should I do?</a>' +
+        '<a class="btn btn-sm" href="#/quickstart">Quick start</a>' +
+        '<a class="btn btn-sm" href="#/academy">Academy</a>' +
+        '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
+        '<a class="btn btn-sm" href="#/lifecycle">Process map</a>' +
+        '</div></div>') + '</div>';
   return html;
 });
 PS.route('list', function (arg, params) {
@@ -11706,7 +11763,8 @@ PS.homeQuickActions = function () {
 };
 
 /* ---------- knowledge concept pages (Section 10, 38, 61) ---------- */
-PS.route('k', function (id) {
+PS.route('k', function (id, params) {
+  if (!id) return PS.sectionIndex('k', params);
   var it = PS.byId('kb', id);
   if (!it) return PS.notFound('concept', id);
   PS.currentItem = { type: 'kb', id: id, item: it };
@@ -11775,7 +11833,8 @@ PS.route('lifecycle', function () {
    An SOP is a controlled procedure, not a checklist. Execution evidence
    lives in the Checklist library; the SOP page links to it instead of
    embedding it. */
-PS.route('sop', function (id) {
+PS.route('sop', function (id, params) {
+  if (!id) return PS.sectionIndex('sop', params);
   var it = PS.byId('sop', id);
   if (!it) return PS.notFound('SOP', id);
   PS.currentItem = { type: 'sop', id: id, item: it };
@@ -11894,7 +11953,8 @@ PS.sopChecklistLink = function (it) {
 };
 
 /* ---------- checklist pages (Section 22, 70) ---------- */
-PS.route('cl', function (id) {
+PS.route('cl', function (id, params) {
+  if (!id) return PS.sectionIndex('cl', params);
   var it = PS.byId('cl', id);
   if (!it) return PS.notFound('checklist', id);
   PS.currentItem = { type: 'cl', id: id, item: it };
@@ -11972,7 +12032,8 @@ PS.templateFieldHtml = function (f, value) {
   return '<div class="field' + (f.type === 'textarea' ? '' : '') + '"><label for="' + id + '">' + PS.esc(f.label) + '</label>' +
     control + (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') + '</div>';
 };
-PS.route('tpl', function (id) {
+PS.route('tpl', function (id, params) {
+  if (!id) return PS.sectionIndex('tpl', params);
   var it = PS.byId('tpl', id);
   if (!it) return PS.notFound('template', id);
   PS.currentItem = { type: 'tpl', id: id, item: it };
@@ -12022,7 +12083,8 @@ PS.route('tpl', function (id) {
   return html;
 });
 /* ---------- decision guide pages (Section 21, 39) ---------- */
-PS.route('dec', function (id) {
+PS.route('dec', function (id, params) {
+  if (!id) return PS.sectionIndex('dec', params);
   var it = PS.byId('dec', id);
   if (!it) return PS.notFound('decision guide', id);
   PS.currentItem = { type: 'dec', id: id, item: it };
@@ -12111,7 +12173,8 @@ PS.renderDecisionResult = function (dec, out, answers) {
   return html;
 };
 /* ---------- KPI pages (Section 30) ---------- */
-PS.route('kpi', function (id) {
+PS.route('kpi', function (id, params) {
+  if (!id) return PS.sectionIndex('kpi', params);
   var it = PS.byId('kpi', id);
   if (!it) return PS.notFound('KPI', id);
   PS.currentItem = { type: 'kpi', id: id, item: it };
@@ -12210,7 +12273,8 @@ PS.route('scenarios', function () {
     }).join('') + '</div>' : PS.empty('Scenario library is loading.')) +
     PS.disclaimer('data');
 });
-PS.route('scen', function (id) {
+PS.route('scen', function (id, params) {
+  if (!id) return PS.sectionIndex('scen', params);
   var it = PS.byId('scen', id);
   if (!it) return PS.notFound('scenario', id);
   PS.currentItem = { type: 'scen', id: id, item: it };
@@ -16492,6 +16556,26 @@ PS.route('community', function () {
     '<div class="card-head"><h1>Community</h1><div class="spacer"></div>' +
     '<button type="button" class="btn btn-primary btn-sm" data-act="community-new">New post</button></div>' +
     '<p class="lead">Notes, questions and wins. Posts are stored in this browser only; nothing is uploaded.</p>' +
+    /* Say what this is not. Procure Sherpa has no server (master §3 excludes
+       portals and cloud, §33 keeps every byte on the device, and the CSP
+       sets connect-src 'none'), so there is no other user's post to read
+       and calling this screen a "community" on its own would be a claim the
+       build cannot support. The honest treatment is the one the disabled
+       certificate page already uses: state the reason, keep the part that
+       is real, and give the way back into the product. */
+    '<div class="alert alert-info"><strong>This is a local notes board, not a forum</strong>' +
+    'There is no server, so nothing here is shared with anyone else and no one replies. ' +
+    'It is a place to write down a sourcing question, a negotiation you want to remember, ' +
+    'or a win worth reviewing - stored in this browser, included in your backup file.</div>' +
+    '<p class="note">Where the answers actually are in this application:</p>' +
+    '<div class="btn-row">' +
+    '<a class="btn btn-sm" href="#/academy">Academy: the 28 procurement functions</a>' +
+    '<a class="btn btn-sm" href="#/what">What should I do?</a>' +
+    '<a class="btn btn-sm" href="#/scenarios">Worked scenarios</a>' +
+    '<a class="btn btn-sm" href="#/exams">Certification exams</a>' +
+    '<a class="btn btn-sm" href="#/glossary">Glossary</a>' +
+    '<a class="btn btn-sm" href="#/backup">Back up these notes</a>' +
+    '</div>' +
     '</div>';
 
   html += '<div class="card" id="communityList">';
@@ -18992,7 +19076,7 @@ PS.SSOP({
   fq: "Continuous compliance monitoring with formal annual internal and external audit cycles.",
   du: "Two to four weeks per formal audit cycle.",
   fl: "Audit Scoping|Risk-Based Sampling|File Compilation|Spine Completeness Audit|Controls Testing|Findings Classification|Remediation Closure",
-  st: "Define Audit Scope and Risk-Weighted Sampling Methodology|Establish audit scope across spend categories, operating entities, and time horizons. Draw a stratified sample covering high-value purchases, single-source waivers, and emergency procurements.|role=Compliance Officer,out=Approved Audit Scope and Sample List,ctrl=Risk-based stratification methodology;Compile Complete Procurement Files Within Stated Deadline|Retrieve complete procurement files for all sampled transactions within 48 hours. Files must be presented exactly as archived; creating or altering documents during audit is strictly prohibited.|role=File Custodian,out=Assembled Audit Dossiers,ctrl=Strict 48-hour retrieval deadline;Verify the Mandatory 10-Point Procurement File Spine|Audit each sampled file against the standard 10-point spine: 1. Approved Requisition, 2. DOA Approvals, 3. Sourcing Strategy, 4. Solicitations, 5. Bids, 6. Evaluation Matrix, 7. Mandate, 8. Award Report, 9. Contract, 10. Savings Sign-off.|role=Compliance Officer,out=File Completeness Audit Matrix,ctrl=10-point standard checklist applied;Test Operational Controls and Segregation of Duties|Independently verify compliance with key internal controls: segregation between requisitioner, sourcing buyer, and invoice approver; adherence to financial delegation limits; and timeliness of PO creation.|role=Internal Auditor,out=Internal Controls Testing Sheet,ctrl=Independent testing of SOX 404 controls;Grade Findings and Classify Severity Levels|Log all audit observations with formal severity ratings: Critical (unauthorized spend, missing DOA approval, missing contract), Major (evaluation missing, retrospective PO), or Minor (timestamp discrepancies).|role=Internal Auditor,out=Formal Audit Findings Register,ctrl=Objective severity grading standard;Formulate Corrective Action Plans with Assigned Owners|Develop formal management responses for every finding, detailing root-cause diagnosis, corrective actions, named management owners, and a mandatory 60-day remediation completion date.|role=Procurement Manager,out=Approved Audit Remediation Plan,ctrl=Time-bound 60-day remediation closure;Execute Retesting and Close Audit Findings|Perform independent follow-up retesting on all remediated items. Confirm sustainable process closure, report status to the Audit Committee, and archive the complete audit dossier.|role=Compliance Officer,out=Final Audit Closure Report,ctrl=Verification through independent retesting",
+  st: "Define Audit Scope and Risk-Weighted Sampling Methodology|Establish audit scope across spend categories, operating entities, and time horizons. Draw a stratified sample covering high-value purchases, single-source waivers, and emergency procurements.|role=Compliance Officer,out=Approved Audit Scope and Sample List,ctrl=Risk-based stratification methodology;Compile Complete Procurement Files Within Stated Deadline|Retrieve complete procurement files for all sampled transactions within 48 hours. Files must be presented exactly as archived. Creating or altering documents during the audit is strictly prohibited.|role=File Custodian,out=Assembled Audit Dossiers,ctrl=Strict 48-hour retrieval deadline;Verify the Mandatory 10-Point Procurement File Spine|Audit each sampled file against the standard 10-point spine: 1. Approved Requisition, 2. DOA Approvals, 3. Sourcing Strategy, 4. Solicitations, 5. Bids, 6. Evaluation Matrix, 7. Mandate, 8. Award Report, 9. Contract, 10. Savings Sign-off.|role=Compliance Officer,out=File Completeness Audit Matrix,ctrl=10-point standard checklist applied;Test Operational Controls and Segregation of Duties|Independently verify compliance with key internal controls: segregation between requisitioner, sourcing buyer and invoice approver, adherence to financial delegation limits, and timeliness of PO creation.|role=Internal Auditor,out=Internal Controls Testing Sheet,ctrl=Independent testing of SOX 404 controls;Grade Findings and Classify Severity Levels|Log all audit observations with formal severity ratings: Critical (unauthorized spend, missing DOA approval, missing contract), Major (evaluation missing, retrospective PO), or Minor (timestamp discrepancies).|role=Internal Auditor,out=Formal Audit Findings Register,ctrl=Objective severity grading standard;Formulate Corrective Action Plans with Assigned Owners|Develop formal management responses for every finding, detailing root-cause diagnosis, corrective actions, named management owners, and a mandatory 60-day remediation completion date.|role=Procurement Manager,out=Approved Audit Remediation Plan,ctrl=Time-bound 60-day remediation closure;Execute Retesting and Close Audit Findings|Perform independent follow-up retesting on all remediated items. Confirm sustainable process closure, report status to the Audit Committee, and archive the complete audit dossier.|role=Compliance Officer,out=Final Audit Closure Report,ctrl=Verification through independent retesting",
   ip: "Internal procurement policy;Delegation of Authority matrix;General ledger transaction extract;Electronic procurement project repositories;Previous audit reports and open finding logs",
   ot: "Audit sampling register;Completed 10-point file completeness matrices;Internal controls testing working papers;Formal audit findings report;Management remediation plan;Audit Committee closure memo",
   dc: "File Compliance Grading|Fully compliant, conditionally compliant with minor documentation remediation, or non-compliant requiring management escalation;Remediation Closure|Approve closure of findings based on verified retest evidence, or escalate overdue actions to the Audit Committee",
@@ -19030,7 +19114,7 @@ PS.SSOP({
   fq: "Upon occurrence of a formally declared operational emergency.",
   du: "Hours to days for emergency order placement; maximum 30 calendar days for full post-event regularisation.",
   fl: "Emergency Declaration|Scope Stripping|Rapid Sourcing|Emergency Approval|Emergency Order|Contemporaneous Logging|30-Day Regularisation",
-  st: "Formally Declare and Document Emergency Status|Record the declaring executive identity, precise factual circumstances, immediate operational or safety risks, and the catastrophic cost of delay before contacting suppliers.|role=Emergency Approver,out=Signed Emergency Declaration,ctrl=Written declaration prior to commitment;Strip Scope to Minimum Immediate Viable Need|Limit the emergency purchase strictly to the immediate goods or services required to stabilize the crisis. Defer recurring, permanent, or non-critical requirements to standard competitive sourcing.|role=Business Unit Lead,out=Minimum Viable Specification,ctrl=Mandatory challenge of scope inflation;Select Fastest Compliant Supply Channel|Screen existing approved catalog suppliers and framework agreements first. If unavailable, select the fastest capable vendor with verified technical competence and acceptable safety credentials.|role=Emergency Buyer,out=Rapid Sourcing Selection Memo,ctrl=Evaluation of fastest capable channel;Secure Emergency Delegation of Authority Approval|Obtain formal emergency approval within established emergency limits: Single Officer up to $50,000; Dual Executive (Procurement Director + CFO) up to $250,000. Verbal approvals require written email confirmation within 24 hours.|role=Emergency Approver,out=Emergency Spend Authorization,ctrl=Pre-authorized emergency financial limits;Issue Controlled Emergency Order with Core Terms|Issue a formal emergency purchase order specifying exact scope, firm delivery date, Not-to-Exceed (NTE) pricing ceiling, and mandatory statutory liability and insurance protections.|role=Emergency Buyer,out=Emergency Purchase Order (NTE),ctrl=Not-to-Exceed price cap enforced;Maintain Real-Time Contemporaneous Audit Log|Record all commercial communications, quoted prices, delivery commitments, and approvals contemporaneously with exact timestamps and participant names. Reconstructing notes weeks later is strictly prohibited.|role=Emergency Buyer,out=Contemporaneous Incident Log,ctrl=Real-time logging requirement;Execute Full Post-Event Regularisation Within 30 Days|Audit actual emergency spend against the NTE ceiling, verify physical delivery, perform standard supplier due diligence, ratify the procurement with the Executive Committee, and transition ongoing demand to standard contracts.|role=Head of Procurement,out=Post-Emergency Regularisation Dossier,ctrl=Mandatory 30-day regularisation gate",
+  st: "Formally Declare and Document Emergency Status|Record the declaring executive identity, precise factual circumstances, immediate operational or safety risks, and the catastrophic cost of delay before contacting suppliers.|role=Emergency Approver,out=Signed Emergency Declaration,ctrl=Written declaration prior to commitment;Strip Scope to Minimum Immediate Viable Need|Limit the emergency purchase strictly to the immediate goods or services required to stabilize the crisis. Defer recurring, permanent, or non-critical requirements to standard competitive sourcing.|role=Business Unit Lead,out=Minimum Viable Specification,ctrl=Mandatory challenge of scope inflation;Select Fastest Compliant Supply Channel|Screen existing approved catalog suppliers and framework agreements first. If unavailable, select the fastest capable vendor with verified technical competence and acceptable safety credentials.|role=Emergency Buyer,out=Rapid Sourcing Selection Memo,ctrl=Evaluation of fastest capable channel;Secure Emergency Delegation of Authority Approval|Obtain formal emergency approval within established emergency limits: Single Officer up to $50,000, Dual Executive (Procurement Director + CFO) up to $250,000. Verbal approvals require written email confirmation within 24 hours.|role=Emergency Approver,out=Emergency Spend Authorization,ctrl=Pre-authorized emergency financial limits;Issue Controlled Emergency Order with Core Terms|Issue a formal emergency purchase order specifying exact scope, firm delivery date, Not-to-Exceed (NTE) pricing ceiling, and mandatory statutory liability and insurance protections.|role=Emergency Buyer,out=Emergency Purchase Order (NTE),ctrl=Not-to-Exceed price cap enforced;Maintain Real-Time Contemporaneous Audit Log|Record all commercial communications, quoted prices, delivery commitments, and approvals contemporaneously with exact timestamps and participant names. Reconstructing notes weeks later is strictly prohibited.|role=Emergency Buyer,out=Contemporaneous Incident Log,ctrl=Real-time logging requirement;Execute Full Post-Event Regularisation Within 30 Days|Audit actual emergency spend against the NTE ceiling, verify physical delivery, perform standard supplier due diligence, ratify the procurement with the Executive Committee, and transition ongoing demand to standard contracts.|role=Head of Procurement,out=Post-Emergency Regularisation Dossier,ctrl=Mandatory 30-day regularisation gate",
   ip: "Signed emergency declaration;Minimum viable technical specification;Emergency budget authorization;Rapid supplier quotes or rate cards;Safety and regulatory incident reports",
   ot: "Signed emergency declaration;Emergency purchase order with Not-to-Exceed cap;Contemporaneous communication log;Completed delivery and acceptance receipts;Post-event regularisation audit package;Executive ratification memo",
   dc: "Emergency Legitimacy Determination|Authorize under emergency procedures or re-route to expedited standard sourcing if delay does not threaten life, safety, or catastrophic operational stoppage;Emergency Sourcing Route|Contract through existing framework supplier, capable emergency vendor, or documented single-source",
