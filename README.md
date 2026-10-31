@@ -370,7 +370,7 @@ tools/
   check_drift.mjs                # Asserts the artifact matches src/ and the docs match the tools
   check_workflows.mjs            # Workflow-file gate: contexts, timeouts, concurrency, Node pin
   check_rels.mjs                 # Cross-reference referential integrity validator
-  smoke.mjs                      # Headless route test suite covering all 72 routes
+  smoke.mjs                      # Headless route test suite covering all 85 route renders
   test_unit.mjs                  # 22 utility assertions run against the built artifact, not a copy
   test_calcs.mjs                 # Calculator correctness harness (all 19 calculators)
   test_calc_values.mjs           # Expected-value fixtures: hand-computed math assertions
@@ -379,7 +379,7 @@ tools/
   test_layout.mjs                # Responsive layout and dynamic UI structure checks
   test_integrity.mjs             # Integrity gate: what the other tests cannot see (see below)
   security_audit.mjs             # Espree AST + DOM scan: CSP, eval, handlers, network, credentials
-  a11y_audit.mjs                 # WCAG 2.1 AA structural audit across 38 routes (visibility-aware)
+  a11y_audit.mjs                 # WCAG 2.1 AA structural audit: every registered route plus one detail page per content kind, fails if a registered route goes unscanned, counts every occurrence
   perf_check.mjs                 # Measured payload, compile and boot budget checker
   i18n_audit.mjs                 # Catalog keys vs DOM usage - a hard gate, not a report
   deploy.mjs / verify_deploy.mjs # Release to Vercel, then assert the served bytes are the build
@@ -417,7 +417,7 @@ npm run verify:min
 # finite output, and that nothing throws on a calculator route
 node tools/test_calcs.mjs
 
-# Run the full route smoke test across all 72 routes
+# Run the full route smoke test across all 85 route renders
 node tools/smoke.mjs
 
 # Validate the GitHub workflow files (a job-level `if` may not use `secrets`;
@@ -432,7 +432,7 @@ node tools/check_rels.mjs
 # handlers and javascript: URLs, CSP integrity and a credential pattern scan
 node tools/security_audit.mjs
 
-# Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs across 38 routes
+# Accessibility audit: labels, ARIA, heading hierarchy, duplicate IDs, on every registered route
 node tools/a11y_audit.mjs
 
 # The integrity gate: registries, sentinel leaks, dead links, orphan content,
@@ -450,7 +450,7 @@ node tools/perf_check.mjs
 npm run audit:i18n
 ```
 
-`npm run qa` runs, in order: preflight, build and validate, lint, the workflow-file gate, cross-reference integrity, the 22 utility unit tests against the built artifact, calculator correctness (1,021 structural assertions over the 19 calculators), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (72 routes), responsive layout & dynamic UI verification (29 checks), the integrity gate (20 gates, 50 assertions, over 59 rendered route instances in both navigation views), the AST security scan (Espree traversal), the accessibility scan (38 routes), the measured performance budget, the i18n coverage audit (44 catalog keys, all 44 wired, across `en` and `es`), and finally the minified deploy build re-verified with the unit, smoke, both calculator, accessibility and layout suites. Every step is a hard gate: `npm run qa` exits non-zero if any of them fails.
+`npm run qa` runs, in order: preflight, build and validate, lint, the workflow-file gate, cross-reference integrity, the 22 utility unit tests against the built artifact, calculator correctness (1,021 structural assertions over the 19 calculators), calculator expected-value fixtures (51 hand-computed math assertions), interactive click-through checks, the content and quiz-engine gate (18 assertions), route smoke (85 route renders), responsive layout & dynamic UI verification (29 checks), the integrity gate (22 gates, 70 assertions, 59 rendered route instances in both navigation views), the AST security scan (Espree traversal), the accessibility scan (every registered route plus one detail page per content kind, failing the gate if a registered route goes unscanned), the measured performance budget, the i18n coverage audit (44 catalog keys, all 44 wired, across `en` and `es`), and finally the minified deploy build re-verified with the unit, smoke, both calculator, accessibility and layout suites. Every step is a hard gate: `npm run qa` exits non-zero if any of them fails.
 
 `npm run qa:ci` is what CI actually runs. It prefixes the suite with `node tools/preflight.mjs` and `node tools/check_drift.mjs`, and the order matters twice over: the drift check must run *before* anything rebuilds - `npm run qa` starts with `node build.mjs`, so running it afterwards would regenerate the artifact and erase the very mismatch the check exists to find - and preflight has to fail before a stale toolchain can produce an error message that blames the code. The drift check no longer stops at the artifact: it also measures the documents against the source (the version of record, the Node pin, the locales the catalog registers, the dev-dependency count, and the route count the smoke table actually has) and fails on a claim that has gone stale.
 
@@ -507,7 +507,7 @@ Documented here deliberately, rather than left for someone to discover:
 * **The CI runs on a self-hosted runner, and right now that runner is offline.** This account's GitHub-hosted runner allocation is intermittently blocked with *"recent account payments have failed or your spending limit needs to be increased"* (Settings -> Billing and plans), and the block is not permanent: a push-triggered run passed and the next one was blocked two minutes later. A self-hosted runner does not consume hosted minutes, so it is not subject to that block, and the suite runs on the same machine that already runs it locally. The cost is availability, and it has already been paid: `gh api repos/chandrahotha/Procure_Sherpa/actions/runners` reports the only runner, `procure-sherpa-workstation` (Windows, self-hosted), as **offline**; the scheduled run of 2026-10-26 never started and was cancelled at 24h0m2s by GitHub's own limit; the Deploy run of 2026-10-27 was skipped because the QA run it waits for never completed; and the last push that CI actually verified was on 2026-10-21. **CI needs that machine to be awake**, and a badge cannot tell you whether it was. To go back to a hosted runner once the billing is fixed, change one line in each workflow to `runs-on: ubuntu-latest`; nothing else depends on it. The runner-side steps are in [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran).
 * **The Deploy workflow is gated by the QA workflow, not by the push.** It triggers on `workflow_run` and only proceeds if the gate passed, so a commit that fails QA is never published. It then checks that the live site is serving the build from the commit that was tested, and waits up to three minutes for the deployment to land, because a deployment is not live the instant the gate finishes.
 * **The same gate runs locally with `npm run qa`**, which is what `npm run deploy` uses before it will publish anything, so a release never depends on any runner being available.
-* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 20 gates carrying 50 assertions, and prints both numbers on its summary line. It renders 59 route instances in both navigation views - the 52 registered routes with the parameterised library, SOP and calculator routes expanded - and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control on every rendered route has a handler (89 distinct `data-act` values); that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the curriculum is in module order for every role and the role recommends rather than rearranges; that resume points at unfinished work; that every learning path is ascending; that every function shows a worked example and every calculator carries example data; that the menu is scoped to the track and the page you are on is in the menu; that no symbol has been mangled; that the build stamp survives minification; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
+* **What the integrity gate catches that the other tests cannot.** `npm run test:integrity` runs 22 gates carrying 70 assertions, and prints both numbers on its summary line. It renders 59 route instances in both navigation views - the 52 registered routes with the parameterised library, SOP and calculator routes expanded - and asserts that no page leaks `undefined`, `NaN` or `[object Object]`; that every internal link resolves; that every control on every rendered route has a handler (89 distinct `data-act` values); that every content item has an inbound link; that every cross-tool handoff can actually carry a value; that the Academy links into the library; that the assessment result reads back correctly; that the registries are populated; that the eight workbenches render and persist a record through the store; that the curriculum is in module order for every role and the role recommends rather than rearranges; that resume points at unfinished work; that every learning path is ascending; that every function shows a worked example and every calculator carries example data; that the menu is scoped to the track and the page you are on is in the menu; that no symbol has been mangled; that the build stamp survives minification; and that no knowledge domain is split into a category of one. It exists because the suite was green while the Maturity page threw an uncaught `TypeError`, the Lifecycle page rendered zero stages, and a calculator silently inverted its RAG band.
 
 ---
 
