@@ -128,18 +128,58 @@ if (!fs.existsSync(path.join(ROOT, 'node_modules'))) {
   }
 }
 
-/* ---------- 3. the local pre-push hook (a note, never a gate) ---------- */
+/* ---------- 3. the local pre-push hook: does it actually run? ----------
+   A hook that git silently skips is worse than no hook, because the
+   documentation describes a safety net that is not there. `core.hooksPath`
+   is only half of it: on a POSIX filesystem the file also needs the
+   executable bit, and if it does not have one git prints a hint about
+   being "ignored because it's not set as executable" and carries on. The
+   hook in this repo was committed 100644, so every push from Linux ran
+   zero local checks while the pre-push gate was being credited for them.
+   Windows is exempt: NTFS has no executable bit and git-for-Windows runs
+   hooks through its own sh either way, so asserting it there would be
+   asserting a thing that cannot be true. */
 try {
-  if (fs.existsSync(path.join(ROOT, '.git'))) {
-    const gitConfig = fs.readFileSync(path.join(ROOT, '.git', 'config'), 'utf8');
-    if (!/hooksPath\s*=\s*\.githooks/.test(gitConfig)) {
+  const gitDir = path.join(ROOT, '.git');
+  if (fs.existsSync(gitDir)) {
+    let configPath = path.join(gitDir, 'config');
+    if (fs.statSync(gitDir).isFile()) {
+      /* A worktree or a CI checkout keeps its config elsewhere; follow the
+         pointer instead of assuming the path. */
+      const pointer = fs.readFileSync(gitDir, 'utf8').match(/^gitdir:\s*(.+)$/m);
+      if (pointer) configPath = path.join(path.resolve(ROOT, pointer[1].trim()), 'config');
+    }
+    const gitConfig = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf8') : '';
+    const wired = /hooksPath\s*=\s*\.githooks/.test(gitConfig);
+    if (!wired) {
       notes.push('the pre-push hook is not wired on this clone: run `npm ci`, or\n' +
         '       git config core.hooksPath .githooks');
+    } else if (process.platform !== 'win32') {
+      const hooksDir = path.join(ROOT, '.githooks');
+      const unrunnable = fs.readdirSync(hooksDir).filter((name) => {
+        const file = path.join(hooksDir, name);
+        if (!fs.statSync(file).isFile()) return false;
+        return !(fs.statSync(file).mode & 0o111);
+      });
+      if (unrunnable.length) {
+        problems.push(
+          'core.hooksPath is set, but ' + unrunnable.map((n) => '.githooks/' + n).join(', ') +
+            ' is not executable,\n' +
+          '  so git SKIPS it and the local pre-push gate has never run on this machine.\n' +
+          '  The symptom is a line nobody reads, on push:\n' +
+          '    hint: The \'.githooks/pre-push\' hook was ignored because it\'s not set as executable.\n' +
+          '  Fix: chmod +x .githooks/*   (npm ci does this too, via tools/setup_hooks.mjs)'
+        );
+      } else {
+        notes.push('pre-push hook wired and executable');
+      }
+    } else {
+      notes.push('pre-push hook wired (executability is not checkable on Windows)');
     }
   }
 } catch {
-  /* A worktree or a CI checkout keeps its config elsewhere. This check is
-     a convenience; nothing in the gate depends on the hook being wired. */
+  /* Reading git configuration is a convenience. Nothing in the shipped
+     artifact depends on it. */
 }
 
 /* ---------- report ---------- */

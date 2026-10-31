@@ -160,6 +160,24 @@ smoke + layout + integrity). If any of it
 fails the push is aborted with a message telling you what to run. Skip
 deliberately (not recommended) with `git push --no-verify`.
 
+Pointing git at the directory is only half of what a hook needs. On a POSIX
+filesystem the file also has to carry the executable bit, and when it does not,
+git skips it and says so in one line of a hint that nobody reads:
+
+```
+hint: The '.githooks/pre-push' hook was ignored because it's not set as executable.
+```
+
+That is what had actually been happening. The hook was committed as mode
+`100644`, so every push from Linux or macOS ran **no** local check while this
+file described the safety net as though it did. It is now committed `100755`,
+`tools/setup_hooks.mjs` sets the bit during `npm ci` (which matters for a
+Windows checkout, where the mode cannot come from the index), and
+`tools/preflight.mjs` fails the gate when `core.hooksPath` is wired but the
+hook is not executable — because a silently skipped check is the same class of
+defect as a missing one. Windows is exempt from that assertion: NTFS has no
+executable bit, and git-for-Windows runs hooks through its own `sh` either way.
+
 ## CI is green because nothing ran
 
 The QA workflow runs on a **self-hosted runner**
