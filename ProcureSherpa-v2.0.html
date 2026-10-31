@@ -3372,14 +3372,27 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 var PS = window.PS = window.PS || {};
 
 PS.APP = 'Procure Sherpa';
-PS.VERSION = '2.0';
+/* The version of record. `package.json` carries the same number as a
+   semver string (2.4.0) and tools/check_drift.mjs fails the build when
+   the two disagree, because for most of this project's life they did:
+   the app announced itself as v2.0, package.json said 2.2.0, and the
+   release documentation described the v2.4 revamp. The What's New page
+   marks the entry whose version equals this one as "Your version", so
+   this string is user-facing, not a comment: while it read '2.0' the
+   page told every reader that the first release was the current one.
+
+   The artifact is still named ProcureSherpa-v2.0.html. That filename is
+   fixed by the master requirements (section 4.1 and section 81) and by
+   every download link, and the tools read the version out of the
+   artifact rather than out of its name. */
+PS.VERSION = '2.4';
 PS.SCHEMA = 2;
 /* Replaced at build time with a hash of the source fragments, so the
    running application can say which sources it was built from. See
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'c40015331266';
+PS.BUILD = '47ac14587fdd';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -16546,6 +16559,22 @@ PS.route('community', function () {
 PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
+  {
+    version: '2.4',
+    date: '2026-10-20',
+    title: 'The application says what it actually does',
+    tag: 'Major',
+    items: [
+      'Navigation rebuilt as two views of one profile field: a learner sees 5 sections and 26 items, a practitioner 6 and 30, and the page you are on is always in the menu',
+      'Eight workbenches, so the toolkit holds your own suppliers, contracts, catalogue, receipts, budget lines, approvals, sourcing events and analytics as records rather than only teaching about them',
+      'The curriculum grew to 11 modules and 28 functions, and every function now links into the SOPs, calculators, checklists and templates it teaches',
+      'The role recommends modules instead of scattering them: the curriculum reads 1 to 11 for every profile',
+      'Truth restoration: the maturity check, the lifecycle map, the assessment score, 27 of 41 cross-tool handoffs and the backup restore path all worked again',
+      'Every Academy function shows its worked example in the explanation, and every calculator offers random values that respect each field rule',
+      'The build carries a stamp: a hash of the source fragments, readable in both the artifact and the deployed minified build',
+      'A verification gate that can actually fail: 20 integrity gates, route smoke across 72 renders, and the whole suite re-run against the minified build'
+    ]
+  },
   {
     version: '2.3',
     date: '2026-10-08',

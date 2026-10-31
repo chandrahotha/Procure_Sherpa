@@ -1,7 +1,20 @@
 var PS = window.PS = window.PS || {};
 
 PS.APP = 'Procure Sherpa';
-PS.VERSION = '2.0';
+/* The version of record. `package.json` carries the same number as a
+   semver string (2.4.0) and tools/check_drift.mjs fails the build when
+   the two disagree, because for most of this project's life they did:
+   the app announced itself as v2.0, package.json said 2.2.0, and the
+   release documentation described the v2.4 revamp. The What's New page
+   marks the entry whose version equals this one as "Your version", so
+   this string is user-facing, not a comment: while it read '2.0' the
+   page told every reader that the first release was the current one.
+
+   The artifact is still named ProcureSherpa-v2.0.html. That filename is
+   fixed by the master requirements (section 4.1 and section 81) and by
+   every download link, and the tools read the version out of the
+   artifact rather than out of its name. */
+PS.VERSION = '2.4';
 PS.SCHEMA = 2;
 /* Replaced at build time with a hash of the source fragments, so the
    running application can say which sources it was built from. See

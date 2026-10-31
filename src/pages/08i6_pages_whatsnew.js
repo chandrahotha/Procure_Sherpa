@@ -7,6 +7,22 @@ PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
   {
+    version: '2.4',
+    date: '2026-10-20',
+    title: 'The application says what it actually does',
+    tag: 'Major',
+    items: [
+      'Navigation rebuilt as two views of one profile field: a learner sees 5 sections and 26 items, a practitioner 6 and 30, and the page you are on is always in the menu',
+      'Eight workbenches, so the toolkit holds your own suppliers, contracts, catalogue, receipts, budget lines, approvals, sourcing events and analytics as records rather than only teaching about them',
+      'The curriculum grew to 11 modules and 28 functions, and every function now links into the SOPs, calculators, checklists and templates it teaches',
+      'The role recommends modules instead of scattering them: the curriculum reads 1 to 11 for every profile',
+      'Truth restoration: the maturity check, the lifecycle map, the assessment score, 27 of 41 cross-tool handoffs and the backup restore path all worked again',
+      'Every Academy function shows its worked example in the explanation, and every calculator offers random values that respect each field rule',
+      'The build carries a stamp: a hash of the source fragments, readable in both the artifact and the deployed minified build',
+      'A verification gate that can actually fail: 20 integrity gates, route smoke across 72 renders, and the whole suite re-run against the minified build'
+    ]
+  },
+  {
     version: '2.3',
     date: '2026-10-08',
     title: 'Learning hub for procurement enthusiasts',
