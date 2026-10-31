@@ -1,28 +1,43 @@
 #!/bin/sh
-# Local pre-push gate. Wired automatically by `npm install` via the
+# Local pre-push gate. Wired automatically by `npm ci`/`npm install` via the
 # "prepare" script (tools/setup_hooks.mjs), which sets:
 #   git config core.hooksPath .githooks
 #
-# CI now runs the full suite on every push and pull request, so this hook is
-# no longer the only thing standing between a broken commit and main. It is
-# kept because it fails in seconds on your machine instead of minutes later
-# in Actions, and because the drift check below is cheap and catches the one
+# CI runs the full gate on every push and pull request to main, so this hook
+# is not the only thing standing between a broken commit and main. It is kept
+# because it fails in seconds on your machine instead of minutes later in
+# Actions, and because the drift check below is cheap and catches the one
 # mistake that is easy to make and annoying to discover remotely: editing
 # src/ and pushing without rebuilding the artifact.
 #
 # Skip deliberately with: git push --no-verify
 
-echo "pre-push: checking the committed artifact matches src/"
-node tools/check_drift.mjs || {
+# First, and before anything that could fail for the wrong reason: is the
+# toolchain itself ready? A clone with no node_modules, or a shell still on
+# the system Node, produces errors that read like bugs in the app or in
+# eslint.config.mjs. This step turns those into "run npm ci" / "nvm use 22".
+echo "pre-push: checking the toolchain (Node version, dev dependencies)"
+node tools/preflight.mjs || {
   echo ""
-  echo "pre-push: FAILED - ProcureSherpa-v2.0.html is out of date."
-  echo "Run 'npm run build' and commit the regenerated artifact with your"
-  echo "src/ changes, then push again."
+  echo "pre-push: FAILED before the tests ran, because the toolchain is not"
+  echo "ready. Nothing above is a bug in the application."
   echo "To push anyway (not recommended): git push --no-verify"
   exit 1
 }
 
-echo "pre-push: running 'npm run test' (fast gate - build + calc tests + smoke)"
+echo "pre-push: checking the committed artifact matches src/"
+node tools/check_drift.mjs || {
+  echo ""
+  echo "pre-push: FAILED - ProcureSherpa-v2.0.html is out of date, or a"
+  echo "document in the repo quotes a number the source no longer agrees"
+  echo "with (the output above says which)."
+  echo "For the artifact: run 'npm run build' and commit the regenerated"
+  echo "ProcureSherpa-v2.0.html with your src/ changes, then push again."
+  echo "To push anyway (not recommended): git push --no-verify"
+  exit 1
+}
+
+echo "pre-push: running 'npm run test' (fast gate - build + unit + calc tests + smoke + integrity)"
 npm run test || {
   echo ""
   echo "pre-push: FAILED. Push aborted. Run 'npm run qa' for the full picture"
