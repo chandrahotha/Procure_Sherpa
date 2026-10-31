@@ -143,11 +143,70 @@ await check('prefs: savePrefs + read back', () => {
   return ok;
 });
 
-/* 9. Backup export content */
-await check('backup: export produces JSON with schema', () => {
-  const r = window.PS.buildBackup ? window.PS.buildBackup() : null;
-  if (!r) return true; /* builder may live behind UI; skip */
-  return typeof r === 'object';
+/* 9. Backup content (Section 27 saved workspace, Section 28 backup and restore).
+
+   This check read:
+       const r = window.PS.buildBackup ? window.PS.buildBackup() : null;
+       if (!r) return true;              // builder may live behind UI; skip
+       return typeof r === 'object';
+   `PS.buildBackup` has never existed - the builder is PS.backupObject() in
+   src/core/06d2_actions_backup.js - so the first branch was always false,
+   the second always returned true, and the check passed on every build
+   from the day it was written. It was also only a `typeof` test, so a
+   backup with every section missing would have passed it.
+
+   Now: the absence of a builder is a failure, and the sections master §28
+   names (saved work, preferences, favourites, recent items, checklist
+   states, user-created notes) plus the §27 workbench records are seeded
+   with one real record each and read back out of the backup object. A
+   section that stops being written, or stops carrying what was written
+   into it, fails the gate. */
+await check('backup: the builder exists (not a hook hidden behind the UI)', () => typeof window.PS.backupObject === 'function');
+
+await check('backup: carries the §27 and §28 collections, with the records inside them', () => {
+  const P = window.PS;
+  if (typeof P.backupObject !== 'function') return false;
+  /* Seed one record per collection the requirements name. */
+  const rec = P.saved.add({ type: 'calculation', title: 'Interactive backup probe', tags: ['probe'], notes: 'written by tools/test_interactive.mjs', data: { probe: 1 } });
+  P.fav.toggle('calc', 'calc-tco');
+  P.recent.add('calc', 'calc-tco', 'Total Cost of Ownership');
+  P.clState.save('cl-procurement-intake', { checked: { step1: true }, notes: 'checklist note from the backup probe' });
+  P.tplState.save('tpl-rfq', { values: { title: 'RFQ from the backup probe' }, notes: 'template note from the backup probe' });
+  P.wb.upsert('suppliers', { id: 'wb-probe-supplier', name: 'Backup Probe Supplier' });
+  P.wb.upsert('contracts', { id: 'wb-probe-contract', name: 'Backup Probe Contract' });
+
+  const bk = P.backupObject();
+  const want = {
+    app: () => bk.app === P.APP,
+    schema: () => bk.schema === P.SCHEMA,
+    version: () => !!bk.version,
+    exported: () => !!bk.exported,
+    prefs: () => bk.prefs && typeof bk.prefs === 'object' && bk.prefs.currency === P.prefs().currency,
+    saved: () => Array.isArray(bk.saved) && bk.saved.some((x) => x && x.id === (rec && rec.id) && x.type === 'calculation' && x.title === 'Interactive backup probe'),
+    favorites: () => Array.isArray(bk.favorites) && bk.favorites.some((x) => x && x.id === 'calc-tco'),
+    recent: () => Array.isArray(bk.recent) && bk.recent.some((x) => x && x.id === 'calc-tco'),
+    checklists: () => bk.checklists && bk.checklists['cl-procurement-intake'] && /backup probe/.test(bk.checklists['cl-procurement-intake'].notes || ''),
+    templates: () => bk.templates && bk.templates['tpl-rfq'] && /backup probe/.test(bk.templates['tpl-rfq'].notes || ''),
+    audit: () => Array.isArray(bk.audit),
+    workbench: () => bk.workbench && Array.isArray(bk.workbench.suppliers) && bk.workbench.suppliers.some((r) => r && r.id === 'wb-probe-supplier') &&
+      Array.isArray(bk.workbench.contracts) && bk.workbench.contracts.some((r) => r && r.id === 'wb-probe-contract')
+  };
+  const missing = Object.keys(want).filter((k) => {
+    let pass = false;
+    try { pass = !!want[k](); } catch (e) { pass = false; }
+    if (!pass) console.log('     backup section missing or empty:', k);
+    return !pass;
+  });
+  /* Clean up so the rest of this file, and the routes it renders, still
+     start from an empty workspace. This goes through PS.store rather than
+     window.localStorage because the harnesses differ: a file:// jsdom
+     window has an opaque origin and no localStorage at all (the app then
+     falls back to its in-memory store), and clearing it throws. */
+  [P.K.saved, P.K.fav, P.K.recent].forEach((k) => P.store.set(k, []));
+  [P.K.cl, P.K.tpl].forEach((k) => P.store.set(k, {}));
+  P.wb.data = {};
+  P.wb.save();
+  return missing.length === 0;
 });
 
 /* 10. Regression: routes that assign PS.pageInit must actually reach it.

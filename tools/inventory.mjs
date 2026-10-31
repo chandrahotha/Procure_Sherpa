@@ -1,16 +1,18 @@
-import { listFiles, baseName, readSrc } from './lib.mjs';
-const groups = { kb: [], sop: [], cl: [], tpl: [], dec: [], kpi: [], scen: [], gloss: [], calc: [] };
-for (const f of listFiles()) {
-  if (!f.endsWith('.js')) continue;
-  const t = readSrc(f);
-  const pre = baseName(f).slice(0, 2);
-  const key = pre === '10' ? 'kb' : pre === '11' ? 'sop' : pre === '12' ? 'cl' : pre === '13' ? 'tpl'
-    : pre === '14' ? 'dec' : (pre === '15' ? 'gloss' : (pre === '16' ? 'scen' : (pre === '17' ? 'kpi' : null)));
-  if (key) {
-    for (const m of t.matchAll(/\bi:\s*["']([a-z0-9-]+)["']/g)) if (!groups[key].includes(m[1])) groups[key].push(m[1]);
-  }
-  if (/^2\d/.test(f)) {
-    for (const m of t.matchAll(/\bid:\s*['"](calc-[a-z0-9-]+)['"]/g)) if (!groups.calc.includes(m[1])) groups.calc.push(m[1]);
-  }
+/* Content inventory: what is actually registered, item by item.
+   Reads the same two registration paths as tools/check_rels.mjs (see
+   registryFromSource in tools/lib.mjs), so the two tools cannot print
+   different numbers for the same build. Documents quote these counts,
+   which is why the old file-by-filename guess was a problem: it printed
+   `CALC (0)` for a registry holding 19 calculators. */
+import { registryFromSource, REGISTRY_KEYS } from './lib.mjs';
+
+const { ids } = registryFromSource();
+const ORDER = ['kb', 'sop', 'cl', 'tpl', 'dec', 'kpi', 'scen', 'gloss', 'calc'];
+for (const key of ORDER) {
+  console.log(key.toUpperCase() + ' (' + ids[key].size + '): ' + [...ids[key]].join(' '));
 }
-for (const [k, v] of Object.entries(groups)) console.log(k.toUpperCase() + ' (' + v.length + '): ' + v.join(' '));
+console.log('total registered items: ' + ORDER.reduce((a, k) => a + ids[k].size, 0));
+/* The list above is the only order the tool prints in; REGISTRY_KEYS is
+   the shared set, so a new registry has to be named here on purpose. */
+const unmapped = REGISTRY_KEYS.filter((k) => !ORDER.includes(k));
+if (unmapped.length) console.log('NOTE: registries not printed: ' + unmapped.join(', '));

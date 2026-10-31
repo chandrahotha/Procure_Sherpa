@@ -8,59 +8,13 @@
    ids - in every converted file were silently skipped: the checker
    reported "broken refs: 0" without having looked at most of the
    content. Each pattern now accepts an optional quote. */
-import { listFiles, baseName, readSrc } from './lib.mjs';
+import { listFiles, baseName, readSrc, registryFromSource } from './lib.mjs';
 const files = listFiles().filter((f) => f.endsWith('.js'));
-const ids = { kb: new Set(), sop: new Set(), cl: new Set(), tpl: new Set(), dec: new Set(), kpi: new Set(), gloss: new Set(), calc: new Set(), scen: new Set() };
-const rels = [];
-/* find balanced {..} starting at index of '{' */
-function balanced(t, start) {
-  let depth = 0;
-  for (let i = start; i < t.length; i++) {
-    if (t[i] === '{') depth++;
-    else if (t[i] === '}') { depth--; if (!depth) return t.slice(start, i + 1); }
-  }
-  return null;
-}
-for (const f of files) {
-  const t = readSrc(f);
-     for (const m of t.matchAll(/PS\.S(?:KB|SOP|DEC|CL|TPL|KPI|GLS|SCN)\(\s*\{/g)) {
-    const obj = balanced(t, m.index + m[0].length - 1);
-    if (!obj) continue;
-    const im = obj.match(/["']?\bi["']?:\s*["']([^"']+)["']/);
-    const ty = m[0].match(/KB|SOP|CL|TPL|DEC|KPI|GLS|SCN/)[0];
-    const key = { KB: 'kb', SOP: 'sop', CL: 'cl', TPL: 'tpl', DEC: 'dec', KPI: 'kpi', GLS: 'gloss', SCN: 'scen' }[ty];
-    if (im) ids[key].add(im[1]);
-    const rm = obj.match(/,\s*["']?rel["']?:\s*\{/);
-    if (rm) {
-      const rtxt = balanced(obj, obj.indexOf('{', rm.index + rm[0].length - 1));
-      if (rtxt) {
-        const rel = {};
-        for (const pm of rtxt.matchAll(/["']?(\w+)["']?\s*:\s*\[([^\]]*)\]/g)) {
-          rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
-        }
-        rels.push({ f, rel });
-      }
-    }
-  }
-  for (const m of t.matchAll(/PS_CALC\.push\(\s*\{/g)) {
-    const obj = balanced(t, m.index + m[0].length - 1);
-    const im = obj && obj.match(/["']?\bid["']?:\s*["']([^"']+)["']/);
-    if (im) ids.calc.add(im[1]);
-    if (obj) {
-      const rm = obj.match(/,\s*["']?rel["']?:\s*\{/);
-      if (rm) {
-        const rtxt = balanced(obj, obj.indexOf('{', rm.index + rm[0].length - 1));
-        if (rtxt) {
-          const rel = {};
-          for (const pm of rtxt.matchAll(/["']?(\w+)["']?\s*:\s*\[([^\]]*)\]/g)) {
-            rel[pm[1]] = (pm[2].match(/["']([^"']+)["']/g) || []).map((x) => x.slice(1, -1));
-          }
-          rels.push({ f, rel });
-        }
-      }
-    }
-  }
-}
+/* The ids and the rel objects come from tools/lib.mjs now, because
+   tools/inventory.mjs has to count exactly what this file resolves.
+   `registryFromSource` reads the only two ways an id can be registered:
+   a PS.S*( {…} ) push for content, a PS_CALC.push({…}) for calculators. */
+const { ids, rels } = registryFromSource(files);
 const ALIAS = { concepts:'concepts', kb:'concepts', concept:'concepts', sops:'sops', sop:'sops', checklists:'checklists', checklist:'checklists', cl:'checklists', templates:'templates', template:'templates', tpl:'templates', calcs:'calcs', calc:'calcs', calculator:'calcs', decisions:'decisions', decision:'decisions', dec:'decisions', kpis:'kpis', kpi:'kpis', scenarios:'scenarios', scenario:'scenarios', scen:'scenarios', glossary:'glossary', gloss:'glossary', term:'glossary' };
 const KEY = { concepts: 'kb', sops: 'sop', checklists: 'cl', templates: 'tpl', calcs: 'calc', decisions: 'dec', kpis: 'kpi', scenarios: 'scen', glossary: 'gloss' };
 const canon = (k) => ALIAS[k] || k;

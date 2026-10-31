@@ -14,6 +14,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
+import { contentPins, handoffWalk, navCounts, PINS, SEARCH_FIXTURE } from './content_pins.mjs';
+import { assessRoute } from './page_contract.mjs';
 
 const ROOT = process.cwd();
 const HTML = path.join(ROOT, 'ProcureSherpa-v2.0.html');
@@ -52,17 +54,40 @@ w.addEventListener('error', (e) => errors.push(String(e.message || e.error)));
 
 await sleep(300);
 
-/* ---------- G1: the registries that were empty must not be empty ---------- */
+/* ---------- G1: the content library is the size the product claims ---------- */
 console.log('\nG1  content registries');
-if (!PS.MATURITY || PS.MATURITY.length < 5) fail('G1', 'PS.MATURITY has ' + (PS.MATURITY || []).length + ' areas, expected at least 5');
-else ok('G1', 'PS.MATURITY has ' + PS.MATURITY.length + ' areas');
-if (!PS.LIFECYCLE || PS.LIFECYCLE.length < 10) fail('G1', 'PS.LIFECYCLE has ' + (PS.LIFECYCLE || []).length + ' stages, expected at least 10');
-else ok('G1', 'PS.LIFECYCLE has ' + PS.LIFECYCLE.length + ' stages');
-if (!PS.ACADEMY_FUNCTIONS || PS.ACADEMY_FUNCTIONS.length < 20) fail('G1', 'PS.ACADEMY_FUNCTIONS has ' + (PS.ACADEMY_FUNCTIONS || []).length + ', expected at least 20');
-else ok('G1', 'PS.ACADEMY_FUNCTIONS has ' + PS.ACADEMY_FUNCTIONS.length + ' functions');
+/* These are the exact pins that used to live only in
+   tools/verify_deploy.mjs, outside `npm run qa`. Deleting a SOP, a
+   checklist or a calculator is now a build failure on every branch, not
+   something only the deployed site notices. The pin list itself is owned
+   by tools/content_pins.mjs, which the deploy check also reads, so the
+   two cannot disagree. */
+for (const c of contentPins(PS)) {
+  if (c.got !== c.pin) {
+    fail('G1', c.label + ': found ' + c.got + ', the pin is ' + c.pin + ' (' + c.spec + '). If the library changed on purpose, change tools/content_pins.mjs in the same commit and update every document that quotes the count.');
+  } else {
+    ok('G1', c.label + ': ' + c.got + ' (' + c.spec + ')');
+  }
+}
 const missingById = (PS.ACADEMY_FUNCTIONS || []).filter((f) => !PS.byId('academy', f.id));
 if (missingById.length) fail('G1', missingById.length + ' academy functions are not resolvable by PS.byId: ' + missingById.map((f) => f.id).join(', '));
 else ok('G1', 'every academy function resolves through PS.byId("academy", id)');
+
+/* ---------- G22: search answers the example the requirements document ---------- */
+console.log('\nG22  documented search answer');
+/* §9 asks for global search over the library; §82 asks that a
+   professional can answer "what SOP should I follow" inside the
+   application. The example the requirements give is a supplier raising
+   a price, and the answer must be the page for it. This assertion used to
+   exist only in the deploy check. */
+{
+  const hit = (PS.search(SEARCH_FIXTURE.query).results || [])[0] || {};
+  if (hit.title !== SEARCH_FIXTURE.title) {
+    fail('G22', 'search("' + SEARCH_FIXTURE.query + '") returns "' + (hit.title || 'nothing') + '" as the top result, expected "' + SEARCH_FIXTURE.title + '"');
+  } else {
+    ok('G22', 'search finds the documented example (' + SEARCH_FIXTURE.query + ' -> ' + hit.title + ')');
+  }
+}
 
 /* ---------- G2/G3/G7: render every route and inspect the result ---------- */
 console.log('\nG2/G3/G7  route rendering');
@@ -112,18 +137,27 @@ for (const hash of ROUTE_VISITS) {
   {
     if (seenRoutes.has(hash)) continue;
     seenRoutes.add(hash);
+    /* Measure every route from an empty browser profile, exactly as
+       tools/smoke.mjs does. Without it the sweep is order-dependent:
+       #/recent reported 146 characters because one earlier detail page had
+       added a record to the recent list, and 301 when it ran clean, and
+       which number a page got was a property of the list above it. */
+    try { w.localStorage.clear(); } catch (e) { /* jsdom store, nothing to do */ }
     w.location.hash = hash;
     PS.renderRoute();
     const main = w.document.querySelector('#main');
-    const text = main ? main.textContent.trim() : '';
     visited.push(hash);
-    if (text.length < 40) emptyRoutes.push(hash + ' (' + text.length + ' chars)');
-    /* sentinel leaks: the signature of a consumer reading a property
-       that the producer never wrote */
-    for (const bad of ['undefined', 'NaN', '[object Object]', 'null%']) {
-      if (text.includes(bad)) {
-        const idx = text.indexOf(bad);
-        sentinelHits.push(hash + ' contains "' + bad + '" near: ' + text.slice(Math.max(0, idx - 40), idx + 40).replace(/\s+/g, ' '));
+    /* The same page contract tools/smoke.mjs applies (tools/page_contract
+       .mjs). This sweep used to fail a route only under 40 characters, a
+       softer number than smoke's 60 and a different one, so a route that
+       was showing the not-found card at 190 characters passed here, there
+       and in verify_deploy all at once. One contract, three tools. */
+    const verdict = assessRoute({ win: w, hash, main });
+    for (const p of verdict.problems) {
+      if (p.startsWith('leaks ')) {
+        sentinelHits.push(hash + ' ' + p);
+      } else {
+        emptyRoutes.push(hash + ' [' + verdict.kind + '] ' + p);
       }
     }
     /* every internal link on the page must resolve */
@@ -154,8 +188,8 @@ if (sentinelHits.length) {
 } else {
   ok('G2/G3', visited.length + ' routes rendered with no sentinel text and no unresolvable internal link');
 }
-if (emptyRoutes.length) emptyRoutes.forEach((e) => fail('G7', 'route renders almost nothing: ' + e));
-else ok('G7', 'every visited route rendered real content');
+if (emptyRoutes.length) emptyRoutes.forEach((e) => fail('G7', 'route fails the page contract: ' + e));
+else ok('G7', 'every visited route meets the page contract in tools/page_contract.mjs (' + visited.length + ' routes)');
 
 /* ---------- G4: every data-act has a handler ---------- */
 console.log('\nG4  action handlers');
@@ -215,20 +249,13 @@ if (orphans.length) {
 
 /* ---------- G6: cross-tool handoffs must actually carry data ---------- */
 console.log('\nG6  cross-tool handoff');
-let edges = 0;
-const deadEdges = [];
-for (const c of PS.data.calc || []) {
-  const handoffs = c.handoffTo || [];
-  for (const t of handoffs) {
-    edges++;
-    const tgt = PS.data.calc.filter((x) => x.id === t)[0];
-    if (!tgt) { deadEdges.push(c.id + ' -> ' + t + ' (no such calculator)'); continue; }
-    const vals = {};
-    (c.fields || []).forEach((f) => { vals[f.k] = 1; });
-    const carried = PS.mapHandoffValues(c, tgt, vals);
-    if (!Object.keys(carried).length) deadEdges.push(c.id + ' -> ' + t + ' (no shared field)');
-  }
-}
+/* The walk is shared with tools/verify_deploy.mjs through
+   tools/content_pins.mjs, so the gate and the deploy check cannot measure
+   different edge sets. G6 owns this assertion; the deploy check only
+   re-runs it against the served bytes. */
+const handoff = handoffWalk(PS);
+const edges = handoff.edges;
+const deadEdges = handoff.dead;
 if (deadEdges.length) {
   deadEdges.forEach((d) => fail('G6', 'handoff edge can never carry data: ' + d));
 } else {
@@ -329,8 +356,16 @@ if (orphanRoutes.length) {
   ok('G11', 'every registered route is reachable from somewhere');
 }
 
-/* ---------- G12: the curriculum is well-formed ---------- */
-console.log('\nG12  curriculum integrity');
+/* ---------- G12: the Academy curriculum is well-formed ---------- */
+console.log('\nG12  academy curriculum');
+/* G12 measures the Academy: the 112 quiz questions and the 140 step
+   sequences the Academy teaches. It used to also print "140 SOP steps,
+   each with an owner, control, record and pitfall" as the evidence for the
+   SOP centre's depth, which was the wrong library: those 140 are
+   PS.ACADEMY_FUNCTIONS[].sopSteps, and the SOP documents' own 106 `steps`
+   were counted by nothing. Master §18 and §77 make claims about SOP
+   content, so the SOP library is now asserted directly, in G21, and the
+   two can fail independently. */
 let qBad = 0, sBad = 0, qCount = 0, sCount = 0;
 for (const f of PS.ACADEMY_FUNCTIONS || []) {
   for (const q of f.quizzes || []) {
@@ -349,8 +384,48 @@ for (const f of PS.ACADEMY_FUNCTIONS || []) {
     }
   }
 }
-if (!qBad) ok('G12', qCount + ' quiz questions, each with exactly one correct option, a rationale on every option and a principle');
-if (!sBad) ok('G12', sCount + ' SOP steps, each with an owner, control, record and pitfall');
+if (qBad) fail('G12', qBad + ' academy quiz problems (above)');
+else if (qCount !== PINS.academyQuizQuestions) fail('G12', 'the Academy teaches ' + qCount + ' quiz questions, expected the pinned ' + PINS.academyQuizQuestions);
+else ok('G12', qCount + ' academy quiz questions, each with exactly one correct option, a rationale on every option and a principle');
+if (sBad) fail('G12', sBad + ' academy step problems (above)');
+else if (sCount !== PINS.academySopSteps) fail('G12', 'the Academy teaches ' + sCount + ' step sequences, expected the pinned ' + PINS.academySopSteps);
+else ok('G12', sCount + ' academy-taught step sequences, each with an owner, control, record and pitfall');
+
+/* ---------- G21: the SOP library's own procedure steps ---------- */
+console.log('\nG21  SOP procedure depth');
+/* §18 gives an SOP 19 numbered parts, and part 7 is "Procedure: detailed
+   sequential steps". §77 forbids placeholder text in that content. Until
+   now the only step-depth claim in the suite was read out of the Academy
+   (see G12), so deleting a step from an SOP document, or emptying one,
+   failed nothing. Each step must name what happens, who does it, what it
+   produces and which control covers it - §18 parts 5, 7, 10 and 13. */
+let sopStepBad = 0, sopStepCount = 0;
+for (const doc of PS.data.sop || []) {
+  const steps = doc.steps || [];
+  if (steps.length < PINS.sopLibraryMinStepsPerSop) {
+    sopStepBad++;
+    fail('G21', doc.id + ' has ' + steps.length + ' procedure steps, expected at least ' + PINS.sopLibraryMinStepsPerSop + ' (section 18 part 7)');
+  }
+  for (const st of steps) {
+    sopStepCount++;
+    if (!st.s || !String(st.s).trim()) { sopStepBad++; fail('G21', doc.id + ' has a procedure step with no title'); continue; }
+    const d = String(st.d || '').trim();
+    if (d.length < 80) { sopStepBad++; fail('G21', doc.id + ' step "' + String(st.s).slice(0, 40) + '" has a ' + d.length + '-character instruction; a sequential step must say what to do'); }
+    for (const [k, label] of [['role', 'owner (section 18 part 5)'], ['out', 'output (section 18 part 13)'], ['ctrl', 'control (section 18 part 10)']]) {
+      if (!st[k]) { sopStepBad++; fail('G21', doc.id + ' step "' + String(st.s).slice(0, 40) + '" declares no ' + label); }
+    }
+    /* The compact seed format separates steps with ';' and step metadata
+       with ','. A ';' written inside a step's prose used to tear the step
+       in two and leave one half with no instruction and the other half
+       showing raw `role=…,out=…` metadata on the page. */
+    if (/(^|\s)(role|out|ctrl)=/.test(d)) { sopStepBad++; fail('G21', doc.id + ' step "' + String(st.s).slice(0, 40) + '" leaks step metadata into its instruction: ' + d.slice(0, 80)); }
+  }
+}
+if (sopStepCount !== PINS.sopLibrarySteps) {
+  fail('G21', 'the SOP library holds ' + sopStepCount + ' procedure steps, expected the pinned ' + PINS.sopLibrarySteps);
+} else if (!sopStepBad) {
+  ok('G21', (PS.data.sop || []).length + ' SOP documents hold ' + sopStepCount + ' procedure steps, each titled, at 80+ characters, with an owner, an output and a control');
+}
 
 /* ---------- G12: the workbenches are reachable and functional ---------- */
 console.log('\nG12  workbenches');
@@ -571,15 +646,15 @@ const navSetView = (track) => {
   PS.buildNav();
 };
 const navSecs = () => [...w.document.querySelectorAll('#navRoot .nav-sec-head > span:nth-child(2)')].map((e) => e.textContent.trim());
-const navCount = () => w.document.querySelectorAll('#navRoot li').length;
 
 w.location.hash = '#/home';
 PS.renderRoute();
 navSetView('academy');
-if (navSecs().length !== 5 || navCount() !== 26) {
-  fail('G16', 'the learn view is wrong: ' + navSecs().length + ' sections, ' + navCount() + ' items');
+const navLearn = navCounts(w.document);
+if (navLearn.sections !== PINS.navLearnSections || navLearn.items !== PINS.navLearnItems) {
+  fail('G16', 'the learn view is wrong: ' + navLearn.sections + ' sections, ' + navLearn.items + ' items (expected ' + PINS.navLearnSections + ' and ' + PINS.navLearnItems + ')');
 } else {
-  ok('G16', 'the learn view shows 5 sections and 26 items (' + navSecs().join(', ') + ')');
+  ok('G16', 'the learn view shows ' + PINS.navLearnSections + ' sections and ' + PINS.navLearnItems + ' items (' + navLearn.names.join(', ') + ')');
 }
 if (navSecs().indexOf('Learn') < 0 || navSecs().indexOf('Workbench') >= 0) {
   fail('G16', 'the learn view shows the wrong sections: ' + navSecs().join(', '));
@@ -598,6 +673,33 @@ if (navSecs().indexOf('Library') < 0) {
   fail('G16', 'the shared library is not reachable from the work view');
 } else {
   ok('G16', 'the shared library is reachable from both views');
+}
+/* The work view's shape and the system footer strip. Both were pinned only
+   in tools/verify_deploy.mjs, i.e. only against the deployed site, so
+   adding or losing a sidebar entry was invisible to `npm run qa`. The src
+   README §3 rule says what these numbers are: a learner sees 5 sections
+   and 26 items, a practitioner 6 and 30, and the system pages live in a
+   permanent footer strip outside the tree. */
+const navWork = navCounts(w.document);
+if (navWork.sections !== PINS.navWorkSections || navWork.items !== PINS.navWorkItems) {
+  fail('G16', 'the work view is wrong: ' + navWork.sections + ' sections, ' + navWork.items + ' items (expected ' + PINS.navWorkSections + ' and ' + PINS.navWorkItems + ')');
+} else {
+  ok('G16', 'the work view shows ' + PINS.navWorkSections + ' sections and ' + PINS.navWorkItems + ' items (' + navWork.names.join(', ') + ')');
+}
+if (navWork.footer !== PINS.navFooterLinks) {
+  fail('G16', 'the sidebar footer has ' + navWork.footer + ' links, expected ' + PINS.navFooterLinks);
+} else {
+  ok('G16', 'the system pages sit in the ' + navWork.footer + '-link footer strip, outside the collapsible tree');
+}
+if (navLearn.names.join('|') !== 'Start|Learn|Library|Look It Up|My Work') {
+  fail('G16', 'the learn view sections changed: ' + navLearn.names.join(', ') + ' (expected Start, Learn, Library, Look It Up, My Work)');
+} else {
+  ok('G16', 'the learn view names its sections Start, Learn, Library, Look It Up and My Work');
+}
+if (navWork.names.join('|') !== 'Start|Workbench|Toolkit|Library|Look It Up|My Work') {
+  fail('G16', 'the work view sections changed: ' + navWork.names.join(', ') + ' (expected Start, Workbench, Toolkit, Library, Look It Up, My Work)');
+} else {
+  ok('G16', 'the work view names its sections Start, Workbench, Toolkit, Library, Look It Up and My Work');
 }
 
 /* The current route always wins: a page outside the current view must
