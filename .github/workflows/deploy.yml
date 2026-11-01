@@ -91,7 +91,7 @@ jobs:
       # credentials and live in the repository variables.
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # For a workflow_run event, github.sha is the head of the
           # default branch, which is not necessarily the commit that was
