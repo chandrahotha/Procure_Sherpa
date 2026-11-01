@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Must match engines.node and .nvmrc. tools/check_workflows.mjs
           # fails the local gate if the pin and the declared engine diverge.
