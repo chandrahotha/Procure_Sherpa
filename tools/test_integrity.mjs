@@ -89,6 +89,85 @@ console.log('\nG22  documented search answer');
   }
 }
 
+/* ---------- G23: the curriculum says what level it is written at ---------- */
+console.log('\nG23  curriculum levels');
+/* The complaint that started this work: the product is good for a first
+   week and thin for a category manager. The cause was structural - all
+   28 functions were written in one flat voice with nothing on the page
+   saying which altitude a lesson was for, so a professional had to open
+   it to find out. G23 owns the fix: every function carries one of the
+   three named levels, the counts are pinned, the hub can be filtered by
+   level, and the level survives onto the function page and the paths. */
+{
+  const TIER_IDS = (PS.academy.TIERS || []).map((t) => t.id);
+  const funcs = PS.ACADEMY_FUNCTIONS || [];
+  const untiered = funcs.filter((f) => !f.tier || TIER_IDS.indexOf(f.tier) === -1);
+  if (untiered.length) {
+    fail('G23', untiered.length + ' functions carry no level from ' + TIER_IDS.join('/') + ': ' + untiered.map((f) => f.id).join(', '));
+  } else {
+    ok('G23', 'every one of the ' + funcs.length + ' functions carries one of the three named levels');
+  }
+  let tierPinBad = 0;
+  for (const [t, pin] of Object.entries(PINS.academyTierCounts)) {
+    const got = funcs.filter((f) => f.tier === t).length;
+    if (got !== pin) { fail('G23', t + ' level holds ' + got + ' functions, the pin is ' + pin + ' - if the split changed on purpose, update tools/content_pins.mjs and every document that quotes it'); tierPinBad++; }
+  }
+  if (!tierPinBad) ok('G23', 'the level split is pinned: ' + Object.entries(PINS.academyTierCounts).map(([t, n]) => n + ' ' + t).join(', '));
+
+  /* The hub must be filterable by level, and the filter must actually
+     filter: rendering #/academy?tier=executive must show the executive
+     functions and nothing else. A filter that renders the full list is
+     the "page that passes as rendered" defect in a new costume. */
+  const renderHub = (tier) => {
+    w.location.hash = tier ? '#/academy?tier=' + tier : '#/academy';
+    PS.renderRoute();
+    const doc = w.document;
+    return {
+      cards: [...doc.querySelectorAll('#main .func-card')],
+      pills: [...doc.querySelectorAll('#main .func-card-level')].map((e) => e.textContent.trim()),
+      chips: [...doc.querySelectorAll('#main .filters .chip')].map((e) => e.textContent.trim())
+    };
+  };
+  const all = renderHub('');
+  if (all.cards.length !== funcs.length) {
+    fail('G23', 'the Academy hub renders ' + all.cards.length + ' function cards, expected ' + funcs.length);
+  } else if (all.pills.length !== funcs.length) {
+    fail('G23', 'only ' + all.pills.length + ' of ' + funcs.length + ' cards state their level');
+  } else if (!TIER_IDS.every((t) => all.chips.some((c) => c.indexOf(PS.academy.tierName(t)) !== -1))) {
+    fail('G23', 'the hub has no filter chip for every level: ' + all.chips.join(' | '));
+  } else {
+    ok('G23', 'the hub labels all ' + funcs.length + ' cards and offers a filter per level (' + all.chips.join(', ') + ')');
+  }
+  for (const t of TIER_IDS) {
+    const pin = PINS.academyTierCounts[t];
+    const view = renderHub(t);
+    if (view.cards.length !== pin) {
+      fail('G23', '#/academy?tier=' + t + ' renders ' + view.cards.length + ' functions, the pin is ' + pin);
+      continue;
+    }
+    const hrefs = view.cards.map((c) => c.getAttribute('href') || '');
+    const ids = funcs.filter((f) => f.tier === t).map((f) => '#/academy/' + encodeURIComponent(f.id));
+    const same = ids.length === hrefs.length && ids.every((h, i) => hrefs.indexOf(h) !== -1);
+    if (!same) { fail('G23', '#/academy?tier=' + t + ' renders functions that are not at that level'); continue; }
+    ok('G23', '#/academy?tier=' + t + ' renders exactly the ' + pin + ' ' + PS.academy.tierName(t) + ' functions');
+  }
+  /* The level has to reach the lesson itself, and the paths page, or a
+     reader who lands on a function from search still cannot tell. */
+  const execFunc = funcs.filter((f) => f.tier === 'executive')[0];
+  w.location.hash = '#/academy/' + encodeURIComponent(execFunc.id);
+  PS.renderRoute();
+  const levelChip = [...w.document.querySelectorAll('#main .chips .chip')].map((e) => e.textContent.trim())
+    .filter((c) => /Level/.test(c));
+  if (!levelChip.length) fail('G23', 'the function page for ' + execFunc.id + ' does not state its level');
+  else ok('G23', 'the function page states its level (' + levelChip.join(', ') + ')');
+  w.location.hash = '#/learning-paths';
+  PS.renderRoute();
+  const pathPills = [...w.document.querySelectorAll('#main .path-card .level-pill')].map((e) => e.textContent.trim());
+  const named = PS.academy.TIERS.map((t) => t.name).filter((nm) => pathPills.some((p2) => p2.indexOf(nm) !== -1));
+  if (named.length < 3) fail('G23', 'the learning paths are not tagged by level: ' + pathPills.join(' | '));
+  else ok('G23', 'every learning path states its level (' + named.join(', ') + ')');
+}
+
 /* ---------- G2/G3/G7: render every route and inspect the result ---------- */
 console.log('\nG2/G3/G7  route rendering');
 const routes = Object.keys(PS.routes).filter((r) => r !== 'notfound');

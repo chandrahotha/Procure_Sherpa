@@ -47,7 +47,7 @@ PS.ACADEMY_FUNCTIONS = PS.ACADEMY_FUNCTIONS || [];
 /* ---------- Module 9: Services, Software and Indirect ---------- */
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-indirect-sourcing',
+  id: 'func-indirect-sourcing',  tier: 'core',
   title: 'Indirect, MRO and Facilities Procurement',
   module: 'Module 9: Services, Software and Indirect Procurement',
   kicker: 'Function 9.1',
@@ -308,7 +308,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-software-licensing',
+  id: 'func-software-licensing',  tier: 'core',
   title: 'Software, SaaS and Technology Licensing',
   module: 'Module 9: Services, Software and Indirect Procurement',
   kicker: 'Function 9.2',
@@ -571,7 +571,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-professional-services',
+  id: 'func-professional-services',  tier: 'practitioner',
   title: 'Professional Services and Consultancy Procurement',
   module: 'Module 9: Services, Software and Indirect Procurement',
   kicker: 'Function 9.3',
@@ -835,7 +835,7 @@ PS.ACADEMY_FUNCTIONS.push({
 /* ---------- Module 10: Risk, Compliance, Ethics and Sustainability ---------- */
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-sustainability',
+  id: 'func-sustainability',  tier: 'executive',
   title: 'Sustainable and Responsible Procurement',
   module: 'Module 10: Risk, Compliance, Ethics and Sustainability',
   kicker: 'Function 10.1',
@@ -1097,7 +1097,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-ethics-compliance',
+  id: 'func-ethics-compliance',  tier: 'executive',
   title: 'Ethics, Anti-Bribery and Third-Party Due Diligence',
   module: 'Module 10: Risk, Compliance, Ethics and Sustainability',
   kicker: 'Function 10.2',
@@ -1360,7 +1360,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-resilience-continuity',
+  id: 'func-resilience-continuity',  tier: 'executive',
   title: 'Supplier Resilience and Business Continuity',
   module: 'Module 10: Risk, Compliance, Ethics and Sustainability',
   kicker: 'Function 10.3',

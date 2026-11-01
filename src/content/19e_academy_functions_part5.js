@@ -28,7 +28,7 @@ PS.ACADEMY_FUNCTIONS = PS.ACADEMY_FUNCTIONS || [];
 /* ---------- Module 11: Digital Procurement, Analytics and Category Strategy ---------- */
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-digital-procurement',
+  id: 'func-digital-procurement',  tier: 'core',
   title: 'Digital and e-Procurement',
   module: 'Module 11: Digital Procurement, Analytics and Category Strategy',
   kicker: 'Function 11.1',
@@ -259,7 +259,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-spend-analytics',
+  id: 'func-spend-analytics',  tier: 'executive',
   title: 'Spend Analytics and the Spend Cube',
   module: 'Module 11: Digital Procurement, Analytics and Category Strategy',
   kicker: 'Function 11.2',
@@ -490,7 +490,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-category-strategy',
+  id: 'func-category-strategy',  tier: 'executive',
   title: 'Category Strategy and Sourcing Plan',
   module: 'Module 11: Digital Procurement, Analytics and Category Strategy',
   kicker: 'Function 11.3',

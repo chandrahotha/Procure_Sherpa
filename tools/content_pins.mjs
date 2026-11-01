@@ -56,6 +56,12 @@ export const PINS = {
   academyModules: 11,
   academySopSteps: 140,
   academyQuizQuestions: 112,
+  /* The three altitudes the curriculum is written at. A function cannot
+     be at two levels, and a level cannot gain or lose a function without
+     these numbers moving - which is the point: changing a lesson's level
+     now fails G1/G16 and G23 until every document that quotes the split
+     is re-read. Counts: 9 foundation, 12 practitioner, 7 executive. */
+  academyTierCounts: { core: 9, practitioner: 12, executive: 7 },
   /* G21: the SOP library's own procedure steps (master §18 part 7).
      This count was 106 before the torn steps were repaired: four of those
      were not steps at all, but halves of a step created by a ';' written
@@ -103,6 +109,12 @@ export function contentPins(PS) {
     { label: 'academy modules', got: new Set(funcs.map((f) => f.module)).size, pin: PINS.academyModules, spec: 'distinct modules across the functions' },
     { label: 'academy-taught step sequences', got: funcs.reduce((a, f) => a + (f.sopSteps || []).length, 0), pin: PINS.academySopSteps, spec: 'G12: PS.ACADEMY_FUNCTIONS[].sopSteps' },
     { label: 'academy quiz questions', got: funcs.reduce((a, f) => a + (f.quizzes || []).length, 0), pin: PINS.academyQuizQuestions, spec: 'G12: PS.ACADEMY_FUNCTIONS[].quizzes' },
+    ...Object.entries(PINS.academyTierCounts).map(([t, pin]) => ({
+      label: 'academy functions at the ' + t + ' level',
+      got: funcs.filter((f) => f.tier === t).length,
+      pin,
+      spec: 'the level filter on the Academy hub (#/academy?tier=' + t + ')'
+    })),
     { label: 'SOP library procedure steps', got: (d.sop || []).reduce((a, s) => a + (s.steps || []).length, 0), pin: PINS.sopLibrarySteps, spec: 'G21: the steps written into the SOP documents themselves' },
     { label: 'workbench collections', got: wb.length, pin: PINS.workbenches, spec: 'section 27, the eight record collections' }
   ];

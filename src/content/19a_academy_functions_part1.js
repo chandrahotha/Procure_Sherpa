@@ -6,7 +6,7 @@
 PS.ACADEMY_FUNCTIONS = PS.ACADEMY_FUNCTIONS || [];
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-mission-value',
+  id: 'func-mission-value',  tier: 'core',
   title: 'The Procurement Mission & Value Creation',
   module: 'Module 1: Foundations, Strategy & Spend Intelligence',
   kicker: 'Function 1.1',
@@ -246,7 +246,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-spend-analysis',
+  id: 'func-spend-analysis',  tier: 'core',
   title: 'Spend Analysis & Demand Profiling',
   module: 'Module 1: Foundations, Strategy & Spend Intelligence',
   kicker: 'Function 1.2',
@@ -483,7 +483,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-category-mgmt',
+  id: 'func-category-mgmt',  tier: 'practitioner',
   title: 'Category Management & Portfolio Strategy',
   module: 'Module 1: Foundations, Strategy & Spend Intelligence',
   kicker: 'Function 1.3',
@@ -718,7 +718,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-requirement-scope',
+  id: 'func-requirement-scope',  tier: 'core',
   title: 'Requirement Definition & Scope Formulation (SOW)',
   module: 'Module 2: Requirement Definition & Market Engagement',
   kicker: 'Function 2.1',
@@ -954,7 +954,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-rfx-strategy',
+  id: 'func-rfx-strategy',  tier: 'core',
   title: 'Sourcing Channels & RFx Selection (RFI vs RFP vs RFQ)',
   module: 'Module 2: Requirement Definition & Market Engagement',
   kicker: 'Function 2.2',
@@ -1190,7 +1190,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-rfq-issuance',
+  id: 'func-rfq-issuance',  tier: 'core',
   title: 'Tender / RFQ Preparation & Market Issuance',
   module: 'Module 2: Requirement Definition & Market Engagement',
   kicker: 'Function 2.3',

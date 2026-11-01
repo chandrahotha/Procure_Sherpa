@@ -19,7 +19,7 @@ Audited 2026-11-01. **Every row below was read out of the code in `src/` and out
 | One registry or field read out of the artifact | `node -e` or a jsdom probe against `ProcureSherpa-v2.0.html` (see `tools/test_interactive.mjs` for the loading boilerplate) |
 | Calculator value correctness | `node tools/test_calc_values.mjs` (hand-computed fixtures) and `node tools/test_calcs.mjs` (envelope/finite/required-field) |
 | Utility/sanitiser behaviour on the shipped code | `node tools/test_unit.mjs` |
-| Integrity gates G1–G22 | `node tools/test_integrity.mjs` |
+| Integrity gates G1–G23 | `node tools/test_integrity.mjs` |
 | The exact content-count pins | owned by `tools/content_pins.mjs`; run inside `npm run qa` by G1/G16/G21/G22 and re-run against the served bytes by `node tools/verify_deploy.mjs` |
 | Deploy verification (what only it can do: the served bytes carry this source tree's build stamp) | `node tools/verify_deploy.mjs` |
 | Node version gate | `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 22` first — the repo refuses Node 20 |
@@ -441,7 +441,7 @@ Practical consequence, stated once rather than per row: **headroom is roughly 60
 | PWA (Lighthouse) | not measurable, "no web manifest and no service worker (`serviceWorker` appears nowhere)" | **Partly stale.** `serviceWorker` genuinely appears nowhere, and there is no external `manifest.json`. But `src/base/01a_head.html:14` injects an **inline blob data-URI manifest** named `procure-sherpa`, plus an external `/manifest.json` link in the SEO block (`:20`), `apple-mobile-web-app-capable` (`:17`) and `/icon.png` | Owner decision | Not a gap, a decision — ADR 0001 and `07b_boot.js:1-21` already decline installability; **fix the roadmap's sentence to "no service worker", because a manifest does exist** | RED |
 | Supported languages | 2 registered, 44/44 shell keys wired | Confirmed: `i18n_audit` "locales registered: 2 (en, es), 44 defined, 44 wired (100%), 0 unused" | 7+ | **Not met** — and see 6.2b: 7 shell locales is feasible, 7 content locales is arithmetically impossible in one file | YELLOW |
 | Calculator count | 19 | Confirmed 19 registered and 19 pinned by literal id in `test_calc_values.mjs` | 25+ | **Not met.** 18 of 19 are the master requirements' mandated set, so growth means adding 6 genuinely new tools, not re-labelling | RED |
-| Academy functions | 28 (24+ target exceeded) | Confirmed: G1 "PS.ACADEMY_FUNCTIONS has 28 functions"; `verify_deploy.mjs:103-104` pins 28 functions and 11 modules exactly | re-baseline the target | **Met and pinned exactly** — the strongest content pin in the repo | GREEN |
+| Academy functions | 28 (24+ target exceeded) | Confirmed: G1 "PS.ACADEMY_FUNCTIONS has 28 functions"; `verify_deploy.mjs:103-104` pins 28 functions and 11 modules exactly | re-baseline the target | **Met and pinned exactly** — the strongest content pin in the repo. Since Cycle 2 Wave A the same 28 functions also carry a level: 9 Foundation, 12 Practitioner, 7 Executive, pinned in `tools/content_pins.mjs` and asserted by G23 (deleting one tier turns four assertions red, naming the function) | GREEN |
 
 ### Certificates — what is actually disabled, and the standing honesty constraint
 
@@ -467,6 +467,35 @@ Practical consequence, stated once rather than per row: **headroom is roughly 60
 | **Total** | **280** | **30** | **144** | **106** |
 
 The whole ledger's GREEN count is 30 (27 before Cycle 1; 9.3a, "Routes passing smoke" and "Accessibility" moved because the assertion behind each one changed, not because a number got bigger). Only **six of those 30 are feature capabilities from the roadmap** — adaptive difficulty (1.1c), `calc.run(values)` (2.2d), screen-reader semantics (6.1c), bundle analysis (7.2e), empty states that point at a next action (9.3a) and the "Did you mean" suggestions (QW3) — plus six GREEN rows that are *measurements* already meeting their target (cross-ref integrity, payload, boot/compile, Academy count, routes passing smoke, accessibility coverage). Everything else the roadmap proposes is either present-and-unproven or absent. That is the honest shape of the project: a well-gated product wrapped in a documentation layer that over-claims Phase 11 and under-claims its own dark-mode scheduler.
+
+## Cycle 2, Wave A: the curriculum now says what level it is written at
+
+**Shipped 2026-11-01.** Every one of the 28 Academy functions carries one of three
+levels — Foundation (9), Practitioner (12), Executive (7) — chosen by the altitude of
+the decision the lesson prepares the reader for, not by seniority. The levels render on
+the hub cards, state themselves on the function page, tag the four learning paths, and
+filter the curriculum through `#/academy?tier=practitioner` (a bookmarkable address, not
+client state; an unknown level falls back to the full curriculum rather than emptying it).
+
+**Why this exists.** The complaint this project keeps receiving from practitioners is that
+the product is good for a first week and thin for a category manager, and the cause was
+structural: one flat voice, 28 lessons with nothing on the page saying which altitude a
+lesson was for, so the only way to find out was to open it. A label does not by itself make
+the senior content exist — Modules 12-14 and the six deeper middle functions are Waves B
+and C — but it makes what does exist findable, and it makes the remaining gap measurable
+instead of anecdotal.
+
+**How to re-verify.** `node tools/test_integrity.mjs` prints G23: every function carries a
+named level, the split is pinned, the hub labels all 28 cards and filters correctly, the
+function page states its level, and the paths are tagged. Mutation-proved: removing the tier
+from `func-category-strategy` turned four assertions red naming the function; the source was
+restored from `/tmp/19e_tier_backup.js` and the artifact rebuilt.
+
+**Traded away, stated rather than silent:** ~5 KB of the 604 KB ADR-0002 transfer headroom
+(three levels of labels and one filter card). The Gate chain also changed: `npm run qa` now
+runs `build:min` after the relationship check so G20 compares two builds of the same sources
+instead of a stale `dist/` — which is why the minified build appears mid-chain rather than only
+inside `verify:min`.
 
 ## What must happen before feature work
 

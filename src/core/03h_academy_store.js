@@ -6,6 +6,22 @@ PS.academy = PS.academy || {};
 
 PS.academy.STORE_KEY = 'academy_progress';
 
+/* Three levels of decision altitude, not three levels of seniority.
+   Every function is written at one of them, so a reader can see what a
+   lesson prepares them to decide on before opening it. Before this
+   existed the curriculum read as one flat "basic" block: a category
+   manager and a first-week buyer were shown the same lesson with no
+   way to tell them apart. */
+PS.academy.TIERS = [
+  { id: 'core', name: 'Foundation', desc: 'The fundamentals: what the function is, and how the work is done correctly.' },
+  { id: 'practitioner', name: 'Practitioner', desc: 'Running a category or an event: cost engineering, evaluation, negotiation, contracting.' },
+  { id: 'executive', name: 'Executive', desc: 'Owning the portfolio: strategy, governance, risk posture, and the board conversation.' }
+];
+PS.academy.tierName = function (id) {
+  var t = (PS.academy.TIERS || []).filter(function (x) { return x.id === id; })[0];
+  return t ? t.name : 'Foundation';
+};
+
 PS.academy.BADGES = [
   { id: 'pioneer', name: 'Procurement Pioneer', icon: '🎖️', desc: 'Completed your first procurement function in the Academy.' },
   { id: 'tco_tactician', name: 'TCO Tactician', icon: '⚖️', desc: 'Mastered Landed Cost & Total Cost of Ownership.' },

@@ -6,7 +6,7 @@
 PS.ACADEMY_FUNCTIONS = PS.ACADEMY_FUNCTIONS || [];
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-quote-normalization',
+  id: 'func-quote-normalization',  tier: 'core',
   title: 'Quotation Comparison & Price Normalization',
   module: 'Module 3: Commercial Analysis & Cost Engineering',
   kicker: 'Function 3.1',
@@ -243,7 +243,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-landed-cost-tco',
+  id: 'func-landed-cost-tco',  tier: 'practitioner',
   title: 'Landed Cost & Total Cost of Ownership (TCO)',
   module: 'Module 3: Commercial Analysis & Cost Engineering',
   kicker: 'Function 3.2',
@@ -481,7 +481,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-should-cost',
+  id: 'func-should-cost',  tier: 'practitioner',
   title: 'Should-Cost Modeling & Cost Breakdowns',
   module: 'Module 3: Commercial Analysis & Cost Engineering',
   kicker: 'Function 3.3',
@@ -717,7 +717,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-supplier-eval',
+  id: 'func-supplier-eval',  tier: 'practitioner',
   title: 'Multi-Criteria Supplier Evaluation & Scoring',
   module: 'Module 4: Supplier Evaluation & Risk Management',
   kicker: 'Function 4.1',
@@ -953,7 +953,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-supplier-risk',
+  id: 'func-supplier-risk',  tier: 'practitioner',
   title: 'Supplier Due Diligence & Risk Mitigation',
   module: 'Module 4: Supplier Evaluation & Risk Management',
   kicker: 'Function 4.2',

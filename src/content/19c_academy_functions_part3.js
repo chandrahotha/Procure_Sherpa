@@ -6,7 +6,7 @@
 PS.ACADEMY_FUNCTIONS = PS.ACADEMY_FUNCTIONS || [];
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-negotiation-strategy',
+  id: 'func-negotiation-strategy',  tier: 'practitioner',
   title: 'Negotiation Planning & Strategy (BATNA & ZOPA)',
   module: 'Module 5: Negotiation Strategy & Commercial Terms',
   kicker: 'Function 5.1',
@@ -241,7 +241,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-commercial-terms',
+  id: 'func-commercial-terms',  tier: 'practitioner',
   title: 'Commercial Terms Optimization (Payment Terms & MOQs)',
   module: 'Module 5: Negotiation Strategy & Commercial Terms',
   kicker: 'Function 5.2',
@@ -478,7 +478,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-contract-structuring',
+  id: 'func-contract-structuring',  tier: 'practitioner',
   title: 'Contract Structuring & Critical Legal Clauses',
   module: 'Module 6: Contracting & Governance',
   kicker: 'Function 6.1',
@@ -713,7 +713,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-doa-controls',
+  id: 'func-doa-controls',  tier: 'practitioner',
   title: 'Delegation of Authority (DOA) & PO Value Controls',
   module: 'Module 6: Contracting & Governance',
   kicker: 'Function 6.2',
@@ -948,7 +948,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-po-execution',
+  id: 'func-po-execution',  tier: 'practitioner',
   title: 'Purchase Order Execution & Expediting',
   module: 'Module 7: Operational Purchasing & Order Execution (P2P)',
   kicker: 'Function 7.1',
@@ -1183,7 +1183,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-threeway-matching',
+  id: 'func-threeway-matching',  tier: 'practitioner',
   title: '3-Way Matching & Discrepancy Resolution',
   module: 'Module 7: Operational Purchasing & Order Execution (P2P)',
   kicker: 'Function 7.2',
@@ -1418,7 +1418,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-srm-scorecards',
+  id: 'func-srm-scorecards',  tier: 'executive',
   title: 'Supplier Relationship Management (SRM) & Scorecards',
   module: 'Module 8: Supplier Management & Value Realization',
   kicker: 'Function 8.1',
@@ -1653,7 +1653,7 @@ PS.ACADEMY_FUNCTIONS.push({
 });
 
 PS.ACADEMY_FUNCTIONS.push({
-  id: 'func-savings-reporting',
+  id: 'func-savings-reporting',  tier: 'executive',
   title: 'Savings Measurement & Value Reporting',
   module: 'Module 8: Supplier Management & Value Realization',
   kicker: 'Function 8.2',

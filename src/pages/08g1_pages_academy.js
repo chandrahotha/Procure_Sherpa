@@ -6,7 +6,7 @@ PS.route('academy', function (funcId, params) {
   if (funcId) {
     return PS.renderAcademyFunction(funcId, params);
   }
-  return PS.renderAcademyHub();
+  return PS.renderAcademyHub(params);
 });
 
 PS.route('academy-progress', function () {
@@ -46,11 +46,19 @@ PS.route('academy-progress', function () {
 });
 
 /* ---------- Curriculum Hub View ---------- */
-PS.renderAcademyHub = function () {
+PS.renderAcademyHub = function (params) {
   PS.pageTitle = 'Procurement Academy';
   var stats = PS.academy.getStats();
   var data = PS.academy.getAll();
   var funcs = PS.ACADEMY_FUNCTIONS || [];
+
+  /* The level filter is a link, not client state: #/academy?tier=executive
+     is an address a reader can bookmark or be sent, and it survives a
+     reload. A value that is not one of the three named levels falls back
+     to "all", so a stale link cannot empty the curriculum. */
+  var tier = (params && params.tier) || '';
+  if (!PS.academy.TIERS.some(function (t) { return t.id === tier; })) tier = '';
+  var shown = tier ? funcs.filter(function (f) { return f.tier === tier; }) : funcs;
 
   // Group functions by module. The modules are always presented in
   // module number order. The curriculum is numbered, and the number IS
@@ -60,7 +68,7 @@ PS.renderAcademyHub = function () {
   // four of the five roles. The role now RECOMMENDS modules further
   // down the page instead, and never moves them.
   var modules = {};
-  funcs.forEach(function (f) {
+  shown.forEach(function (f) {
     var mod = f.module || 'Core Foundations';
     if (!modules[mod]) modules[mod] = [];
     modules[mod].push(f);
@@ -92,6 +100,22 @@ PS.renderAcademyHub = function () {
      of the page. The badge wall below is twelve locked cards, and the
      most useful thing on the page was underneath all of it. */
   html += PS.academyRoleRecommendation(funcs);
+
+  /* Three levels, stated up front, because the honest answer to "is this
+     for me" is a label on the card rather than a guess after reading. */
+  var lvlChips = '<a class="chip ' + (tier ? '' : 'is-on') + '" href="#/academy">All levels <strong>' + funcs.length + '</strong></a>';
+  PS.academy.TIERS.forEach(function (t) {
+    var n = funcs.filter(function (f) { return f.tier === t.id; }).length;
+    lvlChips += '<a class="chip ' + (tier === t.id ? 'is-on' : '') + '" href="#/academy?tier=' + t.id + '">' + PS.esc(t.name) + ' <strong>' + n + '</strong></a>';
+  });
+  var activeTier = PS.academy.TIERS.filter(function (t) { return t.id === tier; })[0];
+  html += '<div class="card mb16"><div class="card-head"><h2>Choose your level</h2>' +
+    '<span class="badge">' + (activeTier ? PS.esc(activeTier.name) + ' track' : 'Full curriculum') + '</span></div>' +
+    '<div class="filters">' + lvlChips + '</div>' +
+    (activeTier
+      ? '<p class="note">' + PS.esc(activeTier.desc) + ' <a href="#/academy">Show all ' + funcs.length + ' functions</a>.</p>'
+      : '<p class="note">The curriculum is written at three altitudes: <strong>Foundation</strong> for the fundamentals, <strong>Practitioner</strong> for the person running a category or an event, and <strong>Executive</strong> for the owner of the portfolio. Filter to the one that matches the decisions you make.</p>') +
+    '</div>';
 
   html += '<div class="card mb16"><div class="card-head"><h2>Achievement Badges</h2><div class="spacer"></div>' +
     '<span class="badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span></div>' +
@@ -126,11 +150,13 @@ PS.renderAcademyHub = function () {
       modFuncs.map(function (f) {
         var isComp = PS.academy.isCompleted(f.id);
         var qRes = PS.academy.getQuizResult(f.id);
+        var lv = PS.academy.TIERS.filter(function (t) { return t.id === f.tier; })[0];
         return '<a class="func-card ' + (isComp ? 'is-mastered' : '') + '" href="#/academy/' + encodeURIComponent(f.id) + '">' +
           '<div class="func-card-kicker">' + PS.esc(f.kicker || 'Procurement Function') + '</div>' +
           '<div class="func-card-title">' + PS.esc(f.title) + '</div>' +
           '<div class="func-card-desc">' + PS.esc(f.tagline || f.desc) + '</div>' +
           '<div class="func-card-meta">' +
+          (lv ? '<span class="func-card-level lv-' + PS.esc(f.tier) + '">' + PS.esc(lv.name) + '</span>' : '') +
           '<span>⏱️ ' + PS.esc(f.duration || '15 mins') + '</span>' +
           '<span>🎯 ' + (f.quizzes ? f.quizzes.length : 3) + ' Scenarios</span>' +
           (qRes ? '<span>📊 ' + qRes.pct + '% Score</span>' : '') +
@@ -173,6 +199,7 @@ PS.renderAcademyFunction = function (funcId, params) {
     '<h1>' + PS.esc(func.title) + '</h1>' +
     '<p class="lead" style="margin-bottom:14px">' + PS.esc(func.tagline || func.desc) + '</p>' +
     '<div class="chips">' +
+    '<span class="chip">🎓 Level: <strong>' + PS.esc(PS.academy.tierName(func.tier)) + '</strong></span>' +
     '<span class="chip">📍 Lifecycle Stage: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
     '<span class="chip">⏱️ Duration: <strong>' + PS.esc(func.duration || '15 mins') + '</strong></span>' +
     (quizRes ? '<span class="chip">🏆 Quiz Score: <strong>' + quizRes.pct + '%</strong></span>' : '') +

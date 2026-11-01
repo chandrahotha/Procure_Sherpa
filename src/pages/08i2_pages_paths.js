@@ -10,6 +10,7 @@ PS.learningPaths.PATHS = [
   {
     id: 'beginner',
     title: 'Procurement Foundations',
+    tier: 'core',
     level: 1,
     desc: 'Start from zero: what procurement is, why it matters, and the concepts every professional relies on.',
     modules: ['func-mission-value', 'func-spend-analysis', 'func-requirement-scope', 'func-landed-cost-tco', 'func-indirect-sourcing'],
@@ -20,6 +21,7 @@ PS.learningPaths.PATHS = [
   {
     id: 'intermediate',
     title: 'Operational Excellence',
+    tier: 'practitioner',
     level: 2,
     desc: 'The day-to-day skills: running a competitive event, evaluating bids, negotiating and placing the order.',
     modules: ['func-rfx-strategy', 'func-rfq-issuance', 'func-quote-normalization', 'func-supplier-eval', 'func-negotiation-strategy', 'func-commercial-terms', 'func-po-execution'],
@@ -30,6 +32,7 @@ PS.learningPaths.PATHS = [
   {
     id: 'advanced',
     title: 'Commercial & Contract Leadership',
+    tier: 'practitioner',
     level: 3,
     desc: 'Category strategy, cost engineering, contracting and the operational controls that make them hold.',
     modules: ['func-category-mgmt', 'func-should-cost', 'func-contract-structuring', 'func-doa-controls', 'func-threeway-matching', 'func-software-licensing', 'func-professional-services'],
@@ -40,6 +43,7 @@ PS.learningPaths.PATHS = [
   {
     id: 'expert',
     title: 'Risk, Governance & Resilience',
+    tier: 'executive',
     level: 4,
     desc: 'The work that decides whether the function survives an audit, a disclosure obligation or a disruption.',
     modules: ['func-supplier-risk', 'func-ethics-compliance', 'func-sustainability', 'func-resilience-continuity', 'func-srm-scorecards', 'func-savings-reporting'],
@@ -108,7 +112,7 @@ PS.route('learning-paths', function () {
 
   var html = '<div class="card">' +
     '<div class="card-head"><h1>Learning paths</h1></div>' +
-    '<p class="lead">Four tracks. Start where you are; each path builds on the one before it.</p>';
+    '<p class="lead">Four tracks, tagged by the altitude they prepare you for: <strong>Foundation</strong>, <strong>Practitioner</strong> or <strong>Executive</strong>. Start where you are; each path builds on the one before it.</p>';
 
   if (assessment) {
     var level = PS.skillAssessment.getLevel(assessment.score);
@@ -133,6 +137,7 @@ PS.route('learning-paths', function () {
     html += '<div class="card path-card" style="border-top:3px solid ' + path.color + '">' +
       '<div class="path-card-head">' +
       '<span class="level-pill">Level ' + path.level + '</span>' +
+      (path.tier ? '<span class="level-pill" style="background:' + (PS.academy && PS.academy.TIERS ? 'var(--accent-soft)' : 'var(--accent-soft)') + ';color:var(--accent)">' + PS.esc(PS.academy && PS.academy.tierName ? PS.academy.tierName(path.tier) : path.tier) + '</span>' : '') +
       (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
       '</div>' +
       '<h2 class="path-card-title">' + PS.esc(path.title) + '</h2>' +
