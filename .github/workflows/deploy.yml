@@ -49,6 +49,10 @@ on:
   workflow_run:
     workflows: ["QA"]
     types: [completed]
+    # Only a QA run whose head is main can publish. Without this, the
+    # trigger fires on the completion of EVERY QA run - including one for a
+    # pull request, whose head_sha is somebody else's commit.
+    branches: [main]
   workflow_dispatch: {}
 
 # One publish at a time per ref, and a newer main makes an in-flight
@@ -70,7 +74,19 @@ jobs:
     # Only after the gate has passed. A manual run is allowed because
     # sometimes you want to re-verify or re-publish a commit that is
     # already green.
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    #
+    # `conclusion == 'success'` alone is not enough. A run whose only job was
+    # SKIPPED also concludes success, and the QA job now skips a fork's pull
+    # request rather than building untrusted code on the owner's workstation.
+    # So the publish requires that the run that finished was a push to main
+    # (or a dispatch), not a pull request whose gate never executed. Without
+    # this line, "we stopped running strangers' code in CI" would quietly
+    # become "we publish what they proposed without testing it".
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') &&
+       github.event.workflow_run.head_branch == 'main')
     # # The runner is a self-hosted one, for the same reason as the QA
     runs-on: [self-hosted, Windows, X64, procure-sherpa]
     # Bounded, for the same reason as the QA job: a run that cannot get a

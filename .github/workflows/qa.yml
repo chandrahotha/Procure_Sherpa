@@ -57,8 +57,30 @@ concurrency:
   group: qa-${{ github.ref }}
   cancel-in-progress: true
 
+# The QA job builds, lints and runs the whole suite. It needs to read the
+# repository and nothing else, and GitHub's default token scope for a
+# repository is whatever the owner last set on the org - which is usually
+# read AND write. A job that never pushes should not carry a credential that
+# can. Declared per workflow so a future job inherits the narrow scope rather
+# than the account default.
+permissions:
+  contents: read
+
 jobs:
   qa:
+    # This job runs on a self-hosted runner: the owner's workstation.
+    # `pull_request` from a fork checks the stranger's code out and then runs
+    # `npm ci`, the build and every test tool on that machine, which is code
+    # execution by anyone who can open a PR against a public repository. The
+    # gate is worth more than the contribution path here, so a fork's PR gets
+    # a skipped job instead of a runner; pushes, same-repo PRs, the weekly
+    # schedule and manual runs are unaffected.
+    #
+    # A skipped job makes the run conclude "success", which the Deploy
+    # workflow used to read as a green light - so deploy.yml no longer trusts
+    # a conclusion alone. Both halves are required; tools/check_workflows.mjs
+    # fails the local gate if either is removed.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # A self-hosted runner is selected by LABELS, not by a name.
     # `procure-sherpa-workstation` is the machine; os and arch keep a
     # differently-labelled runner from picking this job up and failing on a

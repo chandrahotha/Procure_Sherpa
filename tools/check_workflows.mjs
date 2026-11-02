@@ -40,6 +40,20 @@
        `engines.node` declares, so CI never tests a toolchain that nobody
        uses locally.
 
+   Three more were added after the supply-chain review, for the failure mode
+   those rules cannot see - a workflow that is valid, green, and running
+   somebody else's code on the owner's workstation:
+
+     * every workflow declares a top-level `permissions:`, so no job inherits
+       a write-scoped token it has no use for;
+     * a workflow that triggers on `pull_request` AND selects a self-hosted
+       runner must guard against fork PRs, because a fork's PR otherwise
+       builds untrusted code on a machine that is not ephemeral;
+     * a `workflow_run` trigger that gates a publish on
+       `conclusion == 'success'` must also name the events that may publish
+       and filter by branch, because a run whose only job was SKIPPED - which
+       is what the fork guard produces - also concludes success.
+
    What it still cannot check is the thing a workflow file has no word
    for: whether a runner is actually awake. A job that cannot get one
    simply queues, and the run looks neither red nor green. That part is
@@ -241,6 +255,41 @@ for (const file of files) {
       problems.push('setup-node installs Node ' + v + ' but package.json declares engines.node "' + enginesDeclared + '"');
     }
   });
+
+  /* Least privilege on the token. Every job in this repository reads the
+     code and writes nothing, so a workflow that does not say so inherits
+     whatever the account last defaulted GITHUB_TOKEN to - usually read AND
+     write. A stolen or misbehaving step in a build job then has a credential
+     that can push. */
+  if (!/^permissions:/m.test(raw)) {
+    problems.push('the workflow declares no top-level `permissions:`, so every job runs with the account default token scope instead of contents: read');
+  }
+
+  /* A self-hosted runner plus a fork pull request is remote code execution
+     on somebody's machine: the PR job checks the stranger's branch out and
+     runs `npm ci` and every test tool on it. GitHub warns about exactly this
+     combination on public repositories, and the workstation running this
+     project's CI is the owner's own. */
+  const usesSelfHosted = /runs-on:\s*\[[^\]]*self-hosted/.test(raw);
+  const triggersPullRequest = /^ {2}pull_request:/m.test(raw);
+  if (usesSelfHosted && triggersPullRequest) {
+    const guardsForks = /github\.event\.pull_request\.head\.repo\.full_name/.test(raw);
+    if (!guardsForks) {
+      problems.push('the workflow runs on a self-hosted runner and triggers on pull_request, so a fork\'s PR would build untrusted code on this machine; guard the job with `if: github.event_name != \'pull_request\' || github.event.pull_request.head.repo.full_name == github.repository`');
+    }
+  }
+
+  /* The other half of that guard. A run whose only job was skipped concludes
+     "success", so a publish that keys off the conclusion alone starts
+     publishing the very commits the skip exists to refuse. */
+  if (/workflow_run:/m.test(raw) && /conclusion\s*==\s*'success'/.test(raw)) {
+    if (!/workflow_run\.event/.test(raw)) {
+      problems.push('a workflow_run trigger tests only `conclusion == \'success\'`; a skipped gate also concludes success, so the condition has to name which events may publish (github.event.workflow_run.event)');
+    }
+    if (!/branches:/m.test(raw)) {
+      problems.push('a workflow_run trigger has no `branches:` filter, so a run whose head is a pull-request branch can start a publish');
+    }
+  }
 
   if (problems.length) {
     problems.forEach((p) => fail(file + ': ' + p));
