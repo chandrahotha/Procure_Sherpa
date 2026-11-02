@@ -186,15 +186,33 @@ PS.homeSmartResume = function () {
 };
 
 PS.homeThinkingPoint = function () {
+  /* Every lesson carries authored thinking points, and the home page used
+     to hard-code one of them - the same quote greeted every visitor every
+     day while well over a hundred sat unread inside the curriculum. The
+     pick is deterministic per day, so everyone sees the same one on a
+     given day and it rotates through the whole pool. */
+  var pool = [];
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    (f.thinkingPoints || []).forEach(function (tp) {
+      if (tp && tp.quote) pool.push({ tp: tp, f: f });
+    });
+  });
+  if (!pool.length) return '';
+  var day = Math.floor(Date.now() / 86400000);
+  var pick = pool[day % pool.length];
+  var explain = String(pick.tp.explanation || '');
+  if (explain.length > 320) explain = explain.slice(0, 317).replace(/\s+\S*$/, '') + '\u2026';
   return '<div class="thinking-point-card no-print" style="margin-bottom:24px;">' +
-    '<div class="thinking-point-eyebrow">&#128161; Featured Procurement Thinking Point</div>' +
-    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is rarely the lowest-cost purchase.&rdquo;</blockquote>' +
-    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company far more across its operating life than the discount saves.</div>' +
+    '<div class="thinking-point-eyebrow">&#128161; Today&#39;s thinking point &middot; from the Academy curriculum</div>' +
+    '<blockquote class="thinking-point-quote">&ldquo;' + PS.esc(pick.tp.quote) + '&rdquo;</blockquote>' +
+    '<div class="thinking-point-explain">' + PS.esc(explain) + '</div>' +
+    (pick.tp.reflectionPrompt ? '<p class="note" style="margin-top:10px"><strong>Reflect:</strong> ' + PS.esc(pick.tp.reflectionPrompt) + '</p>' : '') +
     '<div class="flex items-center flex-wrap" style="gap:12px; margin-top:14px;">' +
-    '<a class="btn btn-sm btn-primary" href="#/academy/func-landed-cost-tco">Study TCO in Academy &rarr;</a>' +
-    '<a class="btn btn-sm" href="#/calc/calc-tco">Open TCO Calculator</a>' +
-    '<a class="btn btn-sm btn-ghost" href="#/sop/sop-procurement-lifecycle">View Lifecycle SOP</a>' +
-    '</div></div>';
+    '<a class="btn btn-sm btn-primary" href="#/academy/' + encodeURIComponent(pick.f.id) + '">Study &ldquo;' + PS.esc(pick.f.title) + '&rdquo; &rarr;</a>' +
+    '<a class="btn btn-sm btn-ghost" href="#/academy/' + encodeURIComponent(pick.f.id) + '?tab=think">Open the Think tab</a>' +
+    '</div>' +
+    '<p class="note" style="margin-top:10px">' + PS.esc(pick.f.module) + ' &middot; an authored teaching point from the lesson, not a sourced statistic</p>' +
+    '</div>';
 };
 
 PS.homeQuickActions = function () {

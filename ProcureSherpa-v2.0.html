@@ -2358,6 +2358,8 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 .academy-tab-btn{font-size:.9rem;padding:11px 16px;border-radius:10px 10px 0 0}
 .academy-tab-btn.is-active{box-shadow:inset 0 -2px 0 var(--accent)}
+.lesson-progress{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
+.lesson-progress-fill{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
 
 /* ---------- v3: hub and hero typography ---------- */
 .academy-hero h1, .academy-hero .display{font-family:var(--font-read);font-weight:600;letter-spacing:-.02em;font-size:2.1rem;line-height:1.12}
@@ -3743,7 +3745,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'ff0833a77dcc';
+PS.BUILD = '287e7c50b652';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -12465,15 +12467,33 @@ PS.homeSmartResume = function () {
 };
 
 PS.homeThinkingPoint = function () {
+  /* Every lesson carries authored thinking points, and the home page used
+     to hard-code one of them - the same quote greeted every visitor every
+     day while well over a hundred sat unread inside the curriculum. The
+     pick is deterministic per day, so everyone sees the same one on a
+     given day and it rotates through the whole pool. */
+  var pool = [];
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    (f.thinkingPoints || []).forEach(function (tp) {
+      if (tp && tp.quote) pool.push({ tp: tp, f: f });
+    });
+  });
+  if (!pool.length) return '';
+  var day = Math.floor(Date.now() / 86400000);
+  var pick = pool[day % pool.length];
+  var explain = String(pick.tp.explanation || '');
+  if (explain.length > 320) explain = explain.slice(0, 317).replace(/\s+\S*$/, '') + '\u2026';
   return '<div class="thinking-point-card no-print" style="margin-bottom:24px;">' +
-    '<div class="thinking-point-eyebrow">&#128161; Featured Procurement Thinking Point</div>' +
-    '<blockquote class="thinking-point-quote">&ldquo;The cheapest quotation is rarely the lowest-cost purchase.&rdquo;</blockquote>' +
-    '<div class="thinking-point-explain">In procurement, purchase price is only what you pay on Day 1. Total Cost of Ownership (TCO) is what you pay across the entire asset lifespan. A supplier offering a 10% discount on equipment that consumes 30% more power and breaks down twice as often will cost your company far more across its operating life than the discount saves.</div>' +
+    '<div class="thinking-point-eyebrow">&#128161; Today&#39;s thinking point &middot; from the Academy curriculum</div>' +
+    '<blockquote class="thinking-point-quote">&ldquo;' + PS.esc(pick.tp.quote) + '&rdquo;</blockquote>' +
+    '<div class="thinking-point-explain">' + PS.esc(explain) + '</div>' +
+    (pick.tp.reflectionPrompt ? '<p class="note" style="margin-top:10px"><strong>Reflect:</strong> ' + PS.esc(pick.tp.reflectionPrompt) + '</p>' : '') +
     '<div class="flex items-center flex-wrap" style="gap:12px; margin-top:14px;">' +
-    '<a class="btn btn-sm btn-primary" href="#/academy/func-landed-cost-tco">Study TCO in Academy &rarr;</a>' +
-    '<a class="btn btn-sm" href="#/calc/calc-tco">Open TCO Calculator</a>' +
-    '<a class="btn btn-sm btn-ghost" href="#/sop/sop-procurement-lifecycle">View Lifecycle SOP</a>' +
-    '</div></div>';
+    '<a class="btn btn-sm btn-primary" href="#/academy/' + encodeURIComponent(pick.f.id) + '">Study &ldquo;' + PS.esc(pick.f.title) + '&rdquo; &rarr;</a>' +
+    '<a class="btn btn-sm btn-ghost" href="#/academy/' + encodeURIComponent(pick.f.id) + '?tab=think">Open the Think tab</a>' +
+    '</div>' +
+    '<p class="note" style="margin-top:10px">' + PS.esc(pick.f.module) + ' &middot; an authored teaching point from the lesson, not a sourced statistic</p>' +
+    '</div>';
 };
 
 PS.homeQuickActions = function () {
@@ -14703,6 +14723,39 @@ PS.renderAcademyHub = function (params) {
 };
 
 /* ---------- Function Learning Detail View ---------- */
+/* The reading progress bar under the sticky lesson tabs. Exactly one
+   scroll listener exists at a time: each render removes the previous
+   handler before adding its own, and the handler no-ops once its bar is
+   no longer on the page. Progress reads the lesson body against the
+   viewport - 0 before the lesson starts, 1 when its end reaches the top
+   of the screen - and updates only transform, so the browser never
+   reflows for it. */
+PS.academy.wireLessonProgress = function () {
+  var prev = PS.academy._lessonScroll;
+  if (prev) {
+    window.removeEventListener('scroll', prev);
+    window.removeEventListener('resize', prev);
+  }
+  var fill = document.getElementById('lessonProgressFill');
+  if (!fill) return;
+  var fn = function () {
+    var body = document.querySelector('.lesson-body');
+    var bar = document.getElementById('lessonProgressFill');
+    if (!body || !bar) return;
+    var rect = body.getBoundingClientRect();
+    if (!rect.height) { bar.style.transform = 'scaleX(0)'; return; }
+    var vh = window.innerHeight || document.documentElement.clientHeight || 1;
+    var p = (vh - rect.top) / rect.height;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+  };
+  PS.academy._lessonScroll = fn;
+  window.addEventListener('scroll', fn, { passive: true });
+  window.addEventListener('resize', fn, { passive: true });
+  fn();
+};
+
 PS.renderAcademyFunction = function (funcId, params) {
   var func = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.id === funcId; })[0];
   if (!func) return PS.notFound('Academy Function', funcId);
@@ -14762,6 +14815,7 @@ PS.renderAcademyFunction = function (funcId, params) {
     html += '<a class="academy-tab-btn ' + (isAct ? 'is-active' : '') + '" href="#/academy/' + encodeURIComponent(funcId) + '?tab=' + t.id + '">' +
       t.label + ' <span class="tab-badge">' + t.badge + '</span></a>';
   });
+  html += '<span class="lesson-progress" aria-hidden="true"><span class="lesson-progress-fill" id="lessonProgressFill"></span></span>';
   html += '</div>';
 
   // Render tab content. The wrapper is what the reading typography in
@@ -14832,6 +14886,8 @@ PS.renderAcademyFunction = function (funcId, params) {
         '<span class="lnav-title">Review your progress</span>' +
         '<span class="lnav-module">The curriculum is complete</span></a>') +
     '</div>';
+
+  PS.pageInit = function () { PS.academy.wireLessonProgress(); };
 
   return html;
 };
@@ -17807,6 +17863,7 @@ PS.whatsNew.CHANGES = [
       'Inside a lesson: a section jump bar on the mission tab, a closing block that lists what is still to do in this lesson and holds the mark-as-studied control on every tab (it used to exist only inside the laboratory tab), and previous and next lesson as cards naming the title and the function number rather than three arrows in a row. A new gate owns all three',
       'Browsing a library is navigable now: a live result count that moves with the filter, a sticky category jump bar on any library with more than three categories, and group headers that read as sections rather than small headings. In-page jumps go through a scroll action, because this app routes on the hash and a plain anchor link would be read as a route change',
       'The Academy hub got a way in: a sticky module index listing all seventeen modules with each module\'s mastered count, a status filter (Not started / Quiz taken / Mastered) that composes with the level filter instead of resetting it, and a per-module line saying how many lessons and how many minutes each module holds. Four new assertions check the filters against the completion record, so a strip that counts something the cards do not show now fails the build',
+      'The lesson reads like a long-form article now: a reading progress bar rides the sticky tab rail so you always know how much of a lesson is behind you, and the home page featured thinking point rotates daily through the more than one hundred and twenty authored thinking points in the curriculum - each one linking straight to the lesson it came from - instead of showing every visitor the same quote',
       'New Module 20: Procurement Fraud, Collusion and the Controls That Catch It - the fraud triangle applied to buying, the vendor-master and payment-diversion controls that catch it, bid rigging patterns and the twin-bid test, and what to do in the first week after a finding. Comes with six new concepts in a Fraud and Assurance category, a Vendor Master Integrity SOP, a matching assurance track and an award. The curriculum is 60 functions across 20 modules, 363 step sequences and 279 quiz questions',
       'New users start at zero. The spend model used to open on a four-category demo portfolio that read as your own numbers; it now opens empty, and the worked example is one explicit click away when you want it',
       'New Module 19: The Finance of Procurement - Cash, Terms and Value - payment terms read as a financial instrument instead of a concession, the cash conversion cycle and the part of it procurement actually controls, and supply chain finance with the ethics of pushing your own balance sheet onto a smaller supplier. The curriculum is 57 functions across 19 modules, 342 step sequences and 264 quiz questions, with a matching finance track and award',

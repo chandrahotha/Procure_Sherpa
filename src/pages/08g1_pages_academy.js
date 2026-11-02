@@ -267,6 +267,39 @@ PS.renderAcademyHub = function (params) {
 };
 
 /* ---------- Function Learning Detail View ---------- */
+/* The reading progress bar under the sticky lesson tabs. Exactly one
+   scroll listener exists at a time: each render removes the previous
+   handler before adding its own, and the handler no-ops once its bar is
+   no longer on the page. Progress reads the lesson body against the
+   viewport - 0 before the lesson starts, 1 when its end reaches the top
+   of the screen - and updates only transform, so the browser never
+   reflows for it. */
+PS.academy.wireLessonProgress = function () {
+  var prev = PS.academy._lessonScroll;
+  if (prev) {
+    window.removeEventListener('scroll', prev);
+    window.removeEventListener('resize', prev);
+  }
+  var fill = document.getElementById('lessonProgressFill');
+  if (!fill) return;
+  var fn = function () {
+    var body = document.querySelector('.lesson-body');
+    var bar = document.getElementById('lessonProgressFill');
+    if (!body || !bar) return;
+    var rect = body.getBoundingClientRect();
+    if (!rect.height) { bar.style.transform = 'scaleX(0)'; return; }
+    var vh = window.innerHeight || document.documentElement.clientHeight || 1;
+    var p = (vh - rect.top) / rect.height;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+  };
+  PS.academy._lessonScroll = fn;
+  window.addEventListener('scroll', fn, { passive: true });
+  window.addEventListener('resize', fn, { passive: true });
+  fn();
+};
+
 PS.renderAcademyFunction = function (funcId, params) {
   var func = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.id === funcId; })[0];
   if (!func) return PS.notFound('Academy Function', funcId);
@@ -326,6 +359,7 @@ PS.renderAcademyFunction = function (funcId, params) {
     html += '<a class="academy-tab-btn ' + (isAct ? 'is-active' : '') + '" href="#/academy/' + encodeURIComponent(funcId) + '?tab=' + t.id + '">' +
       t.label + ' <span class="tab-badge">' + t.badge + '</span></a>';
   });
+  html += '<span class="lesson-progress" aria-hidden="true"><span class="lesson-progress-fill" id="lessonProgressFill"></span></span>';
   html += '</div>';
 
   // Render tab content. The wrapper is what the reading typography in
@@ -396,6 +430,8 @@ PS.renderAcademyFunction = function (funcId, params) {
         '<span class="lnav-title">Review your progress</span>' +
         '<span class="lnav-module">The curriculum is complete</span></a>') +
     '</div>';
+
+  PS.pageInit = function () { PS.academy.wireLessonProgress(); };
 
   return html;
 };

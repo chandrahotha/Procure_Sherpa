@@ -109,6 +109,30 @@ window.location.hash = '#/maturity';
 await new Promise((r) => setTimeout(r, 150));
 check('Maturity check page has live results container with aria-live', d.querySelector('#matResult')?.getAttribute('aria-live') === 'polite');
 
+// 4b. Lesson reading progress bar (wired in PS.pageInit on lesson render)
+window.location.hash = '#/academy/func-mission-value';
+await new Promise((r) => setTimeout(r, 150));
+const lessonTabs = d.querySelector('.academy-tabs');
+const progFill = d.querySelector('#lessonProgressFill');
+check('Lesson tab rail carries the reading progress bar', !!lessonTabs && !!progFill && lessonTabs.contains(progFill));
+if (progFill) {
+  window.dispatchEvent(new window.Event('scroll'));
+  await new Promise((r) => setTimeout(r, 50));
+  const tf = progFill.style.transform || '';
+  check('Reading progress responds to scroll with a finite transform',
+    tf.indexOf('scaleX(') === 0 && tf.indexOf('NaN') < 0 && tf.indexOf('Infinity') < 0, tf);
+}
+
+// 4c. The home thinking point is drawn from the curriculum, not hard-coded
+window.location.hash = '#/home';
+await new Promise((r) => setTimeout(r, 150));
+const tpc = d.querySelector('.thinking-point-card');
+const funcs = (window.PS && window.PS.ACADEMY_FUNCTIONS) || [];
+const fromCurriculum = !!tpc && funcs.some((f) =>
+  (f.thinkingPoints || []).some((tp) => tp && tp.quote && tpc.textContent.indexOf(tp.quote) >= 0));
+check('The featured thinking point quotes the Academy curriculum and links to its lesson',
+  !!tpc && fromCurriculum && !!tpc.querySelector('a[href^="#/academy/"]'));
+
 // 5. Theme token consistency
 const styleText = Array.from(d.querySelectorAll('style')).map((s) => s.textContent).join('\n');
 check('CSS defines :root color variables (--bg, --panel, --text, --accent)',
