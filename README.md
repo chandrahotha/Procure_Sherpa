@@ -22,7 +22,7 @@ Procure Sherpa is for people who buy things for a living — and for everyone wh
 
 Everything ships in a single self-contained HTML file. Open it and it works — no install, no build step, no account, no network. Your data lives in your browser and never leaves it. The whole product is gated by an automated QA suite (build, lint, 130 integrity assertions, 1,021 calculator assertions, security scan, accessibility audit, performance budget) that runs on every push.
 
-The QA badge above reflects a workflow running on a self-hosted runner, so a green badge is not by itself evidence that this commit was verified — the honest gate is `npm run qa`, run locally or from the pre-push hook. [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran) explains exactly why.
+The QA badge reports a workflow that runs on GitHub-hosted runners: every push and pull request to `main`, plus a weekly scheduled run that catches environment drift. The gate that guards your own push is the pre-push hook, which runs the same suite locally before the commit is allowed through. [CONTRIBUTING.md](CONTRIBUTING.md#ci-is-green-because-nothing-ran) records why CI used to report nothing (an offline self-hosted runner, since replaced) and what to check if runs start queueing again.
 
 ---
 
@@ -184,7 +184,6 @@ Documented on purpose rather than left for discovery — full detail in the [com
 - **Not SEO-indexable.** Pages render client-side behind hash routes; the served markup is an ~8 KB shell. Search-engine visibility would mean a different, prerendered product.
 - **Single-file ceiling.** Everything parses before first paint and there is no code-splitting escape hatch — that constraint is the product. [ADR 0001](docs/adr/0001-single-file-architecture.md) records the decision and its revisit triggers; [ADR 0002](docs/adr/0002-measured-performance-budget.md) records the measured budgets.
 - **No certificate issuance**, by policy — see above.
-- **CI runs on a self-hosted runner** that is not always awake, hence the badge caveat at the top; the local gate is the source of truth.
 
 ---
 

@@ -87,8 +87,10 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
        (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') &&
        github.event.workflow_run.head_branch == 'main')
-    # # The runner is a self-hosted one, for the same reason as the QA
-    runs-on: [self-hosted, Windows, X64, procure-sherpa]
+    # The runner is a GitHub-hosted one, for the same reason as the QA
+    # workflow: always allocated, and the verify step only needs network
+    # access to the live site.
+    runs-on: ubuntu-latest
     # Bounded, for the same reason as the QA job: a run that cannot get a
     # runner sits until GitHub's own limit, and a run that has one should
     # not be able to hang for six hours. The publish path runs the whole

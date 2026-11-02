@@ -95,21 +95,24 @@ versions). Internet Explorer is not supported.
 
 ## Build and release pipeline
 
-The CI runner for this project is the owner's own workstation
-(`runs-on: [self-hosted, Windows, X64, procure-sherpa]`), chosen because the
-account cannot allocate hosted minutes. That is a real trade, and it is
-controlled by three rules `tools/check_workflows.mjs` enforces on every
-`npm run qa`:
+CI runs on GitHub-hosted `ubuntu-latest` runners - ephemeral VMs that
+GitHub allocates and destroys per job. Until 2026-11-03 the workflows ran
+on the owner's own Windows workstation, because the account appeared
+unable to allocate hosted minutes; a canary run on this exact suite
+proved the block was gone, and both workflows moved the same day
+(the history is in CONTRIBUTING.md, "CI is green because nothing ran").
+Three rules `tools/check_workflows.mjs` enforces on every `npm run qa`
+control what runs there:
 
 * **Least privilege.** Every workflow declares `permissions: contents: read`.
   A build job that pushes nothing should not hold a token that can.
-* **Fork pull requests never reach the workstation.** A `pull_request` job
-  runs the contributor's code - `npm ci`, the build, every test tool - and on
-  a self-hosted runner that machine is not ephemeral and not sandboxed. The QA
-  job is therefore skipped unless the PR's head repo is this repository. Pull
-  requests from outside the repository get no CI; a maintainer who wants to
-  review one pulls it down and runs `npm run qa` locally, on a machine they
-  chose.
+* **Fork pull requests never run in this repository's CI.** A
+  `pull_request` job executes the contributor's code - `npm ci`, the
+  build, every test tool. On an ephemeral hosted VM that is no longer the
+  remote-code-execution hazard it was on a personal workstation, but the
+  skip stays: untrusted code runs nowhere under this repository's name,
+  and a maintainer who wants to review a fork's PR pulls it down and runs
+  `npm run qa` locally, on a machine they chose.
 * **A skipped gate is not a passing gate.** Publishing is triggered by
   `workflow_run` on QA's completion, and a run whose only job was *skipped*
   also concludes `success`. So the deploy condition additionally requires the

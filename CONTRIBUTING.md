@@ -180,87 +180,64 @@ executable bit, and git-for-Windows runs hooks through its own `sh` either way.
 
 ## CI is green because nothing ran
 
-The QA workflow runs on a **self-hosted runner**
-(`procure-sherpa-workstation`, Windows, the machine that develops this
-project). That was chosen because hosted minutes on this account are
-intermittently blocked by the spending limit, and a blocked job shows up
-as a red run nobody can read.
+That title was literally true for twelve days, and this section keeps the
+name so the next reader who hits the same failure mode finds it.
 
-The trade is availability. A job whose runner is asleep does not fail; it
-**queues**, and it can queue until GitHub's own 24-hour limit cancels it.
-That has already happened: the scheduled run of 2026-10-26 was cancelled
-after 24h0m2s having run nothing, and the Deploy run of 2026-10-27 was
-`skipped` because the QA run it waits for never completed. A run that
-never started is neither a pass nor a fail, and the badge does not
+The QA workflow used to run on a **self-hosted runner**
+(`procure-sherpa-workstation`, Windows, the machine that developed this
+project). That was chosen because hosted minutes on this account were
+believed to be blocked by the spending limit, and a blocked job shows up
+as a red run nobody can read. The trade was availability: a job whose
+runner is asleep does not fail, it **queues**, and it can queue until
+GitHub's own 24-hour limit cancels it. The scheduled run of 2026-10-26
+was cancelled after 24h0m2s having run nothing, and the Deploy run after
+it was `skipped` because the QA run it waits for never completed. A run
+that never started is neither a pass nor a fail, and the badge does not
 distinguish it.
 
-### The state right now, as measured
+### The fix, as measured on 2026-11-03
 
-Checked with `gh api repos/chandrahotha/Procure_Sherpa/actions/runners`
-and `gh api repos/chandrahotha/Procure_Sherpa/actions/runs` on 2026-11-01:
+The spending limit that blocked hosted allocation is gone. Verified
+empirically before touching `main`: a canary branch ran this exact suite
+on `ubuntu-latest`, and it executed and passed in under two minutes
+(run 41547617809). Both workflows now declare `runs-on: ubuntu-latest` -
+free for public repositories, ephemeral, and always allocated, so CI no
+longer depends on any workstation being awake. Nothing about the gate
+itself changed: the same `qa:ci` chain runs, the same fork-PR skip holds
+(now as defense in depth), and every job is still bounded by
+`timeout-minutes`.
 
 | Fact | Value |
 |---|---|
-| Runners registered | 1 - `procure-sherpa-workstation`, Windows, labels `self-hosted, Windows, X64, procure-sherpa` |
-| Runner status | **`offline`** (and `busy: false`) |
-| Last QA run that actually executed | run 51, push, `success`, 2026-10-21 16:24 UTC |
-| Most recent QA run | run 52, `schedule`, created 2026-10-26 12:12:50Z, `run_started_at` never set, cancelled 2026-10-27 12:12:52Z - **24h0m2s queued, zero steps run** |
-| Deploy run after it | run 33, `skipped` because the gated QA run never completed |
+| Runners used | GitHub-hosted (`ubuntu-latest`), no self-hosted runner required |
+| First full hosted run | run 41547617809, `success`, 2026-11-03, ~2 minutes |
+| Old self-hosted runner | `procure-sherpa-workstation` remains registered but offline and unused; it can be removed in Settings → Actions → Runners |
+| Deploy mode | `verify` (no `VERCEL_TOKEN` secret): the Vercel Git integration publishes `main`, and the Deploy workflow asserts the served bytes are the build from the tested commit |
 
-The consequence is the one people get backwards: **the badge is not a
-statement about the code.** It reports the most recent *attempt* of the
-workflow, so with run 52 cancelled the badge reads failing for a commit
-that passed in CI on 2026-10-21 - and the inverse is just as true, a
-badge can sit reading `passing` for weeks while every scheduled run
-queues and dies, because nothing new ever started. `cancel-in-progress`
-on the `concurrency` group means a newer push supersedes a queued run,
-which is the right behaviour but adds another way for a run to disappear
-without ever having been red or green.
+### If runs start queueing again
 
-So: a green badge is not evidence, and a red one is not necessarily a
-fault. The evidence is a *local* `npm run qa` exit code, or a run whose
-job log shows the steps actually executing. Nothing about this can be
-fixed from a workflow file, because the failure mode is "no machine
-picked this up", which is not a job outcome.
+The failure mode to recognise: a run that sits in **Queued** with
+`run_started_at` never set. That means no runner was allocated - a
+billing/spending-limit change on the account, or a GitHub incident. It
+is not a code fault and no workflow edit fixes it:
 
-What the repository does about it, from inside the repo:
-
-* `timeout-minutes` on every job, so a hung step cannot eat the whole
-  limit, and `npm run check:workflows` now **fails the local gate** if a
-  job is added without one, if a scheduled workflow has no `concurrency`
-  group, or if `setup-node` installs an older Node than `engines.node`
-  declares.
-* a preflight step before anything else, so a runner with the wrong Node
-  or a half-install fails in seconds with the fix in the message.
-* the artifact upload is `continue-on-error`, because an account storage
-  quota is not a code condition.
-
-What it cannot do from a workflow file is wake the machine. **Owner
-steps**, in order of preference. The first two are actions on the
-workstation itself; nothing in this repository can confirm the paths
-quoted there, so treat them as the operator's notes rather than facts the
-repo can vouch for:
-
-1. **Keep the runner reachable.** On that workstation, confirm the
-   listener is running before a push you need verified:
-   `cd actions-runner; ./run.cmd` (Windows service installs show up under
-   `services.msc` as `actions-runner-Procure_Sherpa`).
-   Check from here: `gh api repos/chandrahotha/Procure_Sherpa/actions/runners`
-   - `status` must be `online`. If it is `offline`, no workflow in this
-   repository will run, and every badge you see is history.
-2. **Register a Linux runner** alongside it so the jobs can ask for
-   `ubuntu-latest`-style labels they already work with, and so the suite
-   is tested on the other OS the artifact ships to. Add the label to
-   `runs-on` in both workflows; `tools/ci_release_path.mjs` and the Node
-   steps are shell-independent, so nothing else needs to change.
-3. **Restore hosted runners once billing is fixed.** Settings → Billing
-   and plans → Spending limit. Then the one-line change in each workflow
-   is `runs-on: ubuntu-latest`, and the scheduled run stops depending on
-   a workstation being awake.
-4. **The `production` environment.** If it is configured with required
+1. Check whether it is one run or all of them: open any recent run and
+   look at whether the job ever left Queued. The Actions status page
+   (githubstatus.com) rules out an outage.
+2. Check Settings → Billing and plans → Spending limit on the account -
+   that is what blocked hosted allocation here once before.
+3. Meanwhile the local gate is still the source of truth: `npm run qa`
+   runs the identical chain, and the pre-push hook runs a fast version
+   of it on every push whether CI is alive or not.
+4. A self-hosted runner remains a legitimate fallback (register one,
+   add its labels to `runs-on` in both workflows); everything in the
+   suite is Node-based and shell-independent, so any OS works.
+5. **The `production` environment.** If it is configured with required
    reviewers, the Deploy job waits for a human *before it starts*, and
    `timeout-minutes` does not apply to that wait. Check
    Settings → Environments → production if a deploy sits at "waiting".
+   (Currently it has no protection rules, so the Deploy job starts
+   immediately after QA concludes.)
 
 ## Rules that exist for a reason
 

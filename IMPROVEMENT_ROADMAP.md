@@ -184,26 +184,23 @@ now runs only after the gate has passed, and the build carries a
 hash of its own sources so that a deployment can be checked for
 identity rather than merely for correctness.
 
-The account's block is intermittent rather than permanent, and it
-came back two minutes after it cleared. So the suite runs on a
-**self-hosted runner** - the workstation that develops the project,
-registered against this repository only and started on login. A
-self-hosted runner does not consume hosted minutes, so it is not
-subject to the block. The trade is that CI needs that machine to be
-awake, and the way back to a hosted runner is one line in each workflow
-once the billing is fixed.
+The account's block on hosted minutes proved intermittent rather than
+permanent. It came back two minutes after it cleared once, which is why
+the suite had moved to a **self-hosted runner** - the workstation that
+developed the project, registered against this repository only. The trade
+was availability, and it was paid in full: the runner went **offline**,
+the scheduled run of 2026-10-26 sat queued and was cancelled by GitHub's
+own 24-hour limit at 24h0m2s without starting, the Deploy run of
+2026-10-27 was skipped because the QA run it waits for never completed,
+and the last green push run was 2026-10-21.
 
-**The trade has already been paid.** The runner
-(`procure-sherpa-workstation`) is **offline** as of 2026-11-01
-(`gh api repos/chandrahotha/Procure_Sherpa/actions/runners`), the
-scheduled run of 2026-10-26 sat queued and was cancelled by GitHub's own
-24-hour limit at 24h0m2s without starting, the Deploy run of 2026-10-27
-was skipped because the QA run it waits for never completed, and the last
-green push run was 2026-10-21. A queued job is neither red nor green, and
-the badge reports the most recent *attempt*, not the state of the code.
-The owner steps - wake the listener, register a Linux runner, or go back
-to `ubuntu-latest` - are in CONTRIBUTING.md, "CI is green because nothing
-ran".
+**Resolved 2026-11-03.** A canary run on this exact suite executed on
+`ubuntu-latest` and passed in under two minutes (run 41547617809),
+proving the allocation block was gone, and both workflows moved to
+GitHub-hosted runners the same day. CI now depends on no workstation
+being awake; the gate itself did not change. The full incident and the
+regression checklist are in CONTRIBUTING.md, "CI is green because
+nothing ran".
 
 ### Two engineering decisions were written down
 
@@ -399,13 +396,13 @@ Two items already have partial infrastructure worth knowing about:
   `main`**, plus a weekly scheduled run and a manual dispatch
   (`.github/workflows/qa.yml`), and a local pre-push hook runs the drift
   check and the fast subset first. It is a per-commit gate now; it used
-  to be weekly-only. What is not solved is *availability*: both workflows
-  run on one self-hosted Windows runner, `procure-sherpa-workstation`,
-  which is **offline** as this was last checked
-  (`gh api repos/chandrahotha/Procure_Sherpa/actions/runners`). A run on
-  a sleeping runner queues rather than fails, and the badge does not
-  distinguish the two. See CONTRIBUTING.md, "CI is green because nothing
-  ran", for the incident, the runner's state and the owner steps.
+  to be weekly-only. Availability is solved as of 2026-11-03: both
+  workflows run on GitHub-hosted `ubuntu-latest` runners (free for
+  public repositories), so CI no longer depends on any workstation
+  being awake. The self-hosted era and its failure mode - a run on a
+  sleeping runner queues rather than fails, and the badge does not
+  distinguish the two - are recorded in CONTRIBUTING.md, "CI is green
+  because nothing ran", along with what to check if runs queue again.
 
 If you're deciding what to build next, treat this document as a menu,
 not a schedule.

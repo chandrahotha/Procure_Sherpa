@@ -17,26 +17,25 @@ name: QA
 # ---------------------------------------------------------------------------
 # HOW THIS WORKFLOW FAILS, AND WHAT EACH FAILURE MEANS
 # ---------------------------------------------------------------------------
-# It runs on a self-hosted runner: the labels below select the workstation
-# that develops this project. A self-hosted runner does not consume hosted
-# minutes, so it is not subject to the account-spending block that stopped
-# hosted jobs from being allocated at all. The trade is that CI needs that
-# machine to be awake with its listener running.
+# The jobs run on GitHub-hosted `ubuntu-latest` runners, which are free for
+# public repositories and always allocated. They did not always: this
+# workflow used to run on a self-hosted workstation because hosted minutes
+# on this account were believed to be blocked by the spending limit, and
+# when that workstation went offline the jobs simply queued - the scheduled
+# run of 2026-10-26 was cancelled after 24h0m2s having executed nothing.
+# On 2026-11-03 a canary run (41547617809, on this same suite) executed on
+# `ubuntu-latest` and passed in under two minutes, so the allocation block
+# is gone and the workflows moved to hosted runners the same day.
 #
-# A run whose job never starts therefore looks like a run that is simply
+# A job that cannot get a runner still looks like a run that is simply
 # queued, and it can sit that way until GitHub's own 24-hour limit cancels
-# it. That has happened: the scheduled run of 2026-10-26 was cancelled after
-# 24h0m2s with nothing having executed. A queued job is not a passing job and
-# it is not a failing one either, which is the worst of the three, because
-# the badge reads green while nobody has verified anything.
-#
-# `timeout-minutes` below bounds the part this file can control: once a job
-# has a runner, it cannot run for more than 30 minutes. The full gate takes a
-# few minutes on that machine, so 30 is generous headroom and still an order
-# of magnitude below GitHub's six-hour job default. The queue wait in front
-# of the job is not something a workflow file can bound; it is an operational
-# condition of the runner, and the owner steps are recorded in
-# CONTRIBUTING.md under "CI is green because nothing ran".
+# it. That failure mode is not gone, it is just no longer the expected
+# state. `timeout-minutes` below bounds the part this file can control:
+# once a job has a runner, it cannot run for more than 30 minutes. The
+# full gate takes a few minutes, so 30 is generous headroom and still an
+# order of magnitude below GitHub's six-hour job default. What to do if
+# runs start queueing again is recorded in CONTRIBUTING.md under
+# "CI is green because nothing ran".
 #
 # Steps that are not part of the gate are marked as such, so an account
 # condition (an artifact storage quota, say) cannot turn a verified commit
@@ -68,24 +67,21 @@ permissions:
 
 jobs:
   qa:
-    # This job runs on a self-hosted runner: the owner's workstation.
-    # `pull_request` from a fork checks the stranger's code out and then runs
-    # `npm ci`, the build and every test tool on that machine, which is code
-    # execution by anyone who can open a PR against a public repository. The
-    # gate is worth more than the contribution path here, so a fork's PR gets
-    # a skipped job instead of a runner; pushes, same-repo PRs, the weekly
-    # schedule and manual runs are unaffected.
-    #
-    # A skipped job makes the run conclude "success", which the Deploy
-    # workflow used to read as a green light - so deploy.yml no longer trusts
-    # a conclusion alone. Both halves are required; tools/check_workflows.mjs
-    # fails the local gate if either is removed.
+    # A fork's pull request does not run: the job would check a stranger's
+    # code out and execute `npm ci` and every test tool against it. On an
+    # ephemeral hosted VM that is not the remote-code-execution hazard it
+    # was on the owner's workstation, but it still spends the repository's
+    # Actions minutes on untested-by-us code, so the skip stays as
+    # defense in depth. A skipped job makes the run conclude "success",
+    # which the Deploy workflow used to read as a green light - so
+    # deploy.yml no longer trusts a conclusion alone. Both halves are
+    # required; tools/check_workflows.mjs fails the local gate if either
+    # is removed.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    # A self-hosted runner is selected by LABELS, not by a name.
-    # `procure-sherpa-workstation` is the machine; os and arch keep a
-    # differently-labelled runner from picking this job up and failing on a
-    # shell it does not have.
-    runs-on: [self-hosted, Windows, X64, procure-sherpa]
+    # GitHub-hosted runners: ephemeral, always allocated, free for public
+    # repositories. Every step is Node-based by design, so the OS does not
+    # matter to the suite.
+    runs-on: ubuntu-latest
     # Bounded: a hung step fails the run instead of eating the 24-hour limit.
     timeout-minutes: 30
     steps:
