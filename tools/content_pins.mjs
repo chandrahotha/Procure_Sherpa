@@ -6,8 +6,8 @@
    These numbers used to live only in tools/verify_deploy.mjs, which is a
    deploy step and does not run inside `npm run qa`. So the exact pins
    (13 SOPs, 27 checklists, 33 templates, 19 calculators, 9 maturity
-   areas, 21 lifecycle stages, 28 Academy functions in 11 modules, the
-   140/112 curriculum counts, the handoff edges and the documented search
+   areas, 21 lifecycle stages, 34 Academy functions in 13 modules, the
+   179/148 curriculum counts, the handoff edges and the documented search
    example) were only ever checked against the live site, while the gate
    that every developer runs held loose floors instead ("< 5", "< 10").
    A content regression could be merged and shipped, and `npm run qa`
@@ -52,16 +52,16 @@ export const PINS = {
   calc: 19,
   maturityAreas: 9,
   lifecycleStages: 21,
-  academyFunctions: 28,
-  academyModules: 11,
-  academySopSteps: 140,
-  academyQuizQuestions: 112,
+  academyFunctions: 34,
+  academyModules: 13,
+  academySopSteps: 179,
+  academyQuizQuestions: 148,
   /* The three altitudes the curriculum is written at. A function cannot
      be at two levels, and a level cannot gain or lose a function without
      these numbers moving - which is the point: changing a lesson's level
      now fails G1/G16 and G23 until every document that quotes the split
-     is re-read. Counts: 9 foundation, 12 practitioner, 7 executive. */
-  academyTierCounts: { core: 9, practitioner: 12, executive: 7 },
+     is re-read. Counts: 9 foundation, 13 practitioner, 12 executive. */
+  academyTierCounts: { core: 9, practitioner: 13, executive: 12 },
   /* G21: the SOP library's own procedure steps (master §18 part 7).
      This count was 106 before the torn steps were repaired: four of those
      were not steps at all, but halves of a step created by a ';' written
@@ -71,6 +71,12 @@ export const PINS = {
      metadata, so the artifact cannot quietly go back to 106. */
   sopLibrarySteps: 102,
   sopLibraryMinStepsPerSop: 6,
+  /* G18: Academy functions that carry a link into a workbench. One short
+     by design: func-mission-value is the orientation lesson and has no
+     practice tool, and every other function must have one or the library
+     stops being a system. A key dropped from PS.ACADEMY_WORKBENCH moves
+     this number and fails the gate. */
+  academyWorkbenchLinked: 33,
   workbenches: 8,
   navLearnSections: 5,
   navLearnItems: 26,
@@ -116,6 +122,7 @@ export function contentPins(PS) {
       spec: 'the level filter on the Academy hub (#/academy?tier=' + t + ')'
     })),
     { label: 'SOP library procedure steps', got: (d.sop || []).reduce((a, s) => a + (s.steps || []).length, 0), pin: PINS.sopLibrarySteps, spec: 'G21: the steps written into the SOP documents themselves' },
+    { label: 'academy functions linked to a workbench', got: funcs.filter((f) => !!(PS.ACADEMY_WORKBENCH || {})[f.id]).length, pin: PINS.academyWorkbenchLinked, spec: 'G18: the library has to reach the tool where the work is practised' },
     { label: 'workbench collections', got: wb.length, pin: PINS.workbenches, spec: 'section 27, the eight record collections' }
   ];
 }

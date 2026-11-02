@@ -1,6 +1,6 @@
 /* ==========================================================
    Procure Sherpa - Learning Paths
-   Three tracks from foundations to strategic leadership, with
+   Tracks from foundations to board-level accountability, with
    progress drawn from Academy module completion.
    ========================================================== */
 
@@ -50,6 +50,39 @@ PS.learningPaths.PATHS = [
     skills: ['Due diligence', 'Anti-bribery controls', 'Sustainable sourcing', 'Supply resilience', 'Supplier performance', 'Savings assurance'],
     duration: '4-6 weeks',
     color: 'var(--danger)'
+  },
+  {
+    id: 'digital',
+    title: 'Digital Procurement & Spend Analytics',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The data layer under everything else: the systems the buying runs through, the spend cube the analysis runs on, and the category strategy that turns a finding into a plan.',
+    modules: ['func-digital-procurement', 'func-spend-analytics', 'func-category-strategy'],
+    skills: ['Reading a spend cube', 'Picking the tooling that fits the process', 'Writing a category strategy a business will fund'],
+    duration: '3-5 weeks',
+    color: 'var(--accent)'
+  },
+  {
+    id: 'portfolio',
+    title: 'Portfolio Strategy, the Tail & Demand',
+    tier: 'executive',
+    level: 5,
+    desc: 'Accountability for the shape of the portfolio rather than one line in it: the supply market, the long tail, and the demand you were never told about.',
+    modules: ['func-tail-spend-program', 'func-market-structure', 'func-demand-management'],
+    skills: ['Running a tail programme as a channel, not a campaign', 'Judging whether a market can be made competitive', 'Attacking consumption instead of only price'],
+    duration: '4-6 weeks',
+    color: 'var(--warn-2)'
+  },
+  {
+    id: 'boardroom',
+    title: 'Executive & Board-Level Procurement',
+    tier: 'executive',
+    level: 6,
+    desc: 'Answering for the function in front of a CFO, an audit committee or a board: the operating model, the value narrative, and the order the transformation has to happen in.',
+    modules: ['func-operating-model', 'func-value-narrative', 'func-transformation-roadmap'],
+    skills: ['Designing the model and defending its cost-to-serve', 'Presenting value a finance reader accepts as evidence', 'Sequencing change by dependency, not by enthusiasm'],
+    duration: '5-7 weeks',
+    color: 'var(--scen)'
   }
 ];
 
@@ -79,6 +112,21 @@ PS.learningPaths.sortPaths = function () {
   });
 };
 PS.learningPaths.sortPaths();
+
+/* Which Academy functions no track claims. When Module 12 and Module 13
+   were added the curriculum grew past the paths and nothing said so: the
+   page still read "Four tracks" and the all-modules table, which is built
+   by walking the paths, quietly dropped the nine functions that were never
+   listed. The page now measures its own coverage instead of asserting it,
+   and G24 fails if a function stays uncovered. */
+PS.learningPaths.uncoveredFunctions = function () {
+  var listed = {};
+  (PS.learningPaths.PATHS || []).forEach(function (path) {
+    (path.modules || []).forEach(function (id) { listed[id] = true; });
+  });
+  return (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return !listed[f.id]; });
+};
+
 PS.learningPaths.getUserProgress = function (pathId) {
   var path = PS.learningPaths.PATHS.filter(function (p) { return p.id === pathId; })[0];
   if (!path) return null;
@@ -110,9 +158,15 @@ PS.route('learning-paths', function () {
   PS.pageTitle = 'Learning paths';
   var assessment = PS.skillAssessment ? PS.skillAssessment.getLastResult() : null;
 
+  var pathCount = PS.learningPaths.PATHS.length;
+  var uncovered = PS.learningPaths.uncoveredFunctions().length;
+
   var html = '<div class="card">' +
     '<div class="card-head"><h1>Learning paths</h1></div>' +
-    '<p class="lead">Four tracks, tagged by the altitude they prepare you for: <strong>Foundation</strong>, <strong>Practitioner</strong> or <strong>Executive</strong>. Start where you are; each path builds on the one before it.</p>';
+    '<p class="lead">' + pathCount + ' tracks, each tagged by the altitude it prepares you for: <strong>Foundation</strong>, <strong>Practitioner</strong> or <strong>Executive</strong>. ' +
+    (uncovered
+      ? '<strong>' + uncovered + ' Academy functions are not in any track yet</strong> - they are still readable from the <a href="#/academy">Academy hub</a>.'
+      : 'Every Academy function sits in one track, so working through the tracks covers the whole curriculum.') + '</p>';
 
   if (assessment) {
     var level = PS.skillAssessment.getLevel(assessment.score);

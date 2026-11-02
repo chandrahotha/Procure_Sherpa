@@ -562,11 +562,20 @@ let seqBad = 0;
 for (const role of ROLES) {
   setUser(role, 'academy');
   const nums = moduleBadges();
-  const ascending = nums.every((n, i) => i === 0 || nums[i - 1] < n);
-  if (!ascending) { fail('G13', 'the curriculum is not in module order for role ' + role + ': ' + nums.join(' ')); seqBad++; }
-  if (nums.length !== 11) { fail('G13', 'the curriculum shows ' + nums.length + ' modules for role ' + role + ', expected 11'); seqBad++; }
+  /* Ascending-plus-count used to be the check, which a hub missing module
+     7 and holding a duplicate module 8 would have passed. The requirement
+     is that the numbered curriculum numbers 1 to N in order, so that is
+     what is compared - against the module count pinned in
+     tools/content_pins.mjs, so adding a module cannot fail this gate for
+     the wrong reason or pass it without being counted. */
+  const want = Array.from({ length: PINS.academyModules }, (_, i) => i + 1);
+  if (nums.join(',') !== want.join(',')) {
+    fail('G13', 'the curriculum for role ' + role + ' shows modules [' + nums.join(',') +
+      '], expected 1 to ' + PINS.academyModules + ' in order');
+    seqBad++;
+  }
 }
-if (!seqBad) ok('G13', 'all ' + ROLES.length + ' roles see the curriculum in module order, 1 to 11');
+if (!seqBad) ok('G13', 'all ' + ROLES.length + ' roles see the curriculum in module order, 1 to ' + PINS.academyModules);
 
 /* The role must still do something visible, and it must do it by
    recommending rather than by moving. */
@@ -584,6 +593,38 @@ if (!recPanel) {
   if (!recNums.length) fail('G13', 'the role recommendation names no modules');
   else if (!recAsc) fail('G13', 'the role recommendation is not in module order: ' + recNums.join(' '));
   else ok('G13', 'the role recommends modules in order (' + recNums.join(', ') + ')');
+}
+
+/* A module the tag map does not know can never be recommended, and the
+   picker stops at four - so Modules 12 and 13 arriving as content left them
+   invisible to every role, with no gate noticing. The three checks below are
+   the ones that would have caught it: the tag map covers every module in the
+   curriculum, it names no module that does not exist, and every module is
+   actually recommended by somebody. */
+const curriculumModuleNames = [...new Set((PS.ACADEMY_FUNCTIONS || []).map((f) => f.module))];
+const tagNames = Object.keys(PS.ACADEMY_MODULE_TAGS || {});
+const untagged = curriculumModuleNames.filter((n) => tagNames.indexOf(n) < 0);
+if (untagged.length) {
+  fail('G13', untagged.length + ' curriculum modules are in no role recommendation map: ' + untagged.join('; '));
+} else {
+  ok('G13', 'every one of the ' + curriculumModuleNames.length + ' curriculum modules is tagged for role matching');
+}
+const staleTags = tagNames.filter((n) => curriculumModuleNames.indexOf(n) < 0);
+if (staleTags.length) {
+  fail('G13', 'the role tag map names modules the curriculum does not have: ' + staleTags.join('; '));
+} else {
+  ok('G13', 'the role tag map names no phantom module');
+}
+const recommendedByAny = new Set();
+for (const role of ROLES) {
+  setUser(role, 'academy');
+  (PS.user.recommendedModules() || []).forEach((n) => recommendedByAny.add(n));
+}
+const neverRecommended = curriculumModuleNames.filter((n) => !recommendedByAny.has(n));
+if (neverRecommended.length) {
+  fail('G13', neverRecommended.length + ' modules no role is ever pointed at: ' + neverRecommended.join('; '));
+} else {
+  ok('G13', 'every module is recommended by at least one of the ' + ROLES.length + ' roles');
 }
 
 /* Resume must point at work that is actually left to do. */
@@ -999,6 +1040,175 @@ try {
   }
 } catch (e) {
   fail('G20', 'could not recompute the source hash: ' + e.message);
+}
+
+/* ---------- G24: the curriculum, the tracks and the badges are one system ----------
+   Modules 12 and 13 arrived as content and nothing noticed that the rest of
+   the Academy had not moved with them: nine functions belonged to no
+   learning path, the paths page still said "Four tracks" while the data had
+   four, the all-modules table (built by walking the paths) silently dropped
+   them, and no badge could be earned for the work. Each of those is a
+   content-and-wiring defect, and the gates only measured content.
+
+   This gate measures the wiring: every function has exactly one track, every
+   track entry names a real function, every badge can actually be earned, and
+   the page states the count the data holds instead of a number an author
+   typed. ------------------------------------------------------------------ */
+console.log('\nG24  tracks, badges and curriculum coverage');
+const g24Funcs = PS.ACADEMY_FUNCTIONS || [];
+const g24Paths = (PS.learningPaths && PS.learningPaths.PATHS) || [];
+const g24Ids = g24Funcs.map((f) => f.id);
+
+if (!g24Paths.length) {
+  fail('G24', 'no learning paths are registered');
+} else {
+  const g24Home = {};
+  const g24Phantom = [];
+  g24Paths.forEach((p) => (p.modules || []).forEach((id) => {
+    g24Home[id] = (g24Home[id] || 0) + 1;
+    if (!PS.byId('academy', id)) g24Phantom.push(p.id + ' -> ' + id);
+  }));
+  const g24Untracked = g24Ids.filter((id) => !g24Home[id]);
+  const g24Dup = Object.keys(g24Home).filter((id) => g24Home[id] > 1);
+  if (g24Untracked.length) {
+    fail('G24', g24Untracked.length + ' Academy functions are in no learning path: ' +
+      g24Untracked.map((id) => PS.byId('academy', id).title).join('; '));
+  } else {
+    ok('G24', 'all ' + g24Ids.length + ' Academy functions belong to a learning path');
+  }
+  if (g24Dup.length) {
+    fail('G24', g24Dup.length + ' functions are claimed by more than one path: ' + g24Dup.join(', '));
+  } else {
+    ok('G24', 'no function is claimed by two paths');
+  }
+  if (g24Phantom.length) {
+    fail('G24', 'learning paths list functions that do not exist: ' + g24Phantom.join(', '));
+  } else {
+    ok('G24', 'every path entry (' + Object.keys(g24Home).length + ') resolves to a real Academy function');
+  }
+  const g24TierBad = g24Paths.filter((p) => !p.tier || !PS.academy.tierName(p.tier) ||
+    !(PS.academy.TIERS || []).some((t) => t.id === p.tier));
+  if (g24TierBad.length) {
+    fail('G24', 'paths without a named level: ' + g24TierBad.map((p) => p.id).join(', '));
+  } else {
+    ok('G24', 'all ' + g24Paths.length + ' tracks are tagged with one of the three levels');
+  }
+}
+
+/* The page must state the number the data holds. "Four tracks" was typed
+   while the file held four; the day a fifth arrived the sentence became a
+   claim the product could not support, and no gate reads prose. */
+w.location.hash = '#/learning-paths';
+PS.renderRoute();
+const g24Main = w.document.querySelector('#main');
+const g24Text = g24Main ? g24Main.textContent : '';
+const g24Stated = (g24Text.match(/(\d+)\s+tracks/g) || []).map((s) => Number(s.match(/\d+/)[0]));
+if (!g24Stated.length) {
+  fail('G24', 'the learning-paths page states no track count');
+} else if (g24Stated[0] !== g24Paths.length) {
+  fail('G24', 'the learning-paths page says "' + g24Stated[0] + ' tracks" but the data holds ' + g24Paths.length);
+} else {
+  ok('G24', 'the learning-paths page states the real count (' + g24Stated[0] + ' tracks)');
+}
+const g24Rows = g24Main ? g24Main.querySelectorAll('table tbody tr').length : 0;
+const g24ExpectedRows = g24Paths.reduce((a, p) => a + (p.modules || []).length, 0);
+if (g24Rows !== g24ExpectedRows) {
+  fail('G24', 'the all-modules table renders ' + g24Rows + ' rows, expected ' + g24ExpectedRows +
+    ' (one per function per track)');
+} else {
+  ok('G24', 'the all-modules table lists all ' + g24Rows + ' function/track pairs');
+}
+
+/* Badges are derived from declared triggers, so a trigger that names a
+   function the curriculum does not have is a badge nobody can ever earn.
+   Before this, the triggers were eleven `if` lines and no reader could check
+   them without re-deriving the whole file. */
+const g24Badges = PS.academy.BADGES || [];
+const g24Unearnable = [];
+const g24Ruleless = [];
+g24Badges.forEach((b) => {
+  if (b.first || b.all) return;
+  const need = b.requires || [];
+  if (!need.length) { g24Ruleless.push(b.id); return; }
+  const missing = need.filter((id) => !g24Ids.includes(id));
+  if (missing.length) g24Unearnable.push(b.id + ' -> ' + missing.join(', '));
+});
+if (g24Unearnable.length) {
+  fail('G24', 'badges that can never be earned, their trigger names a function that does not exist: ' +
+    g24Unearnable.join('; '));
+} else {
+  ok('G24', 'every badge trigger names a real Academy function (' + g24Badges.length + ' badges)');
+}
+if (g24Ruleless.length) {
+  fail('G24', 'badges with no earning rule at all: ' + g24Ruleless.join(', '));
+} else {
+  ok('G24', 'every badge declares how it is earned');
+}
+const g24DupBadgeIds = g24Badges.map((b) => b.id).filter((id, i, a) => a.indexOf(id) !== i);
+if (g24DupBadgeIds.length) fail('G24', 'duplicate badge ids: ' + g24DupBadgeIds.join(', '));
+else ok('G24', 'badge ids are unique');
+
+/* And the derivation has to work both ways: earn it, then take the
+   completion away and the award has to be withdrawn. This was previously
+   asserted for no badge at all. */
+const g24Probe = PS.academy.getAll();
+const g24Saved = JSON.parse(JSON.stringify(g24Probe));
+try {
+  const g24Target = g24Badges.filter((b) => (b.requires || []).length > 1)[0];
+  if (!g24Target) {
+    fail('G24', 'no multi-function badge exists to test the derivation with');
+  } else {
+    const g24Blank = { completed: {}, scores: {}, badges: {}, current: '' };
+    PS.academy.save(g24Blank);
+    g24Target.requires.forEach((id) => PS.academy.markCompleted(id));
+    const g24Earned = PS.academy.getAll().badges;
+    if (!g24Earned[g24Target.id]) {
+      fail('G24', 'completing every function in ' + g24Target.id + "'s rule did not award it");
+    } else {
+      ok('G24', 'completing ' + g24Target.requires.length + ' functions awards ' + g24Target.id);
+    }
+    const g24Partial = PS.academy.getAll();
+    delete g24Partial.completed[g24Target.requires[g24Target.requires.length - 1]];
+    PS.academy.save(g24Partial);
+    PS.academy.checkBadges();
+    const g24After = PS.academy.getAll().badges;
+    if (g24After[g24Target.id]) {
+      fail('G24', 'the ' + g24Target.id + ' badge survived after its trigger was undone - badges are not derived from the record');
+    } else {
+      ok('G24', 'undoing a trigger withdraws ' + g24Target.id + ' - badges are derived, not accumulated');
+    }
+  }
+} finally {
+  PS.academy.save(g24Saved);
+}
+
+/* Pages that state a curriculum count in prose have to state the registry's
+   number. The Command Center sentence was typed, the curriculum grew by two
+   modules in src/content/, and the home page kept advertising the smaller
+   product. This scans the pages a reader trusts to orient themselves - not
+   the changelog, whose older entries are dated statements about the past and
+   are meant to keep the numbers they had on that date. */
+const prosePages = ['#/home', '#/academy', '#/learning-paths', '#/academy-progress'];
+const proseBad = [];
+for (const route of prosePages) {
+  w.location.hash = route;
+  PS.renderRoute();
+  const prose = (w.document.querySelector('#main') || { textContent: '' }).textContent.replace(/\s+/g, ' ');
+  for (const m of prose.matchAll(/(\d+)\s+functions?\b/g)) {
+    if (Number(m[1]) !== g24Ids.length) {
+      proseBad.push(route + ' says "' + m[0] + '" while the registry holds ' + g24Ids.length + ' functions');
+    }
+  }
+  for (const m of prose.matchAll(/(\d+)\s+modules?\b/g)) {
+    if (Number(m[1]) !== PINS.academyModules && Number(m[1]) !== g24Paths.length) {
+      proseBad.push(route + ' says "' + m[0] + '" while the curriculum holds ' + PINS.academyModules + ' modules');
+    }
+  }
+}
+if (proseBad.length) {
+  fail('G24', 'pages stating a curriculum count the data does not support: ' + proseBad.join(' | '));
+} else {
+  ok('G24', 'the orienting pages state real counts, not typed numbers (' + prosePages.join(', ') + ')');
 }
 
 w.close();

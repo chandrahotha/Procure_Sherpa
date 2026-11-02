@@ -22,19 +22,29 @@ PS.academy.tierName = function (id) {
   return t ? t.name : 'Foundation';
 };
 
+/* Badges are declared with the functions that earn them, so the trigger is
+   data a gate can read. They used to be eleven hand-written `if` lines
+   inside checkBadges: renaming a function in the content files left its
+   badge permanently unearnable and nothing could notice, because the id the
+   rule tested no longer existed anywhere. `requires` lists function ids that
+   all have to be complete; `first` earns on any single completion; `all`
+   earns when the whole curriculum is complete. */
 PS.academy.BADGES = [
-  { id: 'pioneer', name: 'Procurement Pioneer', icon: '🎖️', desc: 'Completed your first procurement function in the Academy.' },
-  { id: 'tco_tactician', name: 'TCO Tactician', icon: '⚖️', desc: 'Mastered Landed Cost & Total Cost of Ownership.' },
-  { id: 'rfq_architect', name: 'RFQ & Sourcing Architect', icon: '📐', desc: 'Mastered Tender Formulation, RFQ & Price Normalization.' },
-  { id: 'negotiation_ace', name: 'Strategic Negotiator', icon: '🤝', desc: 'Mastered BATNA, ZOPA and Commercial Term Optimization.' },
-  { id: 'contract_guardian', name: 'Contract Guardian', icon: '📜', desc: 'Mastered Contract Structuring, Legal Clauses and DOA Controls.' },
-  { id: 'p2p_specialist', name: 'P2P Disciplinarian', icon: '📦', desc: 'Mastered PO Execution, Expediting and 3-Way Matching.' },
-  { id: 'value_champion', name: 'Value & SRM Champion', icon: '💎', desc: 'Mastered Supplier Relationship Management and Savings Realization.' },
-  { id: 'indirect_navigator', name: 'Indirect Navigator', icon: '🧭', desc: 'Mastered Indirect & MRO sourcing and Professional Services buying.' },
-  { id: 'saas_strategist', name: 'Software & SaaS Strategist', icon: '☁️', desc: 'Mastered Software, SaaS and Technology Licensing.' },
-  { id: 'responsible_buyer', name: 'Responsible Buyer', icon: '🌱', desc: 'Mastered Sustainable Procurement and Ethics & Due Diligence.' },
-  { id: 'resilience_architect', name: 'Resilience Architect', icon: '🛡️', desc: 'Mastered Supplier Resilience and Business Continuity.' },
-  { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.' }
+  { id: 'pioneer', name: 'Procurement Pioneer', icon: '🎖️', desc: 'Completed your first procurement function in the Academy.', first: true },
+  { id: 'tco_tactician', name: 'TCO Tactician', icon: '⚖️', desc: 'Mastered Landed Cost & Total Cost of Ownership.', requires: ['func-landed-cost-tco'] },
+  { id: 'rfq_architect', name: 'RFQ & Sourcing Architect', icon: '📐', desc: 'Mastered Tender Formulation, RFQ & Price Normalization.', requires: ['func-rfq-issuance', 'func-quote-normalization'] },
+  { id: 'negotiation_ace', name: 'Strategic Negotiator', icon: '🤝', desc: 'Mastered BATNA, ZOPA and Commercial Term Optimization.', requires: ['func-negotiation-strategy', 'func-commercial-terms'] },
+  { id: 'contract_guardian', name: 'Contract Guardian', icon: '📜', desc: 'Mastered Contract Structuring, Legal Clauses and DOA Controls.', requires: ['func-contract-structuring', 'func-doa-controls'] },
+  { id: 'p2p_specialist', name: 'P2P Disciplinarian', icon: '📦', desc: 'Mastered PO Execution, Expediting and 3-Way Matching.', requires: ['func-po-execution', 'func-threeway-matching'] },
+  { id: 'value_champion', name: 'Value & SRM Champion', icon: '💎', desc: 'Mastered Supplier Relationship Management and Savings Realization.', requires: ['func-srm-scorecards', 'func-savings-reporting'] },
+  { id: 'indirect_navigator', name: 'Indirect Navigator', icon: '🧭', desc: 'Mastered Indirect & MRO sourcing and Professional Services buying.', requires: ['func-indirect-sourcing', 'func-professional-services'] },
+  { id: 'saas_strategist', name: 'Software & SaaS Strategist', icon: '☁️', desc: 'Mastered Software, SaaS and Technology Licensing.', requires: ['func-software-licensing'] },
+  { id: 'responsible_buyer', name: 'Responsible Buyer', icon: '🌱', desc: 'Mastered Sustainable Procurement and Ethics & Due Diligence.', requires: ['func-sustainability', 'func-ethics-compliance'] },
+  { id: 'resilience_architect', name: 'Resilience Architect', icon: '🛡️', desc: 'Mastered Supplier Resilience and Business Continuity.', requires: ['func-resilience-continuity', 'func-supplier-risk'] },
+  { id: 'analytics_architect', name: 'Spend Analytics Architect', icon: '📊', desc: 'Mastered Digital Procurement, Spend Analytics and Category Strategy.', requires: ['func-digital-procurement', 'func-spend-analytics', 'func-category-strategy'] },
+  { id: 'portfolio_commander', name: 'Portfolio Commander', icon: '🧬', desc: 'Mastered the Tail, Supply Market Structure and Demand Management.', requires: ['func-tail-spend-program', 'func-market-structure', 'func-demand-management'] },
+  { id: 'boardroom_ready', name: 'Boardroom Ready', icon: '🏛️', desc: 'Mastered the Operating Model, the Value Narrative and Transformation Sequencing.', requires: ['func-operating-model', 'func-value-narrative', 'func-transformation-roadmap'] },
+  { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 
 PS.academy.getAll = function () {
@@ -146,24 +156,25 @@ PS.academy.checkBadges = function () {
   var newlyAwarded = [];
   var comp = data.completed || {};
   var compCount = Object.keys(comp).filter(function (k) { return comp[k]; }).length;
+  var allFunctions = (PS.ACADEMY_FUNCTIONS || []);
 
   /* Badges are derived from the completion record, not accumulated. A
      badge that no longer follows from the current record is withdrawn,
      so a demoted function cannot leave a stale award on the transcript. */
   var earned = {};
-  if (compCount >= 1) earned['pioneer'] = 1;
-  if (comp['func-landed-cost-tco']) earned['tco_tactician'] = 1;
-  if (comp['func-rfq-issuance'] && comp['func-quote-normalization']) earned['rfq_architect'] = 1;
-  if (comp['func-negotiation-strategy'] && comp['func-commercial-terms']) earned['negotiation_ace'] = 1;
-  if (comp['func-contract-structuring'] && comp['func-doa-controls']) earned['contract_guardian'] = 1;
-  if (comp['func-po-execution'] && comp['func-threeway-matching']) earned['p2p_specialist'] = 1;
-  if (comp['func-srm-scorecards'] && comp['func-savings-reporting']) earned['value_champion'] = 1;
-  if (comp['func-indirect-sourcing'] && comp['func-professional-services']) earned['indirect_navigator'] = 1;
-  if (comp['func-software-licensing']) earned['saas_strategist'] = 1;
-  if (comp['func-sustainability'] && comp['func-ethics-compliance']) earned['responsible_buyer'] = 1;
-  if (comp['func-resilience-continuity'] && comp['func-supplier-risk']) earned['resilience_architect'] = 1;
-  var allFunctions = (PS.ACADEMY_FUNCTIONS || []);
-  if (allFunctions.length > 0 && compCount >= allFunctions.length) earned['grandmaster'] = 1;
+  (PS.academy.BADGES || []).forEach(function (badge) {
+    if (badge.first) {
+      if (compCount >= 1) earned[badge.id] = 1;
+      return;
+    }
+    if (badge.all) {
+      if (allFunctions.length > 0 && compCount >= allFunctions.length) earned[badge.id] = 1;
+      return;
+    }
+    var need = badge.requires || [];
+    if (!need.length) return;
+    if (need.every(function (fid) { return !!comp[fid]; })) earned[badge.id] = 1;
+  });
 
   var changed = false;
   Object.keys(earned).forEach(function (bId) {

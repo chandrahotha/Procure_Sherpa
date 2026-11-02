@@ -227,17 +227,26 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 7: Operational Purchasing & Order Execution (P2P)': ['operations', 'learn'],
   'Module 8: Supplier Management & Value Realization': ['supplier', 'value', 'learn'],
   'Module 9: Services, Software and Indirect Procurement': ['services', 'operations', 'learn'],
-  'Module 10: Risk, Compliance, Ethics and Sustainability': ['risk', 'governance', 'learn'],
-  'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn']
+  'Module 10: Risk, Compliance, Ethics and Sustainability': ['risk', 'ethics', 'sustainability', 'learn'],
+  'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn'],
+  'Module 12: Advanced Category & Portfolio Strategy': ['portfolio', 'strategy', 'cost', 'learn'],
+  'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn']
 };
 
-/* The kind of work each role leans on, most important first. */
+/* The kind of work each role leans on, most important first.
+   The picker stops at four and takes one module per tag, so a tag that
+   never appears here is a module no role is ever recommended - which is how
+   Modules 12 and 13 shipped and stayed invisible, and why Module 5 and
+   Module 8 were too. 'portfolio', 'executive' and 'ethics' are the tags that
+   give the senior and the compliance material its own slot instead of
+   sharing one with a neighbouring module; beginner and buyer keep the
+   operational set. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
   buyer: ['operations', 'sourcing', 'services', 'spend', 'learn'],
-  manager: ['strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'learn'],
-  finance: ['cost', 'analytics', 'value', 'contract', 'governance', 'learn'],
-  compliance: ['risk', 'governance', 'contract', 'supplier', 'learn']
+  manager: ['strategy', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
+  finance: ['cost', 'analytics', 'executive', 'value', 'contract', 'governance', 'learn'],
+  compliance: ['risk', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {
   var p = this.getProfile();
@@ -255,20 +264,27 @@ PS.user.recommendedModules = function (limit) {
   var pri = this.rolePriority();
   var names = Object.keys(PS.ACADEMY_MODULE_TAGS);
   var picked = [];
-  /* Walk the role's priority in order and take the first modules that
-     match each tag, so a compliance officer gets the risk module
-     before the contract module. The 'learn' tag is a fallback for
-     every module and would match everything, so it is only consulted
-     once nothing else has matched. */
+  /* One module per tag, in the role's own priority order: the first
+     module that matches a tag represents that tag, and the next tag gets
+     the next slot. The loop used to push EVERY module carrying the tag,
+     so a single early tag ate the whole budget - 'risk' handed compliance
+     both Module 4 and Module 10, and by the time the list got to
+     'supplier' there was no room left. That is how two modules of thirteen
+     ended up recommended by nobody, which the role panel never says out
+     loud because it only ever shows the ones it picked.
+     The 'learn' tag is a fallback that matches everything, so it is
+     skipped here and only used if nothing else matched. */
   pri.forEach(function (tag) {
     if (tag === 'learn') return;
-    names.forEach(function (name) {
-      if (picked.length >= max) return;
-      if (picked.indexOf(name) >= 0) return;
+    if (picked.length >= max) return;
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
+      if (picked.indexOf(name) >= 0) continue;
       var tags = PS.ACADEMY_MODULE_TAGS[name] || [];
-      if (tags.indexOf(tag) < 0) return;
+      if (tags.indexOf(tag) < 0) continue;
       picked.push(name);
-    });
+      break;
+    }
   });
   if (!picked.length) {
     names.slice(0, max).forEach(function (n) { picked.push(n); });

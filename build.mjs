@@ -24,6 +24,37 @@ const manifest = fs.readFileSync(path.join(SRC, 'manifest.txt'), 'utf8')
   .map((s) => s.trim())
   .filter((s) => s && !s.startsWith('#'));
 
+/* Every fragment on disk has to be in the manifest.
+
+   A file in src/ that the manifest does not name is assembled into
+   nothing. It compiles, it lints, it passes code review, and it never
+   reaches a user. That is not hypothetical: src/content/
+   19g_academy_functions_part7.js - three Academy functions and a whole
+   module - sat on disk and unlisted while the Academy page counted the
+   modules the manifest happened to carry, and every gate stayed green
+   because a gate can only assert what was built.
+
+   The fix cannot be "remember to edit the manifest", so it is a build
+   failure. Non-fragment files (the src README, the manifest itself, notes
+   and images) are ignored by extension, which is what makes the check
+   safe to make hard. */
+const FRAGMENT_EXT = /\.(js|css|mjs|html)$/i;
+const listed = new Set(manifest.map((rel) => rel.split(path.sep).join('/')));
+const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+  const rel = path.posix.join(path.relative(ROOT, dir).split(path.sep).join('/'), e.name);
+  return e.isDirectory() ? walk(rel) : [rel];
+});
+const orphans = walk('src')
+  .filter((rel) => FRAGMENT_EXT.test(rel) && !listed.has(rel))
+  .sort();
+if (orphans.length) {
+  console.error('FAIL src files are not in src/manifest.txt, so they are not in the build:');
+  orphans.forEach((rel) => console.error('  ' + rel));
+  console.error('Either list them in src/manifest.txt in the order they should assemble,');
+  console.error('or move them out of src/ until they are ready to ship.');
+  process.exit(1);
+}
+
 /* Fragments are normalised to CRLF before joining.
 
    Without this the artifact is not reproducible across machines. Source

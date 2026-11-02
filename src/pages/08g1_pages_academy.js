@@ -443,6 +443,12 @@ PS.ACADEMY_WORKBENCH = {
   'func-spend-analytics': 'analytics',
   'func-digital-procurement': 'analytics',
   'func-doa-controls': 'approvals',
+  'func-tail-spend-program': 'catalogue',
+  'func-market-structure': 'suppliers',
+  'func-demand-management': 'budget',
+  'func-operating-model': 'approvals',
+  'func-value-narrative': 'analytics',
+  'func-transformation-roadmap': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

@@ -19,12 +19,18 @@ PS.homeStartHere = function () {
   var primary, secondary;
   var prof = PS.user ? PS.user.getProfile() : { role: 'beginner', track: 'academy' };
   var operational = prof.track === 'operations';
+  /* The curriculum counts are read, never typed. This sentence was
+     "Twenty-eight functions across eleven modules" for a release and then
+     two more modules arrived in src/content/ and the Command Center went
+     on describing a smaller product than the one it links to. */
+  var moduleCount = new Set(funcs.map(function (f) { return f.module; })).size;
+  var curriculumNote = funcs.length + ' functions across ' + moduleCount + ' modules, beginner to advanced';
   if (isNew) {
     if (operational) {
       primary = { href: '#/operations', label: 'Start with the Operations Hub', note: 'Six phases of the work, and every procedure, checklist, template and calculator that belongs to them.' };
-      secondary = { href: '#/academy', label: 'Or learn the theory first', note: 'Eleven modules, twenty-eight functions, beginner to advanced.' };
+      secondary = { href: '#/academy', label: 'Or learn the theory first', note: curriculumNote + '.' };
     } else {
-      primary = { href: '#/academy', label: 'Start the Academy', note: 'Twenty-eight functions across eleven modules, beginner to advanced, with a quiz and a sandbox in each.' };
+      primary = { href: '#/academy', label: 'Start the Academy', note: 'With a quiz and a sandbox in each: ' + curriculumNote + '.' };
       secondary = { href: '#/what', label: 'Or describe a live problem', note: 'Map a situation to the right SOP, checklist and calculator.' };
     }
   } else if (saved.length) {
