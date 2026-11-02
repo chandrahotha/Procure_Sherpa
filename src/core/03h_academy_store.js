@@ -236,6 +236,59 @@ PS.academy.getStats = function () {
   };
 };
 
+/* ---------- curriculum progress helpers (used by the Academy hub and the lesson page) ----------
+   The hub lists 15 modules and 40 lessons and tells the reader nothing about
+   where they are in it: the only progress view was a separate page, and a
+   learner mid-way through Module 9 could not see that Module 4 was half done
+   without leaving the curriculum. These three functions are the data the
+   progress rails and the lesson position line are built from. */
+
+/* The curriculum in the order it is taught: module number, then the order
+   the functions were authored in inside the module. Same rule as
+   nextUncompleted, so the position a learner is shown and the lesson they
+   are told to resume cannot disagree. */
+PS.academy.sequence = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  return funcs.slice().sort(function (a, b) {
+    var na = PS.academyModuleNumber(a.module) || 0;
+    var nb = PS.academyModuleNumber(b.module) || 0;
+    if (na !== nb) return na - nb;
+    return funcs.indexOf(a) - funcs.indexOf(b);
+  });
+};
+
+PS.academy.positionIn = function (funcId) {
+  var seq = PS.academy.sequence();
+  for (var i = 0; i < seq.length; i++) { if (seq[i].id === funcId) return i + 1; }
+  return 0;
+};
+
+PS.academy.moduleProgress = function (moduleName) {
+  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
+  var done = funcs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+  return { done: done, total: funcs.length, pct: funcs.length ? Math.round((done / funcs.length) * 100) : 0 };
+};
+
+/* A lesson's duration is written as prose ("24 mins"), so the estimate reads
+   the leading number and says nothing at all when it cannot. An honest
+   "about 6 hours left" is worth more than a precise-looking figure built on a
+   guess, and a missing duration contributes zero rather than an invented one. */
+PS.academy.minutesRemaining = function () {
+  var left = 0;
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    if (PS.academy.isCompleted(f.id)) return;
+    var m = PS.num(String(f.duration || '').match(/\d+/));
+    if (m && m > 0 && m < 600) left += m;
+  });
+  return left;
+};
+
+PS.academy.hoursPhrase = function (mins) {
+  if (!mins) return '';
+  if (mins < 60) return 'about ' + mins + ' minutes of lessons left';
+  return 'about ' + (Math.round(mins / 6) / 10) + ' hours of lessons left';
+};
+
 PS.academy.reset = function () {
   PS.store.remove(PS.academy.STORE_KEY);
 };

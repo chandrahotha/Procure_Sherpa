@@ -17,6 +17,7 @@ PS.whatsNew.CHANGES = [
       'Two full controlled procedures added where none existed - the Freight, Duty and Customs Clearance SOP and the Contingent Workforce and Managed Services SOP - so the SOP library is 15 documents holding 118 procedure steps, each with an owner, an output and a control',
       'Six new glossary terms, and these ones carry relations, so the "Where to use it" column finally renders for them - proof that the column was a data gap rather than a code gap',
       'Recognition completed: two new badges cover the foundation and cost-analysis lessons that no badge could previously be earned from, so all 40 functions now contribute to at least one award, and G24 fails if a lesson is ever left out again',
+      'The Academy hub now shows where you are: a progress rail in every module header, a summary line above the curriculum ("you have mastered 5 of 40 functions across 15 modules - about 11.5 hours of lessons left"), and a position line on every lesson ("Lesson 9 of 40 - 1/3 of this module mastered"). G27 compares each rail count and bar width against the completion record, so a progress bar that disagrees with the data fails the build',
       'Role recommendations now name up to five modules instead of four, which is what keeps every module reachable by some role as the curriculum grows'
     ]
   },

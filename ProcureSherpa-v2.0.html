@@ -2188,6 +2188,37 @@ html[data-theme="dark"] .quiz-tip-cta {
 
 
 
+/* ---------- curriculum progress rails (v2.7) ----------
+   The hub lists every module and told the reader nothing about where they
+   were inside it. These are the small bars in each module header and the
+   summary line above the list. */
+.section-head .section-sub{
+  margin:2px 0 0;font-size:.82rem;color:var(--mute);font-weight:500;
+}
+.module-progress{
+  display:flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto;
+}
+.module-progress-count{
+  font-size:.7rem;font-weight:800;color:var(--dim);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+.module-progress-track{
+  display:inline-block;width:88px;height:6px;border-radius:999px;
+  background:var(--sunken);border:1px solid var(--border);overflow:hidden;
+}
+.module-progress-fill{
+  display:block;height:100%;background:var(--ok);border-radius:999px;
+  transition:width .25s ease-out;
+}
+@media (prefers-reduced-motion: reduce){
+  .module-progress-fill{transition:none}
+}
+@media (max-width:640px){
+  .module-head{flex-wrap:wrap}
+  .module-progress{margin-left:0;width:100%}
+  .module-progress-track{flex:1;width:auto}
+}
+
 /* ==========================================================
    Procure Sherpa v2.0 - Portal & User Account Styles
    Section: Topbar User Badge, Profile Modal, Dual-Hub Gateway
@@ -3464,7 +3495,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '83c64c83a854';
+PS.BUILD = 'b8316326d108';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -5790,6 +5821,59 @@ PS.academy.getStats = function () {
     badgesTotal: PS.academy.BADGES.length,
     currentFunc: (PS.academy.nextUncompleted() || { id: data.current || 'func-mission-value' }).id
   };
+};
+
+/* ---------- curriculum progress helpers (used by the Academy hub and the lesson page) ----------
+   The hub lists 15 modules and 40 lessons and tells the reader nothing about
+   where they are in it: the only progress view was a separate page, and a
+   learner mid-way through Module 9 could not see that Module 4 was half done
+   without leaving the curriculum. These three functions are the data the
+   progress rails and the lesson position line are built from. */
+
+/* The curriculum in the order it is taught: module number, then the order
+   the functions were authored in inside the module. Same rule as
+   nextUncompleted, so the position a learner is shown and the lesson they
+   are told to resume cannot disagree. */
+PS.academy.sequence = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  return funcs.slice().sort(function (a, b) {
+    var na = PS.academyModuleNumber(a.module) || 0;
+    var nb = PS.academyModuleNumber(b.module) || 0;
+    if (na !== nb) return na - nb;
+    return funcs.indexOf(a) - funcs.indexOf(b);
+  });
+};
+
+PS.academy.positionIn = function (funcId) {
+  var seq = PS.academy.sequence();
+  for (var i = 0; i < seq.length; i++) { if (seq[i].id === funcId) return i + 1; }
+  return 0;
+};
+
+PS.academy.moduleProgress = function (moduleName) {
+  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
+  var done = funcs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+  return { done: done, total: funcs.length, pct: funcs.length ? Math.round((done / funcs.length) * 100) : 0 };
+};
+
+/* A lesson's duration is written as prose ("24 mins"), so the estimate reads
+   the leading number and says nothing at all when it cannot. An honest
+   "about 6 hours left" is worth more than a precise-looking figure built on a
+   guess, and a missing duration contributes zero rather than an invented one. */
+PS.academy.minutesRemaining = function () {
+  var left = 0;
+  (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
+    if (PS.academy.isCompleted(f.id)) return;
+    var m = PS.num(String(f.duration || '').match(/\d+/));
+    if (m && m > 0 && m < 600) left += m;
+  });
+  return left;
+};
+
+PS.academy.hoursPhrase = function (mins) {
+  if (!mins) return '';
+  if (mins < 60) return 'about ' + mins + ' minutes of lessons left';
+  return 'about ' + (Math.round(mins / 6) / 10) + ' hours of lessons left';
 };
 
 PS.academy.reset = function () {
@@ -14165,7 +14249,14 @@ PS.renderAcademyHub = function (params) {
     '</div></div>';
 
   // Curriculum modules
-  html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2></div>';
+  /* Where the reader actually is in the curriculum, stated above the list
+     rather than only on the separate progress page. */
+  var hubStats = PS.academy.getStats();
+  var minsLeft = PS.academy.minutesRemaining();
+  html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2>' +
+    '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
+    '</strong> functions across ' + Object.keys(modules).length + ' modules' +
+    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
 
   Object.keys(modules).forEach(function (modName, modIdx) {
     var modFuncs = modules[modName];
@@ -14178,6 +14269,16 @@ PS.renderAcademyHub = function (params) {
          again. */
       '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
+      /* The rail is built from the module's own functions, so a module can
+         not claim a percentage the cards below it do not support. */
+      (function () {
+        var mp = PS.academy.moduleProgress(modName);
+        return '<div class="module-progress">' +
+          '<span class="module-progress-count">' + mp.done + '/' + mp.total + '</span>' +
+          '<span class="module-progress-track" role="img" aria-label="' + mp.done + ' of ' + mp.total + ' functions in this module mastered">' +
+          '<span class="module-progress-fill" style="width:' + mp.pct + '%"></span></span>' +
+          '</div>';
+      }()) +
       '</div>' +
       '<div class="grid grid-3">' +
       modFuncs.map(function (f) {
@@ -14235,6 +14336,13 @@ PS.renderAcademyFunction = function (funcId, params) {
     '<span class="chip">🎓 Level: <strong>' + PS.esc(PS.academy.tierName(func.tier)) + '</strong></span>' +
     '<span class="chip">📍 Lifecycle Stage: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
     '<span class="chip">⏱️ Duration: <strong>' + PS.esc(func.duration || '15 mins') + '</strong></span>' +
+    (function () {
+      var pos = PS.academy.positionIn(funcId);
+      var mp = PS.academy.moduleProgress(func.module);
+      if (!pos) return '';
+      return '<span class="chip">\uD83D\uDCCD Lesson <strong>' + pos + ' of ' + (PS.ACADEMY_FUNCTIONS || []).length +
+        '</strong> \u00B7 ' + mp.done + '/' + mp.total + ' of this module mastered</span>';
+    }()) +
     (quizRes ? '<span class="chip">🏆 Quiz Score: <strong>' + quizRes.pct + '%</strong></span>' : '') +
     '</div>' +
     '</div>';
@@ -17143,6 +17251,7 @@ PS.whatsNew.CHANGES = [
       'Two full controlled procedures added where none existed - the Freight, Duty and Customs Clearance SOP and the Contingent Workforce and Managed Services SOP - so the SOP library is 15 documents holding 118 procedure steps, each with an owner, an output and a control',
       'Six new glossary terms, and these ones carry relations, so the "Where to use it" column finally renders for them - proof that the column was a data gap rather than a code gap',
       'Recognition completed: two new badges cover the foundation and cost-analysis lessons that no badge could previously be earned from, so all 40 functions now contribute to at least one award, and G24 fails if a lesson is ever left out again',
+      'The Academy hub now shows where you are: a progress rail in every module header, a summary line above the curriculum ("you have mastered 5 of 40 functions across 15 modules - about 11.5 hours of lessons left"), and a position line on every lesson ("Lesson 9 of 40 - 1/3 of this module mastered"). G27 compares each rail count and bar width against the completion record, so a progress bar that disagrees with the data fails the build',
       'Role recommendations now name up to five modules instead of four, which is what keeps every module reachable by some role as the curriculum grows'
     ]
   },

@@ -1382,6 +1382,93 @@ if (!startBtn) {
   }
 }
 
+/* ---------- G27: the progress rails say what the record says ----------
+   A progress bar is the one element a learner trusts to answer "how far am I
+   in this?". It is also the easiest thing in a redesign to make decorative:
+   rendered from a count that disagrees with the completion record, it looks
+   alive and lies. So the rails are compared against the data, per module,
+   with a learner mid-way through the curriculum rather than at either extreme.
+   jsdom has no scrollIntoView; the Academy renders it on some paths. */
+console.log('\nG27  progress rails tell the truth');
+w.HTMLElement.prototype.scrollIntoView = w.HTMLElement.prototype.scrollIntoView || function () {};
+const g27Probe = PS.academy.getAll();
+const g27Keep = JSON.parse(JSON.stringify(g27Probe));
+try {
+  const g27Seq = PS.academy.sequence();
+  /* Master an uneven set so no module can pass by accident: 2 of module 1,
+     all of module 2, none of module 3. */
+  PS.academy._cache = null;
+  PS.academy.save({ completed: {}, scores: {}, badges: {}, current: '' });
+  ['func-mission-value', 'func-spend-analysis', 'func-requirement-scope', 'func-rfx-strategy', 'func-quote-normalization']
+    .forEach((id) => PS.academy.markCompleted(id));
+  const g27Done = Object.keys(PS.academy.getAll().completed).filter((k) => PS.academy.getAll().completed[k]).length;
+
+  w.location.hash = '#/academy';
+  PS.renderRoute();
+  const g27Main = w.document.querySelector('#main');
+  const rails = [...g27Main.querySelectorAll('.module-progress')];
+  const moduleNames = [...new Set(PS.ACADEMY_FUNCTIONS.map((f) => f.module))];
+  if (rails.length !== moduleNames.length) {
+    fail('G27', 'the hub renders ' + rails.length + ' progress rails for ' + moduleNames.length + ' modules');
+  } else {
+    ok('G27', 'every module on the hub carries a progress rail (' + rails.length + ')');
+  }
+
+  /* Matched by the module name the group actually displays, not by index:
+     if the hub ever renders the groups in an order that is not the order the
+     data is read in, an index pairing would compare one module's bar against
+     another module's record and call the difference a pass. */
+  const wrong = [];
+  rails.forEach((rail) => {
+    const group = rail.closest('.module-group');
+    const headName = group ? (group.querySelector('h2') || { textContent: '' }).textContent.trim() : '';
+    const modName = moduleNames.filter((n) => n === headName)[0];
+    if (!modName) { wrong.push('a rail sits under a heading no module matches ("' + headName + '")'); return; }
+    const inMod = PS.ACADEMY_FUNCTIONS.filter((f) => f.module === modName);
+    const done = inMod.filter((f) => PS.academy.isCompleted(f.id)).length;
+    const shown = (rail.querySelector('.module-progress-count') || { textContent: '' }).textContent.trim();
+    const fill = (rail.querySelector('.module-progress-fill') || {}).style;
+    const wantPct = Math.round((done / inMod.length) * 100) + '%';
+    if (shown !== done + '/' + inMod.length) wrong.push(modName + ' shows ' + shown + ', record says ' + done + '/' + inMod.length);
+    if (fill && fill.width !== wantPct) wrong.push(modName + ' bar is ' + fill.width + ', should be ' + wantPct);
+  });
+  if (wrong.length) fail('G27', 'progress rails disagree with the completion record: ' + wrong.join(' | '));
+  else ok('G27', 'every rail count and bar width matches the completion record exactly');
+
+  const summary = (g27Main.querySelector('.section-sub') || { textContent: '' }).textContent;
+  const summaryCount = (summary.match(/mastered\s+(\d+)\s+of\s+(\d+)/i) || []).slice(1);
+  if (summaryCount.length !== 2) {
+    fail('G27', 'the curriculum summary line does not state a mastered count: "' + summary.trim().slice(0, 90) + '"');
+  } else if (Number(summaryCount[0]) !== g27Done || Number(summaryCount[1]) !== PS.ACADEMY_FUNCTIONS.length) {
+    fail('G27', 'the summary says ' + summaryCount[0] + ' of ' + summaryCount[1] + ', the record says ' + g27Done + ' of ' + PS.ACADEMY_FUNCTIONS.length);
+  } else {
+    ok('G27', 'the hub summary states the real position (' + summaryCount[0] + ' of ' + summaryCount[1] + ' mastered)');
+  }
+  if (!/hours? of lessons left|curriculum is complete/i.test(summary)) {
+    fail('G27', 'the hub summary states no remaining-time estimate: "' + summary.trim().slice(0, 90) + '"');
+  } else {
+    ok('G27', 'the hub tells the learner what is still to read (' + (summary.match(/about [0-9.]+ (hours?|minutes?)/i) || [''])[0] + ')');
+  }
+
+  /* Position on the lesson page has to be the position in the taught
+     sequence, not an index into whatever order the array happens to be in. */
+  const midFunc = g27Seq[8];
+  w.location.hash = '#/academy/' + encodeURIComponent(midFunc.id);
+  PS.renderRoute();
+  const chips = [...w.document.querySelectorAll('#main .chip')].map((c) => c.textContent.replace(/\s+/g, ' '));
+  const posChip = chips.filter((c) => /Lesson \d+ of \d+/.test(c))[0];
+  if (!posChip) {
+    fail('G27', 'the lesson page states no position in the curriculum');
+  } else if (!new RegExp('Lesson ' + 9 + ' of ' + g27Seq.length).test(posChip)) {
+    fail('G27', 'the lesson page says "' + posChip.trim() + '" but the function is number 9 of ' + g27Seq.length + ' in the taught sequence');
+  } else {
+    ok('G27', 'the lesson page states its place in the sequence (' + posChip.trim().replace(/^📍\s*/, '') + ')');
+  }
+} finally {
+  PS.academy._cache = null;
+  PS.academy.save(g27Keep);
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

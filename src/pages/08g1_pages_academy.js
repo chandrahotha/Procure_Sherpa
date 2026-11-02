@@ -137,7 +137,14 @@ PS.renderAcademyHub = function (params) {
     '</div></div>';
 
   // Curriculum modules
-  html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2></div>';
+  /* Where the reader actually is in the curriculum, stated above the list
+     rather than only on the separate progress page. */
+  var hubStats = PS.academy.getStats();
+  var minsLeft = PS.academy.minutesRemaining();
+  html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2>' +
+    '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
+    '</strong> functions across ' + Object.keys(modules).length + ' modules' +
+    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
 
   Object.keys(modules).forEach(function (modName, modIdx) {
     var modFuncs = modules[modName];
@@ -150,6 +157,16 @@ PS.renderAcademyHub = function (params) {
          again. */
       '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
+      /* The rail is built from the module's own functions, so a module can
+         not claim a percentage the cards below it do not support. */
+      (function () {
+        var mp = PS.academy.moduleProgress(modName);
+        return '<div class="module-progress">' +
+          '<span class="module-progress-count">' + mp.done + '/' + mp.total + '</span>' +
+          '<span class="module-progress-track" role="img" aria-label="' + mp.done + ' of ' + mp.total + ' functions in this module mastered">' +
+          '<span class="module-progress-fill" style="width:' + mp.pct + '%"></span></span>' +
+          '</div>';
+      }()) +
       '</div>' +
       '<div class="grid grid-3">' +
       modFuncs.map(function (f) {
@@ -207,6 +224,13 @@ PS.renderAcademyFunction = function (funcId, params) {
     '<span class="chip">🎓 Level: <strong>' + PS.esc(PS.academy.tierName(func.tier)) + '</strong></span>' +
     '<span class="chip">📍 Lifecycle Stage: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
     '<span class="chip">⏱️ Duration: <strong>' + PS.esc(func.duration || '15 mins') + '</strong></span>' +
+    (function () {
+      var pos = PS.academy.positionIn(funcId);
+      var mp = PS.academy.moduleProgress(func.module);
+      if (!pos) return '';
+      return '<span class="chip">\uD83D\uDCCD Lesson <strong>' + pos + ' of ' + (PS.ACADEMY_FUNCTIONS || []).length +
+        '</strong> \u00B7 ' + mp.done + '/' + mp.total + ' of this module mastered</span>';
+    }()) +
     (quizRes ? '<span class="chip">🏆 Quiz Score: <strong>' + quizRes.pct + '%</strong></span>' : '') +
     '</div>' +
     '</div>';

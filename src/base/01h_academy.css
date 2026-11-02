@@ -1266,3 +1266,34 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 
 
+
+/* ---------- curriculum progress rails (v2.7) ----------
+   The hub lists every module and told the reader nothing about where they
+   were inside it. These are the small bars in each module header and the
+   summary line above the list. */
+.section-head .section-sub{
+  margin:2px 0 0;font-size:.82rem;color:var(--mute);font-weight:500;
+}
+.module-progress{
+  display:flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto;
+}
+.module-progress-count{
+  font-size:.7rem;font-weight:800;color:var(--dim);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+.module-progress-track{
+  display:inline-block;width:88px;height:6px;border-radius:999px;
+  background:var(--sunken);border:1px solid var(--border);overflow:hidden;
+}
+.module-progress-fill{
+  display:block;height:100%;background:var(--ok);border-radius:999px;
+  transition:width .25s ease-out;
+}
+@media (prefers-reduced-motion: reduce){
+  .module-progress-fill{transition:none}
+}
+@media (max-width:640px){
+  .module-head{flex-wrap:wrap}
+  .module-progress{margin-left:0;width:100%}
+  .module-progress-track{flex:1;width:auto}
+}

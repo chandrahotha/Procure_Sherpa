@@ -647,3 +647,25 @@ Library total: **248 registered records** (`node tools/inventory.mjs`), 254 rela
 **Verification.** `npm run qa` exit 0 — 26 integrity gates / 106 assertions, 46 storage checks, 32 journey steps, 29/29 layout, 18/18 content-quiz, i18n 43/43 wired, a11y 0 findings over 64 renders, perf 657 KB gzipped against the 1,152 KB ceiling. `node tools/check_drift.mjs`: no documentation drift. `node tools/check_rels.mjs`: 254 rel objects, 0 broken.
 
 **Ceilings.** The new lessons are structurally asserted, not pedagogically verified — the same limit every content row carries. The two new SOPs are written from procurement practice, not from a specific organisation's policy, and the product's own disclaimer says the reader must configure local thresholds. The glossary's 35 converted records still ship `rel: {}`; six new ones prove the fix is data, and the remaining 35 are owed that edit.
+
+---
+
+## Cycle 8 — 2026-11-02 (fourth pass): the hub finally says where the learner is
+
+**The gap.** The Academy listed 15 modules and 40 lessons and told a reader nothing about their place in it. Progress lived on a separate page (`#/academy-progress`); the hub itself gave no per-module position, no remaining effort, and no lesson-to-lesson orientation. For a learning portal that is the central screen, not a decoration.
+
+**Shipped (part of v2.7, which had not been pushed):**
+
+| Change | Where | Proven by |
+| --- | --- | --- |
+| Progress rail in every module header — `done/total` plus a bar filled from the completion record | `src/pages/08g1_pages_academy.js`, `src/base/01h_academy.css` | **G27** compares each rail's count *and* its bar width against the record, module by module, matched by the heading the group actually displays |
+| Curriculum summary above the list — "you have mastered 5 of 40 functions across 15 modules · about 11.5 hours of lessons left" | same file, `PS.academy.getStats/minutesRemaining/hoursPhrase` | **G27** asserts the stated count equals the record and that a remaining-time phrase is present |
+| Position line on every lesson — "Lesson 9 of 40 · 1/3 of this module mastered" | `PS.academy.sequence()/positionIn()/moduleProgress()` in `src/core/03h_academy_store.js` | **G27** asserts the number equals the index in the taught sequence (module number, then authored order) — the same ordering `nextUncompleted` uses, so "you are here" and "resume here" cannot disagree |
+
+**Honest by construction.** `minutesRemaining()` reads the leading integer of each lesson's `duration` prose and adds nothing when the number is missing or implausible — an estimate is stated as "about", and a lesson with no stated duration contributes zero rather than an invented figure. The rail markup is `role="img"` with an `aria-label` stating the fraction, so the bar is not a colour-only signal (a11y audit: 0 findings across 64 renders).
+
+**G27 is mutation-proved.** Forcing every rail to render `total/total` turned the gate red naming all fifteen modules with the disagreement each one claimed (`Module 1 … shows 3/3, record says 2/3`), and restoring it returned the suite to green. A progress bar that disagrees with the data is now a build failure rather than a detail nobody checks.
+
+**Also in this pass:** the roadmap's badge row was still claiming "12, with every function covered" while seven functions appeared in no earning rule; it now states 19 badges and all 40 functions covered, and G24 asserts the coverage so the sentence cannot rot back into a claim.
+
+**Verification.** `npm run qa` exit 0 — 27 integrity gates / 111 assertions, 46 storage checks, 32 journey steps, 29/29 layout, 18/18 content-quiz, i18n 43/43 wired, a11y 0 findings, perf 660 KB gzipped against the 1,152 KB ceiling. `check_drift` and `check_rels` clean. Visual check in Chromium (dark, 5 of 40 seeded): 15 rails with correct fractions, summary line correct, lesson chip reads "Lesson 9 of 40 · 1/3 of this module mastered".
