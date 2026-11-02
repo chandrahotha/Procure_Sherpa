@@ -47,7 +47,7 @@ export const PINS = {
   tpl: 33,
   dec: 17,
   kpi: 18,
-  gloss: 41,
+  gloss: 45,
   scen: 6,
   calc: 19,
   maturityAreas: 9,

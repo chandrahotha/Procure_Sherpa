@@ -1469,6 +1469,53 @@ try {
   PS.academy.save(g27Keep);
 }
 
+/* ---------- G28: the glossary's "Where to use it" column ----------
+   §31 promised every glossary entry would link to relevant content. All 35
+   records converted from v1.1.0 shipped `rel: {}`, so the column rendered its
+   muted placeholder for every row and nothing noticed: G5 counts inbound links
+   only, and an empty relation set is not an unresolvable reference, so
+   check_rels had nothing to report either. This gate is what makes the column
+   a requirement instead of a layout. */
+console.log('\nG28  glossary links render');
+const g28Terms = (PS.data.gloss || []);
+const g28Keys = PS.GLOSS_LINK_KEYS || ['concepts', 'sops', 'calcs', 'templates'];
+const g28Type = PS.GLOSS_LINK_TYPE || { concepts: 'kb', sops: 'sop', calcs: 'calc', templates: 'tpl' };
+const g28Empty = [];
+const g28Dead = [];
+for (const g of g28Terms) {
+  const rel = g.rel || {};
+  const total = g28Keys.reduce((a, k) => a + ((rel[k] || []).length), 0);
+  if (!total) { g28Empty.push(g.id); continue; }
+  for (const k of g28Keys) {
+    for (const id of (rel[k] || [])) {
+      if (!PS.byId(g28Type[k], id)) g28Dead.push(g.id + ' -> ' + k + '/' + id);
+    }
+  }
+}
+if (g28Empty.length) {
+  fail('G28', g28Empty.length + ' glossary terms still ship no relations, so their row renders the empty placeholder: ' + g28Empty.slice(0, 8).join(', '));
+} else {
+  ok('G28', 'all ' + g28Terms.length + ' glossary terms carry relations for the "Where to use it" column');
+}
+if (g28Dead.length) {
+  fail('G28', 'glossary relations that resolve to nothing: ' + g28Dead.slice(0, 8).join(', '));
+} else {
+  ok('G28', 'every glossary relation resolves to a registered concept, SOP, calculator or template');
+}
+
+/* And the column has to actually render chips, not just hold the data. */
+w.location.hash = '#/glossary';
+PS.renderRoute();
+const g28Rows = [...w.document.querySelectorAll('#main table tbody tr')];
+const g28Blank = g28Rows.filter((r) => /:|—|-\s*$/.test((r.lastElementChild || { textContent: '' }).textContent.trim()) && (r.lastElementChild || { textContent: '' }).textContent.trim().length < 3);
+if (!g28Rows.length) {
+  fail('G28', 'the glossary page renders no term table');
+} else if (g28Blank.length) {
+  fail('G28', g28Blank.length + ' glossary rows render the placeholder instead of links');
+} else {
+  ok('G28', 'the glossary table renders ' + g28Rows.length + ' rows, every one with links in the "Where to use it" column');
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

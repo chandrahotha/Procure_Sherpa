@@ -440,7 +440,8 @@ PS.ACADEMY_FUNCTIONS.push({
     templates: ['tpl-business-case', 'tpl-savings-validation', 'tpl-cost-avoidance'],
     calcs: ['calc-savings-analysis', 'calc-multi-year-contract-cost', 'calc-kpi-calculator'],
     decisions: ['re-source', 'make-or-buy'],
-    kpis: ['kpi-roi', 'kpi-savings-realization', 'kpi-working-capital-impact']
+    kpis: ['kpi-roi', 'kpi-savings-realization', 'kpi-working-capital-impact'],
+    glossary: ['gloss-ebitda', 'gloss-working-capital', 'gloss-run-rate']
   },
   labMission: {
     title: 'Mission 14.2: Write the One-Page Ask',

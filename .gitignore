@@ -17,3 +17,7 @@ dist/
 
 # Local agent worktrees
 .kilo/
+
+# Revamp planning package (owner's local working documents; not part of the
+# product, the build, or the shipped repository)
+PROCURE_SHERPA_REVAMP_WORKKIT/

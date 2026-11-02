@@ -3495,7 +3495,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'b8316326d108';
+PS.BUILD = '0d304edb67ab';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -20414,6 +20414,25 @@ PS.SGLS({ i: "gloss-change-order", t: "Change order", d: "A priced written varia
 PS.SGLS({ i: "gloss-co-employment", t: "Co-employment risk", d: "The exposure that arises when an organisation directs a worker it does not employ - setting hours, supervision, tools and performance management. It converts a flexible cost into an employment, tax and benefits liability and is the main reason contingent work needs a defined engagement model.",
   rel: { concepts: ["contingent-workforce", "segregation-of-duties"], sops: ["sop-contingent-labour"], checklists: ["cl-supplier-due-diligence"] } });
 
+/* ==========================================================
+   Procure Sherpa v2.7 - Glossary additions: the financial
+   vocabulary the Academy lessons assume. EBITDA, working
+   capital, cost-to-serve and run-rate were named in the
+   lessons and the KPI library but had no entry, so a learner
+   meeting them in a board-level module had nowhere to look.
+   These carry relations, so they render the full
+   "Where to use it" column.
+   ========================================================== */
+
+PS.SGLS({ i: "gloss-ebitda", t: "EBITDA", d: "Earnings Before Interest, Taxes, Depreciation and Amortisation. The operating profit measure a business is most often valued and managed on, and therefore the number a procurement case travels in: a price cut lands in it directly, a working-capital change usually does not.",
+  rel: { concepts: ["procurement-value", "savings-types", "price-vs-cost"], calcs: ["calc-savings-analysis"], kpis: ["kpi-savings", "kpi-roi"] } });
+PS.SGLS({ i: "gloss-working-capital", t: "Working capital", d: "Current assets less current liabilities - the cash tied up in inventory, receivables and prepayments against what is owed to suppliers. Payment terms, consignment stock and fewer emergency buys move it without touching unit price, which is why a saving claim expressed only in EBITDA understates what procurement did.",
+  rel: { concepts: ["working-capital", "procurement-value"], calcs: ["calc-payment-terms"], kpis: ["kpi-working-capital-impact"], templates: ["tpl-business-case"] } });
+PS.SGLS({ i: "gloss-cost-to-serve", t: "Cost-to-serve", d: "The internal cost of processing a transaction, independent of what the goods cost: requisition handling, approval, PO issue, receipt, matching, dispute and payment. Estimating it per purchase order is what turns a high-volume tail into a business case for a catalogue or a call-off.",
+  rel: { concepts: ["c-procurement-savings", "savings-types"], calcs: ["calc-kpi-calculator", "calc-po-value-check"], kpis: ["kpi-cycle-time", "kpi-maverick-spend"], sops: ["sop-procurement-lifecycle"] } });
+PS.SGLS({ i: "gloss-run-rate", t: "Run-rate vs one-off saving", d: "A run-rate saving repeats every period at the new price or the new consumption level; a one-off saves once and disappears from the comparison. Banking a one-off as a run rate is the most common way a savings report becomes impossible to reproduce the following year.",
+  rel: { concepts: ["savings-baseline", "savings-realization", "cost-avoidance"], calcs: ["calc-multi-year-contract-cost", "calc-savings-analysis"], kpis: ["kpi-savings-realization"], sops: ["sop-savings-calculation"] } });
+
 /* ============ Scenario guides: converted from v1.1.0 ============ */
 PS.SSCN({ i: "scn-new-purchase", t: "New Purchase", c: 'Situations', p: "I need to source a new product or service.", st: [{"label":"Define Requirement","note":"Document business need, specification, and budget.","type":"sop","id":"sop-procurement-intake"},{"label":"Develop Sourcing Strategy","note":"Determine sourcing method and evaluation criteria.","type":"sop","id":"sop-sourcing-strategy"},{"label":"Identify Suppliers","note":"Research and qualify potential suppliers.","type":"sop","id":"sop-supplier-identification"},{"label":"Issue RFQ/RFP","note":"Issue solicitation to qualified suppliers.","type":"sop","id":"sop-rfq"},{"label":"Evaluate Bids","note":"Evaluate technical and commercial proposals.","type":"sop","id":"sop-commercial-evaluation"},{"label":"Negotiate","note":"Negotiate terms with preferred supplier.","type":"sop","id":"sop-negotiation-execution"},{"label":"Award","note":"Prepare award recommendation and obtain approval.","type":"tpl","id":"tpl-award-recommendation"},{"label":"Contract/PO","note":"Execute contract or issue purchase order.","type":"sop","id":"sop-contract-award"}], rel: {"sops":["sop-procurement-intake","sop-sourcing-strategy","sop-supplier-identification","sop-rfq","sop-commercial-evaluation","sop-negotiation-execution","sop-contract-award"],"templates":["tpl-award-recommendation"],"calcs":["calc-compare-quotes","calc-tco","calc-supplier-scorecard"]} });
 PS.SSCN({ i: "scn-price-increase", t: "Supplier Price Increase", c: 'Situations', p: "My supplier has increased prices. How should I respond?", st: [{"label":"Validate Contract","note":"Check contract terms, escalation clauses, and notice periods.","type":"sop","id":"sop-contract-review"},{"label":"Analyze Increase","note":"Calculate absolute and percentage increase, compare to inflation.","type":"calc","id":"calc-price-increase"},{"label":"Market Assessment","note":"Research market prices and alternative suppliers.","type":"sop","id":"sop-sourcing-strategy"},{"label":"Calculate Impact","note":"Calculate financial impact on annual spend and budgets.","type":"calc","id":"calc-tco"},{"label":"Negotiate","note":"Engage supplier with alternatives and market data.","type":"sop","id":"sop-negotiation-execution"},{"label":"Document Decision","note":"Record decision, rationale, and any contract amendments.","type":"sop","id":"sop-savings-calculation"}], rel: {"sops":["sop-contract-review","sop-sourcing-strategy","sop-negotiation-execution","sop-savings-calculation"],"calcs":["calc-price-increase","calc-tco","calc-price-escalation","calc-negotiation-savings"]} });
@@ -27619,7 +27638,8 @@ PS.ACADEMY_FUNCTIONS.push({
     templates: ['tpl-business-case', 'tpl-savings-calculation'],
     calcs: ['calc-savings-analysis', 'calc-kpi-calculator'],
     decisions: ['consolidate-suppliers', 'sourcing-method'],
-    kpis: ['kpi-maverick-spend', 'kpi-sum', 'kpi-contract-coverage']
+    kpis: ['kpi-maverick-spend', 'kpi-sum', 'kpi-contract-coverage'],
+    glossary: ['gloss-cost-to-serve', 'gloss-run-rate']
   },
   labMission: {
     title: 'Mission 12.1: Size the Tail Before Touching It',
@@ -29227,7 +29247,8 @@ PS.ACADEMY_FUNCTIONS.push({
     templates: ['tpl-business-case', 'tpl-savings-validation', 'tpl-cost-avoidance'],
     calcs: ['calc-savings-analysis', 'calc-multi-year-contract-cost', 'calc-kpi-calculator'],
     decisions: ['re-source', 'make-or-buy'],
-    kpis: ['kpi-roi', 'kpi-savings-realization', 'kpi-working-capital-impact']
+    kpis: ['kpi-roi', 'kpi-savings-realization', 'kpi-working-capital-impact'],
+    glossary: ['gloss-ebitda', 'gloss-working-capital', 'gloss-run-rate']
   },
   labMission: {
     title: 'Mission 14.2: Write the One-Page Ask',
@@ -32144,6 +32165,93 @@ PS.CONTENT_STATUS = PS.contentReport();
   if (qa.length) console.warn('Content QA: ' + qa.length + ' issues', qa.slice(0, 12));
   if (PS.PRUNED_REFS) console.info('Link hygiene: ' + PS.PRUNED_REFS + ' forward reference(s) hidden from view until that content ships.');
 }());
+/* ==========================================================
+   Procure Sherpa v2.7 - Glossary link completion
+   The 35 glossary records converted from v1.1.0 all ship `rel: {}`, so
+   `glossLinks()` renders its muted placeholder and the "Where to use it"
+   column on #/glossary is empty for every one of them (§31, roadmap 9.2c).
+   The six terms added in v2.6 carry relations and render correctly, which
+   shows the renderer was never the problem - the data was.
+
+   This file supplies those relations in one table rather than editing the
+   converted seed, so the v1 import stays a faithful record of what was
+   converted. G28 asserts every term ends up with at least one relation and
+   that every relation resolves to a registered item, so a typo here is a
+   build failure rather than a silently empty cell.
+   ========================================================== */
+
+PS.GLOSS_LINKS = {
+  'gloss-batna': { concepts: ['batna', 'negotiation-leverage'], sops: ['sop-negotiation-preparation'], calcs: ['calc-negotiation-savings'], templates: ['tpl-negotiation-planner'] },
+  'gloss-bid': { concepts: ['rfi-rfq-rfp', 'evaluation-criteria'], sops: ['sop-rfq'], calcs: ['calc-compare-quotes'], templates: ['tpl-bid-instructions'] },
+  'gloss-blanket-po': { concepts: ['framework-agreement', 'c-procure-to-pay'], sops: ['sop-contract-review'], calcs: ['calc-moq'], templates: ['tpl-contract-review-checklist'] },
+  'gloss-capex': { concepts: ['make-or-buy', 'total-cost-of-ownership', 'c-capex'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-tco'], templates: ['tpl-business-case'] },
+  'gloss-cost-avoidance': { concepts: ['cost-avoidance', 'savings-types'], sops: ['sop-savings-calculation'], calcs: ['calc-savings-analysis'], templates: ['tpl-cost-avoidance'] },
+  'gloss-direct-spend': { concepts: ['direct-indirect-spend', 'spend-analysis', 'c-direct-procurement'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-tco'], templates: ['tpl-rfq'] },
+  'gloss-doa': { concepts: ['delegation-of-authority', 'segregation-of-duties'], sops: ['sop-contract-review', 'sop-procurement-audit'], templates: ['tpl-exception-request'] },
+  'gloss-eoq': { concepts: ['demand-management', 'total-cost-of-ownership'], calcs: ['calc-moq'], templates: ['tpl-rfq'] },
+  'gloss-fx': { concepts: ['currency-fx', 'price-vs-cost'], sops: ['sop-supplier-price-increase-review'], calcs: ['calc-fx-currency'], templates: ['tpl-contract-review-checklist'] },
+  'gloss-hhi': { concepts: ['concentration-risk', 'supplier-market-analysis', 'spend-analysis'], sops: ['sop-supplier-performance-management'], calcs: ['calc-supplier-concentration'], templates: ['tpl-supplier-risk-assessment'] },
+  'gloss-incoterms': { concepts: ['incoterms', 'customs-and-duty', 'landed-cost-model', 'freight-modes'], sops: ['sop-freight-and-customs'], calcs: ['calc-landed-cost'], templates: ['tpl-rfq'] },
+  'gloss-kpi': { concepts: ['savings-measurement', 'supplier-performance'], sops: ['sop-supplier-performance-management'], calcs: ['calc-kpi-calculator'], templates: ['tpl-supplier-scorecard'] },
+  'gloss-landed-cost': { concepts: ['landed-cost-model', 'total-cost-of-ownership', 'customs-and-duty'], sops: ['sop-freight-and-customs'], calcs: ['calc-landed-cost'], templates: ['tpl-rfq'] },
+  'gloss-moq': { concepts: ['demand-management', 'cost-breakdown'], calcs: ['calc-moq'], templates: ['tpl-rfq'] },
+  'gloss-maverick-spend': { concepts: ['c-maverick-spend', 'spend-analysis', 'demand-management'], sops: ['sop-procurement-intake', 'sop-procurement-audit'], calcs: ['calc-budget-vs-actual'], templates: ['tpl-exception-request'] },
+  'gloss-opex': { concepts: ['c-opex', 'direct-indirect-spend'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-tco'], templates: ['tpl-business-case'] },
+  'gloss-ppv': { concepts: ['savings-measurement', 'price-vs-cost', 'savings-baseline'], sops: ['sop-savings-calculation'], calcs: ['calc-savings-analysis'], templates: ['tpl-savings-calculation'] },
+  'gloss-rfi': { concepts: ['rfi-rfq-rfp', 'supplier-market-analysis'], sops: ['sop-rfp'], templates: ['tpl-rfi'] },
+  'gloss-rfq': { concepts: ['rfi-rfq-rfp', 'evaluation-criteria'], sops: ['sop-rfq'], calcs: ['calc-compare-quotes'], templates: ['tpl-rfq'] },
+  'gloss-rfp': { concepts: ['rfi-rfq-rfp', 'sourcing-strategy', 'evaluation-criteria'], sops: ['sop-rfp'], calcs: ['calc-tco'], templates: ['tpl-rfp'] },
+  'gloss-rft': { concepts: ['rfi-rfq-rfp', 'competitive-tension'], sops: ['sop-rfq'], templates: ['tpl-bid-instructions'] },
+  'gloss-sla': { concepts: ['service-level-agreement', 'supplier-performance'], sops: ['sop-supplier-performance-management'], calcs: ['calc-kpi-calculator'], templates: ['tpl-contract-performance-review'] },
+  'gloss-sow': { concepts: ['statement-of-work', 'specification'], sops: ['sop-contract-review'], calcs: ['calc-should-cost'], templates: ['tpl-rfp'] },
+  'gloss-tco': { concepts: ['total-cost-of-ownership', 'landed-cost-model', 'should-cost'], sops: ['sop-contract-review'], calcs: ['calc-tco', 'calc-landed-cost'], templates: ['tpl-bid-comparison'] },
+  'gloss-zopa': { concepts: ['zopa', 'batna', 'concession-management'], sops: ['sop-negotiation-preparation'], calcs: ['calc-negotiation-savings'], templates: ['tpl-negotiation-planner'] },
+  'gloss-strategic-sourcing': { concepts: ['c-strategic-sourcing', 'sourcing-strategy', 'category-management'], sops: ['sop-rfp', 'sop-procurement-lifecycle'], calcs: ['calc-tco'], templates: ['tpl-business-case'] },
+  'gloss-single-source': { concepts: ['competitive-tension', 'supplier-qualification'], sops: ['sop-supplier-evaluation'], calcs: ['calc-compare-quotes'], templates: ['tpl-single-source'] },
+  'gloss-sole-source': { concepts: ['concentration-risk', 'supplier-market-analysis'], sops: ['sop-supplier-evaluation'], calcs: ['calc-supplier-concentration'], templates: ['tpl-sole-source'] },
+  'gloss-should-cost': { concepts: ['should-cost', 'cost-breakdown', 'price-vs-cost'], sops: ['sop-negotiation-preparation'], calcs: ['calc-should-cost'], templates: ['tpl-business-case'] },
+  'gloss-spend-under-management': { concepts: ['spend-analysis', 'category-management', 'c-spend-management'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-kpi-calculator'], templates: ['tpl-business-case'] },
+  'gloss-source-to-contract': { concepts: ['c-source-to-contract', 'contract-structure', 'sourcing-strategy'], sops: ['sop-contract-review', 'sop-rfp'], calcs: ['calc-multi-year-contract-cost'], templates: ['tpl-contract-review-checklist'] },
+  'gloss-procure-to-pay': { concepts: ['c-procure-to-pay', 'c-three-way-match', 'segregation-of-duties'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-po-value-check'], templates: ['tpl-supplier-onboarding'] },
+  'gloss-category-management': { concepts: ['category-management', 'supplier-segmentation', 'spend-analysis'], sops: ['sop-procurement-lifecycle'], calcs: ['calc-supplier-concentration'], templates: ['tpl-business-case'] },
+  'gloss-segregation-of-duties': { concepts: ['segregation-of-duties', 'audit-trail', 'conflict-of-interest'], sops: ['sop-procurement-audit'], calcs: ['calc-po-value-check'], templates: ['tpl-exception-request'] },
+  'gloss-delegation-of-authority': { concepts: ['delegation-of-authority', 'segregation-of-duties'], sops: ['sop-procurement-audit', 'sop-contract-review'], calcs: ['calc-po-value-check'], templates: ['tpl-exception-request'] }
+};
+
+/* The relation types the glossary column renders. glossLinks() reads exactly
+   these four keys, so a relation written under another name would be silently
+   invisible - the table above is limited to what the column can show. */
+PS.GLOSS_LINK_KEYS = ['concepts', 'sops', 'calcs', 'templates'];
+PS.GLOSS_LINK_TYPE = { concepts: 'kb', sops: 'sop', calcs: 'calc', templates: 'tpl' };
+
+PS.applyGlossLinks = function () {
+  var applied = 0;
+  Object.keys(PS.GLOSS_LINKS || {}).forEach(function (gid) {
+    var g = PS.byId('gloss', gid);
+    if (!g) return;
+    var rel = g.rel && typeof g.rel === 'object' ? g.rel : {};
+    (PS.GLOSS_LINK_KEYS || []).forEach(function (key) {
+      var ids = PS.GLOSS_LINKS[gid][key] || [];
+      /* Merge rather than replace: a term that already carries a relation
+         from the converted seed keeps it, and the completion only adds. */
+      var have = rel[key] || [];
+      rel[key] = have.concat(ids.filter(function (id) { return have.indexOf(id) < 0; }));
+    });
+    g.rel = rel;
+    applied++;
+  });
+  return applied;
+};
+
+/* Applied at load - but note where "load" is. This fragment is listed after
+   src/core/90_normalize.js in src/manifest.txt, because a converted glossary
+   record only gains its `id` during normalisation. Run it with the other
+   content files and every PS.byId lookup below misses, the function applies
+   nothing, returns 0, and the column stays empty while the data looks
+   complete to anyone reading the file. G28 is what catches that class of
+   ordering mistake rather than letting it ship. */
+PS.applyGlossLinks();
+
 /* ==========================================================
    End of Procure Sherpa v2.0 application script.
    Single-file build: HTML5 + CSS3 + vanilla JavaScript, no

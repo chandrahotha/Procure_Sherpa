@@ -127,6 +127,7 @@ src/content/13d_tpl_contract_gov_sav.js
 src/content/14z_dec_v1.js
 src/content/15z_gloss_v1.js
 src/content/15b_gloss_markets.js
+src/content/15d_gloss_value.js
 src/content/16z_scn_v1.js
 src/content/17z_kpi_v1.js
 src/content/18a_help_content.js
@@ -181,4 +182,10 @@ src/calcs/38b_calcimpl_kpi.js
 src/core/90a_idmap.js
 src/core/90b_link_completion.js
 src/core/90_normalize.js
+# The glossary link completion runs after normalisation, because that is where
+# a converted record gains the id this file looks up. Listed with the other
+# content it would run against a registry whose glossary entries have a term
+# and no id, apply nothing, and leave the column empty - which is exactly the
+# bug it exists to fix.
+src/content/15c_gloss_links.js
 src/base/99_tail.html

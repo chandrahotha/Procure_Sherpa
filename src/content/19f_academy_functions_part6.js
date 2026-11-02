@@ -222,7 +222,8 @@ PS.ACADEMY_FUNCTIONS.push({
     templates: ['tpl-business-case', 'tpl-savings-calculation'],
     calcs: ['calc-savings-analysis', 'calc-kpi-calculator'],
     decisions: ['consolidate-suppliers', 'sourcing-method'],
-    kpis: ['kpi-maverick-spend', 'kpi-sum', 'kpi-contract-coverage']
+    kpis: ['kpi-maverick-spend', 'kpi-sum', 'kpi-contract-coverage'],
+    glossary: ['gloss-cost-to-serve', 'gloss-run-rate']
   },
   labMission: {
     title: 'Mission 12.1: Size the Tail Before Touching It',
