@@ -627,7 +627,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-contract-review',
   rel: {
     concepts: ['liability-indemnity', 'service-level-agreement', 'change-control', 'contract-structure', 'audit-trail', 'supplier-performance-management'],
-    sops: ['sop-contract-review', 'sop-contract-renewal', 'sop-supplier-performance-management'],
+    sops: ['sop-contract-review', 'sop-contract-renewal', 'sop-savings-validation', 'sop-supplier-performance-management'],
     checklists: ['cl-contract-review', 'cl-contract-renewal', 'cl-exception-approval', 'cl-supplier-risk-review'],
     templates: ['tpl-contract-change-request', 'tpl-contract-renewal-assessment', 'tpl-exception-request', 'tpl-business-case'],
     calcs: ['calc-multi-year-contract-cost', 'calc-savings-analysis', 'calc-tco'],

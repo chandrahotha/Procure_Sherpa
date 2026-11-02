@@ -575,7 +575,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-corrective-action': 'suppliers',
   'func-supplier-development': 'suppliers',
   'func-quality-and-audit': 'receipts',
-  'func-dual-source-resilience': 'analytics'
+  'func-dual-source-resilience': 'analytics',
+  'func-emergency-procurement': 'approvals',
+  'func-allocation-and-shortage': 'suppliers',
+  'func-disruption-recovery': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

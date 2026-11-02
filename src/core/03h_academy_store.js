@@ -51,6 +51,7 @@ PS.academy.BADGES = [
   { id: 'contract_steward', name: 'Contract Steward', icon: '⚖️', desc: 'Mastered the Obligation Register, Change Control and Claims & Remedies.', requires: ['func-obligation-register', 'func-change-control', 'func-claims-and-remedies'] },
   { id: 'supplier_lifecycle', name: 'Supplier Lifecycle Discipline', icon: '🔁', desc: 'Mastered Supplier Onboarding & Segmentation and Corrective Action & Business Review.', requires: ['func-supplier-onboarding', 'func-corrective-action'] },
   { id: 'supply_guardian', name: 'Supply Continuity Architect', icon: '🛡️', desc: 'Mastered Supplier Development, Conformity & Audit and Dual Sourcing & Resilience.', requires: ['func-supplier-development', 'func-quality-and-audit', 'func-dual-source-resilience'] },
+  { id: 'disruption_response', name: 'Disruption Response Lead', icon: '⚡', desc: 'Mastered Emergency Buying, Allocation and Shortage, and Post-Disruption Recovery.', requires: ['func-emergency-procurement', 'func-allocation-and-shortage', 'func-disruption-recovery'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

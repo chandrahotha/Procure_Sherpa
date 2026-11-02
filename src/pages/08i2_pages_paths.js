@@ -127,6 +127,17 @@ PS.learningPaths.PATHS = [
     skills: ['Building capability where substitution is impossible', 'Choosing where conformity is verified', 'Pricing protection against expected loss', 'Keeping a second source alive'],
     duration: '4-6 weeks',
     color: 'var(--ops)'
+  },
+  {
+    id: 'disruption',
+    title: 'Disruption, Emergency Buying and Allocation',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'What to do when the process cannot respond: the pre-agreed fast route, the market that stops serving you, and the close that decides whether anything changes.',
+    modules: ['func-emergency-procurement', 'func-allocation-and-shortage', 'func-disruption-recovery'],
+    skills: ['Using a bounded emergency route', 'Reading an allocation rule', 'Forcing an explicit internal allocation decision', 'Re-baselining and closing a claim'],
+    duration: '4-5 weeks',
+    color: 'var(--danger)'
   }
 ];
 

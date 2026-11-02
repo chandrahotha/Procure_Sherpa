@@ -234,7 +234,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn'],
   'Module 15: Specialised Markets and Category Depth': ['specialist', 'analytics', 'learn'],
   'Module 16: Contract Risk, Claims and Disputes': ['contract', 'claims', 'learn'],
-  'Module 17: Global Sourcing Operations - Development, Quality and Continuity': ['quality', 'operations', 'learn']
+  'Module 17: Global Sourcing Operations - Development, Quality and Continuity': ['quality', 'operations', 'learn'],
+  'Module 18: Disruption, Emergency Buying and Allocation': ['disruption', 'risk', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -248,7 +249,7 @@ PS.ACADEMY_MODULE_TAGS = {
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
   buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
-  manager: ['strategy', 'influence', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
+  manager: ['strategy', 'influence', 'portfolio', 'disruption', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'contract', 'governance', 'learn'],
   compliance: ['risk', 'quality', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
 };

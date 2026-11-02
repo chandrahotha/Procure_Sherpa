@@ -199,7 +199,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['supplier-qualification', 'supplier-segmentation', 'supplier-financial-risk', 'segregation-of-duties', 'audit-trail', 'supplier-relationship-management'],
-    sops: ['sop-supplier-evaluation', 'sop-procurement-lifecycle', 'sop-supplier-performance-management'],
+    sops: ['sop-supplier-onboarding', 'sop-supplier-evaluation', 'sop-procurement-lifecycle', 'sop-supplier-performance-management'],
     checklists: ['cl-supplier-onboarding', 'cl-supplier-due-diligence', 'cl-supplier-risk-review'],
     templates: ['tpl-supplier-onboarding', 'tpl-supplier-due-diligence', 'tpl-supplier-risk-assessment'],
     calcs: ['calc-supplier-concentration', 'calc-kpi-calculator'],
