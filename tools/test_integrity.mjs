@@ -1211,6 +1211,71 @@ if (proseBad.length) {
   ok('G24', 'the orienting pages state real counts, not typed numbers (' + prosePages.join(', ') + ')');
 }
 
+/* ---------- G25: the product does not claim an authority it does not have ----------
+   Procure Sherpa is not an authorized issuer of procurement credentials. The
+   certificate route already says so, and the Academy still scores exams,
+   awards badges and prints a page called "Transcript" - which is the surface
+   where a reader could form a claim the product cannot support. Nothing
+   asserted either half of that: no gate read the wording, and the disclaimer
+   could be deleted from any of the three pages without a test noticing.
+
+   The ban list is written as assertions of authority rather than as words,
+   because the curriculum legitimately discusses accredited suppliers and
+   certification bodies. A route page is the scope, for the same reason. */
+console.log('\nG25  credential honesty and the content report');
+const CREDENTIAL_CLAIMS = [
+  /is accredited/i, /accredited by/i, /nationally recogni[sz]ed/i, /recogni[sz]ed qualification/i,
+  /Executive Certificate/i, /Master of (Procurement|Supply|Sourcing)/i,
+  /this certificate (certifies|confirms|attests)/i, /certified by Procure Sherpa/i,
+  /ISO\s*\d{4}\s*certified/i, /award(s|ed)? (you )?a (recognised|certified|accredited)/i
+];
+const credentialRoutes = ['#/certificate', '#/exams', '#/academy-progress', '#/portfolio', '#/assessment', '#/academy', '#/learning-paths'];
+const claimHits = [];
+for (const route of credentialRoutes) {
+  w.location.hash = route;
+  PS.renderRoute();
+  const text = (w.document.querySelector('#main') || { textContent: '' }).textContent;
+  for (const re of CREDENTIAL_CLAIMS) {
+    const m = text.match(re);
+    if (m) claimHits.push(route + ' says "' + m[0] + '"');
+  }
+}
+if (claimHits.length) {
+  fail('G25', 'a page claims an authority the product does not have: ' + claimHits.join(' | '));
+} else {
+  ok('G25', 'no credential-bearing page asserts accreditation, recognition or certification (' + credentialRoutes.length + ' pages read)');
+}
+
+/* The honest line has to be on the pages that report a result, not only on
+   the one that is switched off. */
+const disclaimerNeeded = ['#/certificate', '#/exams', '#/academy-progress'];
+const missingDisclaimer = [];
+for (const route of disclaimerNeeded) {
+  w.location.hash = route;
+  PS.renderRoute();
+  const text = (w.document.querySelector('#main') || { textContent: '' }).textContent;
+  if (!/not an authorized issuer|not a legally authorized issuer/i.test(text)) missingDisclaimer.push(route);
+}
+if (missingDisclaimer.length) {
+  fail('G25', 'pages reporting a result without saying the result certifies nothing: ' + missingDisclaimer.join(', '));
+} else {
+  ok('G25', 'every page that reports a result states that it is not a credential (' + disclaimerNeeded.join(', ') + ')');
+}
+
+/* The content-quality report the build already computes, shown to the person
+   who would have to act on it. */
+const qaProblems = PS.contentQA();
+w.location.hash = '#/audit';
+PS.renderRoute();
+const auditText = (w.document.querySelector('#main') || { textContent: '' }).textContent;
+if (!/Content quality report/i.test(auditText)) {
+  fail('G25', 'PS.contentQA() is still only a console.warn - the #/audit page does not show it');
+} else if (qaProblems.length === 0 ? !/no issues/i.test(auditText) : !auditText.includes(qaProblems.length + ' issue')) {
+  fail('G25', 'the #/audit content report disagrees with PS.contentQA() (which returns ' + qaProblems.length + ')');
+} else {
+  ok('G25', 'the audit page shows the content report and agrees with PS.contentQA() (' + qaProblems.length + ' problems)');
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

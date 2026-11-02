@@ -346,7 +346,12 @@ PS.withDisclaimer = function (kind) {
     tax: 'Tax treatment varies by jurisdiction and transaction type. Verify applicable tax rules before using results for accounting or compliance decisions.',
     legal: 'Contract and legal guidance on this platform is general procurement information and is not a substitute for qualified legal advice.',
     finance: 'Financial calculations are decision-support estimates. Validate assumptions before committing funds.',
-    data: 'Results depend entirely on the figures you enter. Procure Sherpa does not verify or benchmark supplier data.'
+    data: 'Results depend entirely on the figures you enter. Procure Sherpa does not verify or benchmark supplier data.',
+    /* The product scores exams and hands out badges. That is a self-check
+       kept in one browser, and the difference matters to anyone who would
+       otherwise put it on a CV, so it is said in the same voice as the other
+       disclaimers and asserted by G25 on every page that reports a result. */
+    credential: 'Exam results, badges and progress are recorded in this browser only. Procure Sherpa is not an authorized issuer of procurement credentials, so nothing here is a certification, an accredited qualification, or verifiable by a third party.'
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';
 };

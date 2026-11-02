@@ -3405,14 +3405,14 @@ PS.APP = 'Procure Sherpa';
    fixed by the master requirements (section 4.1 and section 81) and by
    every download link, and the tools read the version out of the
    artifact rather than out of its name. */
-PS.VERSION = '2.4';
+PS.VERSION = '2.5';
 PS.SCHEMA = 2;
 /* Replaced at build time with a hash of the source fragments, so the
    running application can say which sources it was built from. See
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'd0a678896f3e';
+PS.BUILD = '1ac6d1c62535';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4208,7 +4208,12 @@ PS.withDisclaimer = function (kind) {
     tax: 'Tax treatment varies by jurisdiction and transaction type. Verify applicable tax rules before using results for accounting or compliance decisions.',
     legal: 'Contract and legal guidance on this platform is general procurement information and is not a substitute for qualified legal advice.',
     finance: 'Financial calculations are decision-support estimates. Validate assumptions before committing funds.',
-    data: 'Results depend entirely on the figures you enter. Procure Sherpa does not verify or benchmark supplier data.'
+    data: 'Results depend entirely on the figures you enter. Procure Sherpa does not verify or benchmark supplier data.',
+    /* The product scores exams and hands out badges. That is a self-check
+       kept in one browser, and the difference matters to anyone who would
+       otherwise put it on a CV, so it is said in the same voice as the other
+       disclaimers and asserted by G25 on every page that reports a result. */
+    credential: 'Exam results, badges and progress are recorded in this browser only. Procure Sherpa is not an authorized issuer of procurement credentials, so nothing here is a certification, an accredited qualification, or verifiable by a third party.'
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';
 };
@@ -13336,6 +13341,23 @@ PS.route('audit', function () {
         return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(String(a.e).replace(/-/g, ' ')) + '</td><td>' + PS.esc(a.d) + '</td></tr>';
       }).join('') + '</tbody></table></div></div>'
       : PS.empty('No events recorded yet. Use a calculator or save some work and the log will fill automatically.')) +
+    /* The content check ran on every load and its only output was a
+       console.warn, which the reader of a single HTML file has no reason to
+       open. The same array is now on the page the product already uses to
+       show what it recorded about the user. */
+    (function () {
+      var qa = PS.contentQA();
+      return '<div class="card"><div class="card-head"><h2>Content quality report</h2>' +
+        '<div class="spacer"></div><span class="badge">' +
+        (qa.length ? qa.length + ' issue' + (qa.length === 1 ? '' : 's') : 'no issues') +
+        '</span></div>' +
+        '<p class="card-sub">On every load Procure Sherpa re-reads its own libraries for duplicate ids, items missing a required field and links that point at content which is not there.</p>' +
+        (qa.length
+          ? '<ul>' + qa.slice(0, 40).map(function (p) { return '<li>' + PS.esc(String(p)) + '</li>'; }).join('') + '</ul>' +
+            '<p class="note">These are also written to the browser console. The QA gate fails the build on the same list, so a shipped copy of this file should not carry any.</p>'
+          : '<p class="note">Nothing is wrong with the content in this copy. The build gate asserts the same thing, so a release that breaks it does not ship.</p>') +
+        '</div>';
+    }()) +
     PS.disclaimer('data');
   return html;
 });
@@ -13854,7 +13876,12 @@ PS.route('academy-progress', function () {
         '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(f.id) + '">Open</a></td>' +
         '</tr>';
     }).join('') +
-    '</tbody></table></div></div>';
+    '</tbody></table></div>' +
+    /* This page is titled "Transcript" and lists quiz percentages, so it is
+       one of the places a reader could form the impression that the product
+       has certified something. It has not, and the page says so in the same
+       voice it uses everywhere else. */
+    PS.disclaimer('credential');
 
   return html;
 });
@@ -13911,7 +13938,7 @@ PS.renderAcademyHub = function (params) {
 
   // Badges strip
   /* The recommendation sits directly under the hero, not at the end
-     of the page. The badge wall below is twelve locked cards, and the
+     of the page. The badge wall below is a grid of locked cards, and the
      most useful thing on the page was underneath all of it. */
   html += PS.academyRoleRecommendation(funcs);
 
@@ -15396,7 +15423,8 @@ PS.route('exams', function () {
     bankCards +
     '<div id="examRunner"></div>' +
     '<div class="card"><div class="card-head"><h2>Attempt history</h2></div>' + PS.exams.historyHtml() + '</div>' +
-    PS.disclaimer('data');
+    PS.disclaimer('data') +
+    PS.disclaimer('credential');
 });
 PS.acts['exam-history'] = function () {
   PS.modal({
@@ -16884,6 +16912,23 @@ PS.route('community', function () {
 PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
+  {
+    version: '2.5',
+    date: '2026-11-02',
+    title: 'The curriculum grew up, and the toolkit was proved against itself',
+    tag: 'Improvement',
+    items: [
+      'The Academy now teaches 34 functions across 13 modules: Advanced Category & Portfolio Strategy (the tail, supply market structure, demand management) and Executive & Board-Level Procurement (operating model and cost-to-serve, the value narrative, transformation sequencing) - 179 step sequences and 148 quiz questions in total',
+      'Nine functions that had been orphaned - three from Module 11 and six from Modules 12 and 13 - now belong to a learning track, so the seven tracks cover every function in the curriculum exactly once',
+      'Three new badges for the senior material, and every badge now declares which functions earn it, so a renamed lesson breaks a gate instead of quietly making an award impossible',
+      'The role recommendation was fixed in two ways: Modules 12 and 13 had never been in the tag map so no role could be pointed at them, and the picker was taking every module that matched a tag rather than the first, which had left Module 5 and Module 8 recommended by nobody at any version',
+      'Restore is hostile-file safe: a backup JSON sent by someone else could carry a __proto__ key and replace the prototype of your stored settings, which for this product means it could choose your tax rate and costing defaults. Nothing executed; the numbers were simply not yours',
+      'A storage suite where there was none: saved work, rename, duplicate, delete, the 250 and 50-item caps, favourites, recents, checklist and template state, the 100-event audit cap, workbench records, every way a bad backup file can be refused, and a real reload - the records are written, the page is reloaded from the bytes the browser kept, and they are read back',
+      'The audit page now shows the content-quality report the build already computed and previously only wrote to the developer console',
+      'Exam results, badges and the transcript page say plainly that Procure Sherpa certifies nothing and that no third party can verify a result',
+      'Every calculator handoff, workbench link and internal reference still resolves, and the whole suite is 25 integrity gates over 100 assertions'
+    ]
+  },
   {
     version: '2.4',
     date: '2026-10-20',

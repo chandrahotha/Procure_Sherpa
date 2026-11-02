@@ -56,6 +56,23 @@ PS.route('audit', function () {
         return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(String(a.e).replace(/-/g, ' ')) + '</td><td>' + PS.esc(a.d) + '</td></tr>';
       }).join('') + '</tbody></table></div></div>'
       : PS.empty('No events recorded yet. Use a calculator or save some work and the log will fill automatically.')) +
+    /* The content check ran on every load and its only output was a
+       console.warn, which the reader of a single HTML file has no reason to
+       open. The same array is now on the page the product already uses to
+       show what it recorded about the user. */
+    (function () {
+      var qa = PS.contentQA();
+      return '<div class="card"><div class="card-head"><h2>Content quality report</h2>' +
+        '<div class="spacer"></div><span class="badge">' +
+        (qa.length ? qa.length + ' issue' + (qa.length === 1 ? '' : 's') : 'no issues') +
+        '</span></div>' +
+        '<p class="card-sub">On every load Procure Sherpa re-reads its own libraries for duplicate ids, items missing a required field and links that point at content which is not there.</p>' +
+        (qa.length
+          ? '<ul>' + qa.slice(0, 40).map(function (p) { return '<li>' + PS.esc(String(p)) + '</li>'; }).join('') + '</ul>' +
+            '<p class="note">These are also written to the browser console. The QA gate fails the build on the same list, so a shipped copy of this file should not carry any.</p>'
+          : '<p class="note">Nothing is wrong with the content in this copy. The build gate asserts the same thing, so a release that breaks it does not ship.</p>') +
+        '</div>';
+    }()) +
     PS.disclaimer('data');
   return html;
 });

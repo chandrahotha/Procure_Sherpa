@@ -40,7 +40,12 @@ PS.route('academy-progress', function () {
         '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(f.id) + '">Open</a></td>' +
         '</tr>';
     }).join('') +
-    '</tbody></table></div></div>';
+    '</tbody></table></div>' +
+    /* This page is titled "Transcript" and lists quiz percentages, so it is
+       one of the places a reader could form the impression that the product
+       has certified something. It has not, and the page says so in the same
+       voice it uses everywhere else. */
+    PS.disclaimer('credential');
 
   return html;
 });
@@ -97,7 +102,7 @@ PS.renderAcademyHub = function (params) {
 
   // Badges strip
   /* The recommendation sits directly under the hero, not at the end
-     of the page. The badge wall below is twelve locked cards, and the
+     of the page. The badge wall below is a grid of locked cards, and the
      most useful thing on the page was underneath all of it. */
   html += PS.academyRoleRecommendation(funcs);
 

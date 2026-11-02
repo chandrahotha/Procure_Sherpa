@@ -14,7 +14,7 @@ PS.APP = 'Procure Sherpa';
    fixed by the master requirements (section 4.1 and section 81) and by
    every download link, and the tools read the version out of the
    artifact rather than out of its name. */
-PS.VERSION = '2.4';
+PS.VERSION = '2.5';
 PS.SCHEMA = 2;
 /* Replaced at build time with a hash of the source fragments, so the
    running application can say which sources it was built from. See

@@ -148,24 +148,35 @@ const read = (rel) => {
 };
 const docs = DOCFILES.map((f) => ({ file: f, text: read(f) })).filter((d) => d.text);
 
+/* A line that describes a previous state is allowed to name the previous
+   number: "the pool went 106 -> 102" is evidence, not a live claim. */
+const HISTORICAL = /\bwas\b|\bused to\b|->|→|\bwent\b|\bpreviously\b|\bno longer\b/i;
+
 const docProblems = [];
 /**
- * Fail if any document matches `claim`, unless the claim is written as a
- * historical record inside a `<details>` block or prefixed 'was'.
+ * Fail if any document's current-state line matches `claim`. Matching is
+ * line-wise and skips a line that HISTORICAL recognises, because a document
+ * quoting a stale claim in order to refute it ("the roadmap is wrong: it
+ * marks the scheduler not built") is not itself making the claim - and if it
+ * were punished for the quotation, the honest document would learn to stop
+ * quoting anything checkable.
  * @param {string} label what is being checked
  * @param {RegExp} claim the stale wording
  * @param {string} measure what the source actually says
  * @param {string} fix what to do about it
  */
 function forbid(label, claim, measure, fix) {
-  const hits = docs.filter((d) => claim.test(d.text));
-  if (hits.length) {
-    docProblems.push({
-      label,
-      detail: hits.map((h) => h.file + ': ' + h.text.split(/\r?\n/).find((l) => claim.test(l)).trim().slice(0, 110)).join('\n      '),
-      measure, fix
-    });
+  const hits = [];
+  for (const d of docs) {
+    for (const line of d.text.split(/\r?\n/)) {
+      if (HISTORICAL.test(line)) continue;
+      if (claim.test(line)) {
+        hits.push(d.file + ': ' + line.trim().slice(0, 110));
+        break;
+      }
+    }
   }
+  if (hits.length) docProblems.push({ label, detail: hits.join('\n      '), measure, fix });
 }
 
 /* ---------- the version of record ---------- */
@@ -261,6 +272,91 @@ if (devCount > 1) {
   }));
 }
 
+/* ---------- the curriculum counts the documents quote ----------
+   Modules 12 and 13 arrived, the registry went from 28 functions in 11
+   modules to 34 in 13, and every document that had counted the curriculum
+   kept counting the old one - including the UI copy on the Command Center.
+   The numbers exist once, in tools/content_pins.mjs, and G1 fails the build
+   when the artifact disagrees with them; these rules make the prose agree
+   with the pin. A document that wants a different number has to change the
+   pin, which changes the gate, which means the claim was decided rather than
+   remembered.
+
+   A line that describes a previous state is allowed to name the previous
+   number: "the pool went 106 -> 102" is evidence, and refusing it would
+   teach the documents to stop saying anything checkable. */
+const { PINS } = await import('./content_pins.mjs');
+const COUNT_CLAIMS = [
+  { re: /(\d{2,3}) Academy functions/gi, want: () => PINS.academyFunctions, what: 'academy functions' },
+  { re: /(\d{2,3}) functions, (\d{2,3}) (?:SOP steps|steps)/g, want: () => PINS.academyFunctions, at: 1, what: 'academy functions' },
+  { re: /(\d{2}) modules, (\d{2,3}) functions/g, want: () => PINS.academyModules, at: 1, what: 'academy modules' },
+  { re: /(\d{2,3}) quiz questions/g, want: () => PINS.academyQuizQuestions, what: 'academy quiz questions' },
+  { re: /(\d{2,3}) (?:academy )?SOP steps/g, want: () => PINS.academySopSteps, what: 'academy step sequences' },
+  { re: /(\d{2,3}) procedure steps/g, want: () => PINS.sopLibrarySteps, what: 'SOP library procedure steps' }
+];
+for (const d of docs) {
+  for (const line of d.text.split(/\r?\n/)) {
+    if (HISTORICAL.test(line)) continue;
+    for (const claim of COUNT_CLAIMS) {
+      claim.re.lastIndex = 0;
+      let m;
+      while ((m = claim.re.exec(line))) {
+        const idx = m.length > 2 ? (claim.at || 1) : 1;
+        const got = Number(m[idx]);
+        const pin = claim.want();
+        if (got !== pin) {
+          docProblems.push({
+            label: 'a ' + claim.what + ' count in the documents no longer matches the pin',
+            detail: d.file + ': ' + line.trim().slice(0, 110),
+            measure: 'tools/content_pins.mjs pins ' + claim.what + ' at ' + pin + ', and G1 fails the build on the artifact disagreeing',
+            fix: 'update the document, or change the pin in the same commit as the content and update every document that quotes it'
+          });
+        }
+      }
+    }
+  }
+}
+
+/* ---------- claims about what is built ---------- */
+const themeSrc = read(path.join('src', 'core', '04b2_navbuild.js'));
+const hasScheduler = /_themeSchedulerInterval\s*=\s*setInterval/.test(themeSrc);
+if (hasScheduler) {
+  forbid('a document says the theme-from-clock scheduler is not built',
+    /dark mode scheduler[^|]*not built|nothing derives the theme from the clock/i,
+    'src/core/04b2_navbuild.js runs PS._themeSchedulerInterval on a 60 s timer, and 03d2_prefs.js carries themeSchedule',
+    'the roadmap row has to describe the scheduler that exists, or name what is missing from it');
+}
+const headSrc = read(path.join('src', 'base', '01a_head.html'));
+const hasManifestLink = /rel=["']manifest["']/.test(headSrc);
+if (!hasManifestLink) {
+  forbid('a document claims a web app manifest ships',
+    /blob manifest ships|inline blob manifest|manifest ships at/i,
+    'src/base/01a_head.html links no manifest, and src/core/07b_boot.js documents why the blob manifest was removed as dead code',
+    'the honest claim is that the artifact is not installable, and say what installability would cost the CSP');
+}
+
+/* The roadmap's own success-metrics table quotes the smoke count in a form
+   the phrase rule above does not see ("Routes passing smoke test | 72 of
+   72"). A target the project prints a number for is a number the drift check
+   can measure, so it gets its own rule. */
+{
+  const smokeRow = /Routes passing smoke test\s*\|\s*(\d+) of (\d+)/;
+  for (const d of docs) {
+    for (const line of d.text.split(/\r?\n/)) {
+      if (HISTORICAL.test(line)) continue;
+      const m = smokeRow.exec(line);
+      if (m && Number(m[1]) !== smokeRoutes.length) {
+        docProblems.push({
+          label: 'the smoke route count in a document no longer matches the smoke table',
+          detail: d.file + ': ' + line.trim().slice(0, 110),
+          measure: 'tools/smoke.mjs has ' + smokeRoutes.length + ' routes',
+          fix: 'run `node tools/smoke.mjs` and quote what it prints, or add the missing route to the table'
+        });
+      }
+    }
+  }
+}
+
 if (docProblems.length) {
   console.error('--- documentation drift ---');
   console.error('FAIL: ' + docProblems.length + ' claim(s) in the documents no longer match the source.');
@@ -283,5 +379,6 @@ console.log('toolchain pin:      engines.node "' + pkgEngines + '", .nvmrc ' + n
 console.log('locales registered: ' + locales.length + ' (' + locales.join(', ') + ')');
 console.log('dev-dependencies:   ' + devCount);
 console.log('smoke routes:       ' + smokeRoutes.length);
+console.log('curriculum pin:     ' + PINS.academyFunctions + ' functions in ' + PINS.academyModules + ' modules, ' + PINS.academyQuizQuestions + ' questions, ' + PINS.academySopSteps + ' step sequences');
 console.log('DOCUMENTATION DRIFT: none');
 process.exit(0);

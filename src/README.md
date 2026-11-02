@@ -72,7 +72,7 @@ src/
 
   content/              Controlled Knowledge Libraries
                         09*..18*            Concepts, SOPs, checklists, templates, KPIs
-                        19a..19e_*          11 modules / 28 Academy digital procurement functions
+                        19a..19g_*          11 modules / 28 Academy digital procurement functions
 
   calcs/                Financial & Operational Calculators
                         20*..38*            19 paired calculator definitions and math algorithms

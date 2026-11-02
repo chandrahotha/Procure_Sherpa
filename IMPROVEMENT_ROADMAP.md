@@ -1,8 +1,8 @@
 # Procure Sherpa - Improvement Roadmap
 
-**Current Version:** 2.4 (`package.json` carries `2.4.0`, `PS.VERSION` carries `2.4`, and the application prints `Procure Sherpa v2.4` when it loads)  
+**Current Version:** 2.5 (`package.json` carries `2.5.0`, `PS.VERSION` carries `2.5`, and the application prints `Procure Sherpa v2.5` when it loads)  
 **Baseline Tag:** `HUBCHANGED`  
-**Last Updated:** 2026-11-01
+**Last Updated:** 2026-11-02
 
 The committed artifact keeps the name `ProcureSherpa-v2.0.html`. That
 filename is fixed by the master requirements (sections 4.1 and 81) and by
@@ -68,8 +68,8 @@ strip, and the layout no longer overflows on a phone.
 | Academy functions | 19 | **28** |
 | Functions with a library link | 0 | **28** |
 | Content items with no inbound link | 201 | **0** |
-| Learning paths | 3, covering 8 functions | 4, covering all 28 |
-| Skill portfolio areas | 6, covering 8 functions | 7, covering all 28 |
+| Learning paths | 3, covering 8 functions | 4, covering all 34 |
+| Skill portfolio areas | 6, covering 8 functions | 7, covering all 34 |
 | Badges | 8, with 7 of 19 functions earning none | 12, with every function covered |
 | SOP steps | 96 | **140** |
 | Knowledge-check questions | 76 | **112** |
@@ -388,7 +388,7 @@ Two items already have partial infrastructure worth knowing about:
   the content libraries register (66 concepts, 13 SOPs, 27 checklists,
   33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
-  plus the 28 Academy functions and their 112 quiz questions. Counting
+  plus the 34 Academy functions and their 148 quiz questions. Counting
   quoted string literals, `src/content` alone holds about 0.8 MB of
   English against the catalog's 1 KB. **The honest limit is one translated
   shell around an English product**, and the Spanish half is real but
@@ -823,7 +823,7 @@ left sitting in a backlog nobody re-reads.
 | Keyboard shortcuts cheat sheet (printable) | 1 day | High | `01g_print.css`, `03c_ui.js` | ✅ shipped - `03c_ui.js` carries the printable cheat sheet |
 | Calculator "Copy as Markdown" | 1 day | High | `05c_calcresult.js` | ✅ shipped - `PS.calcMarkdown()` in `05c_calcresult.js`, and the KB/SOP/checklist pages carry the same button |
 | Search "Did you mean?" | 2 days | Medium | `03g_search.js` | ✅ shipped - the suggestion label is in `03g_search.js` |
-| Dark mode scheduler (sunset/sunrise) | 1 day | Medium | `03d2_prefs.js` | 📋 not built - dark mode exists and is switchable; nothing derives the theme from the clock |
+| Dark mode scheduler (sunset/sunrise) | 0 days | Medium | `04b2_navbuild.js`, `03d2_prefs.js` | ✅ shipped, in a different file than this row named - `PS.getScheduledTheme` compares the clock to `themeAutoStart`/`themeAutoEnd` and `PS.startThemeScheduler` re-checks every 60 s from boot, with the times editable in Settings. What is still owed is the assertion: §43 only checks the dark tokens exist, and the jsdom harness stubs `matchMedia` to `matches:false`, so the `system` branch has never been executed under test |
 | Export chart as SVG button | 1 day | High | `03j_charts.js` | ✅ shipped - every chart renders an "Export SVG" button |
 | Saved items bulk actions (delete, tag) | 2 days | Medium | `08d2_pages_savedlist.js` | ✅ shipped for export and delete; tagging is not part of the bulk bar |
 | Academy "Mark all complete" for testing | 0.5 day | Low | `03h_academy_store.js` | 📋 not built - "Mark all" exists on checklists, not in the Academy store |
@@ -845,6 +845,7 @@ one `tools/check_drift.mjs` compares against `package.json` and
 | 2.2 | 2026-09-28 | - |
 | 2.3 | 2026-10-08 | - |
 | 2.4 | 2026-10-20 | The revamp recorded in `docs/v2.4-delivery-report.md` |
+| 2.5 | 2026-11-02 | Academy Modules 12 and 13 shipped and integrated, the storage suite written, the hostile-backup path closed, CI least privilege added, and 25 integrity gates |
 
 The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
 in Q2 2027. All three shipped inside four weeks of being planned, in
@@ -866,11 +867,11 @@ is right and this table is the thing to fix.
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Routes passing smoke test | 72 of 72 (`node tools/smoke.mjs` - "routes: 72 failing: 0") | 80+ |
+| Routes passing smoke test | 85 of 85 (`node tools/smoke.mjs` - "routes: 85 failing: 0") | 80+ - met |
 | Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 239 rel objects; broken refs: 0") | 0 broken |
-| Payload | 1,978 KB readable, 1,620 KB minified, 547 KB gzipped | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
+| Payload | 2,149 KB readable, 1,768 KB minified, 528 KB gzipped as deployed (594 KB gzipped as the readable file). Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
-| Accessibility (`npm run audit:a11y`) | 0 issues, across the 38 routes the audit enumerates | 0 issues across all 52 registered routes |
+| Accessibility (`npm run audit:a11y`) | 0 issues, across the 64 routes the audit enumerates (52 registered routes, so the sweep is wider than the registry) | 0 issues, keyboard focus visible in both themes |
 | PWA score (Lighthouse) | **not measurable as things stand** - the artifact has no web manifest and no service worker (`serviceWorker` appears nowhere in `src/` or the built file), so there is no install surface for Lighthouse to score. This is Phase 7 work, not a missing measurement | decide first whether the product wants to be installable at all |
 | Supported languages | 2 registered (`en`, `es`), 44 of 44 shell catalog keys wired - `npm run audit:i18n`. The authored content is English-only; see the i18n entry in the status legend | 7+ |
 | Calculator count | 19 | 25+ |

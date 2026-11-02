@@ -7,6 +7,23 @@ PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
   {
+    version: '2.5',
+    date: '2026-11-02',
+    title: 'The curriculum grew up, and the toolkit was proved against itself',
+    tag: 'Improvement',
+    items: [
+      'The Academy now teaches 34 functions across 13 modules: Advanced Category & Portfolio Strategy (the tail, supply market structure, demand management) and Executive & Board-Level Procurement (operating model and cost-to-serve, the value narrative, transformation sequencing) - 179 step sequences and 148 quiz questions in total',
+      'Nine functions that had been orphaned - three from Module 11 and six from Modules 12 and 13 - now belong to a learning track, so the seven tracks cover every function in the curriculum exactly once',
+      'Three new badges for the senior material, and every badge now declares which functions earn it, so a renamed lesson breaks a gate instead of quietly making an award impossible',
+      'The role recommendation was fixed in two ways: Modules 12 and 13 had never been in the tag map so no role could be pointed at them, and the picker was taking every module that matched a tag rather than the first, which had left Module 5 and Module 8 recommended by nobody at any version',
+      'Restore is hostile-file safe: a backup JSON sent by someone else could carry a __proto__ key and replace the prototype of your stored settings, which for this product means it could choose your tax rate and costing defaults. Nothing executed; the numbers were simply not yours',
+      'A storage suite where there was none: saved work, rename, duplicate, delete, the 250 and 50-item caps, favourites, recents, checklist and template state, the 100-event audit cap, workbench records, every way a bad backup file can be refused, and a real reload - the records are written, the page is reloaded from the bytes the browser kept, and they are read back',
+      'The audit page now shows the content-quality report the build already computed and previously only wrote to the developer console',
+      'Exam results, badges and the transcript page say plainly that Procure Sherpa certifies nothing and that no third party can verify a result',
+      'Every calculator handoff, workbench link and internal reference still resolves, and the whole suite is 25 integrity gates over 100 assertions'
+    ]
+  },
+  {
     version: '2.4',
     date: '2026-10-20',
     title: 'The application says what it actually does',

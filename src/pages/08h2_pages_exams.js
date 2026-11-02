@@ -27,7 +27,8 @@ PS.route('exams', function () {
     bankCards +
     '<div id="examRunner"></div>' +
     '<div class="card"><div class="card-head"><h2>Attempt history</h2></div>' + PS.exams.historyHtml() + '</div>' +
-    PS.disclaimer('data');
+    PS.disclaimer('data') +
+    PS.disclaimer('credential');
 });
 PS.acts['exam-history'] = function () {
   PS.modal({
