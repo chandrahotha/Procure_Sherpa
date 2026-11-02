@@ -751,3 +751,15 @@ Curriculum was **48 functions in 16 modules, 279 step sequences, 219 quiz questi
 **Verification.** `npm run qa` exit 0 — 29 integrity gates, G1 pinning 51/17/300/234, G12 grading all 234 questions, G13 showing 17 modules in order and every one recommended, G15 a worked example on all 51, G24 one path and one badge rule per function. Artifact 2,701 KB readable, 752 KB gzipped against the 1,152 KB ceiling.
 
 **Ceiling.** These lessons carry no named human reviewer, and the constraint that makes them worth reading — that a supplier cannot be replaced cheaply — is asserted from practice rather than from the reader's own category. The lab missions are where that has to be tested.
+
+### Cycle 8 addendum 6 — the hub became navigable, and the gate checks it does
+
+Fifty-one lessons across seventeen modules made the Academy hub a page roughly one screen long per module with no way into it. Three additions, all link-driven so a filtered view is an address a reader can bookmark, send to someone, and reload:
+
+- **A sticky module index strip** — one chip per visible module, each carrying its own `done/total`, so the strip is also a map of where the gaps are. Built from the modules actually rendered, so a filtered page never offers a jump to something it has hidden. `scroll-margin-top` puts the jump target below the sticky strip rather than behind it.
+- **A status filter** — Not started / Quiz taken / Mastered, composing with the existing level filter rather than resetting it. The three states are derived only from what the progress record actually stores (a completion flag and a quiz result); there is no "lesson opened" event, so nothing pretends there is.
+- **A per-module line** — lessons, minutes, and what is already mastered, so the reader can choose where the next half hour goes.
+
+**G27 grew four assertions** to own it: the mastered filter equals the completion record, unread plus mastered partitions the whole, level and status compose rather than reset, the strip's counts match the lessons under each module, and an empty combination states why and links back. Mutation-proved by making the strip report one lesson more than each module holds — it named all three mismatches.
+
+**Verification.** `npm run qa` exit 0 — 29 gates / 125 assertions, a11y 0 findings over 64 renders, 754 KB gzipped against the 1,152 KB ceiling.

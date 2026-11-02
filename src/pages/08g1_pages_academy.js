@@ -65,6 +65,26 @@ PS.renderAcademyHub = function (params) {
   if (!PS.academy.TIERS.some(function (t) { return t.id === tier; })) tier = '';
   var shown = tier ? funcs.filter(function (f) { return f.tier === tier; }) : funcs;
 
+  /* Status is a second, independent filter and works the same way: a link,
+     so #/academy?status=mastered is shareable and survives a reload. At
+     seventeen modules and fifty-one lessons the page is long enough that
+     "show me what I have not started" is the most useful thing a reader can
+     ask for, and the answer should not require scrolling through all of it.
+     The three states are built only from what the progress record actually
+     stores - a completion flag and a quiz result. There is no "opened this
+     lesson" event, so nothing pretends there is. */
+  var status = (params && params.status) || '';
+  if (['unread', 'attempted', 'mastered'].indexOf(status) < 0) status = '';
+  if (status) {
+    shown = shown.filter(function (f) {
+      var done = PS.academy.isCompleted(f.id);
+      var scored = !!PS.academy.getQuizResult(f.id);
+      if (status === 'mastered') return done;
+      if (status === 'attempted') return !done && scored;
+      return !done && !scored;
+    });
+  }
+
   // Group functions by module. The modules are always presented in
   // module number order. The curriculum is numbered, and the number IS
   // the sequence: a page whose first badge reads 'Module 7' tells the
@@ -107,18 +127,41 @@ PS.renderAcademyHub = function (params) {
   html += PS.academyRoleRecommendation(funcs);
 
   /* Three levels, stated up front, because the honest answer to "is this
-     for me" is a label on the card rather than a guess after reading. */
-  var lvlChips = '<a class="chip ' + (tier ? '' : 'is-on') + '" href="#/academy">All levels <strong>' + funcs.length + '</strong></a>';
+     for me" is a label on the card rather than a guess after reading.
+     Both chip rows carry the other filter through: choosing a level and
+     then choosing "unread" should narrow, not silently reset. */
+  var filterHref = function (t, s) {
+    var q = [];
+    if (t) q.push('tier=' + encodeURIComponent(t));
+    if (s) q.push('status=' + encodeURIComponent(s));
+    return '#/academy' + (q.length ? '?' + q.join('&') : '');
+  };
+  var lvlChips = '<a class="chip ' + (tier ? '' : 'is-on') + '" href="' + filterHref('', status) + '">All levels <strong>' + funcs.length + '</strong></a>';
   PS.academy.TIERS.forEach(function (t) {
     var n = funcs.filter(function (f) { return f.tier === t.id; }).length;
-    lvlChips += '<a class="chip ' + (tier === t.id ? 'is-on' : '') + '" href="#/academy?tier=' + t.id + '">' + PS.esc(t.name) + ' <strong>' + n + '</strong></a>';
+    lvlChips += '<a class="chip ' + (tier === t.id ? 'is-on' : '') + '" href="' + filterHref(t.id, status) + '">' + PS.esc(t.name) + ' <strong>' + n + '</strong></a>';
+  });
+  var STATUS_LABELS = [['unread', 'Not started'], ['attempted', 'Quiz taken'], ['mastered', 'Mastered']];
+  var statusChips = '<a class="chip ' + (status ? '' : 'is-on') + '" href="' + filterHref(tier, '') + '">Any status <strong>' +
+    (tier ? shown.length : funcs.length) + '</strong></a>';
+  STATUS_LABELS.forEach(function (s) {
+    var n = funcs.filter(function (f) {
+      var done = PS.academy.isCompleted(f.id);
+      var scored = !!PS.academy.getQuizResult(f.id);
+      if (s[0] === 'mastered') return done;
+      if (s[0] === 'attempted') return !done && scored;
+      return !done && !scored;
+    }).length;
+    statusChips += '<a class="chip ' + (status === s[0] ? 'is-on' : '') + '" href="' + filterHref(tier, s[0]) + '">' +
+      s[1] + ' <strong>' + n + '</strong></a>';
   });
   var activeTier = PS.academy.TIERS.filter(function (t) { return t.id === tier; })[0];
   html += '<div class="card mb16"><div class="card-head"><h2>Choose your level</h2>' +
     '<span class="badge">' + (activeTier ? PS.esc(activeTier.name) + ' track' : 'Full curriculum') + '</span></div>' +
     '<div class="filters">' + lvlChips + '</div>' +
+    '<div class="filters">' + statusChips + '</div>' +
     (activeTier
-      ? '<p class="note">' + PS.esc(activeTier.desc) + ' <a href="#/academy">Show all ' + funcs.length + ' functions</a>.</p>'
+      ? '<p class="note">' + PS.esc(activeTier.desc) + ' <a href="' + filterHref('', status) + '">Show all ' + funcs.length + ' functions</a>.</p>'
       : '<p class="note">The curriculum is written at three altitudes: <strong>Foundation</strong> for the fundamentals, <strong>Practitioner</strong> for the person running a category or an event, and <strong>Executive</strong> for the owner of the portfolio. Filter to the one that matches the decisions you make.</p>') +
     '</div>';
 
@@ -141,10 +184,33 @@ PS.renderAcademyHub = function (params) {
      rather than only on the separate progress page. */
   var hubStats = PS.academy.getStats();
   var minsLeft = PS.academy.minutesRemaining();
+  var modNames = Object.keys(modules);
   html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2>' +
     '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
-    '</strong> functions across ' + Object.keys(modules).length + ' modules' +
+    '</strong> functions across ' + modNames.length + ' modules' +
     (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
+
+  /* A jump strip, because seventeen modules of three lessons is a page more
+     than one screen long per module, and "go to the contracts one" should not
+     require scrolling to find it. Each chip carries its own mastered count, so
+     the strip doubles as a map of where the gaps are. It is built from the
+     modules actually shown, so a filtered page never offers a jump to a module
+     it has just hidden. */
+  if (modNames.length > 1) {
+    html += '<nav class="module-index" aria-label="Jump to a module">' + modNames.map(function (modName) {
+      var mp = PS.academy.moduleProgress(modName);
+      var no = PS.academyModuleNumber(modName);
+      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '">' +
+        '<span class="mi-no">' + no + '</span>' +
+        '<span class="mi-name">' + PS.esc(String(modName).replace(/^Module\s+\d+:\s*/, '')) + '</span>' +
+        '<span class="mi-count">' + mp.done + '/' + mp.total + '</span></a>';
+    }).join('') + '</nav>';
+  }
+  if (!shown.length) {
+    html += '<div class="empty">No lesson matches this combination of level and status. ' +
+      '<a href="' + filterHref('', '') + '">Show the whole curriculum</a>.</div>';
+    return html;
+  }
 
   Object.keys(modules).forEach(function (modName, modIdx) {
     var modFuncs = modules[modName];
@@ -157,6 +223,16 @@ PS.renderAcademyHub = function (params) {
          again. */
       '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
+      /* Lessons, minutes and what is already done, stated once per module so
+         the reader can choose where to spend the next half hour. */
+      (function () {
+        var mins = modFuncs.reduce(function (a, f) {
+          return a + (parseInt(String(f.duration || '15 mins'), 10) || 15);
+        }, 0);
+        var done = modFuncs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+        return '<span class="module-meta">' + modFuncs.length + ' lessons \u00B7 ' + mins + ' min \u00B7 ' +
+          (done ? done + ' mastered' : 'not started yet') + '</span>';
+      }()) +
       /* The rail is built from the module's own functions, so a module can
          not claim a percentage the cards below it do not support. */
       (function () {

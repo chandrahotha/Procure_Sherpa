@@ -1506,6 +1506,66 @@ try {
   } else {
     ok('G27', 'the lesson page states its place in the sequence (' + posChip.trim().replace(/^📍\s*/, '') + ')');
   }
+  /* The hub's filters and its jump strip. Seventeen modules and fifty-one
+     lessons is long enough that these are how anyone navigates, and a filter
+     that quietly ignores the other one - or a strip that counts something the
+     cards below do not show - is worse than no filter at all. */
+  const g27Mastered = g27Seq.filter((f) => PS.academy.isCompleted(f.id)).length;
+  const g27Cards = (sel) => { w.location.hash = sel; PS.renderRoute(); return w.document.querySelectorAll('#main .func-card').length; };
+  const mCards = g27Cards('#/academy?status=mastered');
+  const uCards = g27Cards('#/academy?status=unread');
+  const allCards = g27Cards('#/academy');
+  if (mCards !== g27Mastered) {
+    fail('G27', 'the "Mastered" filter shows ' + mCards + ' lessons but ' + g27Mastered + ' are recorded as mastered');
+  } else if (uCards + mCards !== allCards) {
+    fail('G27', 'the status filters do not partition the curriculum: ' + uCards + ' unread + ' + mCards + ' mastered against ' + allCards + ' shown');
+  } else {
+    ok('G27', 'the hub status filters agree with the completion record and partition it (' + uCards + ' unread + ' + mCards + ' mastered = ' + allCards + ')');
+  }
+
+  /* Level and status must compose rather than reset each other. */
+  const execTotal = g27Seq.filter((f) => f.tier === 'executive').length;
+  const execMastered = g27Seq.filter((f) => f.tier === 'executive' && PS.academy.isCompleted(f.id)).length;
+  const combo = g27Cards('#/academy?tier=executive&status=mastered');
+  if (combo !== execMastered) {
+    fail('G27', 'tier=executive&status=mastered shows ' + combo + ' lessons, expected ' + execMastered + ' of ' + execTotal + ' executive functions');
+  } else {
+    ok('G27', 'the level and status filters compose (' + combo + ' of ' + execTotal + ' executive lessons mastered)');
+  }
+
+  /* The jump strip has to count what the cards on the page actually are. */
+  w.location.hash = '#/academy';
+  PS.renderRoute();
+  const stripChips = [...w.document.querySelectorAll('#main .module-index-chip')];
+  const stripBad = [];
+  stripChips.forEach((chip) => {
+    const href = chip.getAttribute('href') || '';
+    const target = w.document.querySelector('#main ' + href.replace('#', '#'));
+    const cardCount = target ? target.querySelectorAll('.func-card').length : -1;
+    const parts = String(chip.querySelector('.mi-count').textContent).split('/');
+    if (Number(parts[1]) !== cardCount) stripBad.push(href + ' chip says /' + parts[1] + ' but the module holds ' + cardCount);
+  });
+  if (!stripChips.length) {
+    fail('G27', 'the hub has no module index strip, so a ' + g27Seq.length + '-lesson page offers no way to navigate it');
+  } else if (stripBad.length) {
+    fail('G27', 'the module index strip disagrees with the curriculum below it: ' + stripBad.slice(0, 3).join('; '));
+  } else {
+    ok('G27', 'the module index strip lists ' + stripChips.length + ' modules and each count matches the lessons under it');
+  }
+
+  /* A filter combination with nothing in it must say so and offer the way
+     back, rather than rendering a page that looks broken. */
+  w.location.hash = '#/academy?tier=executive&status=attempted';
+  PS.renderRoute();
+  const emptyBox = w.document.querySelector('#main .empty');
+  const emptyCards = w.document.querySelectorAll('#main .func-card').length;
+  if (emptyCards === 0 && !emptyBox) {
+    fail('G27', 'an empty filter result renders no lessons and no explanation');
+  } else if (emptyCards === 0 && emptyBox && !emptyBox.querySelector('a')) {
+    fail('G27', 'the empty filter result explains itself but offers no way back to the full curriculum');
+  } else {
+    ok('G27', 'an empty filter result states why and links back to the whole curriculum');
+  }
 } finally {
   PS.academy._cache = null;
   PS.academy.save(g27Keep);

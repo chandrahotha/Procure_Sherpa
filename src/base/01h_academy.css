@@ -1348,3 +1348,44 @@ html[data-theme="dark"] .quiz-tip-cta {
   .academy-hero h1,.academy-hero .display{font-size:1.6rem}
   .module-head h2{font-size:1.2rem}
 }
+
+/* ---------- v3: the module index strip ----------
+   Seventeen modules is a page long enough to need a way in. The strip is
+   sticky under the topbar, wraps to two rows on a narrow screen, and each
+   chip shows its own mastered count, so it reads as a map of the gaps as
+   well as a set of jump links. */
+.module-index{
+  position:sticky;top:calc(var(--top) + 6px);z-index:21;display:flex;flex-wrap:wrap;gap:6px;
+  margin:0 0 18px;padding:9px 10px;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);
+}
+.module-index-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 10px 5px 6px;
+  border:1px solid var(--border);border-radius:var(--r-pill);background:var(--panel);
+  color:var(--dim);font-size:.78rem;font-weight:600;text-decoration:none;line-height:1.4;
+  transition:border-color var(--dur),color var(--dur),background var(--dur),transform .1s var(--ease);
+}
+.module-index-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none;transform:translateY(-1px)}
+.module-index-chip:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.module-index-chip .mi-no{
+  flex:0 0 20px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+  background:var(--sunken);color:var(--mute);font-size:.66rem;font-weight:800;font-variant-numeric:tabular-nums;
+}
+.module-index-chip.is-complete{border-color:color-mix(in srgb,var(--ok) 45%,var(--border));background:var(--ok-soft);color:var(--ok)}
+.module-index-chip.is-complete .mi-no{background:var(--ok);color:#fff}
+.module-index-chip .mi-count{font-size:.68rem;font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums}
+.module-index-chip.is-complete .mi-count{color:var(--ok)}
+/* The jump target has to land below the sticky strip, or the module heading
+   it scrolled to is hidden behind it. */
+.module-group{scroll-margin-top:calc(var(--top) + 96px)}
+.module-meta{
+  font-size:.76rem;font-weight:700;letter-spacing:.02em;color:var(--mute);
+  background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px;white-space:nowrap;
+}
+@media (max-width:900px){
+  .module-index{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
+  .module-index-chip{flex:0 0 auto}
+  .module-index-chip .mi-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
