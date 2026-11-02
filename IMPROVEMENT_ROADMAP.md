@@ -1,6 +1,6 @@
 # Procure Sherpa - Improvement Roadmap
 
-**Current Version:** 2.7 (`package.json` carries `2.7.0`, `PS.VERSION` carries `2.7`, and the application prints `Procure Sherpa v2.7` when it loads)  
+**Current Version:** 3.0 (`package.json` carries `3.0.0`, `PS.VERSION` carries `3.0`, and the application prints `Procure Sherpa v3.0` when it loads)  
 **Baseline Tag:** `HUBCHANGED`  
 **Last Updated:** 2026-11-02
 
@@ -212,8 +212,8 @@ ran".
   ceiling derived from "3 seconds at 3 Mbps" (1152 KB), the script's full
   V8 compile against a 400 ms budget, and the application boot to a
   rendered first page against a 500 ms budget. `npm run perf` prints the
-  live figures - the size is a fact about the file (547 KB gzipped,
-  1.46 s at 3 Mbps), the two timings are wall-clock and belong to the
+  live figures - the size is a fact about the file (666 KB gzipped,
+  1.78 s at 3 Mbps), the two timings are wall-clock and belong to the
   machine that took them, which is why ADR 0002 keeps its measurement
   dated instead of asserting it as a property of the build. The previous
   1300 KB "JS payload ceiling" was never derived from anything and had
@@ -848,6 +848,7 @@ one `tools/check_drift.mjs` compares against `package.json` and
 | 2.5 | 2026-11-02 | Academy Modules 12 and 13 shipped and integrated, the storage suite written, the hostile-backup path closed, CI least privilege added, and 25 integrity gates |
 | 2.6 | 2026-11-02 | Module 14 (influence, the executive ask, adoption) - 37 functions in 14 modules; practice-exam integrity fixed; footer and sidebar rebuilt; 26 integrity gates |
 | 2.7 | 2026-11-02 | Module 15 (freight and customs, regulated buying, people-time categories) plus 6 new concepts, 2 new SOPs and 6 glossary terms - 40 functions in 15 modules, 248 library records, 19 badges |
+| 3.0 | 2026-11-02 | The reading edition: new design system (jade accent, dark navigation rail, 16px base, serif lesson prose, 1,440px content column), theme-aware charts, glossary relations complete (45 terms, 252 records), 29 integrity gates / 118 assertions |
 
 The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
 in Q2 2027. All three shipped inside four weeks of being planned, in

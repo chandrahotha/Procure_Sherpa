@@ -3592,7 +3592,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '447f47b9f104';
+PS.BUILD = '364b0759a72d';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -17378,6 +17378,8 @@ PS.whatsNew.CHANGES = [
       'The content column uses the viewport: 1,440px instead of 1,240px, with a separate reading measure for prose, so a dashboard fills the screen and a paragraph does not run 110 characters',
       'Charts are now theme-aware. An SVG attribute cannot read a CSS variable, so the graphs used to keep their light-theme ink when the page went dark; they now resolve the palette at render time',
       'Hard-coded colours removed from generated markup - the mastered tick, the unlocked badge, the risk meter and the winning bid column were painted in fixed hexes that were near-invisible on the dark canvas',
+      'Forms, tables and result panels come up from 13-14px: inputs at .95rem, table cells at .9rem, result values at 1.4rem, the headline figure at 1.95rem, and the calculator input pane widened to 440px',
+      'A new gate owns the theme: no inline colour may be written into a page outside a token, charts must resolve their palette through the theme function, the navigation rail must be painted from its six tokens, and the lesson prose must actually carry the reading face. It found three offenders the eye had missed',
       'Cards, buttons and tiles share one motion language: a 1-2px lift on hover, a short staggered entrance on load, all of it collapsed to nothing under prefers-reduced-motion',
       'The glossary is complete: all 45 terms now carry outgoing links, including EBITDA, working capital, cost-to-serve and run-rate, and a gate fails if a term ever ships without somewhere to go'
     ]
