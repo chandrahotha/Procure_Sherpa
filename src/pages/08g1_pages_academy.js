@@ -36,7 +36,7 @@ PS.route('academy-progress', function () {
         '<td><strong>' + PS.esc(f.title) + '</strong><br><small class="muted">' + PS.esc(f.module) + '</small></td>' +
         '<td><span class="badge">' + PS.esc(f.lifecycleStage || 'General') + '</span></td>' +
         '<td>' + (sc ? sc.pct + '% (' + sc.score + '/' + sc.total + ')' : '<span class="muted">Not taken</span>') + '</td>' +
-        '<td>' + (isComp ? '<span style="color:#059669;font-weight:700">✓ Mastered</span>' : '<span class="muted">In Progress</span>') + '</td>' +
+        '<td>' + (isComp ? '<span class="text-ok font-bold">✓ Mastered</span>' : '<span class="muted">In Progress</span>') + '</td>' +
         '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(f.id) + '">Open</a></td>' +
         '</tr>';
     }).join('') +
@@ -131,7 +131,7 @@ PS.renderAcademyHub = function (params) {
         '<div class="badge-icon">' + b.icon + '</div>' +
         '<div class="badge-name">' + PS.esc(b.name) + '</div>' +
         '<div class="badge-desc">' + PS.esc(b.desc) + '</div>' +
-        (un ? '<div style="margin-top:6px;font-size:0.7rem;color:#059669;font-weight:700">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
+        (un ? '<div class="state-ok" style="margin-top:6px;font-size:0.7rem">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
         '</div>';
     }).join('') +
     '</div></div>';
@@ -216,7 +216,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   var html = '<div class="card" style="margin-bottom:14px">' +
     '<div class="dash-eyebrow-row"><span class="eyebrow">' + PS.esc(func.module || 'Academy') + ' &middot; ' + PS.esc(func.kicker || 'Function') + '</span>' +
     '<div class="spacer"></div>' +
-    (isComp ? '<span class="badge" style="background:#ecfdf5;color:#059669;font-weight:700">✓ Function Mastered</span>' : '<span class="badge badge-primary">Learning in Progress</span>') +
+    (isComp ? '<span class="badge badge-ok">✓ Function Mastered</span>' : '<span class="badge badge-primary">Learning in Progress</span>') +
     '</div>' +
     '<h1>' + PS.esc(func.title) + '</h1>' +
     '<p class="lead" style="margin-bottom:14px">' + PS.esc(func.tagline || func.desc) + '</p>' +
@@ -252,7 +252,10 @@ PS.renderAcademyFunction = function (funcId, params) {
   });
   html += '</div>';
 
-  // Render tab content
+  // Render tab content. The wrapper is what the reading typography in
+  // 01h_academy.css hangs off: a lesson is the longest text in the product
+  // and it was being set in the UI face at UI sizes.
+  html += '<div class="lesson-body">';
   if (activeTab === 'learn') {
     html += PS.renderFuncTabLearn(func);
   } else if (activeTab === 'think') {
@@ -264,6 +267,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   } else if (activeTab === 'apply') {
     html += PS.renderFuncTabApply(func);
   }
+  html += '</div>';
 
   // Next / Previous Navigation Footer
   html += '<div class="card card-tight no-print" style="margin-top:24px"><div class="flex-between">' +
@@ -309,9 +313,9 @@ PS.renderFuncTabLearn = function (f) {
     '<h3>Mandatory Controls & Governance</h3>' +
     '<ul>' + (f.controls || []).map(function (c) { return '<li>' + PS.esc(c) + '</li>'; }).join('') + '</ul>' +
     '<h3>Common Mistakes to Avoid</h3>' +
-    '<ul>' + (f.mistakes || []).map(function (m) { return '<li><span style="color:#dc2626">&#10006;</span> ' + PS.esc(m) + '</li>'; }).join('') + '</ul>' +
+    '<ul>' + (f.mistakes || []).map(function (m) { return '<li><span class="text-danger">&#10006;</span> ' + PS.esc(m) + '</li>'; }).join('') + '</ul>' +
     '<h3>Industry Best Practices</h3>' +
-    '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span style="color:#059669">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
+    '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span class="text-ok">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
     '</div></div>';
 
   html += PS.academyWorkedExample(f);
@@ -800,7 +804,7 @@ PS.executeAcademySandbox = function (type) {
     var nRisk = getNum('sb_kr_n_risk', 15);
 
     var items = [
-      { name: 'Custom ASICs', impact: sImp, risk: sRisk, spend: '$4.5M Spend', spendRatio: 1.3, color: '#6366f1' },
+      { name: 'Custom ASICs', impact: sImp, risk: sRisk, spend: '$4.5M Spend', spendRatio: 1.3, color: '#0f6e5c' },
       { name: 'Shipping Packaging', impact: lImp, risk: lRisk, spend: '$2.8M Spend', spendRatio: 1.1, color: '#10b981' },
       { name: 'Resin Additives', impact: bImp, risk: bRisk, spend: '$400k Spend', spendRatio: 0.6, color: '#f59e0b' },
       { name: 'Office Supplies', impact: nImp, risk: nRisk, spend: '$250k Spend', spendRatio: 0.5, color: '#64748b' }
@@ -930,7 +934,7 @@ PS.executeAcademySandbox = function (type) {
 
     var ratingText = riskScore <= 16 ? 'Optimal Enterprise Protection' : (riskScore <= 40 ? 'Commercially Balanced Risk' : 'Catastrophic Legal & Balance Sheet Exposure');
     var badgeClass = riskScore <= 16 ? 'verdict-strong' : (riskScore <= 40 ? 'verdict-warn' : 'verdict-danger');
-    var meterColor = riskScore <= 16 ? '#10b981' : (riskScore <= 40 ? '#f59e0b' : '#ef4444');
+    var meterColor = riskScore <= 16 ? 'var(--ok-2)' : (riskScore <= 40 ? 'var(--warn-2)' : 'var(--danger)');
 
     html = '<span class="sandbox-verdict-tag ' + badgeClass + '">' +
       'Contract Redline Audit : Legal Risk Exposure Score ' + riskScore + ' / 100 (' + ratingText + ')</span>' +
@@ -993,8 +997,8 @@ PS.executeAcademySandbox = function (type) {
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">ESG &amp; Regulatory Compliance</td><td style="padding:7px 12px;">15%</td><td style="padding:7px 12px;">' + aE.toFixed(1) + ' / 10 (' + (aE * 0.15).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bE.toFixed(1) + ' / 10 (' + (bE * 0.15).toFixed(2) + ')</td></tr>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Financial Health &amp; Solvency</td><td style="padding:7px 12px;">10%</td><td style="padding:7px 12px;">' + aF.toFixed(1) + ' / 10 (' + (aF * 0.1).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bF.toFixed(1) + ' / 10 (' + (bF * 0.1).toFixed(2) + ')</td></tr>' +
       '<tr style="background:var(--bg-2); font-weight:700;"><td style="padding:10px 12px;">Composite Weighted Score</td><td style="padding:10px 12px;">100%</td>' +
-      '<td style="padding:10px 12px; color:' + (aWins ? '#4f46e5' : 'inherit') + ';">' + scoreA.toFixed(2) + ' / 10.0 ' + (aWins ? '★ Winner' : '') + '</td>' +
-      '<td style="padding:10px 12px; color:' + (!aWins ? '#4f46e5' : 'inherit') + ';">' + scoreB.toFixed(2) + ' / 10.0 ' + (!aWins ? '★ Winner' : '') + '</td>' +
+      '<td style="padding:10px 12px; color:' + (aWins ? 'var(--accent)' : 'inherit') + ';">' + scoreA.toFixed(2) + ' / 10.0 ' + (aWins ? '★ Winner' : '') + '</td>' +
+      '<td style="padding:10px 12px; color:' + (!aWins ? 'var(--accent)' : 'inherit') + ';">' + scoreB.toFixed(2) + ' / 10.0 ' + (!aWins ? '★ Winner' : '') + '</td>' +
       '</tr>' +
       '</tbody></table></div>' +
       '<div class="sandbox-metric-row">' +

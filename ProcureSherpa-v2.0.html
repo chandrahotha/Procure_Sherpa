@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="Procure Sherpa: enterprise digital learning platform and operational execution system for procurement professionals: interactive learning journeys, controlled SOPs, decision guides, compliance checklists, production templates, financial calculators, and value KPIs.">
 <meta name="application-name" content="Procure Sherpa">
-<meta name="theme-color" content="#5346f5">
+<meta name="theme-color" content="#f4f5f3">
 <meta name="robots" content="index, follow">
 <meta name="keywords" content="procurement, procurement training, procurement calculators, sourcing, supplier management, TCO calculator, RFQ, RFP, SOP, procurement academy, category management, negotiation, contract governance">
 <meta name="author" content="Digi Tracks">
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Procure Sherpa | Procurement Digital Learning Platform">
 <meta name="twitter:description" content="Interactive procurement learning and decision-support platform: Academy curriculum, controlled SOPs, checklists, templates, 19 financial calculators, and KPI dashboards. Offline-first, zero telemetry, single HTML file.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235346f5'/%3E%3Ctext x='50' y='68' font-family='Arial,Helvetica,sans-serif' font-size='52' font-weight='700' fill='white' text-anchor='middle'%3EPS%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f6e5c'/%3E%3Ctext x='50' y='68' font-family='Arial,Helvetica,sans-serif' font-size='52' font-weight='700' fill='white' text-anchor='middle'%3EPS%3C/text%3E%3C/svg%3E">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Procure Sherpa | Procurement Digital Learning Platform</title>
 <script type="application/ld+json">
@@ -62,102 +62,135 @@
 </script>
 <style>
 /* ==========================================================
-   Procure Sherpa v2.1 - Design System
+   Procure Sherpa v3.0 - Design System
    Section 1: design tokens
+
+   The v3 identity is an editorial one: a warm-neutral canvas,
+   white paper surfaces, one jade accent, and a dark navigation
+   rail that stays the same in both themes so the sidebar reads
+   as furniture rather than as a panel that happens to be on the
+   left. Type is larger and the reading measure is capped, because
+   this product is mostly long prose about professional work.
    ========================================================== */
 :root{
-  --font:"Inter","Segoe UI Variable Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue","Noto Sans","DejaVu Sans",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  /* A serif for prose and lesson headlines only, never for dashboard chrome.
+     Every family here ships with the OS or with a default Linux font pack,
+     because the artifact is offline and fetches nothing: no webfont can be
+     assumed, so the stack names what is actually installed. */
+  --font-read:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"DejaVu Serif",serif;
 
-  --bg:#f3f5fb; --panel:#ffffff; --panel-2:#f7f9fd; --sunken:#edf1f8;
-  --text:#0e1526; --dim:#3d4b66; --mute:#68768f;
-  --border:#e3e8f4; --border-2:#c9d3e6;
+  --bg:#f4f5f3; --bg-2:#eceeeb; --panel:#ffffff; --panel-2:#f8faf8; --sunken:#eef1ef;
+  --text:#11151c; --dim:#39424f; --mute:#69737f;
+  --border:#e2e6e4; --border-2:#c6cec9;
 
-  --accent:#5346f5; --accent-2:#4331d8; --accent-3:#8b5cf6; --accent-ink:#ffffff; --accent-soft:#eeeffe;
-  --ring:0 0 0 3px rgba(83,70,245,.20);
+  /* The navigation rail: one dark furniture element in both themes. Its
+     tokens are separate from --panel/--text so nothing on a content surface
+     accidentally inherits rail contrast. */
+  --rail:#101720; --rail-2:#16202c; --rail-line:#232f3d;
+  --rail-text:#dbe4ee; --rail-dim:#93a2b4; --rail-mute:#6d7c8f;
+  --rail-hover:rgba(255,255,255,.055); --rail-active:rgba(62,181,159,.16);
+  --rail-hi:#6fdcbf; /* the one bright colour allowed on the rail */
+
+  --accent:#0f6e5c; --accent-2:#0a5245; --accent-3:#3eb59f; --accent-ink:#ffffff; --accent-soft:#e5f2ee;
+  --accent-gradient:linear-gradient(135deg,#0f6e5c 0%,#3eb59f 100%);
+  --ring:0 0 0 3px rgba(15,110,92,.22);
   /* Visible keyboard focus (WCAG 2.1 SC 2.4.7; master §47 names both keyboard
      navigation and visible focus states). The indicator is an `outline`, not
      a `box-shadow` on its own, because forced-colors / Windows high-contrast
      mode drops shadows but keeps outlines. Declared in both themes so the
      focus colour follows the theme; tools/a11y_audit.mjs asserts it. */
   --focus-outline:2px solid var(--accent); --focus-offset:2px;
-  --ok:#047857; --ok-2:#059669; --ok-soft:#e3f6ec;
-  --warn:#b45309; --warn-2:#d97706; --warn-soft:#fdf0dd;
-  --danger:#dc2626; --danger-2:#ef4444; --danger-soft:#fdecec;
-  --info:#0284c7; --info-2:#06b6d4; --info-soft:#e4f3fb;
+  --ok:#1f7a44; --ok-2:#2f9d5a; --ok-soft:#e4f3e9;
+  --warn:#a45a06; --warn-2:#c97d18; --warn-soft:#fbf0dd;
+  --danger:#c02626; --danger-2:#e04545; --danger-soft:#fcecec;
+  --info:#0a6ea8; --info-2:#1e9ad6; --info-soft:#e3f1fa;
 
   /* Semantic content type colors */
   --kb:#6d4aff; --kb-soft:#efeaff; --kb-gradient:linear-gradient(135deg,#6d4aff 0%,#a855f7 100%);
-  --sop:#2f6bff; --sop-soft:#e7efff; --sop-gradient:linear-gradient(135deg,#2f6bff 0%,#38bdf8 100%);
-  --cl:#059669; --cl-soft:#e2f6ea; --cl-gradient:linear-gradient(135deg,#059669 0%,#34d399 100%);
-  --tpl:#d97706; --tpl-soft:#faf0dd; --tpl-gradient:linear-gradient(135deg,#d97706 0%,#fbbf24 100%);
+  --sop:#2563eb; --sop-soft:#e7effd; --sop-gradient:linear-gradient(135deg,#2563eb 0%,#38bdf8 100%);
+  --cl:#0f766e; --cl-soft:#e2f2f0; --cl-gradient:linear-gradient(135deg,#0f766e 0%,#34d399 100%);
+  --tpl:#b45309; --tpl-soft:#f9efdc; --tpl-gradient:linear-gradient(135deg,#b45309 0%,#fbbf24 100%);
   --calc:#0d9488; --calc-soft:#dcf4f1; --calc-gradient:linear-gradient(135deg,#0d9488 0%,#2dd4bf 100%);
-  --dec:#db2777; --dec-soft:#fbe9f4; --dec-gradient:linear-gradient(135deg,#db2777 0%,#f43f5e 100%);
-  --kpi:#ea580c; --kpi-soft:#fdf0dc; --kpi-gradient:linear-gradient(135deg,#ea580c 0%,#fb923c 100%);
-  --scen:#7c3aed; --scen-soft:#f1eaff; --scen-gradient:linear-gradient(135deg,#7c3aed 0%,#c084fc 100%);
-  --gloss:#64748b; --gloss-soft:#f1f5f9; --gloss-gradient:linear-gradient(135deg,#64748b 0%,#94a3b8 100%);
-  --academy:#6366f1; --academy-soft:#eef2ff; --academy-gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
+  --dec:#be185d; --dec-soft:#fbe9f2; --dec-gradient:linear-gradient(135deg,#be185d 0%,#f43f5e 100%);
+  --kpi:#c2410c; --kpi-soft:#fbeee2; --kpi-gradient:linear-gradient(135deg,#c2410c 0%,#fb923c 100%);
+  --scen:#6d28d9; --scen-soft:#eeeaff; --scen-gradient:linear-gradient(135deg,#6d28d9 0%,#c084fc 100%);
+  --gloss:#475569; --gloss-soft:#eef1f5; --gloss-gradient:linear-gradient(135deg,#475569 0%,#94a3b8 100%);
+  --academy:#0f6e5c; --academy-soft:#e5f2ee; --academy-gradient:linear-gradient(135deg,#0f6e5c 0%,#3eb59f 100%);
   --ops:#0d9488; --ops-soft:#dcf4f1; --ops-gradient:linear-gradient(135deg,#0d9488 0%,#2dd4bf 100%);
 
-  --r-xs:8px; --r-sm:10px; --r:14px; --r-lg:22px; --r-xl:26px; --r-pill:999px;
+  --r-xs:8px; --r-sm:10px; --r:14px; --r-lg:20px; --r-xl:26px; --r-pill:999px;
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
   --space-5:20px; --space-6:24px; --space-7:32px; --space-8:40px;
-  --sh:0 1px 2px rgba(16,24,40,.05);
-  --sh-1:0 2px 6px rgba(16,24,40,.06),0 12px 28px rgba(16,24,40,.09);
-  --sh-2:0 16px 48px rgba(16,24,40,.18);
-  --sh-glow:0 0 0 1px rgba(83,70,245,.15),0 4px 14px rgba(83,70,245,.12);
-  --side:280px; --top:64px;
+  --sh:0 1px 2px rgba(17,21,28,.05);
+  --sh-1:0 1px 2px rgba(17,21,28,.05),0 10px 26px rgba(17,21,28,.08);
+  --sh-2:0 20px 54px rgba(17,21,28,.16);
+  --sh-glow:0 0 0 1px rgba(15,110,92,.16),0 6px 18px rgba(15,110,92,.12);
+  --side:288px; --top:60px;
+  /* Two widths do different jobs: the page box holds a dashboard's grid, the
+     measure holds a paragraph. Letting prose run to 1240px is why the old
+     layout was tiring to read. */
+  --page-max:1440px; --measure:74ch;
+  --ease:cubic-bezier(.16,1,.3,1); --ease-out:cubic-bezier(.22,1,.36,1); --dur:.18s;
 }
 html[data-theme="dark"]{
-  --bg:#070b16; --panel:#0e1626; --panel-2:#141f37; --sunken:#050a12;
-  --text:#e9eefb; --dim:#a9b8d4; --mute:#7d8cab;
-  --border:#223050; --border-2:#35496f;
-  --accent:#8b93ff; --accent-2:#6d78f8; --accent-3:#a78bfa; --accent-ink:#0b1020; --accent-soft:rgba(139,147,255,.15);
-  --ring:0 0 0 3px rgba(139,147,255,.25);
+  --bg:#0b1016; --bg-2:#0e141b; --panel:#131b24; --panel-2:#18222d; --sunken:#0a0f14;
+  --text:#e8eef5; --dim:#adbdcf; --mute:#7e8ea0;
+  --border:#25323f; --border-2:#3a4c5e;
+  --rail:#080d12; --rail-2:#0d141b; --rail-line:#1d2833;
+  --rail-text:#dbe4ee; --rail-dim:#93a2b4; --rail-mute:#6d7c8f;
+  --accent:#4ec2a8; --accent-2:#7fd9c2; --accent-3:#3eb59f; --accent-ink:#06231c; --accent-soft:rgba(78,194,168,.15);
+  --accent-gradient:linear-gradient(135deg,#3eb59f 0%,#7fd9c2 100%);
+  --ring:0 0 0 3px rgba(78,194,168,.28);
   /* The focus ring has to be readable on a dark canvas too, so the token is
      re-declared here rather than inherited from :root. */
   --focus-outline:2px solid var(--accent); --focus-offset:2px;
-  --ok:#34d399; --ok-2:#6ee7b7; --ok-soft:#0f2a20;
-  --warn:#fbbf24; --warn-2:#fde047; --warn-soft:#2b2113;
-  --danger:#f87171; --danger-2:#fca5a5; --danger-soft:#2d1614;
-  --info:#38bdf8; --info-2:#67e8f9; --info-soft:#0f2634;
+  --ok:#4cc38a; --ok-2:#7fdcaa; --ok-soft:#12291d;
+  --warn:#e6b45c; --warn-2:#f2cd8a; --warn-soft:#2b2113;
+  --danger:#f2838b; --danger-2:#f8b0b5; --danger-soft:#2d1618;
+  --info:#6cc8f0; --info-2:#9cdbf6; --info-soft:#0f2634;
 
   --kb:#b9a8ff; --kb-soft:#2a2350; --kb-gradient:linear-gradient(135deg,#b9a8ff 0%,#c4b5fd 100%);
-  --sop:#9ec1ff; --sop-soft:#1c2c4f; --sop-gradient:linear-gradient(135deg,#9ec1ff 0%,#bfdbfe 100%);
-  --cl:#7fd8a5; --cl-soft:#153426; --cl-gradient:linear-gradient(135deg,#7fd8a5 0%,#a7f3d0 100%);
+  --sop:#9ec1ff; --sop-soft:#1a2a48; --sop-gradient:linear-gradient(135deg,#9ec1ff 0%,#bfdbfe 100%);
+  --cl:#6fd3c7; --cl-soft:#123435; --cl-gradient:linear-gradient(135deg,#6fd3c7 0%,#a7f3d0 100%);
   --tpl:#e8c476; --tpl-soft:#3a2f14; --tpl-gradient:linear-gradient(135deg,#e8c476 0%,#fde68a 100%);
   --calc:#6fd3c7; --calc-soft:#123733; --calc-gradient:linear-gradient(135deg,#6fd3c7 0%,#99f6e4 100%);
-  --dec:#f0a4d2; --dec-soft:#3c1c31; --dec-gradient:linear-gradient(135deg,#f0a4d2 0%,#fda4af 100%);
+  --dec:#f0a4d2; --dec-soft:#3a1c2d; --dec-gradient:linear-gradient(135deg,#f0a4d2 0%,#fda4af 100%);
   --kpi:#f2b866; --kpi-soft:#3a2a10; --kpi-gradient:linear-gradient(135deg,#f2b866 0%,#fed7aa 100%);
-  --scen:#f5a76f; --scen-soft:#3c2214; --scen-gradient:linear-gradient(135deg,#f5a76f 0%,#fdba74 100%);
+  --scen:#c4b5fd; --scen-soft:#2a2350; --scen-gradient:linear-gradient(135deg,#c4b5fd 0%,#fdba74 100%);
   --gloss:#cbd5e1; --gloss-soft:#1e293b; --gloss-gradient:linear-gradient(135deg,#cbd5e1 0%,#e2e8f0 100%);
-  --academy:#a5b4fc; --academy-soft:#2a2350; --academy-gradient:linear-gradient(135deg,#a5b4fc 0%,#c4b5fd 100%);
+  --academy:#4ec2a8; --academy-soft:#123435; --academy-gradient:linear-gradient(135deg,#3eb59f 0%,#7fd9c2 100%);
   --ops:#6fd3c7; --ops-soft:#123733; --ops-gradient:linear-gradient(135deg,#6fd3c7 0%,#99f6e4 100%);
 
   --sh:0 1px 2px rgba(0,0,0,.5);
   --sh-1:0 2px 10px rgba(0,0,0,.5),0 14px 32px rgba(0,0,0,.45);
-  --sh-2:0 16px 48px rgba(0,0,0,.6);
-  --sh-glow:0 0 0 1px rgba(139,147,255,.2),0 4px 14px rgba(139,147,255,.15);
+  --sh-2:0 20px 54px rgba(0,0,0,.6);
+  --sh-glow:0 0 0 1px rgba(78,194,168,.22),0 6px 18px rgba(78,194,168,.16);
 }
 
-/* Section 2: reset + SaaS type scale */
+/* Section 2: reset + v3 type scale
+   Base size moved 15px -> 16px and the leading opened up. The product is
+   mostly long professional prose, and at 15px/1.6 in a 1240px column it was
+   the reading that made people stop, not the content. */
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:var(--font);font-size:15px;line-height:1.6;color:var(--text);
+  font-family:var(--font);font-size:16px;line-height:1.65;color:var(--text);
   background:var(--bg);overflow-wrap:break-word;min-height:100vh;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
-h1,h2,h3,h4,h5{line-height:1.25;margin:0 0 .5em;font-weight:700;letter-spacing:-.02em;color:var(--text)}
-h1{font-size:1.55rem}h2{font-size:1.2rem}h3{font-size:1.02rem}h4{font-size:.92rem}
-h5{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:700}
-p{margin:0 0 .75em}
-ul,ol{margin:0 0 .75em;padding-left:1.3em}
-li{margin:.2em 0}
+h1,h2,h3,h4,h5{line-height:1.2;margin:0 0 .5em;font-weight:700;letter-spacing:-.022em;color:var(--text)}
+h1{font-size:1.9rem;letter-spacing:-.03em}h2{font-size:1.32rem}h3{font-size:1.1rem}h4{font-size:.96rem}
+h5{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mute);font-weight:800}
+p{margin:0 0 .85em}
+ul,ol{margin:0 0 .85em;padding-left:1.35em}
+li{margin:.28em 0}
 li::marker{color:var(--mute)}
-small{font-size:.8rem}
-a{color:var(--accent);text-decoration:none}
+li+li{margin-top:.4em}
+small{font-size:.82rem}
+a{color:var(--accent);text-decoration:none;text-underline-offset:2px}
 a:hover{text-decoration:underline}
 a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:4px;text-decoration:underline}
 code,kbd,samp,pre{font-family:var(--mono);font-size:.85em}
@@ -190,34 +223,39 @@ button{font-family:inherit}
 .t-dim{color:var(--dim)}.t-mute{color:var(--mute)}
 .font-bold{font-weight:700}.font-semibold{font-weight:600}
 .text-accent{color:var(--accent)}.text-ok{color:var(--ok)}.text-info{color:var(--info)}
+.text-danger{color:var(--danger)}.text-warn{color:var(--warn)}
+.state-ok{color:var(--ok);font-weight:700}
 .spacer{flex:1 1 auto}
-.lead{font-size:.95rem;color:var(--dim);line-height:1.6}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:1.02rem;color:var(--dim);line-height:1.7}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* ---------- v3 reading layer ----------
+   Two different widths answer two different problems. `.page-box` is what a
+   dashboard or a workbench grid gets: it uses the viewport. `.reading` is
+   what a paragraph gets: it stops at the measure, because a 100-character
+   line is the single most tiring thing a reading page can do. */
+.reading{max-width:var(--measure)}
+.reading-wide{max-width:88ch}
+.display{font-family:var(--font-read);font-weight:600;letter-spacing:-.012em;line-height:1.18}
+.prose{font-family:var(--font-read);font-size:1.06rem;line-height:1.75;color:var(--text)}
+.prose p{margin:0 0 1em}
+.prose h2,.prose h3{font-family:var(--font-read);font-weight:600;letter-spacing:-.015em}
+.prose strong{font-weight:700}
+@media (max-width:720px){
+  body{font-size:15.5px}
+  h1{font-size:1.55rem}
+  h2{font-size:1.18rem}
+  .prose{font-size:1.01rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
 
 .app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
 .app.has-no-sidebar{grid-template-columns:1fr}
 .app.has-no-sidebar .sidebar,.app.has-no-sidebar #scrim{display:none!important}
 .app.has-no-sidebar .main{max-width:1240px;width:100%;margin:0 auto}
-
-/* Sidebar account row. It is a <button>, so it has to shed the UA styling
-   before it can look like the rest of the strip: full width, left-aligned,
-   inherited font, no default border. */
-.sidebar-foot-account{
-  display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;
-  padding:8px 10px;background:var(--panel-2);color:inherit;
-  border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;
-  transition:background .12s,border-color .12s;
-}
-.sidebar-foot-account:hover{background:var(--sunken);border-color:var(--border-2)}
-.sidebar-foot-avatar{
-  width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
-  color:#fff;font-size:.7rem;font-weight:700;flex:0 0 26px;
-}
-.sidebar-foot-meta{flex:1;min-width:0;display:block}
-.sidebar-foot-name{display:block;font-size:.78rem;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-foot-sub{display:block;font-size:.68rem;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-foot-caret{flex:0 0 auto;color:var(--mute);font-size:1rem;line-height:1;padding-bottom:2px}
 
 /* Section: Visual Data Analytics Charts */
 .chart-container{
@@ -284,63 +322,70 @@ button{font-family:inherit}
 .timeline-progress .timeline-step.is-current::before{background:var(--accent);border-color:var(--accent);animation:pulse-ring 2s ease-out infinite}
 @keyframes pulse-ring{0%{box-shadow:0 0 0 0 var(--accent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
 
+/* ---------- The navigation rail (v3) ----------
+   One dark element in an otherwise light product. It stays dark in the dark
+   theme too - a shade below the canvas rather than above it - because the
+   rail is furniture, not a panel, and its job is to hold still while the
+   content moves. */
 .sidebar{
-  background:var(--panel);border-right:1px solid var(--border);
+  background:linear-gradient(180deg,var(--rail) 0%,var(--rail-2) 100%);
+  color:var(--rail-dim);border-right:1px solid var(--rail-line);
   display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40;
 }
-.brand{display:flex;align-items:center;gap:11px;padding:16px 16px 14px}
+.brand{display:flex;align-items:center;gap:11px;padding:18px 16px 14px}
 .brand-mark{
   width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--academy),var(--accent) 55%,var(--accent-3));color:var(--accent-ink);font-weight:800;font-size:.8rem;
-  letter-spacing:.03em;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.25);
+  background:var(--accent-gradient);color:#fff;font-weight:800;font-size:.8rem;
+  letter-spacing:.03em;box-shadow:0 6px 18px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.3);
 }
-.brand-text strong{display:block;font-size:.98rem;line-height:1.2;letter-spacing:-.015em}
-.brand-text span{display:block;font-size:.68rem;color:var(--mute);margin-top:2px;font-weight:600;letter-spacing:.04em}
+.brand-text strong{display:block;font-size:1rem;line-height:1.2;letter-spacing:-.022em;color:var(--rail-text);font-weight:750}
+.brand-text span{display:block;font-size:.67rem;color:var(--rail-mute);margin-top:3px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
 .sidebar-close{display:none!important;margin-left:auto}
-.nav-filter{padding:2px 12px 10px;display:flex;gap:6px;align-items:center}
+.nav-filter{padding:2px 12px 12px;display:flex;gap:6px;align-items:center}
 .nav-toggle-all{
-  flex:0 0 auto;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;cursor:pointer;
-  font:inherit;font-size:.66rem;font-weight:700;letter-spacing:.02em;color:var(--mute);
-  padding:6px 8px;white-space:nowrap;
+  flex:0 0 auto;background:var(--rail-hover);border:1px solid var(--rail-line);border-radius:8px;cursor:pointer;
+  font:inherit;font-size:.66rem;font-weight:700;letter-spacing:.02em;color:var(--rail-mute);
+  padding:6px 8px;white-space:nowrap;transition:color var(--dur),border-color var(--dur),background var(--dur);
 }
-.nav-toggle-all:hover{background:var(--panel);color:var(--accent);border-color:var(--border-2)}
+.nav-toggle-all:hover{color:var(--rail-text);border-color:var(--rail-dim);background:rgba(255,255,255,.08)}
 .nav-toggle-all:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-filter input{
-  flex:1 1 auto;min-width:0;padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:var(--r-sm);
-  background:var(--panel-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236b7a90" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 12px center;
-  color:var(--text);font:inherit;font-size:.83rem;transition:border-color .13s,box-shadow .13s,background .13s;
+  flex:1 1 auto;min-width:0;padding:9px 12px 9px 34px;border:1px solid var(--rail-line);border-radius:var(--r-sm);
+  background:var(--rail-hover) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236d7c8f" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 12px center;
+  color:var(--rail-text);font:inherit;font-size:.84rem;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur);
 }
-.nav-filter input:hover{border-color:var(--border-2)}
-.nav-filter input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
-.nav-filter input::placeholder{color:var(--mute)}
+.nav-filter input:hover{border-color:var(--rail-dim)}
+.nav-filter input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent-3);background:rgba(255,255,255,.075)}
+.nav-filter input::placeholder{color:var(--rail-mute)}
 .nav{
   flex:1;overflow-y:auto;padding:2px 12px 20px;scrollbar-width:thin;
-  scrollbar-color:var(--border-2) transparent;
+  scrollbar-color:var(--rail-line) transparent;
 }
 .nav::-webkit-scrollbar{width:9px}
 .nav::-webkit-scrollbar-track{background:transparent}
-.nav::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:9px;border:3px solid var(--panel)}
-.nav::-webkit-scrollbar-thumb:hover{background:var(--dim)}
+.nav::-webkit-scrollbar-thumb{background:var(--rail-line);border-radius:9px;border:3px solid transparent}
+.nav::-webkit-scrollbar-thumb:hover{background:var(--rail-mute)}
 .nav-sec{margin:1px 0 2px}
-.nav-sec+.nav-sec{margin-top:6px;padding-top:4px;border-top:1px solid var(--border)}
+.nav-sec+.nav-sec{margin-top:6px;padding-top:4px;border-top:1px solid var(--rail-line)}
 .nav-sec-head{
   width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
-  padding:9px 10px 7px;border-radius:10px;color:var(--dim);font:inherit;font-size:.68rem;
-  font-weight:800;letter-spacing:.11em;text-transform:uppercase;text-align:left;
-  transition:color .12s,background .12s;
+  padding:9px 10px 7px;border-radius:10px;color:var(--rail-mute);font:inherit;font-size:.68rem;
+  font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-align:left;
+  transition:color var(--dur),background var(--dur);
 }
-.nav-sec-head:hover{background:var(--panel-2);color:var(--text)}
+.nav-sec-head:hover{background:var(--rail-hover);color:var(--rail-text)}
+.nav-sec-head:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-sec-head .sec-ico{
   width:20px;height:20px;flex:0 0 20px;border-radius:6px;display:grid;place-items:center;
-  background:var(--sunken);font-size:.74rem;font-style:normal;color:var(--dim);
+  background:rgba(255,255,255,.07);font-size:.74rem;font-style:normal;color:var(--rail-dim);
 }
 .nav-sec-head .sec-count{
-  font-size:.64rem;font-weight:700;background:var(--sunken);border:1px solid var(--border);
-  border-radius:999px;padding:0 6px;line-height:1.7;color:var(--mute);
+  font-size:.64rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);
+  border-radius:999px;padding:0 6px;line-height:1.7;color:var(--rail-mute);
 }
 .nav-sec-head .chev{
-  margin-left:auto;transition:transform .16s;flex:0 0 auto;
-  font-size:.86rem;line-height:1;color:var(--mute);opacity:.8;
+  margin-left:auto;transition:transform .16s var(--ease);flex:0 0 auto;
+  font-size:.86rem;line-height:1;color:var(--rail-mute);opacity:.8;
 }
 .nav-sec[data-open="false"] .nav-list{display:none}
 .nav-sec[data-open="false"] .chev{transform:rotate(-90deg)}
@@ -349,77 +394,92 @@ button{font-family:inherit}
    The menu follows the profile's track, and this is the control that
    changes it. It sits between the tree and the system footer, where
    it is visible without competing with the navigation itself. */
-.nav-view-switch{
-  padding:10px 14px 12px;border-top:1px solid var(--border);
-}
+.nav-view-switch{padding:10px 14px 12px;border-top:1px solid var(--rail-line)}
 .nav-view-label{
-  display:block;font-size:.6rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--mute);margin-bottom:6px;
+  display:block;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--rail-mute);margin-bottom:6px;
 }
 .nav-view-group{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .nav-view-btn{
-  appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--dim);
+  appearance:none;border:1px solid var(--rail-line);background:var(--rail-hover);color:var(--rail-dim);
   font:inherit;font-size:.76rem;font-weight:700;padding:7px 6px;border-radius:9px;cursor:pointer;
-  transition:background .13s,color .13s,border-color .13s;
+  transition:background var(--dur),color var(--dur),border-color var(--dur);
 }
-.nav-view-btn:hover{border-color:var(--border-2);color:var(--text);background:var(--sunken)}
-.nav-view-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent)}
+.nav-view-btn:hover{border-color:var(--rail-dim);color:var(--rail-text);background:rgba(255,255,255,.08)}
+.nav-view-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent-3)}
 .nav-view-btn.is-on{
-  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
-  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 28%,transparent);
+  background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.32);
 }
 .nav-view-btn[aria-pressed="true"]{font-weight:800}
-.nav-empty-hint{font-size:.72rem;color:var(--mute);margin:6px 0 10px;line-height:1.45}
+.nav-empty-hint{font-size:.72rem;color:var(--rail-mute);margin:6px 0 10px;line-height:1.45}
 .nav-list{list-style:none;margin:0;padding:1px 0 7px}
 .nav-list a{
-  position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--dim);
-  font-size:.86rem;font-weight:520;line-height:1.4;text-decoration:none;
-  transition:background .12s,color .12s,transform .08s;
+  position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:9px;color:var(--rail-dim);
+  font-size:.87rem;font-weight:520;line-height:1.45;text-decoration:none;
+  transition:background var(--dur),color var(--dur),transform .1s var(--ease);
 }
-.nav-list a:hover{background:var(--panel-2);color:var(--text);transform:translateX(2px)}
-.nav-list a.is-current{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.nav-list a:hover{background:var(--rail-hover);color:var(--rail-text);text-decoration:none;transform:translateX(2px)}
+.nav-list a:focus-visible{outline:var(--focus-outline);outline-offset:-1px;box-shadow:var(--ring)}
+.nav-list a.is-current{background:var(--rail-active);color:var(--rail-hi);font-weight:700}
 .nav-list a.is-current::before{
-  content:"";position:absolute;left:-6px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--accent);
+  content:"";position:absolute;left:-6px;top:7px;bottom:7px;width:3px;border-radius:3px;background:var(--accent-3);
 }
-.nav-badge{margin-left:auto;font-size:.64rem;color:var(--mute);font-weight:700;background:var(--sunken);border:1px solid var(--border);border-radius:999px;padding:0 7px;line-height:1.7;min-width:20px;text-align:center}
+.nav-badge{margin-left:auto;font-size:.64rem;color:var(--rail-mute);font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);border-radius:999px;padding:0 7px;line-height:1.7;min-width:20px;text-align:center}
 .nav-badge:empty{display:none}
-a.is-current .nav-badge{background:rgba(255,255,255,.65);color:inherit;border-color:transparent}
-html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)}
-.nav-empty{padding:18px 12px;text-align:center;color:var(--mute);font-size:.82rem}
-.sidebar-foot{padding:10px 12px 12px}
+a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);border-color:transparent}
+.nav-empty{padding:18px 12px;text-align:center;color:var(--rail-mute);font-size:.82rem}
+.sidebar-foot{padding:10px 12px 14px}
 /* Two tidy columns instead of a wrapping row of pills: four system links
    used to break unpredictably as the sidebar narrowed, and the strip read as
    three stacked blocks of small text. */
 .sidebar-foot-links{
   display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:9px;
-  padding-bottom:9px;border-bottom:1px solid var(--border);
+  padding-bottom:9px;border-bottom:1px solid var(--rail-line);
 }
 .sidebar-foot-label{
   grid-column:1 / -1;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--mute);margin-bottom:1px;
+  color:var(--rail-mute);margin-bottom:1px;
 }
 .sidebar-foot-link{
-  font-size:.69rem;font-weight:600;color:var(--dim);text-decoration:none;
-  padding:5px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--panel-2);
+  font-size:.69rem;font-weight:600;color:var(--rail-dim);text-decoration:none;
+  padding:5px 8px;border-radius:var(--r-sm);border:1px solid var(--rail-line);background:var(--rail-hover);
   text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  transition:color .12s,border-color .12s,background .12s;
+  transition:color var(--dur),border-color var(--dur),background var(--dur);
 }
-.sidebar-foot-link:hover{color:var(--accent);border-color:var(--border-2);background:var(--sunken)}
-.sidebar-foot-link.is-current{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.sidebar-foot-link:hover{color:var(--rail-hi);border-color:var(--rail-dim);background:rgba(255,255,255,.08);text-decoration:none}
+.sidebar-foot-link.is-current{color:var(--rail-hi);border-color:var(--accent-3);background:var(--rail-active)}
+.sidebar-foot-account{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;
+  padding:8px 10px;background:var(--rail-hover);color:var(--rail-text);
+  border:1px solid var(--rail-line);border-radius:var(--r-sm);cursor:pointer;
+  transition:background var(--dur),border-color var(--dur);
+}
+.sidebar-foot-account:hover{background:rgba(255,255,255,.08);border-color:var(--rail-dim)}
+.sidebar-foot-account:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.sidebar-foot-avatar{
+  width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+  color:#fff;font-size:.7rem;font-weight:700;flex:0 0 26px;
+}
+.sidebar-foot-meta{flex:1;min-width:0;display:block}
+.sidebar-foot-name{display:block;font-size:.78rem;font-weight:700;color:var(--rail-text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-sub{display:block;font-size:.68rem;color:var(--rail-mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-caret{flex:0 0 auto;color:var(--rail-mute);font-size:1rem;line-height:1;padding-bottom:2px}
 .content{display:flex;flex-direction:column;min-width:0;min-height:100vh}
 .topbar{
   position:sticky;top:0;z-index:30;display:flex;gap:12px;align-items:center;flex-wrap:nowrap;
-  min-height:var(--top);padding:10px 24px;background:color-mix(in srgb,var(--panel) 86%,transparent);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  min-height:var(--top);padding:10px 32px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);
+  border-bottom:1px solid var(--border);
 }
 .menu-btn{display:none!important}
-.search-mini{display:flex;gap:8px;flex:1;max-width:600px;min-width:0;align-items:center;margin:0 auto}
+.search-mini{display:flex;gap:8px;flex:1;max-width:640px;min-width:0;align-items:center;margin:0 auto}
 .search-wrap{position:relative;flex:1;min-width:0;display:flex}
 .search-mini input{
   flex:1;min-width:0;padding:10px 52px 10px 40px;border:1px solid var(--border);border-radius:12px;
-  background:var(--panel-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="%236b7a90" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 13px center;
-  color:var(--text);font:inherit;font-size:.87rem;box-shadow:var(--sh);
-  transition:border-color .13s,box-shadow .13s,background .13s;
+  background:var(--panel-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="%2369737f" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 13px center;
+  color:var(--text);font:inherit;font-size:.89rem;box-shadow:var(--sh);
+  transition:border-color var(--dur),box-shadow var(--dur),background var(--dur);
 }
 .search-mini input:hover{border-color:var(--border-2)}
 .search-mini input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent);box-shadow:var(--ring);background:var(--panel)}
@@ -431,41 +491,21 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 }
 .topbar-actions{display:flex;gap:6px;align-items:center;margin-left:auto}
 .topbar-actions .btn{white-space:nowrap}
-.crumb{padding:14px 28px 0;font-size:.76rem;color:var(--mute);display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-.crumb a{color:var(--dim);text-decoration:none;padding:2px 5px;border-radius:6px;font-weight:550}
+.crumb{padding:16px 32px 0;font-size:.78rem;color:var(--mute);display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.crumb a{color:var(--dim);text-decoration:none;padding:2px 6px;border-radius:6px;font-weight:550}
 .crumb a:hover{background:var(--sunken);color:var(--accent);text-decoration:none}
 .crumb .sep{margin:0 3px;opacity:.45}
-.main{flex:1;padding:16px 28px 56px;max-width:1240px;width:100%;margin:0 auto;animation:page-in .16s ease-out}
-@keyframes page-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-.footer{border-top:1px solid var(--border);padding:18px 28px 26px;font-size:.72rem;color:var(--mute);background:var(--panel)}
+.main{flex:1;padding:22px 32px 64px;max-width:var(--page-max);width:100%;margin:0 auto;animation:page-in .24s var(--ease-out)}
+@keyframes page-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.footer{border-top:1px solid var(--border);padding:22px 32px 30px;font-size:.74rem;color:var(--mute);background:var(--panel)}
 /* Three zones, aligned to the content column: who built it, where to get
    help, and what the product is and is not. It used to be nine bare links,
    then two paragraphs of disclaimer, then a brand line with an email address
    in it - four stacked rows with no hierarchy and nothing to look at first. */
 .foot-inner{
-  max-width:1240px;margin:0 auto;display:grid;gap:16px 28px;align-items:start;
+  max-width:var(--page-max);margin:0 auto;display:grid;gap:16px 32px;align-items:start;
   grid-template-columns:minmax(190px,1fr) minmax(240px,1.4fr) minmax(220px,1.6fr);
 }
-.foot-brand-block{display:flex;gap:11px;align-items:flex-start}
-.foot-mark{
-  flex:0 0 34px;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
-  background:var(--accent);color:#fff;font-size:.78rem;font-weight:800;letter-spacing:.02em;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
-}
-.foot-brand-text{display:flex;flex-direction:column;gap:2px;min-width:0}
-.foot-app-name{font-size:.82rem;font-weight:800;color:var(--text);letter-spacing:-.01em}
-.foot-app-by{font-size:.72rem;color:var(--mute)}
-.foot-brand-link{color:var(--dim);text-decoration:none;font-weight:700}
-.foot-brand-link:hover{color:var(--accent);text-decoration:underline}
-.foot-brand-site{
-  display:inline-block;margin-top:3px;font-size:.7rem;font-weight:650;color:var(--accent);
-  text-decoration:none;border:1px solid var(--border-2);border-radius:999px;padding:3px 9px;
-  background:var(--panel-2);transition:border-color .12s,background .12s;
-}
-.foot-brand-site:hover{border-color:var(--accent);background:var(--accent-soft)}
-.footer .foot-links{display:flex;flex-wrap:wrap;gap:4px 6px}
-.footer .foot-links a{padding:3px 8px;border-radius:6px;color:var(--dim);text-decoration:none;font-weight:600}
-.footer .foot-links a:hover{background:var(--sunken);color:var(--accent)}
 .foot-meta{display:flex;flex-direction:column;gap:6px;min-width:0}
 .foot-privacy{
   font-size:.7rem;font-weight:650;color:var(--dim);margin:0;
@@ -488,17 +528,17 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 /* Section 4: SaaS components :  buttons, cards, page heads, tiles, badges, alerts */
 .btn{
   display:inline-flex;align-items:center;gap:8px;justify-content:center;
-  font:inherit;font-size:.85rem;font-weight:650;min-height:38px;padding:8px 16px;border-radius:10px;
+  font:inherit;font-size:.87rem;font-weight:650;min-height:40px;padding:9px 17px;border-radius:11px;
   border:1px solid var(--border-2);background:var(--panel);color:var(--text);cursor:pointer;
-  transition:background .13s,border-color .13s,box-shadow .13s,transform .06s,color .13s;
+  transition:background var(--dur),border-color var(--dur),box-shadow var(--dur),transform .08s var(--ease),color var(--dur);
   text-decoration:none;line-height:1.3;white-space:nowrap;
 }
-.btn:hover{background:var(--panel-2);border-color:var(--dim);text-decoration:none}
-.btn:active{transform:translateY(1px)}
+.btn:hover{background:var(--panel-2);border-color:var(--dim);text-decoration:none;transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.985)}
 .btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent)}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
-.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 32%,transparent)}
-.btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 2px 5px color-mix(in srgb,var(--accent) 26%,transparent),0 8px 22px color-mix(in srgb,var(--accent) 18%,transparent)}
+.btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink);box-shadow:0 4px 10px color-mix(in srgb,var(--accent) 30%,transparent),0 14px 30px color-mix(in srgb,var(--accent) 20%,transparent)}
 .btn-ghost{background:transparent;border-color:transparent;color:var(--accent)}
 .btn-ghost:hover{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
 .btn-danger{border-color:color-mix(in srgb,var(--danger) 55%,var(--border));color:var(--danger);background:var(--panel)}
@@ -541,7 +581,8 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .icon-btn[disabled]{opacity:.4;cursor:default;box-shadow:none}
 .hide-sm{font-size:.82rem;font-weight:650}
 /* cards */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:24px;margin-bottom:16px;position:relative;overflow:hidden;transition:box-shadow var(--dur),border-color var(--dur),transform var(--dur)}
+.card:hover{box-shadow:var(--sh-1);border-color:var(--border-2)}
 .card::before{
   content:"";position:absolute;top:0;left:0;right:0;height:3px;
   background:var(--card-gradient,transparent);
@@ -555,14 +596,19 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .card-head h1{font-size:1.3rem}.card-head h2{font-size:1.08rem}.card-head h3{font-size:.95rem}
 .card-sub{color:var(--mute);font-size:.85rem;margin:-6px 0 14px;max-width:92ch;line-height:1.55}
 
-/* SaaS page header */
-.page-head{margin:6px 0 18px}
-.page-head h1{font-size:1.65rem;margin:6px 0 4px;letter-spacing:-.025em}
-.page-head .page-sub{color:var(--dim);font-size:.92rem;margin:0 0 14px;max-width:78ch;line-height:1.6}
-.page-head .btn-row{margin-top:4px}
-.section-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:24px 2px 12px}
-.section-head h2{margin:0;font-size:1.05rem;letter-spacing:-.015em}
-.section-head .link-more{margin-left:auto;font-size:.82rem;font-weight:650}
+/* Page header. The eyebrow says what kind of page this is, the title says
+   which one, the sub-line is capped at a readable measure, and the hairline
+   underneath stops the header floating above the first card with nothing
+   joining them. */
+.page-head{margin:8px 0 22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.page-head h1{font-size:2.05rem;margin:8px 0 6px;letter-spacing:-.032em;line-height:1.12}
+.page-head .page-sub{color:var(--dim);font-size:1rem;margin:0 0 16px;max-width:var(--measure);line-height:1.65}
+.page-head .btn-row{margin-top:6px}
+.section-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:30px 2px 14px}
+.section-head h2{margin:0;font-size:1.18rem;letter-spacing:-.02em}
+.section-head::after{content:"";flex:1 1 40px;height:1px;background:var(--border);min-width:24px}
+.section-head .link-more{margin-left:auto;font-size:.84rem;font-weight:650}
+@media (max-width:720px){.page-head h1{font-size:1.6rem}.section-head::after{display:none}}
 /* grids */
 .grid{display:grid;gap:14px;margin-bottom:16px}
 .grid-2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
@@ -574,14 +620,14 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   position:relative;display:flex;flex-direction:column;background:var(--panel);
   border:1px solid var(--border);border-radius:var(--r);padding:18px;color:var(--text);
   box-shadow:var(--sh);text-decoration:none;overflow:hidden;
-  transition:border-color .14s,box-shadow .14s,transform .1s;
+  transition:border-color var(--dur),box-shadow var(--dur),transform .12s var(--ease);
 }
 .tile::before{
   content:"";position:absolute;top:0;left:0;right:0;height:4px;
   background:var(--tile-gradient,var(--accent-gradient));
   opacity:0;transition:opacity .14s;
 }
-.tile:hover{border-color:var(--tile-border,var(--tacc));box-shadow:var(--sh-2),var(--sh-glow);transform:translateY(-3px);text-decoration:none}
+.tile:hover{border-color:var(--tile-border,var(--tacc));box-shadow:var(--sh-1),var(--sh-glow);transform:translateY(-3px);text-decoration:none}
 .tile:hover::before{opacity:1}
 .tile-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .tile .t-ico{
@@ -596,7 +642,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .tile .t-ico svg{width:22px;height:22px}
 .tile .t-kicker{font-size:.65rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);line-height:1.4}
 .tile .t-title{font-weight:700;margin:0 0 5px;font-size:.98rem;letter-spacing:-.012em;line-height:1.32}
-.tile .t-desc{font-size:.81rem;color:var(--dim);margin:0;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.tile .t-desc{font-size:.85rem;color:var(--dim);margin:0;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
 .t-meta{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.04em;color:var(--dim);text-transform:uppercase;background:var(--sunken);border:1px solid var(--border);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .t-cta{margin-top:14px;padding-top:11px;border-top:1px solid var(--border);font-size:.8rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px}
 .t-cta span[aria-hidden="true"]{transition:transform .14s}
@@ -687,18 +733,18 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
   background:var(--stat-gradient,var(--accent-gradient));
 }
 .stat:hover{border-color:var(--accent);box-shadow:var(--sh-2);transform:translateY(-2px);text-decoration:none}
-.stat .s-val{font-size:1.65rem;font-weight:750;letter-spacing:-.025em;font-variant-numeric:tabular-nums;line-height:1.15;background:var(--stat-text-gradient,linear-gradient(135deg,var(--text),var(--dim)));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .s-val{font-size:2rem;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--stat-color,var(--text))}
 .stat .s-lab{font-size:.68rem;color:var(--mute);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
-.stat.is-ok .s-val{background:linear-gradient(135deg,var(--ok),var(--ok-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat.is-ok .s-val{--stat-color:var(--ok)}
 .stat.is-ok::before{background:linear-gradient(90deg,var(--ok),var(--ok-2))}
-.stat.is-warn .s-val{background:linear-gradient(135deg,var(--warn),var(--warn-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat.is-warn .s-val{--stat-color:var(--warn)}
 .stat.is-warn::before{background:linear-gradient(90deg,var(--warn),var(--warn-2))}
-.stat.is-danger .s-val{background:linear-gradient(135deg,var(--danger),var(--danger-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat.is-danger .s-val{--stat-color:var(--danger)}
 .stat.is-danger::before{background:linear-gradient(90deg,var(--danger),var(--danger-2))}
-.stat.is-info .s-val{background:linear-gradient(135deg,var(--info),var(--info-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat.is-info .s-val{--stat-color:var(--info)}
 .stat.is-info::before{background:linear-gradient(90deg,var(--info),var(--info-2))}
 /* badges */
-.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--r-pill);font-size:.66rem;font-weight:750;letter-spacing:.05em;text-transform:uppercase;background:var(--sunken);color:var(--dim);border:1px solid var(--border);white-space:nowrap;line-height:1.5}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--r-pill);font-size:.69rem;font-weight:750;letter-spacing:.05em;text-transform:uppercase;background:var(--sunken);color:var(--dim);border:1px solid var(--border);white-space:nowrap;line-height:1.5}
 .badge svg{width:12px;height:12px;flex:0 0 auto}
 .badge-type{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 22%,transparent)}
 .badge-ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
@@ -707,7 +753,7 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .badge-info{background:var(--info-soft);color:var(--info);border-color:transparent}
 /* chips */
 .chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{font-size:.76rem;font-weight:600;padding:6px 13px;border-radius:var(--r-pill);background:var(--panel);border:1px solid var(--border-2);color:var(--dim);cursor:pointer;text-decoration:none;display:inline-block;line-height:1.35;transition:border-color .12s,color .12s,background .12s}
+.chip{font-size:.8rem;font-weight:600;padding:6px 13px;border-radius:var(--r-pill);background:var(--panel);border:1px solid var(--border-2);color:var(--dim);cursor:pointer;text-decoration:none;display:inline-block;line-height:1.35;transition:border-color .12s,color .12s,background .12s}
 .chip:hover{border-color:var(--accent);color:var(--accent);text-decoration:none;background:var(--accent-soft)}
 /* alerts with glyph medallion */
 .alert{position:relative;border:1px solid var(--border);border-radius:12px;padding:12px 15px 12px 46px;margin:0 0 14px;background:var(--panel-2);font-size:.86rem;line-height:1.55}
@@ -727,6 +773,18 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .disclaimer{font-size:.75rem;color:var(--mute);border-top:1px dashed var(--border-2);padding-top:9px;margin-top:14px;line-height:1.55}
 .note{font-size:.8rem;color:var(--mute);line-height:1.55}
 kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var(--border-2);border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:var(--panel);color:var(--dim)}
+
+/* ---------- v3 entrance ----------
+   Cards and tiles arrive in a short stagger instead of all at once. It is
+   load-time CSS only - no observer, no per-page JS - and the global
+   prefers-reduced-motion rule in 01b_reset.css collapses it to nothing for
+   people who have asked for that. */
+@keyframes rise-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.grid>.card,.grid>.tile,.grid>.stat,.stats>.stat{animation:rise-in .34s var(--ease-out) backwards}
+.grid>:nth-child(2),.stats>:nth-child(2){animation-delay:.04s}
+.grid>:nth-child(3),.stats>:nth-child(3){animation-delay:.08s}
+.grid>:nth-child(4),.stats>:nth-child(4){animation-delay:.12s}
+.grid>:nth-child(n+5),.stats>:nth-child(n+5){animation-delay:.16s}
 
 /* Section 5: SaaS forms + tables + timeline + progress */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;min-width:0}
@@ -2220,6 +2278,45 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 
 /* ==========================================================
+   v3 - the lesson should read like a lesson
+   ----------
+   A function page is 4,000-8,000 characters of professional prose. Until now
+   it was set in the interface face at interface sizes, in whatever width the
+   grid happened to give it. These rules set the reading body in the serif
+   stack at a 16-17px size with a capped measure, keep every control (quiz
+   options, tables, forms, chips) in the interface face, and pin the five
+   lesson tabs under the topbar so the reader can see where they are in the
+   mission at any point in a long scroll.
+   ========================================================== */
+.lesson-body .card{padding:26px 30px}
+.lesson-body h2{font-family:var(--font-read);font-size:1.34rem;font-weight:600;letter-spacing:-.018em;line-height:1.25;margin:0 0 .6em}
+.lesson-body h3{font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--mute);font-weight:800;margin:1.9em 0 .7em}
+.lesson-body h3:first-of-type{margin-top:1.1em}
+.lesson-body p,.lesson-body li{font-family:var(--font-read);font-size:1.045rem;line-height:1.78;color:var(--text)}
+.lesson-body p{max-width:66ch}
+.lesson-body ul,.lesson-body ol{max-width:66ch}
+.lesson-body li{margin:.55em 0}
+.lesson-body li::marker{color:var(--accent);font-family:var(--font)}
+.lesson-body strong{font-weight:700}
+/* Controls stay in the interface face: a quiz option is a thing you click,
+   not a thing you read at arm's length. */
+.lesson-body table,.lesson-body .badge,.lesson-body .chip,.lesson-body .btn,
+.lesson-body .t-title,.lesson-body .t-desc,.lesson-body .t-kicker,.lesson-body .t-meta,
+.lesson-body .note,.lesson-body .disclaimer,.lesson-body .alert,.lesson-body .stat,
+.lesson-body .quiz-question,.lesson-body .quiz-option,.lesson-body .quiz-feedback,
+.lesson-body .sop-step,.lesson-body .module-progress-count,.lesson-body kbd{font-family:var(--font)}
+.lesson-body table td,.lesson-body table th{font-size:.92rem}
+.lesson-body .thinking-point-quote{font-family:var(--font-read);font-size:1.16rem;line-height:1.6}
+
+.academy-tabs{
+  position:sticky;top:var(--top);z-index:22;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:8px 0 2px;margin-bottom:18px;border-bottom:1px solid var(--border);
+}
+.academy-tab-btn{font-size:.9rem;padding:11px 16px;border-radius:10px 10px 0 0}
+.academy-tab-btn.is-active{box-shadow:inset 0 -2px 0 var(--accent)}
+
+/* ==========================================================
    Procure Sherpa v2.0 - Portal & User Account Styles
    Section: Topbar User Badge, Profile Modal, Dual-Hub Gateway
    ========================================================== */
@@ -3488,14 +3585,14 @@ PS.APP = 'Procure Sherpa';
    fixed by the master requirements (section 4.1 and section 81) and by
    every download link, and the tools read the version out of the
    artifact rather than out of its name. */
-PS.VERSION = '2.7';
+PS.VERSION = '3.0';
 PS.SCHEMA = 2;
 /* Replaced at build time with a hash of the source fragments, so the
    running application can say which sources it was built from. See
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '0d304edb67ab';
+PS.BUILD = 'e0b51885d270';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4111,7 +4208,7 @@ PS.kbdHelp = {
       'th, td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; vertical-align: top; }' +
       'th { background: #f0f0f0; font-weight: bold; width: 30%; }' +
       'kbd { font-family: "SF Mono", "Fira Code", Consolas, monospace; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-size: 9.5pt; white-space: nowrap; }' +
-      '.footer { margin-top: 24pt; font-size: 8pt; color: #666; text-align: center; }' +
+      '.footer { margin-top: 24pt; font-size: 8pt; color: var(--dim); text-align: center; }' +
       '@media print { .no-print { display: none !important; } }' +
       '</style></head><body>' +
       '<h1>Procure Sherpa — Keyboard Shortcuts Cheat Sheet</h1>' +
@@ -5912,7 +6009,7 @@ PS.user = {
       role: 'beginner',
       track: 'academy',
       company: '',
-      avatarBg: '#4f46e5',
+      avatarBg: '#0f6e5c',
       joinedDate: PS.dateStr()
     };
     var stored = PS.store.get(PS.K.user, null);
@@ -6027,7 +6124,7 @@ PS.user = {
       '<div class="hub-jump-row mb16" style="display:flex; gap:8px; flex-wrap:wrap;">' +
       '<a class="btn btn-sm btn-ghost" href="#/home" data-act="user-profile-close">⌂ Command Center</a>' +
       '<a class="btn btn-sm btn-primary" href="#/academy" data-act="user-profile-close">🎓 Academy Curriculum &rarr;</a>' +
-      '<a class="btn btn-sm" href="#/operations" data-act="user-profile-close" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
+      '<a class="btn btn-sm btn-ops" href="#/operations" data-act="user-profile-close">💼 Operations Gateway &rarr;</a>' +
       '</div>' +
 
       '<form id="profileEditForm">' +
@@ -6215,7 +6312,27 @@ PS.chart = {
     URL.revokeObjectURL(url);
   },
   /* Should-Cost Waterfall Buildup Chart */
+  /* An SVG presentation attribute cannot resolve var(), so every colour a
+     chart paints has to be read off the theme here, at render time. Without
+     this the graphs keep their light-theme ink when the rest of the page has
+     gone dark. */
+  tokens: function () {
+    var cs, g = function (n, f) { return f; };
+    try {
+      cs = getComputedStyle(document.documentElement);
+      g = function (n, f) { var v = String(cs.getPropertyValue(n) || '').trim(); return v || f; };
+    } catch (e) { }
+    return {
+      accent: g('--accent', '#0f6e5c'), accent3: g('--accent-3', '#3eb59f'),
+      ok: g('--ok', '#1f7a44'), ok2: g('--ok-2', '#2f9d5a'),
+      warn: g('--warn', '#a45a06'), danger: g('--danger', '#c02626'),
+      danger2: g('--danger-2', '#e04545'), mute: g('--mute', '#69737f'),
+      text: g('--text', '#11151c'), grid: g('--border', '#e2e6e4'),
+      surface: g('--panel', '#ffffff')
+    };
+  },
   waterfall: function (items, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 680;
     var h = opts.height || 260;
@@ -6270,7 +6387,7 @@ PS.chart = {
       }
 
       var fillGrad = b.isTotal ? 'url(#wfGradTotal)' : (val < 0 ? 'url(#wfGradNeg)' : 'url(#wfGradPos)');
-      var strokeColor = b.isTotal ? '#059669' : (val < 0 ? '#dc2626' : '#4f46e5');
+      var strokeColor = b.isTotal ? C.ok : (val < 0 ? C.danger : C.accent);
 
       svgParts.push(
         '<rect x="' + barX.toFixed(1) + '" y="' + barTop.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + barH.toFixed(1) + '" rx="4" fill="' + fillGrad + '" stroke="' + strokeColor + '" stroke-width="1.2" />' +
@@ -6292,16 +6409,16 @@ PS.chart = {
 
     var defs = '<defs>' +
       '<linearGradient id="wfGradPos" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#6366f1" stop-opacity="0.9" />' +
-      '<stop offset="100%" stop-color="#4f46e5" stop-opacity="0.8" />' +
+      '<stop offset="0%" stop-color=C.accent stop-opacity="0.9" />' +
+      '<stop offset="100%" stop-color=C.accent stop-opacity="0.8" />' +
       '</linearGradient>' +
       '<linearGradient id="wfGradTotal" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#10b981" stop-opacity="0.95" />' +
-      '<stop offset="100%" stop-color="#059669" stop-opacity="0.85" />' +
+      '<stop offset="0%" stop-color=C.ok2 stop-opacity="0.95" />' +
+      '<stop offset="100%" stop-color=C.ok stop-opacity="0.85" />' +
       '</linearGradient>' +
       '<linearGradient id="wfGradNeg" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#f87171" stop-opacity="0.95" />' +
-      '<stop offset="100%" stop-color="#dc2626" stop-opacity="0.85" />' +
+      '<stop offset="0%" stop-color="' + C.danger2 + '" stop-opacity="0.95" />' +
+      '<stop offset="100%" stop-color=C.danger stop-opacity="0.85" />' +
       '</linearGradient>' +
       '</defs>';
 
@@ -6318,6 +6435,7 @@ PS.chart = {
 
   /* Kraljic 2x2 Portfolio Matrix Visualizer */
   kraljic: function (items, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 600;
     var h = opts.height || 420;
@@ -6338,16 +6456,16 @@ PS.chart = {
     svg.push('<rect x="' + midX + '" y="' + midY + '" width="' + (w - pad - midX) + '" height="' + (h - pad - midY) + '" fill="rgba(245, 158, 11, 0.08)" stroke="var(--border)" stroke-width="1" />');
 
     /* Quadrant Watermark Headers */
-    svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill="#059669" letter-spacing="0.05em">LEVERAGE (High Value, Low Risk)</text>');
+    svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill=C.ok letter-spacing="0.05em">LEVERAGE (High Value, Low Risk)</text>');
     svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 38) + '" font-size="10" fill="var(--mute)">Strategy: Competitive Tendering, Reverse Auctions</text>');
 
-    svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill="#6366f1" letter-spacing="0.05em">STRATEGIC (High Value, High Risk)</text>');
+    svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill=C.accent letter-spacing="0.05em">STRATEGIC (High Value, High Risk)</text>');
     svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 38) + '" font-size="10" fill="var(--mute)">Strategy: Long-Term Partnerships, SRM, Co-Development</text>');
 
-    svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill="#64748b" letter-spacing="0.05em">NON-CRITICAL (Low Value, Low Risk)</text>');
+    svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill=C.mute letter-spacing="0.05em">NON-CRITICAL (Low Value, Low Risk)</text>');
     svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 38) + '" font-size="10" fill="var(--mute)">Strategy: P-Cards, Catalogs, Vendor Consolidation</text>');
 
-    svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill="#d97706" letter-spacing="0.05em">BOTTLENECK (Low Value, High Risk)</text>');
+    svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill=C.warn letter-spacing="0.05em">BOTTLENECK (Low Value, High Risk)</text>');
     svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 38) + '" font-size="10" fill="var(--mute)">Strategy: Safety Stock, Dual-Sourcing, Standardize Specs</text>');
 
     /* Axis Dividers */
@@ -6363,7 +6481,7 @@ PS.chart = {
       var cx = pad + (cat.risk / 100) * (w - pad * 2);
       var cy = (h - pad) - (cat.impact / 100) * (h - pad * 2);
       var r = Math.max(Math.min(cat.spendRatio ? cat.spendRatio * 22 : 14, 26), 9);
-      var color = cat.color || '#4f46e5';
+      var color = cat.color || C.accent;
 
       svg.push(
         '<g class="kraljic-node" tabindex="0">' +
@@ -6388,6 +6506,7 @@ PS.chart = {
 
   /* Pareto 80/20 Spend Distribution Curve */
   pareto: function (vendors, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 680;
     var h = opts.height || 280;
@@ -6420,15 +6539,15 @@ PS.chart = {
       svg.push(
         '<line x1="' + padLeft + '" y1="' + gy.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + gy.toFixed(1) + '" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3" />' +
         '<text x="' + (padLeft - 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="var(--mute)">$' + (gVal / 1000).toFixed(0) + 'k</text>' +
-        '<text x="' + (w - padRight + 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="start" font-size="10" fill="#d97706">' + gPct + '%</text>'
+        '<text x="' + (w - padRight + 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="start" font-size="10" fill=C.warn>' + gPct + '%</text>'
       );
     }
 
     /* 80% Cutoff Line */
     var y80 = padTop + chartH * (1 - 0.8);
     svg.push(
-      '<line x1="' + padLeft + '" y1="' + y80.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + y80.toFixed(1) + '" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" />' +
-      '<text x="' + (w - padRight - 8) + '" y="' + (y80 - 6).toFixed(1) + '" text-anchor="end" font-size="10" font-weight="700" fill="#ef4444">80% Spend Cutoff (Category Class A)</text>'
+      '<line x1="' + padLeft + '" y1="' + y80.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + y80.toFixed(1) + '" stroke=C.danger stroke-width="1.5" stroke-dasharray="5,4" />' +
+      '<text x="' + (w - padRight - 8) + '" y="' + (y80 - 6).toFixed(1) + '" text-anchor="end" font-size="10" font-weight="700" fill=C.danger>80% Spend Cutoff (Category Class A)</text>'
     );
 
     /* Render Spend Bars */
@@ -6445,7 +6564,7 @@ PS.chart = {
       cumPoints.push({ x: ptX, y: ptY, pct: (cumPct * 100).toFixed(1) });
 
       var isClassA = (cumSpend - spend) / totalSpend < 0.8;
-      var fill = isClassA ? '#4f46e5' : '#94a3b8';
+      var fill = isClassA ? C.accent : C.mute;
 
       svg.push(
         '<rect x="' + barX.toFixed(1) + '" y="' + barY.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + barH.toFixed(1) + '" rx="3" fill="' + fill + '" />' +
@@ -6460,10 +6579,10 @@ PS.chart = {
       for (var p = 1; p < cumPoints.length; p++) {
         pathD += ' L ' + cumPoints[p].x.toFixed(1) + ' ' + cumPoints[p].y.toFixed(1);
       }
-      svg.push('<path d="' + pathD + '" fill="none" stroke="#d97706" stroke-width="2.5" />');
+      svg.push('<path d="' + pathD + '" fill="none" stroke=C.warn stroke-width="2.5" />');
       cumPoints.forEach(function (pt) {
         svg.push(
-          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#d97706" stroke-width="2" />'
+          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke=C.warn stroke-width="2" />'
         );
       });
     }
@@ -6481,6 +6600,7 @@ PS.chart = {
 
   /* Altman Z-Score Solvency Risk Gauge */
   zscoreGauge: function (score, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 380;
     var h = opts.height || 220;
@@ -6498,28 +6618,28 @@ PS.chart = {
     var needleY = cy - (r - 12) * Math.sin(angle);
 
     var zoneLabel = 'Distress Zone (High Insolvency Risk)';
-    var zoneColor = '#ef4444';
+    var zoneColor = C.danger;
     if (z >= 2.90) {
       zoneLabel = 'Safe Zone (Low Default Probability)';
-      zoneColor = '#10b981';
+      zoneColor = C.ok2;
     } else if (z >= 1.23) {
       zoneLabel = 'Grey Zone (Marginal Liquidity / Monitor)';
-      zoneColor = '#f59e0b';
+      zoneColor = C.warn;
     }
 
     var svg = [
       /* Red Arc (0 to 1.23) -> angle PI to PI - (1.23/4)*PI */
-      '<path d="M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + '" fill="none" stroke="#ef4444" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + '" fill="none" stroke=C.danger stroke-width="' + thickness + '" />',
       /* Amber Arc (1.23 to 2.90) */
-      '<path d="M ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + '" fill="none" stroke="#f59e0b" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + '" fill="none" stroke="' + C.warn + '" stroke-width="' + thickness + '" />',
       /* Green Arc (2.90 to 4.0) */
-      '<path d="M ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + '" fill="none" stroke="#10b981" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + '" fill="none" stroke=C.ok2 stroke-width="' + thickness + '" />',
 
       /* Gauge Tick Marks & Labels */
-      '<text x="' + (cx - r - 6) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill="#ef4444">0.0</text>',
-      '<text x="' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI) - 8).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill="#ef4444">1.23</text>',
-      '<text x="' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI) + 4).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill="#10b981">2.90</text>',
-      '<text x="' + (cx + r - 4) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill="#10b981">4.0+</text>',
+      '<text x="' + (cx - r - 6) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill=C.danger>0.0</text>',
+      '<text x="' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI) - 8).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill=C.danger>1.23</text>',
+      '<text x="' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI) + 4).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill=C.ok2>2.90</text>',
+      '<text x="' + (cx + r - 4) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill=C.ok2>4.0+</text>',
 
       /* Needle */
       '<line x1="' + cx + '" y1="' + cy + '" x2="' + needleX.toFixed(1) + '" y2="' + needleY.toFixed(1) + '" stroke="var(--text)" stroke-width="3" stroke-linecap="round" />',
@@ -6544,6 +6664,7 @@ PS.chart = {
   /* Radar: two series compared across criteria (0-5 scale).
      axes: [{key, label}], series: [{name, color, values: {key: score}}] */
   radar: function (axes, series, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 460;
     var h = opts.height || 380;
@@ -6574,15 +6695,16 @@ PS.chart = {
       svg.push('<text x="' + lab.x.toFixed(1) + '" y="' + (lab.y + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="700" fill="var(--dim)">' + PS.esc(a.label) + '</text>');
     });
 
-    (series || []).forEach(function (s) {
+    (series || []).forEach(function (s, si) {
+      var col = s.color || (si === 0 ? C.accent : C.mute);
       var pts = [];
       axes.forEach(function (a, i) { var p = pt(i, s.values[a.key]); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); });
-      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + s.color + '" stroke="' + s.color + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + col + '" stroke="' + col + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
     });
 
     var legend = (series || []).map(function (s) {
       return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--dim)">' +
-        '<span style="width:10px;height:10px;border-radius:2px;background:' + s.color + '"></span>' + PS.esc(s.name) + '</span>';
+        '<span style="width:10px;height:10px;border-radius:2px;background:' + (s.color || C.accent) + '"></span>' + PS.esc(s.name) + '</span>';
     }).join(' <span style="color:var(--mute);font-size:.8rem">vs</span> ');
 
     return '<div class="chart-container">' +
@@ -7243,7 +7365,7 @@ PS.applyTheme = function (theme) {
   document.documentElement.setAttribute('data-theme', t);
   try {
     var mt = document.querySelector('meta[name="theme-color"]');
-    if (mt) mt.setAttribute('content', t === 'dark' ? '#070b16' : '#5346f5');
+    if (mt) mt.setAttribute('content', t === 'dark' ? '#0b1016' : '#f4f5f3');
   } catch (e) { }
   var tb = PS.$('#themeBtn');
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';
@@ -14148,7 +14270,7 @@ PS.route('academy-progress', function () {
         '<td><strong>' + PS.esc(f.title) + '</strong><br><small class="muted">' + PS.esc(f.module) + '</small></td>' +
         '<td><span class="badge">' + PS.esc(f.lifecycleStage || 'General') + '</span></td>' +
         '<td>' + (sc ? sc.pct + '% (' + sc.score + '/' + sc.total + ')' : '<span class="muted">Not taken</span>') + '</td>' +
-        '<td>' + (isComp ? '<span style="color:#059669;font-weight:700">✓ Mastered</span>' : '<span class="muted">In Progress</span>') + '</td>' +
+        '<td>' + (isComp ? '<span class="text-ok font-bold">✓ Mastered</span>' : '<span class="muted">In Progress</span>') + '</td>' +
         '<td><a class="btn btn-sm" href="#/academy/' + encodeURIComponent(f.id) + '">Open</a></td>' +
         '</tr>';
     }).join('') +
@@ -14243,7 +14365,7 @@ PS.renderAcademyHub = function (params) {
         '<div class="badge-icon">' + b.icon + '</div>' +
         '<div class="badge-name">' + PS.esc(b.name) + '</div>' +
         '<div class="badge-desc">' + PS.esc(b.desc) + '</div>' +
-        (un ? '<div style="margin-top:6px;font-size:0.7rem;color:#059669;font-weight:700">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
+        (un ? '<div class="state-ok" style="margin-top:6px;font-size:0.7rem">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
         '</div>';
     }).join('') +
     '</div></div>';
@@ -14328,7 +14450,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   var html = '<div class="card" style="margin-bottom:14px">' +
     '<div class="dash-eyebrow-row"><span class="eyebrow">' + PS.esc(func.module || 'Academy') + ' &middot; ' + PS.esc(func.kicker || 'Function') + '</span>' +
     '<div class="spacer"></div>' +
-    (isComp ? '<span class="badge" style="background:#ecfdf5;color:#059669;font-weight:700">✓ Function Mastered</span>' : '<span class="badge badge-primary">Learning in Progress</span>') +
+    (isComp ? '<span class="badge badge-ok">✓ Function Mastered</span>' : '<span class="badge badge-primary">Learning in Progress</span>') +
     '</div>' +
     '<h1>' + PS.esc(func.title) + '</h1>' +
     '<p class="lead" style="margin-bottom:14px">' + PS.esc(func.tagline || func.desc) + '</p>' +
@@ -14364,7 +14486,10 @@ PS.renderAcademyFunction = function (funcId, params) {
   });
   html += '</div>';
 
-  // Render tab content
+  // Render tab content. The wrapper is what the reading typography in
+  // 01h_academy.css hangs off: a lesson is the longest text in the product
+  // and it was being set in the UI face at UI sizes.
+  html += '<div class="lesson-body">';
   if (activeTab === 'learn') {
     html += PS.renderFuncTabLearn(func);
   } else if (activeTab === 'think') {
@@ -14376,6 +14501,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   } else if (activeTab === 'apply') {
     html += PS.renderFuncTabApply(func);
   }
+  html += '</div>';
 
   // Next / Previous Navigation Footer
   html += '<div class="card card-tight no-print" style="margin-top:24px"><div class="flex-between">' +
@@ -14421,9 +14547,9 @@ PS.renderFuncTabLearn = function (f) {
     '<h3>Mandatory Controls & Governance</h3>' +
     '<ul>' + (f.controls || []).map(function (c) { return '<li>' + PS.esc(c) + '</li>'; }).join('') + '</ul>' +
     '<h3>Common Mistakes to Avoid</h3>' +
-    '<ul>' + (f.mistakes || []).map(function (m) { return '<li><span style="color:#dc2626">&#10006;</span> ' + PS.esc(m) + '</li>'; }).join('') + '</ul>' +
+    '<ul>' + (f.mistakes || []).map(function (m) { return '<li><span class="text-danger">&#10006;</span> ' + PS.esc(m) + '</li>'; }).join('') + '</ul>' +
     '<h3>Industry Best Practices</h3>' +
-    '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span style="color:#059669">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
+    '<ul>' + (f.bestPractices || []).map(function (b) { return '<li><span class="text-ok">&#10004;</span> ' + PS.esc(b) + '</li>'; }).join('') + '</ul>' +
     '</div></div>';
 
   html += PS.academyWorkedExample(f);
@@ -14912,7 +15038,7 @@ PS.executeAcademySandbox = function (type) {
     var nRisk = getNum('sb_kr_n_risk', 15);
 
     var items = [
-      { name: 'Custom ASICs', impact: sImp, risk: sRisk, spend: '$4.5M Spend', spendRatio: 1.3, color: '#6366f1' },
+      { name: 'Custom ASICs', impact: sImp, risk: sRisk, spend: '$4.5M Spend', spendRatio: 1.3, color: '#0f6e5c' },
       { name: 'Shipping Packaging', impact: lImp, risk: lRisk, spend: '$2.8M Spend', spendRatio: 1.1, color: '#10b981' },
       { name: 'Resin Additives', impact: bImp, risk: bRisk, spend: '$400k Spend', spendRatio: 0.6, color: '#f59e0b' },
       { name: 'Office Supplies', impact: nImp, risk: nRisk, spend: '$250k Spend', spendRatio: 0.5, color: '#64748b' }
@@ -15042,7 +15168,7 @@ PS.executeAcademySandbox = function (type) {
 
     var ratingText = riskScore <= 16 ? 'Optimal Enterprise Protection' : (riskScore <= 40 ? 'Commercially Balanced Risk' : 'Catastrophic Legal & Balance Sheet Exposure');
     var badgeClass = riskScore <= 16 ? 'verdict-strong' : (riskScore <= 40 ? 'verdict-warn' : 'verdict-danger');
-    var meterColor = riskScore <= 16 ? '#10b981' : (riskScore <= 40 ? '#f59e0b' : '#ef4444');
+    var meterColor = riskScore <= 16 ? 'var(--ok-2)' : (riskScore <= 40 ? 'var(--warn-2)' : 'var(--danger)');
 
     html = '<span class="sandbox-verdict-tag ' + badgeClass + '">' +
       'Contract Redline Audit : Legal Risk Exposure Score ' + riskScore + ' / 100 (' + ratingText + ')</span>' +
@@ -15105,8 +15231,8 @@ PS.executeAcademySandbox = function (type) {
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">ESG &amp; Regulatory Compliance</td><td style="padding:7px 12px;">15%</td><td style="padding:7px 12px;">' + aE.toFixed(1) + ' / 10 (' + (aE * 0.15).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bE.toFixed(1) + ' / 10 (' + (bE * 0.15).toFixed(2) + ')</td></tr>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Financial Health &amp; Solvency</td><td style="padding:7px 12px;">10%</td><td style="padding:7px 12px;">' + aF.toFixed(1) + ' / 10 (' + (aF * 0.1).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bF.toFixed(1) + ' / 10 (' + (bF * 0.1).toFixed(2) + ')</td></tr>' +
       '<tr style="background:var(--bg-2); font-weight:700;"><td style="padding:10px 12px;">Composite Weighted Score</td><td style="padding:10px 12px;">100%</td>' +
-      '<td style="padding:10px 12px; color:' + (aWins ? '#4f46e5' : 'inherit') + ';">' + scoreA.toFixed(2) + ' / 10.0 ' + (aWins ? '★ Winner' : '') + '</td>' +
-      '<td style="padding:10px 12px; color:' + (!aWins ? '#4f46e5' : 'inherit') + ';">' + scoreB.toFixed(2) + ' / 10.0 ' + (!aWins ? '★ Winner' : '') + '</td>' +
+      '<td style="padding:10px 12px; color:' + (aWins ? 'var(--accent)' : 'inherit') + ';">' + scoreA.toFixed(2) + ' / 10.0 ' + (aWins ? '★ Winner' : '') + '</td>' +
+      '<td style="padding:10px 12px; color:' + (!aWins ? 'var(--accent)' : 'inherit') + ';">' + scoreB.toFixed(2) + ' / 10.0 ' + (!aWins ? '★ Winner' : '') + '</td>' +
       '</tr>' +
       '</tbody></table></div>' +
       '<div class="sandbox-metric-row">' +
@@ -17240,6 +17366,22 @@ PS.route('community', function () {
 PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
+  {
+    version: '3.0',
+    date: '2026-11-02',
+    title: 'The reading edition',
+    tag: 'Major',
+    items: [
+      'A new design system: a warm-neutral canvas, one jade accent in place of the old indigo, and a dark navigation rail that stays put in both themes so the menu reads as furniture rather than as another panel. Every colour now comes from a token, in both light and dark',
+      'The lesson finally looks like a lesson. Body text is set in a serif reading face at 16-17px with a capped measure, section headings are typographic rather than UI labels, and the five lesson tabs stick under the top bar so you always know where you are in a long mission',
+      'Type scale raised across the product - 15px to 16px base, page titles at 2rem, stat numbers at 2rem in solid ink instead of gradient-clipped text that washed out in dark mode',
+      'The content column uses the viewport: 1,440px instead of 1,240px, with a separate reading measure for prose, so a dashboard fills the screen and a paragraph does not run 110 characters',
+      'Charts are now theme-aware. An SVG attribute cannot read a CSS variable, so the graphs used to keep their light-theme ink when the page went dark; they now resolve the palette at render time',
+      'Hard-coded colours removed from generated markup - the mastered tick, the unlocked badge, the risk meter and the winning bid column were painted in fixed hexes that were near-invisible on the dark canvas',
+      'Cards, buttons and tiles share one motion language: a 1-2px lift on hover, a short staggered entrance on load, all of it collapsed to nothing under prefers-reduced-motion',
+      'The glossary is complete: all 45 terms now carry outgoing links, including EBITDA, working capital, cost-to-serve and run-rate, and a gate fails if a term ever ships without somewhere to go'
+    ]
+  },
   {
     version: '2.7',
     date: '2026-11-02',

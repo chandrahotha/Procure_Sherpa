@@ -30,7 +30,7 @@ PS.user = {
       role: 'beginner',
       track: 'academy',
       company: '',
-      avatarBg: '#4f46e5',
+      avatarBg: '#0f6e5c',
       joinedDate: PS.dateStr()
     };
     var stored = PS.store.get(PS.K.user, null);
@@ -145,7 +145,7 @@ PS.user = {
       '<div class="hub-jump-row mb16" style="display:flex; gap:8px; flex-wrap:wrap;">' +
       '<a class="btn btn-sm btn-ghost" href="#/home" data-act="user-profile-close">⌂ Command Center</a>' +
       '<a class="btn btn-sm btn-primary" href="#/academy" data-act="user-profile-close">🎓 Academy Curriculum &rarr;</a>' +
-      '<a class="btn btn-sm" href="#/operations" data-act="user-profile-close" style="background:#0d9488; color:#fff; border-color:#0d9488;">💼 Operations Gateway &rarr;</a>' +
+      '<a class="btn btn-sm btn-ops" href="#/operations" data-act="user-profile-close">💼 Operations Gateway &rarr;</a>' +
       '</div>' +
 
       '<form id="profileEditForm">' +

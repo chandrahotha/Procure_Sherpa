@@ -1297,3 +1297,42 @@ html[data-theme="dark"] .quiz-tip-cta {
   .module-progress{margin-left:0;width:100%}
   .module-progress-track{flex:1;width:auto}
 }
+
+/* ==========================================================
+   v3 - the lesson should read like a lesson
+   ----------
+   A function page is 4,000-8,000 characters of professional prose. Until now
+   it was set in the interface face at interface sizes, in whatever width the
+   grid happened to give it. These rules set the reading body in the serif
+   stack at a 16-17px size with a capped measure, keep every control (quiz
+   options, tables, forms, chips) in the interface face, and pin the five
+   lesson tabs under the topbar so the reader can see where they are in the
+   mission at any point in a long scroll.
+   ========================================================== */
+.lesson-body .card{padding:26px 30px}
+.lesson-body h2{font-family:var(--font-read);font-size:1.34rem;font-weight:600;letter-spacing:-.018em;line-height:1.25;margin:0 0 .6em}
+.lesson-body h3{font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--mute);font-weight:800;margin:1.9em 0 .7em}
+.lesson-body h3:first-of-type{margin-top:1.1em}
+.lesson-body p,.lesson-body li{font-family:var(--font-read);font-size:1.045rem;line-height:1.78;color:var(--text)}
+.lesson-body p{max-width:66ch}
+.lesson-body ul,.lesson-body ol{max-width:66ch}
+.lesson-body li{margin:.55em 0}
+.lesson-body li::marker{color:var(--accent);font-family:var(--font)}
+.lesson-body strong{font-weight:700}
+/* Controls stay in the interface face: a quiz option is a thing you click,
+   not a thing you read at arm's length. */
+.lesson-body table,.lesson-body .badge,.lesson-body .chip,.lesson-body .btn,
+.lesson-body .t-title,.lesson-body .t-desc,.lesson-body .t-kicker,.lesson-body .t-meta,
+.lesson-body .note,.lesson-body .disclaimer,.lesson-body .alert,.lesson-body .stat,
+.lesson-body .quiz-question,.lesson-body .quiz-option,.lesson-body .quiz-feedback,
+.lesson-body .sop-step,.lesson-body .module-progress-count,.lesson-body kbd{font-family:var(--font)}
+.lesson-body table td,.lesson-body table th{font-size:.92rem}
+.lesson-body .thinking-point-quote{font-family:var(--font-read);font-size:1.16rem;line-height:1.6}
+
+.academy-tabs{
+  position:sticky;top:var(--top);z-index:22;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:8px 0 2px;margin-bottom:18px;border-bottom:1px solid var(--border);
+}
+.academy-tab-btn{font-size:.9rem;padding:11px 16px;border-radius:10px 10px 0 0}
+.academy-tab-btn.is-active{box-shadow:inset 0 -2px 0 var(--accent)}

@@ -26,7 +26,27 @@ PS.chart = {
     URL.revokeObjectURL(url);
   },
   /* Should-Cost Waterfall Buildup Chart */
+  /* An SVG presentation attribute cannot resolve var(), so every colour a
+     chart paints has to be read off the theme here, at render time. Without
+     this the graphs keep their light-theme ink when the rest of the page has
+     gone dark. */
+  tokens: function () {
+    var cs, g = function (n, f) { return f; };
+    try {
+      cs = getComputedStyle(document.documentElement);
+      g = function (n, f) { var v = String(cs.getPropertyValue(n) || '').trim(); return v || f; };
+    } catch (e) { }
+    return {
+      accent: g('--accent', '#0f6e5c'), accent3: g('--accent-3', '#3eb59f'),
+      ok: g('--ok', '#1f7a44'), ok2: g('--ok-2', '#2f9d5a'),
+      warn: g('--warn', '#a45a06'), danger: g('--danger', '#c02626'),
+      danger2: g('--danger-2', '#e04545'), mute: g('--mute', '#69737f'),
+      text: g('--text', '#11151c'), grid: g('--border', '#e2e6e4'),
+      surface: g('--panel', '#ffffff')
+    };
+  },
   waterfall: function (items, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 680;
     var h = opts.height || 260;
@@ -81,7 +101,7 @@ PS.chart = {
       }
 
       var fillGrad = b.isTotal ? 'url(#wfGradTotal)' : (val < 0 ? 'url(#wfGradNeg)' : 'url(#wfGradPos)');
-      var strokeColor = b.isTotal ? '#059669' : (val < 0 ? '#dc2626' : '#4f46e5');
+      var strokeColor = b.isTotal ? C.ok : (val < 0 ? C.danger : C.accent);
 
       svgParts.push(
         '<rect x="' + barX.toFixed(1) + '" y="' + barTop.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + barH.toFixed(1) + '" rx="4" fill="' + fillGrad + '" stroke="' + strokeColor + '" stroke-width="1.2" />' +
@@ -103,16 +123,16 @@ PS.chart = {
 
     var defs = '<defs>' +
       '<linearGradient id="wfGradPos" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#6366f1" stop-opacity="0.9" />' +
-      '<stop offset="100%" stop-color="#4f46e5" stop-opacity="0.8" />' +
+      '<stop offset="0%" stop-color=C.accent stop-opacity="0.9" />' +
+      '<stop offset="100%" stop-color=C.accent stop-opacity="0.8" />' +
       '</linearGradient>' +
       '<linearGradient id="wfGradTotal" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#10b981" stop-opacity="0.95" />' +
-      '<stop offset="100%" stop-color="#059669" stop-opacity="0.85" />' +
+      '<stop offset="0%" stop-color=C.ok2 stop-opacity="0.95" />' +
+      '<stop offset="100%" stop-color=C.ok stop-opacity="0.85" />' +
       '</linearGradient>' +
       '<linearGradient id="wfGradNeg" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="#f87171" stop-opacity="0.95" />' +
-      '<stop offset="100%" stop-color="#dc2626" stop-opacity="0.85" />' +
+      '<stop offset="0%" stop-color="' + C.danger2 + '" stop-opacity="0.95" />' +
+      '<stop offset="100%" stop-color=C.danger stop-opacity="0.85" />' +
       '</linearGradient>' +
       '</defs>';
 
@@ -129,6 +149,7 @@ PS.chart = {
 
   /* Kraljic 2x2 Portfolio Matrix Visualizer */
   kraljic: function (items, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 600;
     var h = opts.height || 420;
@@ -149,16 +170,16 @@ PS.chart = {
     svg.push('<rect x="' + midX + '" y="' + midY + '" width="' + (w - pad - midX) + '" height="' + (h - pad - midY) + '" fill="rgba(245, 158, 11, 0.08)" stroke="var(--border)" stroke-width="1" />');
 
     /* Quadrant Watermark Headers */
-    svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill="#059669" letter-spacing="0.05em">LEVERAGE (High Value, Low Risk)</text>');
+    svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill=C.ok letter-spacing="0.05em">LEVERAGE (High Value, Low Risk)</text>');
     svg.push('<text x="' + (pad + 12) + '" y="' + (pad + 38) + '" font-size="10" fill="var(--mute)">Strategy: Competitive Tendering, Reverse Auctions</text>');
 
-    svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill="#6366f1" letter-spacing="0.05em">STRATEGIC (High Value, High Risk)</text>');
+    svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 24) + '" font-size="12" font-weight="800" fill=C.accent letter-spacing="0.05em">STRATEGIC (High Value, High Risk)</text>');
     svg.push('<text x="' + (midX + 12) + '" y="' + (pad + 38) + '" font-size="10" fill="var(--mute)">Strategy: Long-Term Partnerships, SRM, Co-Development</text>');
 
-    svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill="#64748b" letter-spacing="0.05em">NON-CRITICAL (Low Value, Low Risk)</text>');
+    svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill=C.mute letter-spacing="0.05em">NON-CRITICAL (Low Value, Low Risk)</text>');
     svg.push('<text x="' + (pad + 12) + '" y="' + (midY + 38) + '" font-size="10" fill="var(--mute)">Strategy: P-Cards, Catalogs, Vendor Consolidation</text>');
 
-    svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill="#d97706" letter-spacing="0.05em">BOTTLENECK (Low Value, High Risk)</text>');
+    svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 24) + '" font-size="12" font-weight="800" fill=C.warn letter-spacing="0.05em">BOTTLENECK (Low Value, High Risk)</text>');
     svg.push('<text x="' + (midX + 12) + '" y="' + (midY + 38) + '" font-size="10" fill="var(--mute)">Strategy: Safety Stock, Dual-Sourcing, Standardize Specs</text>');
 
     /* Axis Dividers */
@@ -174,7 +195,7 @@ PS.chart = {
       var cx = pad + (cat.risk / 100) * (w - pad * 2);
       var cy = (h - pad) - (cat.impact / 100) * (h - pad * 2);
       var r = Math.max(Math.min(cat.spendRatio ? cat.spendRatio * 22 : 14, 26), 9);
-      var color = cat.color || '#4f46e5';
+      var color = cat.color || C.accent;
 
       svg.push(
         '<g class="kraljic-node" tabindex="0">' +
@@ -199,6 +220,7 @@ PS.chart = {
 
   /* Pareto 80/20 Spend Distribution Curve */
   pareto: function (vendors, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 680;
     var h = opts.height || 280;
@@ -231,15 +253,15 @@ PS.chart = {
       svg.push(
         '<line x1="' + padLeft + '" y1="' + gy.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + gy.toFixed(1) + '" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3" />' +
         '<text x="' + (padLeft - 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="var(--mute)">$' + (gVal / 1000).toFixed(0) + 'k</text>' +
-        '<text x="' + (w - padRight + 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="start" font-size="10" fill="#d97706">' + gPct + '%</text>'
+        '<text x="' + (w - padRight + 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="start" font-size="10" fill=C.warn>' + gPct + '%</text>'
       );
     }
 
     /* 80% Cutoff Line */
     var y80 = padTop + chartH * (1 - 0.8);
     svg.push(
-      '<line x1="' + padLeft + '" y1="' + y80.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + y80.toFixed(1) + '" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" />' +
-      '<text x="' + (w - padRight - 8) + '" y="' + (y80 - 6).toFixed(1) + '" text-anchor="end" font-size="10" font-weight="700" fill="#ef4444">80% Spend Cutoff (Category Class A)</text>'
+      '<line x1="' + padLeft + '" y1="' + y80.toFixed(1) + '" x2="' + (w - padRight) + '" y2="' + y80.toFixed(1) + '" stroke=C.danger stroke-width="1.5" stroke-dasharray="5,4" />' +
+      '<text x="' + (w - padRight - 8) + '" y="' + (y80 - 6).toFixed(1) + '" text-anchor="end" font-size="10" font-weight="700" fill=C.danger>80% Spend Cutoff (Category Class A)</text>'
     );
 
     /* Render Spend Bars */
@@ -256,7 +278,7 @@ PS.chart = {
       cumPoints.push({ x: ptX, y: ptY, pct: (cumPct * 100).toFixed(1) });
 
       var isClassA = (cumSpend - spend) / totalSpend < 0.8;
-      var fill = isClassA ? '#4f46e5' : '#94a3b8';
+      var fill = isClassA ? C.accent : C.mute;
 
       svg.push(
         '<rect x="' + barX.toFixed(1) + '" y="' + barY.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + barH.toFixed(1) + '" rx="3" fill="' + fill + '" />' +
@@ -271,10 +293,10 @@ PS.chart = {
       for (var p = 1; p < cumPoints.length; p++) {
         pathD += ' L ' + cumPoints[p].x.toFixed(1) + ' ' + cumPoints[p].y.toFixed(1);
       }
-      svg.push('<path d="' + pathD + '" fill="none" stroke="#d97706" stroke-width="2.5" />');
+      svg.push('<path d="' + pathD + '" fill="none" stroke=C.warn stroke-width="2.5" />');
       cumPoints.forEach(function (pt) {
         svg.push(
-          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#d97706" stroke-width="2" />'
+          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke=C.warn stroke-width="2" />'
         );
       });
     }
@@ -292,6 +314,7 @@ PS.chart = {
 
   /* Altman Z-Score Solvency Risk Gauge */
   zscoreGauge: function (score, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 380;
     var h = opts.height || 220;
@@ -309,28 +332,28 @@ PS.chart = {
     var needleY = cy - (r - 12) * Math.sin(angle);
 
     var zoneLabel = 'Distress Zone (High Insolvency Risk)';
-    var zoneColor = '#ef4444';
+    var zoneColor = C.danger;
     if (z >= 2.90) {
       zoneLabel = 'Safe Zone (Low Default Probability)';
-      zoneColor = '#10b981';
+      zoneColor = C.ok2;
     } else if (z >= 1.23) {
       zoneLabel = 'Grey Zone (Marginal Liquidity / Monitor)';
-      zoneColor = '#f59e0b';
+      zoneColor = C.warn;
     }
 
     var svg = [
       /* Red Arc (0 to 1.23) -> angle PI to PI - (1.23/4)*PI */
-      '<path d="M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + '" fill="none" stroke="#ef4444" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + '" fill="none" stroke=C.danger stroke-width="' + thickness + '" />',
       /* Amber Arc (1.23 to 2.90) */
-      '<path d="M ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + '" fill="none" stroke="#f59e0b" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + '" fill="none" stroke="' + C.warn + '" stroke-width="' + thickness + '" />',
       /* Green Arc (2.90 to 4.0) */
-      '<path d="M ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + '" fill="none" stroke="#10b981" stroke-width="' + thickness + '" />',
+      '<path d="M ' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' ' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI)).toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + '" fill="none" stroke=C.ok2 stroke-width="' + thickness + '" />',
 
       /* Gauge Tick Marks & Labels */
-      '<text x="' + (cx - r - 6) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill="#ef4444">0.0</text>',
-      '<text x="' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI) - 8).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill="#ef4444">1.23</text>',
-      '<text x="' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI) + 4).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill="#10b981">2.90</text>',
-      '<text x="' + (cx + r - 4) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill="#10b981">4.0+</text>',
+      '<text x="' + (cx - r - 6) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill=C.danger>0.0</text>',
+      '<text x="' + (cx + r * Math.cos(Math.PI - 1.23/4*Math.PI) - 8).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 1.23/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill=C.danger>1.23</text>',
+      '<text x="' + (cx + r * Math.cos(Math.PI - 2.90/4*Math.PI) + 4).toFixed(1) + '" y="' + (cy - r * Math.sin(Math.PI - 2.90/4*Math.PI) - 10).toFixed(1) + '" font-size="10" font-weight="700" fill=C.ok2>2.90</text>',
+      '<text x="' + (cx + r - 4) + '" y="' + (cy + 16) + '" font-size="10" font-weight="700" fill=C.ok2>4.0+</text>',
 
       /* Needle */
       '<line x1="' + cx + '" y1="' + cy + '" x2="' + needleX.toFixed(1) + '" y2="' + needleY.toFixed(1) + '" stroke="var(--text)" stroke-width="3" stroke-linecap="round" />',
@@ -355,6 +378,7 @@ PS.chart = {
   /* Radar: two series compared across criteria (0-5 scale).
      axes: [{key, label}], series: [{name, color, values: {key: score}}] */
   radar: function (axes, series, opts) {
+    var C = PS.chart.tokens();
     opts = opts || {};
     var w = opts.width || 460;
     var h = opts.height || 380;
@@ -385,15 +409,16 @@ PS.chart = {
       svg.push('<text x="' + lab.x.toFixed(1) + '" y="' + (lab.y + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="700" fill="var(--dim)">' + PS.esc(a.label) + '</text>');
     });
 
-    (series || []).forEach(function (s) {
+    (series || []).forEach(function (s, si) {
+      var col = s.color || (si === 0 ? C.accent : C.mute);
       var pts = [];
       axes.forEach(function (a, i) { var p = pt(i, s.values[a.key]); pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); });
-      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + s.color + '" stroke="' + s.color + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
+      svg.push('<polygon points="' + pts.join(' ') + '" fill="' + col + '" stroke="' + col + '" stroke-width="2" fill-opacity="0.16" stroke-linejoin="round" />');
     });
 
     var legend = (series || []).map(function (s) {
       return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--dim)">' +
-        '<span style="width:10px;height:10px;border-radius:2px;background:' + s.color + '"></span>' + PS.esc(s.name) + '</span>';
+        '<span style="width:10px;height:10px;border-radius:2px;background:' + (s.color || C.accent) + '"></span>' + PS.esc(s.name) + '</span>';
     }).join(' <span style="color:var(--mute);font-size:.8rem">vs</span> ');
 
     return '<div class="chart-container">' +

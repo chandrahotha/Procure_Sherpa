@@ -1,6 +1,6 @@
 {
   "name": "procure-sherpa",
-  "version": "2.7.0",
+  "version": "3.0.0",
   "description": "A single-file, offline-first procurement learning and decision-support tool: competency curriculum, digital SOPs, checklists, templates, 19 financial calculators, decision guides and inline analytics. Runs from one HTML file with no server, no database, no accounts and no telemetry; all state is per-browser localStorage.",
   "main": "ProcureSherpa-v2.0.html",
   "files": [

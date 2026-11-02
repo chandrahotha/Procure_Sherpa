@@ -1,21 +1,25 @@
-/* Section 2: reset + SaaS type scale */
+/* Section 2: reset + v3 type scale
+   Base size moved 15px -> 16px and the leading opened up. The product is
+   mostly long professional prose, and at 15px/1.6 in a 1240px column it was
+   the reading that made people stop, not the content. */
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:var(--font);font-size:15px;line-height:1.6;color:var(--text);
+  font-family:var(--font);font-size:16px;line-height:1.65;color:var(--text);
   background:var(--bg);overflow-wrap:break-word;min-height:100vh;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
-h1,h2,h3,h4,h5{line-height:1.25;margin:0 0 .5em;font-weight:700;letter-spacing:-.02em;color:var(--text)}
-h1{font-size:1.55rem}h2{font-size:1.2rem}h3{font-size:1.02rem}h4{font-size:.92rem}
-h5{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:700}
-p{margin:0 0 .75em}
-ul,ol{margin:0 0 .75em;padding-left:1.3em}
-li{margin:.2em 0}
+h1,h2,h3,h4,h5{line-height:1.2;margin:0 0 .5em;font-weight:700;letter-spacing:-.022em;color:var(--text)}
+h1{font-size:1.9rem;letter-spacing:-.03em}h2{font-size:1.32rem}h3{font-size:1.1rem}h4{font-size:.96rem}
+h5{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mute);font-weight:800}
+p{margin:0 0 .85em}
+ul,ol{margin:0 0 .85em;padding-left:1.35em}
+li{margin:.28em 0}
 li::marker{color:var(--mute)}
-small{font-size:.8rem}
-a{color:var(--accent);text-decoration:none}
+li+li{margin-top:.4em}
+small{font-size:.82rem}
+a{color:var(--accent);text-decoration:none;text-underline-offset:2px}
 a:hover{text-decoration:underline}
 a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-radius:4px;text-decoration:underline}
 code,kbd,samp,pre{font-family:var(--mono);font-size:.85em}
@@ -48,7 +52,31 @@ button{font-family:inherit}
 .t-dim{color:var(--dim)}.t-mute{color:var(--mute)}
 .font-bold{font-weight:700}.font-semibold{font-weight:600}
 .text-accent{color:var(--accent)}.text-ok{color:var(--ok)}.text-info{color:var(--info)}
+.text-danger{color:var(--danger)}.text-warn{color:var(--warn)}
+.state-ok{color:var(--ok);font-weight:700}
 .spacer{flex:1 1 auto}
-.lead{font-size:.95rem;color:var(--dim);line-height:1.6}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:1.02rem;color:var(--dim);line-height:1.7}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* ---------- v3 reading layer ----------
+   Two different widths answer two different problems. `.page-box` is what a
+   dashboard or a workbench grid gets: it uses the viewport. `.reading` is
+   what a paragraph gets: it stops at the measure, because a 100-character
+   line is the single most tiring thing a reading page can do. */
+.reading{max-width:var(--measure)}
+.reading-wide{max-width:88ch}
+.display{font-family:var(--font-read);font-weight:600;letter-spacing:-.012em;line-height:1.18}
+.prose{font-family:var(--font-read);font-size:1.06rem;line-height:1.75;color:var(--text)}
+.prose p{margin:0 0 1em}
+.prose h2,.prose h3{font-family:var(--font-read);font-weight:600;letter-spacing:-.015em}
+.prose strong{font-weight:700}
+@media (max-width:720px){
+  body{font-size:15.5px}
+  h1{font-size:1.55rem}
+  h2{font-size:1.18rem}
+  .prose{font-size:1.01rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}

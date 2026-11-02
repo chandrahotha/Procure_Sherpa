@@ -7,6 +7,22 @@ PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
   {
+    version: '3.0',
+    date: '2026-11-02',
+    title: 'The reading edition',
+    tag: 'Major',
+    items: [
+      'A new design system: a warm-neutral canvas, one jade accent in place of the old indigo, and a dark navigation rail that stays put in both themes so the menu reads as furniture rather than as another panel. Every colour now comes from a token, in both light and dark',
+      'The lesson finally looks like a lesson. Body text is set in a serif reading face at 16-17px with a capped measure, section headings are typographic rather than UI labels, and the five lesson tabs stick under the top bar so you always know where you are in a long mission',
+      'Type scale raised across the product - 15px to 16px base, page titles at 2rem, stat numbers at 2rem in solid ink instead of gradient-clipped text that washed out in dark mode',
+      'The content column uses the viewport: 1,440px instead of 1,240px, with a separate reading measure for prose, so a dashboard fills the screen and a paragraph does not run 110 characters',
+      'Charts are now theme-aware. An SVG attribute cannot read a CSS variable, so the graphs used to keep their light-theme ink when the page went dark; they now resolve the palette at render time',
+      'Hard-coded colours removed from generated markup - the mastered tick, the unlocked badge, the risk meter and the winning bid column were painted in fixed hexes that were near-invisible on the dark canvas',
+      'Cards, buttons and tiles share one motion language: a 1-2px lift on hover, a short staggered entrance on load, all of it collapsed to nothing under prefers-reduced-motion',
+      'The glossary is complete: all 45 terms now carry outgoing links, including EBITDA, working capital, cost-to-serve and run-rate, and a gate fails if a term ever ships without somewhere to go'
+    ]
+  },
+  {
     version: '2.7',
     date: '2026-11-02',
     title: 'The markets the general method does not cover',

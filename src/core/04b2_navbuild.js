@@ -322,7 +322,7 @@ PS.applyTheme = function (theme) {
   document.documentElement.setAttribute('data-theme', t);
   try {
     var mt = document.querySelector('meta[name="theme-color"]');
-    if (mt) mt.setAttribute('content', t === 'dark' ? '#070b16' : '#5346f5');
+    if (mt) mt.setAttribute('content', t === 'dark' ? '#0b1016' : '#f4f5f3');
   } catch (e) { }
   var tb = PS.$('#themeBtn');
   if (tb) tb.textContent = t === 'dark' ? '\u25D1' : '\u25D0';

@@ -166,7 +166,7 @@ PS.kbdHelp = {
       'th, td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; vertical-align: top; }' +
       'th { background: #f0f0f0; font-weight: bold; width: 30%; }' +
       'kbd { font-family: "SF Mono", "Fira Code", Consolas, monospace; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-size: 9.5pt; white-space: nowrap; }' +
-      '.footer { margin-top: 24pt; font-size: 8pt; color: #666; text-align: center; }' +
+      '.footer { margin-top: 24pt; font-size: 8pt; color: var(--dim); text-align: center; }' +
       '@media print { .no-print { display: none !important; } }' +
       '</style></head><body>' +
       '<h1>Procure Sherpa — Keyboard Shortcuts Cheat Sheet</h1>' +
