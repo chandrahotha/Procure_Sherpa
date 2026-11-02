@@ -487,7 +487,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-adoption-and-change': 'analytics',
   'func-freight-and-landed-cost': 'catalogue',
   'func-regulated-procurement': 'rfx',
-  'func-people-time-categories': 'suppliers'
+  'func-people-time-categories': 'suppliers',
+  'func-obligation-register': 'contracts',
+  'func-change-control': 'contracts',
+  'func-claims-and-remedies': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

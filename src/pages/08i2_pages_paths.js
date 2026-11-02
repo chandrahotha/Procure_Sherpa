@@ -105,6 +105,17 @@ PS.learningPaths.PATHS = [
     skills: ['Designing the model and defending its cost-to-serve', 'Presenting value a finance reader accepts as evidence', 'Sequencing change by dependency, not by enthusiasm'],
     duration: '5-7 weeks',
     color: 'var(--scen)'
+  },
+  {
+    id: 'contract-risk',
+    title: 'Contract Risk, Claims and Disputes',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'What happens after signature: turning the agreement into owned duties, controlling the changes that arrive anyway, and handling the disagreement when it does.',
+    modules: ['func-obligation-register', 'func-change-control', 'func-claims-and-remedies'],
+    skills: ['Reading a contract as a list of obligations', 'Pricing and bounding a variation', 'Assembling a provable position', 'Deciding whether a claim is worth pursuing'],
+    duration: '4-5 weeks',
+    color: 'var(--dec)'
   }
 ];
 

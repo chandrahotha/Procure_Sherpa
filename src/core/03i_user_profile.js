@@ -232,7 +232,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 12: Advanced Category & Portfolio Strategy': ['portfolio', 'strategy', 'cost', 'learn'],
   'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn'],
   'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn'],
-  'Module 15: Specialised Markets and Category Depth': ['specialist', 'analytics', 'learn']
+  'Module 15: Specialised Markets and Category Depth': ['specialist', 'analytics', 'learn'],
+  'Module 16: Contract Risk, Claims and Disputes': ['contract', 'claims', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.

@@ -48,6 +48,7 @@ PS.academy.BADGES = [
   { id: 'boardroom_ready', name: 'Boardroom Ready', icon: '🏛️', desc: 'Mastered the Operating Model, the Value Narrative and Transformation Sequencing.', requires: ['func-operating-model', 'func-value-narrative', 'func-transformation-roadmap'] },
   { id: 'influence_architect', name: 'Influence & Adoption Architect', icon: '🧲', desc: 'Mastered Stakeholder Mapping, the Executive Ask and Change Adoption.', requires: ['func-stakeholder-mapping', 'func-executive-ask', 'func-adoption-and-change'] },
   { id: 'market_depth', name: 'Category Depth Specialist', icon: '🧭', desc: 'Mastered Freight and Customs, Regulated Procurement and the People-Time Categories.', requires: ['func-freight-and-landed-cost', 'func-regulated-procurement', 'func-people-time-categories'] },
+  { id: 'contract_steward', name: 'Contract Steward', icon: '⚖️', desc: 'Mastered the Obligation Register, Change Control and Claims & Remedies.', requires: ['func-obligation-register', 'func-change-control', 'func-claims-and-remedies'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

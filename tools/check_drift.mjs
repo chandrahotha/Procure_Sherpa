@@ -150,7 +150,11 @@ const docs = DOCFILES.map((f) => ({ file: f, text: read(f) })).filter((d) => d.t
 
 /* A line that describes a previous state is allowed to name the previous
    number: "the pool went 106 -> 102" is evidence, not a live claim. */
-const HISTORICAL = /\bwas\b|\bused to\b|->|→|\bwent\b|\bpreviously\b|\bno longer\b/i;
+/* A line that labels itself as a dated record is not making a current
+   claim, so it is exempt: 'as at this release', 'as shipped at', 'at the
+   v2.4 audit'. The exemption is the label, not the number - an unlabelled
+   stale figure still fails. */
+const HISTORICAL = /\bwas\b|\bused to\b|->|→|\bwent\b|\bpreviously\b|\bno longer\b|\bas at \b|\bas shipped at\b|\bat this release\b|\bat the v2\.\d+ audit\b/i;
 
 const docProblems = [];
 /**
