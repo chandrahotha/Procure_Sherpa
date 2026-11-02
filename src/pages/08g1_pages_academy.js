@@ -644,7 +644,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-dual-source-resilience': 'analytics',
   'func-emergency-procurement': 'approvals',
   'func-allocation-and-shortage': 'suppliers',
-  'func-disruption-recovery': 'analytics'
+  'func-disruption-recovery': 'analytics',
+  'func-payment-terms-value': 'contracts',
+  'func-cash-conversion-cycle': 'analytics',
+  'func-supply-chain-finance': 'suppliers'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

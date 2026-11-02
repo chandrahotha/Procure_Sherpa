@@ -138,6 +138,17 @@ PS.learningPaths.PATHS = [
     skills: ['Using a bounded emergency route', 'Reading an allocation rule', 'Forcing an explicit internal allocation decision', 'Re-baselining and closing a claim'],
     duration: '4-5 weeks',
     color: 'var(--danger)'
+  },
+  {
+    id: 'finance',
+    title: 'The Finance of Procurement',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'Cash, terms and value: what a payment term is worth, how the cash conversion cycle turns procurement decisions into balance-sheet effects, and who is really financing the supply base.',
+    modules: ['func-payment-terms-value', 'func-cash-conversion-cycle', 'func-supply-chain-finance'],
+    skills: ['Valuing a term as cash and as cost', 'Reading the cash conversion cycle by component', 'Telling a saving from a cash action', 'Running a financing programme without coercion'],
+    duration: '4-6 weeks',
+    color: 'var(--kpi)'
   }
 ];
 
