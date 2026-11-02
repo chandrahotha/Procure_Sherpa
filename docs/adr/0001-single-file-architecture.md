@@ -75,8 +75,8 @@ smoke suite, both calculator suites, the accessibility audit and the layout
 audit **against `dist/index.html`**, not just against the readable build.
 `npm run qa` ends with that step.
 
-This is deliberately not a code-splitting scheme. It buys headroom - 15.4%
-of the payload on the build measured 2026-11-02, 2,902 KB down to 2,455 KB,
+This is deliberately not a code-splitting scheme. It buys headroom - 15.2%
+of the payload on the build measured 2026-11-03, 3,001 KB down to 2,546 KB,
 and it scales with the code - without giving up any of the four properties above,
 and it costs one dev-dependency that never reaches a user. (`terser` is the
 dependency this decision added; `package.json` also carries `eslint` and
@@ -93,8 +93,8 @@ They are written down so the first sign of trouble is not a blocked build.
    read "the readable artifact passes 1360 KB", the 85% point of the
    uncompressed 1600 KB ceiling ADR 0002 retired; nothing warns there any
    more, because the uncompressed size is reported and not gated.) The
-   artifact was 1271 KB when this ADR was written and is 2,902 KB as at
-   2026-11-02, which gzips to 806 KB - 70% of the ceiling that actually binds. It is
+   artifact was 1271 KB when this ADR was written and is 3,001 KB as at
+   2026-11-03, which gzips to 834 KB - 72% of the ceiling that actually binds. It is
    still inside the ceiling, and the ceiling was raised on a measured
    basis rather than to fit whatever the content happened to be.
 2. **The minified artifact passes 979 KB gzipped**, which is the ceiling
@@ -151,11 +151,11 @@ primary strategy.
 - The ceiling has not been removed - it has been pushed out and, more
   importantly, written down with the conditions that mean it is time to
   act.
-- The current position, as re-measured on 2026-11-02: 2,902 KB readable,
-  2,455 KB minified, 806 KB gzipped for the readable artifact and 729 KB
+- The current position, as re-measured on 2026-11-03: 3,001 KB readable,
+  2,546 KB minified, 834 KB gzipped for the readable artifact and 757 KB
   for the deployed one. The transfer ceiling derived in ADR 0002 is 1,152
-  KB gzipped, so there is 347 KB of headroom on what a browser actually
-  receives, which is roughly 1.2 MB of further source at the compression
+  KB gzipped, so there is 318 KB of headroom on what a browser actually
+  receives, which is roughly 1.1 MB of further source at the compression
   ratio this build actually achieves (3.6:1). That is enough for
   the workbenches already built and for a good deal more content. The
   honest constraint on this product is now the reader's time and the

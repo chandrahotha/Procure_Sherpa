@@ -647,7 +647,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-disruption-recovery': 'analytics',
   'func-payment-terms-value': 'contracts',
   'func-cash-conversion-cycle': 'analytics',
-  'func-supply-chain-finance': 'suppliers'
+  'func-supply-chain-finance': 'suppliers',
+  'func-purchasing-fraud-risk': 'receipts',
+  'func-bid-rigging-detection': 'rfx',
+  'func-fraud-response-and-disclosure': 'approvals'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

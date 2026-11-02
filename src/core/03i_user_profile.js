@@ -236,7 +236,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 16: Contract Risk, Claims and Disputes': ['contract', 'claims', 'learn'],
   'Module 17: Global Sourcing Operations - Development, Quality and Continuity': ['quality', 'operations', 'learn'],
   'Module 18: Disruption, Emergency Buying and Allocation': ['disruption', 'risk', 'learn'],
-  'Module 19: The Finance of Procurement - Cash, Terms and Value': ['finance', 'value', 'learn']
+  'Module 19: The Finance of Procurement - Cash, Terms and Value': ['finance', 'value', 'learn'],
+  'Module 20: Procurement Fraud, Collusion and the Controls That Catch It': ['assurance', 'risk', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -250,9 +251,9 @@ PS.ACADEMY_MODULE_TAGS = {
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
   buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
-  manager: ['strategy', 'influence', 'portfolio', 'disruption', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
+  manager: ['strategy', 'influence', 'portfolio', 'disruption', 'assurance', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],
-  compliance: ['risk', 'quality', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
+  compliance: ['assurance', 'risk', 'quality', 'ethics', 'governance', 'contract', 'executive', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {
   var p = this.getProfile();

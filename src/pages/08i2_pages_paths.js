@@ -149,6 +149,17 @@ PS.learningPaths.PATHS = [
     skills: ['Valuing a term as cash and as cost', 'Reading the cash conversion cycle by component', 'Telling a saving from a cash action', 'Running a financing programme without coercion'],
     duration: '4-6 weeks',
     color: 'var(--kpi)'
+  },
+  {
+    id: 'assurance',
+    title: 'Fraud, Collusion and Assurance',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'The detection half of integrity: the patterns that show up in purchasing data, the shapes collusion takes in a bid list, and how a concern is handled without destroying evidence or reputation.',
+    modules: ['func-purchasing-fraud-risk', 'func-bid-rigging-detection', 'func-fraud-response-and-disclosure'],
+    skills: ['Reading distributions rather than averages', 'Verifying a payment change out of band', 'Naming the signals collusion leaves in a tender', 'Holding the first hour of a case correctly'],
+    duration: '4-6 weeks',
+    color: 'var(--dec)'
   }
 ];
 

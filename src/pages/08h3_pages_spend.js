@@ -27,6 +27,14 @@ PS.route('spend-model', function () {
       '<button type="button" class="btn btn-sm btn-danger" data-act="spend-del-cat" data-id="' + PS.escAttr(c.id) + '">Remove</button>' +
       '</div>' + supHtml + '</div>';
   }).join('');
+  var editorHtml = (m.categories || []).length
+    ? catHtml
+    : '<div class="empty"><h3>Your spend model is empty</h3>' +
+      '<p>Add your first category and the suppliers inside it, or load the worked example to see how the hierarchy feeds the Pareto and Kraljic views. Nothing here leaves this browser.</p>' +
+      '<div class="btn-row" style="justify-content:center">' +
+      '<button type="button" class="btn btn-primary" data-act="spend-add-cat">+ Add first category</button>' +
+      '<button type="button" class="btn" data-act="spend-load-example">Load worked example</button>' +
+      '</div></div>';
   var html = PS.reportHead('Spend data model', 'Single source for Pareto & Kraljic') +
     '<div class="card"><div class="card-head"><div><h1>Spend data model</h1>' +
     '<p class="card-sub">Maintain a category &gt; supplier hierarchy here. The Pareto and Kraljic charts below derive directly from this model, so updating spend once keeps every view consistent. Drag supplier rows to reorder.</p></div>' +
@@ -37,7 +45,7 @@ PS.route('spend-model', function () {
     '<button type="button" class="btn" data-act="spend-add-cat">+ Category</button>' +
     '<button type="button" class="btn btn-ghost" data-act="spend-load-example">Load example</button>' +
     '</div>' +
-    '<div class="spend-editor" id="spendEditor">' + catHtml + '</div>' +
+    '<div class="spend-editor" id="spendEditor">' + editorHtml + '</div>' +
     '<p class="note">Changes are saved when you press <strong>Save model</strong>. Sliders set the Kraljic impact and risk for each category.</p>' +
     '</div>' +
     PS.spendModel.chartsHtml(m) +

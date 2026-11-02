@@ -47,8 +47,12 @@ PS.spendModel.example = function () {
 
 PS.spendModel.load = function () {
   var m = PS.spendModel.all();
-  if (!m.categories || !m.categories.length) return PS.spendModel.example();
-  return m;
+  /* A new user opens with zero records. This used to substitute a demo
+     portfolio here, which read as somebody else's live spend data and put
+     fake numbers under the Pareto, Kraljic and budget views until the
+     visitor overwrote them. The worked example stays available behind the
+     explicit "Load example" control. */
+  return (m && Array.isArray(m.categories) && m.categories.length) ? m : { categories: [] };
 };
 
 /* ---------- helpers ---------- */
@@ -203,7 +207,7 @@ PS.spendModel.chartsHtml = function (m) {
   }
   var kraljic = (m.categories || []).map(function (c) {
     var catSpend = (c.suppliers || []).reduce(function (a, s) { return a + (PS.num(s.spend) || 0); }, 0);
-    return { name: c.name, impact: c.impact || 50, risk: c.risk || 50, spend: '$' + PS.group(catSpend, 0), spendRatio: total ? Math.max(0.4, (catSpend / total) * 3) : 0.6, color: '#6366f1' };
+    return { name: c.name, impact: c.impact || 50, risk: c.risk || 50, spend: '$' + PS.group(catSpend, 0), spendRatio: total ? Math.max(0.4, (catSpend / total) * 3) : 0.6, color: PS.chart.tokens().accent };
   });
   html += '<div class="card"><h3>Kraljic portfolio</h3>' +
     (kraljic.length ? PS.chart.kraljic(kraljic, { width: 460, height: 400 }) : '<p class="note">Add categories to map the 2x2 matrix.</p>') +
