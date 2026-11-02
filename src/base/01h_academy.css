@@ -1380,6 +1380,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 /* The jump target has to land below the sticky strip, or the module heading
    it scrolled to is hidden behind it. */
 .module-group{scroll-margin-top:calc(var(--top) + 96px)}
+.module-group:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 .module-meta{
   font-size:.76rem;font-weight:700;letter-spacing:.02em;color:var(--mute);
   background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px;white-space:nowrap;
@@ -1407,6 +1408,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 .lesson-toc a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none}
 .lesson-toc a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .lesson-body .card[id^="lsec-"]{scroll-margin-top:calc(var(--top) + 104px)}
+.lesson-body .card[id^="lsec-"]:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 
 .lesson-close{margin-top:26px;padding:22px 24px}
 .lesson-steps{list-style:none;margin:6px 0 0;padding:0}

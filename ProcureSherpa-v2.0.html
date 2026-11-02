@@ -786,6 +786,40 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 .grid>:nth-child(4),.stats>:nth-child(4){animation-delay:.12s}
 .grid>:nth-child(n+5),.stats>:nth-child(n+5){animation-delay:.16s}
 
+/* ---------- v3: browsing a library ----------
+   A library page is a filter, a count and a long list of groups. The count
+   has to move with the filter, the group headers have to be scannable at
+   speed, and a jump bar makes a 72-entry library navigable without scrolling
+   through all of it. */
+.list-count{
+  font-size:.92rem;color:var(--dim);margin:2px 0 12px;padding:0 2px;
+  display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;
+}
+.list-count strong{font-size:1.15rem;font-weight:750;color:var(--text);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.list-jump{
+  position:sticky;top:calc(var(--top) + 6px);z-index:20;display:flex;flex-wrap:wrap;gap:6px;
+  margin:0 0 16px;padding:9px 10px;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);
+}
+.list-jump a{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--border);background:var(--panel);color:var(--dim);
+  font-size:.79rem;font-weight:650;text-decoration:none;line-height:1.4;
+  transition:border-color var(--dur),color var(--dur),background var(--dur),transform .1s var(--ease);
+}
+.list-jump a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none;transform:translateY(-1px)}
+.list-jump a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.list-jump a span{font-size:.7rem;font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums}
+.list-group h2{font-size:1.18rem}
+.list-group{scroll-margin-top:calc(var(--top) + 96px)}
+.list-group:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
+@media (max-width:900px){
+  .list-jump{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
+  .list-jump a{flex:0 0 auto}
+}
+
 /* Section 5: SaaS forms + tables + timeline + progress */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;min-width:0}
 .field>label{font-size:.85rem;font-weight:650;color:var(--dim);letter-spacing:-.005em}
@@ -2368,6 +2402,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 /* The jump target has to land below the sticky strip, or the module heading
    it scrolled to is hidden behind it. */
 .module-group{scroll-margin-top:calc(var(--top) + 96px)}
+.module-group:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 .module-meta{
   font-size:.76rem;font-weight:700;letter-spacing:.02em;color:var(--mute);
   background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px;white-space:nowrap;
@@ -2395,6 +2430,7 @@ html[data-theme="dark"] .quiz-tip-cta {
 .lesson-toc a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none}
 .lesson-toc a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .lesson-body .card[id^="lsec-"]{scroll-margin-top:calc(var(--top) + 104px)}
+.lesson-body .card[id^="lsec-"]:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 
 .lesson-close{margin-top:26px;padding:22px 24px}
 .lesson-steps{list-style:none;margin:6px 0 0;padding:0}
@@ -3707,7 +3743,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '9674e61f0911';
+PS.BUILD = '0812936606ad';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -7787,6 +7823,14 @@ PS.listSortItems = function (items, sort) {
   });
   return arr;
 };
+/* A category anchor has to survive the category name: 'Tax & FX Tools' and
+   'Services - IT' cannot be used as element ids, and two categories that
+   differ only in punctuation must not collide into the same anchor. */
+PS.catAnchor = function (cat) {
+  return 'cat-' + String(cat || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') +
+    '-' + String(cat || '').split('').reduce(function (a, ch) { return (a * 31 + ch.charCodeAt(0)) >>> 0; }, 7);
+};
+
 PS.listItemsHtml = function (type, items, groupByCat) {
   if (!items.length) return PS.empty('No items match. Try a different search term or category.');
   if (!groupByCat) {
@@ -7799,8 +7843,11 @@ PS.listItemsHtml = function (type, items, groupByCat) {
     byCat[c].push(x);
   });
   return order.map(function (c) {
-    return '<h3 class="mb8">' + PS.esc(c) + ' <span class="badge">' + byCat[c].length + '</span></h3>' +
-      '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>';
+    return '<div class="list-group" id="' + PS.catAnchor(c) + '">' +
+      '<div class="section-head"><h2>' + PS.esc(c) + '</h2>' +
+      '<span class="badge">' + byCat[c].length + '</span></div>' +
+      '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>' +
+      '</div>';
   }).join('');
 };
 /* A section URL with no reference is the section, not a dead end.
@@ -7839,6 +7886,20 @@ PS.listPage = function (type, cat, params) {
     '</select></div>' +
     (type === 'calc' ? '<p class="note">Every calculator opens with Load example, Calculate, Reset, Save, Print, Export and cross-tool handoffs.</p>' : '') +
     '</div>' +
+    (function () {
+      /* The count has to move with the filter. It used to say "72 items" while
+         the reader had typed three letters and was looking at four, which is
+         the kind of number that quietly teaches people to ignore the UI. */
+      var shown = items.filter(function (x) { return PS.itemMatches(x, state.q); }).length;
+      return '<div class="list-count" id="listCount" aria-live="polite">' +
+        '<strong>' + shown + '</strong> ' + (shown === 1 ? 'entry' : 'entries') +
+        (state.q ? ' matching <strong>' + PS.esc(state.q) + '</strong> of ' + items.length + ' in this library' : ' in this library') +
+        (cat ? ' \u00B7 filtered to the category ' + PS.esc(cat) : '') + '</div>';
+    }()) +
+    (cats.length > 3 && !cat ? '<nav class="list-jump" aria-label="Jump to a category">' + cats.map(function (c) {
+      var n = items.filter(function (x) { return (x.cat || 'General') === c; }).length;
+      return '<a href="#' + PS.catAnchor(c) + '" data-act="scroll-to" data-target="' + PS.catAnchor(c) + '">' + PS.esc(c) + ' <span>' + n + '</span></a>';
+    }).join('') + '</nav>' : '') +
     (cats.length > 1 ? '<div class="filters no-print"><a class="chip' + (!cat ? ' is-on' : '') + '" href="#/list/' + type + '">All</a>' +
       cats.map(function (c) {
         return '<a class="chip' + (c === cat ? ' is-on' : '') + '" href="#/list/' + type + '/' + encodeURIComponent(c) + '">' + PS.esc(c) + '</a>';
@@ -7856,7 +7917,14 @@ PS.refreshList = function () {
   var q = PS.$('#listQ') ? PS.$('#listQ').value : '';
   var sort = PS.$('#listSort') ? PS.$('#listSort').value : 'cat';
   items = items.filter(function (x) { return PS.itemMatches(x, q); });
-  wrap.innerHTML = PS.listItemsHtml(c.type, PS.listSortItems(items, sort), !c.cat);
+  items = PS.listSortItems(items, sort);
+  wrap.innerHTML = PS.listItemsHtml(c.type, items, !c.cat);
+  var count = PS.$('#listCount');
+  if (count) {
+    count.innerHTML = '<strong>' + items.length + '</strong> ' + (items.length === 1 ? 'entry' : 'entries') +
+      (q ? ' matching <strong>' + PS.esc(q) + '</strong> of ' + (PS.data[c.type] || []).filter(function (x) { return PS.inCat(x, c.cat); }).length + ' in this library' : ' in this library') +
+      (c.cat ? ' \u00B7 filtered to the category ' + PS.esc(c.cat) : '');
+  }
 };
 /* ==========================================================
    Section I: calculator engine (Section 24, 25, 26, 36, 40)
@@ -14560,7 +14628,7 @@ PS.renderAcademyHub = function (params) {
     html += '<nav class="module-index" aria-label="Jump to a module">' + modNames.map(function (modName) {
       var mp = PS.academy.moduleProgress(modName);
       var no = PS.academyModuleNumber(modName);
-      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '">' +
+      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '" data-act="scroll-to" data-target="module-' + no + '">' +
         '<span class="mi-no">' + no + '</span>' +
         '<span class="mi-name">' + PS.esc(String(modName).replace(/^Module\s+\d+:\s*/, '')) + '</span>' +
         '<span class="mi-count">' + mp.done + '/' + mp.total + '</span></a>';
@@ -14764,7 +14832,7 @@ PS.renderAcademyFunction = function (funcId, params) {
 PS.renderFuncTabLearn = function (f) {
   var LSEC = [['lsec-1','What it is'],['lsec-2','Who is involved'],['lsec-3','Inputs and outputs'],['lsec-4','Controls and mistakes'],['lsec-5','Key terms']];
   var html = '<nav class="lesson-toc" aria-label="Sections in this lesson">' + LSEC.map(function (s) {
-    return '<a href="#' + s[0] + '">' + PS.esc(s[1]) + '</a>';
+    return '<a href="#' + s[0] + '" data-act="scroll-to" data-target="' + s[0] + '">' + PS.esc(s[1]) + '</a>';
   }).join('') + '</nav>' + '<div class="grid grid-2">' +
     '<div class="card" id="lsec-1">' +
     '<h2>What is this function?</h2>' +
@@ -14918,6 +14986,25 @@ PS.academyWorkedExample = function (f) {
     '<span class="eyebrow">See it happen</span></div>' +
     body + calcLink +
     '</div>';
+};
+
+/* ---------- In-page jumps ----------
+   This application routes on the hash, so a plain href="#section" is read as
+   a route change and lands on the not-found card. Jump links therefore carry
+   this action, which stops the navigation and scrolls instead, then moves
+   focus to the target so a keyboard or screen-reader user arrives where the
+   sighted reader did rather than being left at the top of the page. */
+PS.acts['scroll-to'] = function (el, e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  var id = el && el.dataset ? el.dataset.target : '';
+  var target = id ? document.getElementById(id) : null;
+  if (!target) { PS.toast('That section is not on this page.'); return; }
+  var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  try { target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+  catch (err) { try { target.scrollIntoView(); } catch (e2) { } }
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  try { target.focus({ preventScroll: true }); } catch (err) { try { target.focus(); } catch (e2) { } }
+  PS.audit('scroll-to', id);
 };
 
 /* ---------- Linked library: the Academy connected to the content library ----------
@@ -17674,6 +17761,7 @@ PS.whatsNew.CHANGES = [
       'A new controlled procedure where the curriculum had been pointing at a checklist: the Contract Change Control SOP, seven steps each with an owner, an output and a control. The SOP library is now 16 documents holding 125 procedure steps',
       'The five modules that had only two lessons each now have three: supplier onboarding and segmentation, concessions and the negotiation record, contract types and indexation and the renewal window, requisition intake and the approval matrix, and corrective action and the business review. The curriculum is 48 functions, 279 step sequences and 219 quiz questions',
       'Inside a lesson: a section jump bar on the mission tab, a closing block that lists what is still to do in this lesson and holds the mark-as-studied control on every tab (it used to exist only inside the laboratory tab), and previous and next lesson as cards naming the title and the function number rather than three arrows in a row. A new gate owns all three',
+      'Browsing a library is navigable now: a live result count that moves with the filter, a sticky category jump bar on any library with more than three categories, and group headers that read as sections rather than small headings. In-page jumps go through a scroll action, because this app routes on the hash and a plain anchor link would be read as a route change',
       'The Academy hub got a way in: a sticky module index listing all seventeen modules with each module\'s mastered count, a status filter (Not started / Quiz taken / Mastered) that composes with the level filter instead of resetting it, and a per-module line saying how many lessons and how many minutes each module holds. Four new assertions check the filters against the completion record, so a strip that counts something the cards do not show now fails the build',
       'New Module 18: Disruption, Emergency Buying and Allocation - the pre-agreed fast route with a clock instead of a market check, how allocation actually works and what moves your position in it, and the three closures that decide whether anything changes afterwards. The curriculum is 54 functions across 18 modules, 321 step sequences and 249 quiz questions',
       'Two controlled procedures the required library named and the product did not have: the Supplier Onboarding SOP (ten steps, from tier assignment to the readiness gate) and the Savings Validation SOP (nine steps, from an agreed baseline to the annual re-baseline). The SOP library is now 18 documents holding 143 procedure steps',

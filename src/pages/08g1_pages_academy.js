@@ -200,7 +200,7 @@ PS.renderAcademyHub = function (params) {
     html += '<nav class="module-index" aria-label="Jump to a module">' + modNames.map(function (modName) {
       var mp = PS.academy.moduleProgress(modName);
       var no = PS.academyModuleNumber(modName);
-      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '">' +
+      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '" data-act="scroll-to" data-target="module-' + no + '">' +
         '<span class="mi-no">' + no + '</span>' +
         '<span class="mi-name">' + PS.esc(String(modName).replace(/^Module\s+\d+:\s*/, '')) + '</span>' +
         '<span class="mi-count">' + mp.done + '/' + mp.total + '</span></a>';
@@ -404,7 +404,7 @@ PS.renderAcademyFunction = function (funcId, params) {
 PS.renderFuncTabLearn = function (f) {
   var LSEC = [['lsec-1','What it is'],['lsec-2','Who is involved'],['lsec-3','Inputs and outputs'],['lsec-4','Controls and mistakes'],['lsec-5','Key terms']];
   var html = '<nav class="lesson-toc" aria-label="Sections in this lesson">' + LSEC.map(function (s) {
-    return '<a href="#' + s[0] + '">' + PS.esc(s[1]) + '</a>';
+    return '<a href="#' + s[0] + '" data-act="scroll-to" data-target="' + s[0] + '">' + PS.esc(s[1]) + '</a>';
   }).join('') + '</nav>' + '<div class="grid grid-2">' +
     '<div class="card" id="lsec-1">' +
     '<h2>What is this function?</h2>' +
@@ -558,6 +558,25 @@ PS.academyWorkedExample = function (f) {
     '<span class="eyebrow">See it happen</span></div>' +
     body + calcLink +
     '</div>';
+};
+
+/* ---------- In-page jumps ----------
+   This application routes on the hash, so a plain href="#section" is read as
+   a route change and lands on the not-found card. Jump links therefore carry
+   this action, which stops the navigation and scrolls instead, then moves
+   focus to the target so a keyboard or screen-reader user arrives where the
+   sighted reader did rather than being left at the top of the page. */
+PS.acts['scroll-to'] = function (el, e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  var id = el && el.dataset ? el.dataset.target : '';
+  var target = id ? document.getElementById(id) : null;
+  if (!target) { PS.toast('That section is not on this page.'); return; }
+  var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  try { target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+  catch (err) { try { target.scrollIntoView(); } catch (e2) { } }
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  try { target.focus({ preventScroll: true }); } catch (err) { try { target.focus(); } catch (e2) { } }
+  PS.audit('scroll-to', id);
 };
 
 /* ---------- Linked library: the Academy connected to the content library ----------

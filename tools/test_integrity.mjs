@@ -1735,6 +1735,61 @@ console.log('\nG30  the lesson page works as a lesson');
   } else {
     ok('G30', 'the Learn tab section jumps all resolve to a card on the page (' + tocLinks.length + ')');
   }
+
+  /* Every in-page jump in the product routes on data-act="scroll-to", because
+     a bare href="#x" would be read as a route by the hash router and land on
+     the not-found card. This checks the rule is applied everywhere and that
+     each target exists on the page the link is on. */
+  const g30Pages = ['#/academy', '#/academy?tab=learn', '#/list/kb', '#/list/calc', '#/list/sop'];
+  const g30Bad = [];
+  let g30Jumps = 0;
+  for (const h of g30Pages) {
+    w.location.hash = h.indexOf('tab=') >= 0 ? '#/academy/func-mission-value?' + h.split('?')[1] : h;
+    PS.renderRoute();
+    const page = w.document.querySelector('#main');
+    [...page.querySelectorAll('[data-act="scroll-to"]')].forEach((a) => {
+      g30Jumps++;
+      const id = a.getAttribute('data-target') || '';
+      /* Element ids are document-scoped, so look them up there and then
+         require the element to be on the page the link is actually on. */
+      const target = id ? w.document.getElementById(id) : null;
+      if (!id || !target || !page.contains(target)) g30Bad.push(h + ' -> ' + (id || '(no target)'));
+    });
+  }
+  if (g30Jumps < 10) {
+    fail('G30', 'only ' + g30Jumps + ' in-page jumps exist across the hub, lessons and libraries - the navigation strips have gone missing');
+  } else if (g30Bad.length) {
+    fail('G30', 'in-page jumps with no target on their own page: ' + g30Bad.slice(0, 5).join(', '));
+  } else {
+    ok('G30', g30Jumps + ' in-page jumps all route through scroll-to and resolve to a target on their own page');
+  }
+
+  /* The library result count has to move with the filter. It used to state the
+     whole library while showing four entries, which is the kind of number that
+     teaches people to ignore the interface. */
+  w.location.hash = '#/list/kb';
+  PS.renderRoute();
+  const kbPage = w.document.querySelector('#main');
+  const countEl = kbPage.querySelector('#listCount');
+  const input = kbPage.querySelector('#listQ');
+  if (!countEl) {
+    fail('G30', 'the library page renders no live result count');
+  } else if (!input) {
+    fail('G30', 'the library page has no filter input to drive the count');
+  } else {
+    const before = String(countEl.textContent).replace(/[^0-9]/g, '').slice(0, 3);
+    input.value = 'zzqq';
+    PS.refreshList();
+    const after = String(w.document.querySelector('#listCount').textContent).replace(/[^0-9]/g, '').slice(0, 3);
+    const tiles = w.document.querySelectorAll('#listWrap .tile').length;
+    if (after.indexOf('0') !== 0 && tiles !== 0) {
+      fail('G30', 'the result count did not move when the filter excluded everything (count says ' + after + ', ' + tiles + ' tiles rendered)');
+    } else {
+      ok('G30', 'the library result count follows the filter (' + before + ' entries shown, then the filtered position)');
+    }
+    input.value = '';
+    PS.refreshList();
+  }
 }
 
 w.close();

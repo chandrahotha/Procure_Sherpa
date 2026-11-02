@@ -29,6 +29,14 @@ PS.listSortItems = function (items, sort) {
   });
   return arr;
 };
+/* A category anchor has to survive the category name: 'Tax & FX Tools' and
+   'Services - IT' cannot be used as element ids, and two categories that
+   differ only in punctuation must not collide into the same anchor. */
+PS.catAnchor = function (cat) {
+  return 'cat-' + String(cat || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') +
+    '-' + String(cat || '').split('').reduce(function (a, ch) { return (a * 31 + ch.charCodeAt(0)) >>> 0; }, 7);
+};
+
 PS.listItemsHtml = function (type, items, groupByCat) {
   if (!items.length) return PS.empty('No items match. Try a different search term or category.');
   if (!groupByCat) {
@@ -41,8 +49,11 @@ PS.listItemsHtml = function (type, items, groupByCat) {
     byCat[c].push(x);
   });
   return order.map(function (c) {
-    return '<h3 class="mb8">' + PS.esc(c) + ' <span class="badge">' + byCat[c].length + '</span></h3>' +
-      '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>';
+    return '<div class="list-group" id="' + PS.catAnchor(c) + '">' +
+      '<div class="section-head"><h2>' + PS.esc(c) + '</h2>' +
+      '<span class="badge">' + byCat[c].length + '</span></div>' +
+      '<div class="grid grid-3 mb16">' + byCat[c].map(function (x) { return PS.tileFor(type, x); }).join('') + '</div>' +
+      '</div>';
   }).join('');
 };
 /* A section URL with no reference is the section, not a dead end.
@@ -81,6 +92,20 @@ PS.listPage = function (type, cat, params) {
     '</select></div>' +
     (type === 'calc' ? '<p class="note">Every calculator opens with Load example, Calculate, Reset, Save, Print, Export and cross-tool handoffs.</p>' : '') +
     '</div>' +
+    (function () {
+      /* The count has to move with the filter. It used to say "72 items" while
+         the reader had typed three letters and was looking at four, which is
+         the kind of number that quietly teaches people to ignore the UI. */
+      var shown = items.filter(function (x) { return PS.itemMatches(x, state.q); }).length;
+      return '<div class="list-count" id="listCount" aria-live="polite">' +
+        '<strong>' + shown + '</strong> ' + (shown === 1 ? 'entry' : 'entries') +
+        (state.q ? ' matching <strong>' + PS.esc(state.q) + '</strong> of ' + items.length + ' in this library' : ' in this library') +
+        (cat ? ' \u00B7 filtered to the category ' + PS.esc(cat) : '') + '</div>';
+    }()) +
+    (cats.length > 3 && !cat ? '<nav class="list-jump" aria-label="Jump to a category">' + cats.map(function (c) {
+      var n = items.filter(function (x) { return (x.cat || 'General') === c; }).length;
+      return '<a href="#' + PS.catAnchor(c) + '" data-act="scroll-to" data-target="' + PS.catAnchor(c) + '">' + PS.esc(c) + ' <span>' + n + '</span></a>';
+    }).join('') + '</nav>' : '') +
     (cats.length > 1 ? '<div class="filters no-print"><a class="chip' + (!cat ? ' is-on' : '') + '" href="#/list/' + type + '">All</a>' +
       cats.map(function (c) {
         return '<a class="chip' + (c === cat ? ' is-on' : '') + '" href="#/list/' + type + '/' + encodeURIComponent(c) + '">' + PS.esc(c) + '</a>';
@@ -98,5 +123,12 @@ PS.refreshList = function () {
   var q = PS.$('#listQ') ? PS.$('#listQ').value : '';
   var sort = PS.$('#listSort') ? PS.$('#listSort').value : 'cat';
   items = items.filter(function (x) { return PS.itemMatches(x, q); });
-  wrap.innerHTML = PS.listItemsHtml(c.type, PS.listSortItems(items, sort), !c.cat);
+  items = PS.listSortItems(items, sort);
+  wrap.innerHTML = PS.listItemsHtml(c.type, items, !c.cat);
+  var count = PS.$('#listCount');
+  if (count) {
+    count.innerHTML = '<strong>' + items.length + '</strong> ' + (items.length === 1 ? 'entry' : 'entries') +
+      (q ? ' matching <strong>' + PS.esc(q) + '</strong> of ' + (PS.data[c.type] || []).filter(function (x) { return PS.inCat(x, c.cat); }).length + ' in this library' : ' in this library') +
+      (c.cat ? ' \u00B7 filtered to the category ' + PS.esc(c.cat) : '');
+  }
 };

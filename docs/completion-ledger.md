@@ -793,3 +793,17 @@ Three defects in the reading surface, all of them structural rather than cosmeti
 **Caught on the way, and worth recording:** the closing block threw on `quizRes.pct` because a `doneLabel` was computed eagerly even when no quiz had been taken — the ternary was inside the object literal, not at the point of use. G7 turned it into "renders the not-found card / no visible h1 / 142 chars", which is the failure signature this suite is designed to produce: the page contract caught a thrown render rather than a styled-but-broken one.
 
 **Verification.** `npm run qa` exit 0 — **30 integrity gates / 128 assertions**, a11y 0 findings over 64 renders, security 0, layout 29/29, 782 KB gzipped against the 1,152 KB ceiling. Checked in Chromium on a Module 16 lesson: 5 jump links, closing block with 3 steps and the completion control, 2 nav cards, next lesson reading "Change Control and the Variation Nobody Priced — Function 16.2".
+
+### Cycle 8 addendum 9 — browsing a library, and one assertion that was fake until it was checked
+
+**The browse surfaces** (`src/core/04d_listpage.js`, `01d_components.css`). Seven library pages carry most of the product's content (72 concepts, 18 SOPs, 27 checklists, 33 templates, 17 decision guides, 18 KPIs, 19 calculators). They now have:
+
+- **A live result count** that changes as the reader filters. It previously said "72 items" while the reader had typed three letters and was looking at four — a number that teaches people to ignore the interface.
+- **A sticky category jump bar** on any library with more than three categories, each entry showing how many items it holds.
+- **Group headers as sections** rather than an `h3` with a count badge, with an anchor target and a focus ring.
+
+**In-page jumps cannot be plain anchors here.** The application routes on the hash, so `href="#cat-x"` is read as a route change and lands on the not-found card — which is exactly what the hub's module index and the lesson section bar would have done. They now carry a `scroll-to` action that prevents the navigation, scrolls, and moves focus to the target so a keyboard or screen-reader user arrives where the sighted reader did. Verified in Chromium: after clicking a category jump the hash is still `#/list/kb`, the list is still rendered, and the target exists.
+
+**G30 grew two assertions, and the first draft of one was vacuous.** The jump-target check was written as `if (!id || !page.getElementById ? false : …)` — `page` is an element, not a document, so `!page.getElementById` was truthy and the ternary returned `false` for every link: it could never have failed. Rewritten to look the id up on the document and require the element to be inside the rendered page, then mutation-proved by pointing a lesson jump at `lsec-9`, which it named. **This is the same class of defect the suite exists to catch in the product, introduced by the suite itself** — an assertion that reads as a check and reports nothing.
+
+**Verification.** `npm run qa` exit 0 — 30 gates / **130 assertions**, a11y 0 findings over 64 renders (it also caught and rejected the `outline:none` rules I first put on the jump targets, which is the rule working as intended), security 0, layout 29/29, 784 KB gzipped against the 1,152 KB ceiling.
