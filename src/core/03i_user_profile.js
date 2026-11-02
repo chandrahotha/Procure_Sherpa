@@ -231,11 +231,12 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn'],
   'Module 12: Advanced Category & Portfolio Strategy': ['portfolio', 'strategy', 'cost', 'learn'],
   'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn'],
-  'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn']
+  'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn'],
+  'Module 15: Specialised Markets and Category Depth': ['specialist', 'analytics', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
-   The picker stops at four and takes one module per tag, so a tag that
+   The picker stops at five and takes one module per tag, so a tag that
    never appears here is a module no role is ever recommended - which is how
    Modules 12 and 13 shipped and stayed invisible, and why Module 5 and
    Module 8 were too. 'portfolio', 'executive' and 'ethics' are the tags that
@@ -244,7 +245,7 @@ PS.ACADEMY_MODULE_TAGS = {
    operational set. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
-  buyer: ['operations', 'sourcing', 'negotiation', 'services', 'spend', 'learn'],
+  buyer: ['operations', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
   manager: ['strategy', 'influence', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'contract', 'governance', 'learn'],
   compliance: ['risk', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
@@ -261,7 +262,7 @@ PS.academyModuleNumber = function (moduleName) {
    number order. The role decides WHICH modules, never the order they
    appear in. */
 PS.user.recommendedModules = function (limit) {
-  var max = limit || 4;
+  var max = limit || 5;
   var pri = this.rolePriority();
   var names = Object.keys(PS.ACADEMY_MODULE_TAGS);
   var picked = [];

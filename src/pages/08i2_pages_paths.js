@@ -85,6 +85,17 @@ PS.learningPaths.PATHS = [
     color: 'var(--accent)'
   },
   {
+    id: 'specialist',
+    title: 'Specialised Markets & Category Depth',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'Where a general method is not enough: freight and customs, regulated tendering, and the people-time categories where the rate card matters less than the supervision model.',
+    modules: ['func-freight-and-landed-cost', 'func-regulated-procurement', 'func-people-time-categories'],
+    skills: ['Comparing sources on true landed cost', 'Running an award that survives a challenge', 'Controlling contingent and agency spend by behaviour, not by rate'],
+    duration: '4-6 weeks',
+    color: 'var(--scen)'
+  },
+  {
     id: 'boardroom',
     title: 'Executive & Board-Level Procurement',
     tier: 'executive',

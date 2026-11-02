@@ -456,7 +456,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-transformation-roadmap': 'analytics',
   'func-stakeholder-mapping': 'approvals',
   'func-executive-ask': 'budget',
-  'func-adoption-and-change': 'analytics'
+  'func-adoption-and-change': 'analytics',
+  'func-freight-and-landed-cost': 'catalogue',
+  'func-regulated-procurement': 'rfx',
+  'func-people-time-categories': 'suppliers'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

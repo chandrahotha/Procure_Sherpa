@@ -113,8 +113,10 @@ src/content/10g_kb_contracts.js
 src/content/10h_kb_governance.js
 src/content/10i_kb_risk.js
 src/content/10j_kb_savings.js
+src/content/10k_kb_markets.js
 src/content/10z_kb_v1.js
 src/content/11z_sop_v1.js
+src/content/11b_sop_markets.js
 src/content/12z_cl_v1.js
 src/content/12b_cl_sourcing.js
 src/content/12c_cl_steward.js
@@ -124,6 +126,7 @@ src/content/13c_tpl_neg_supplier.js
 src/content/13d_tpl_contract_gov_sav.js
 src/content/14z_dec_v1.js
 src/content/15z_gloss_v1.js
+src/content/15b_gloss_markets.js
 src/content/16z_scn_v1.js
 src/content/17z_kpi_v1.js
 src/content/18a_help_content.js
@@ -135,6 +138,7 @@ src/content/19e_academy_functions_part5.js
 src/content/19f_academy_functions_part6.js
 src/content/19g_academy_functions_part7.js
 src/content/19h_academy_functions_part8.js
+src/content/19i_academy_functions_part9.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js

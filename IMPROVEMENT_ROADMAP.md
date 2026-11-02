@@ -1,6 +1,6 @@
 # Procure Sherpa - Improvement Roadmap
 
-**Current Version:** 2.6 (`package.json` carries `2.6.0`, `PS.VERSION` carries `2.6`, and the application prints `Procure Sherpa v2.6` when it loads)  
+**Current Version:** 2.7 (`package.json` carries `2.7.0`, `PS.VERSION` carries `2.7`, and the application prints `Procure Sherpa v2.7` when it loads)  
 **Baseline Tag:** `HUBCHANGED`  
 **Last Updated:** 2026-11-02
 
@@ -68,9 +68,9 @@ strip, and the layout no longer overflows on a phone.
 | Academy functions | 19 | **28** |
 | Functions with a library link | 0 | **28** |
 | Content items with no inbound link | 201 | **0** |
-| Learning paths | 3, covering 8 functions | 4, covering all 37 |
-| Skill portfolio areas | 6, covering 8 functions | 7, covering all 37 |
-| Badges | 8, with 7 of 19 functions earning none | 12, with every function covered |
+| Learning paths | 3, covering 8 functions | 4, covering all 40 |
+| Skill portfolio areas | 6, covering 8 functions | 7, covering all 40 |
+| Badges | 8, with 7 of 19 functions earning none | 19 badges, and every one of the 40 functions appears in at least one earning rule - asserted by G24, which is what makes the claim checkable rather than remembered |
 | SOP steps | 96 | **140** |
 | Knowledge-check questions | 76 | **112** |
 | Question options | 274 | **411** |
@@ -384,11 +384,11 @@ Two items already have partial infrastructure worth knowing about:
   breadth. The catalog carries 44 short strings, roughly 1 KB of English
   text, and it covers the persistent shell: navigation sections, the
   topbar and its search field, modal dialogs, and the calculator action
-  bars. Everything a user actually reads is outside it: the 234 records
-  the content libraries register (66 concepts, 13 SOPs, 27 checklists,
-  33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6
+  bars. Everything a user actually reads is outside it: the 248 records
+  the content libraries register (72 concepts, 15 SOPs, 27 checklists,
+  33 templates, 17 decision guides, 18 KPIs, 41 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
-  plus the 37 Academy functions and their 164 quiz questions. Counting
+  plus the 40 Academy functions and their 179 quiz questions. Counting
   quoted string literals, `src/content` alone holds about 0.8 MB of
   English against the catalog's 1 KB. **The honest limit is one translated
   shell around an English product**, and the Spanish half is real but
@@ -847,6 +847,7 @@ one `tools/check_drift.mjs` compares against `package.json` and
 | 2.4 | 2026-10-20 | The revamp recorded in `docs/v2.4-delivery-report.md` |
 | 2.5 | 2026-11-02 | Academy Modules 12 and 13 shipped and integrated, the storage suite written, the hostile-backup path closed, CI least privilege added, and 25 integrity gates |
 | 2.6 | 2026-11-02 | Module 14 (influence, the executive ask, adoption) - 37 functions in 14 modules; practice-exam integrity fixed; footer and sidebar rebuilt; 26 integrity gates |
+| 2.7 | 2026-11-02 | Module 15 (freight and customs, regulated buying, people-time categories) plus 6 new concepts, 2 new SOPs and 6 glossary terms - 40 functions in 15 modules, 248 library records, 19 badges |
 
 The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
 in Q2 2027. All three shipped inside four weeks of being planned, in
@@ -869,7 +870,7 @@ is right and this table is the thing to fix.
 | Metric | Current | Target |
 |--------|---------|--------|
 | Routes passing smoke test | 85 of 85 (`node tools/smoke.mjs` - "routes: 85 failing: 0") | 80+ - met |
-| Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 239 rel objects; broken refs: 0") | 0 broken |
+| Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 254 rel objects; broken refs: 0") | 0 broken |
 | Payload | 2,149 KB readable, 1,768 KB minified, 528 KB gzipped as deployed (594 KB gzipped as the readable file). Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
 | Accessibility (`npm run audit:a11y`) | 0 issues, across the 64 routes the audit enumerates (52 registered routes, so the sweep is wider than the registry) | 0 issues, keyboard focus visible in both themes |

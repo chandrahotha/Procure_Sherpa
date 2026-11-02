@@ -7,6 +7,20 @@ PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
   {
+    version: '2.7',
+    date: '2026-11-02',
+    title: 'The markets the general method does not cover',
+    tag: 'Improvement',
+    items: [
+      'New Module 15: Specialised Markets and Category Depth - Freight, Duty and the True Landed Cost; Regulated and Public Procurement; Contingent Workforce, Agencies and Professional Services. The curriculum is now 40 functions across 15 modules, 223 step sequences and 179 quiz questions',
+      'Six new knowledge concepts in a domain the library did not have (Markets & Categories): freight modes, customs and duty, landed-cost modelling, public procurement rules, agency scope and contingent workforce',
+      'Two full controlled procedures added where none existed - the Freight, Duty and Customs Clearance SOP and the Contingent Workforce and Managed Services SOP - so the SOP library is 15 documents holding 118 procedure steps, each with an owner, an output and a control',
+      'Six new glossary terms, and these ones carry relations, so the "Where to use it" column finally renders for them - proof that the column was a data gap rather than a code gap',
+      'Recognition completed: two new badges cover the foundation and cost-analysis lessons that no badge could previously be earned from, so all 40 functions now contribute to at least one award, and G24 fails if a lesson is ever left out again',
+      'Role recommendations now name up to five modules instead of four, which is what keeps every module reachable by some role as the curriculum grows'
+    ]
+  },
+  {
     version: '2.6',
     date: '2026-11-02',
     title: 'The craft that makes the other modules happen',

@@ -1,11 +1,11 @@
-# Procure Sherpa v2.6
+# Procure Sherpa v2.7
 
 **An enterprise procurement learning and operations platform, compiled into a single offline HTML file.**
 
 Competency curriculum, digital SOPs, compliance checklists, operational templates, financial calculators, decision frameworks, and inline visual analytics — no server, no database, no build step for end users, no telemetry.
 
-The version of record is `2.6.0` in `package.json`; the running application
-calls itself `2.6` (`PS.VERSION`), which is what the What's New page marks as
+The version of record is `2.7.0` in `package.json`; the running application
+calls itself `2.7` (`PS.VERSION`), which is what the What's New page marks as
 "Your version", what the audit log writes and what a backup envelope carries.
 The artifact keeps the filename `ProcureSherpa-v2.0.html`: that name is fixed
 by the master requirements and by every download link below, it is a product
@@ -109,7 +109,7 @@ Procure Sherpa separates strategic competency acquisition from day-to-day operat
              ▼                                                           ▼
 ┌─────────────────────────────────────────┐ ┌─────────────────────────────────────────┐
 │     Procurement Academy (#/academy)     │ │        Operations Hub (#/operations)    │
-│  11 Modules · 28 Functions · 5-Tab      │ │  19 Financial Calculators · 13 SOPs     │
+│  11 Modules · 28 Functions · 5-Tab      │ │  19 Financial Calculators · 15 SOPs     │
 │  Pedagogy · Digital SOPs · Crisis       │ │  27 Compliance Checklists · 33 Templates│
 │  Sandboxes · Progress Transcript        │ │  17 Decision Guides · 18 KPIs           │
 │  (Certificates: future feature)         │ │  8 Workbenches for your own records     │
@@ -129,7 +129,7 @@ Procure Sherpa separates strategic competency acquisition from day-to-day operat
 | # | Capability | Summary |
 |---|---|---|
 | 1 | Command Center & Unified Navigation | One home, one sidebar scoped to the track you chose |
-| 2 | Procurement Academy | 14 modules, 37 functions, 200 SOP steps, 164 questions, 5-tab pedagogy, practice exams |
+| 2 | Procurement Academy | 15 modules, 40 functions, 223 SOP steps, 179 questions, 5-tab pedagogy, practice exams |
 | 3 | Visual Analytics Engine | Waterfall, Kraljic matrix, Pareto curve, Altman Z-Score, all inline SVG |
 | 4 | Crisis Simulation Sandboxes | 10 hands-on commercial scenarios with live calculation models |
 | 5 | Credential Transcript | Deliberately disabled — see below |
@@ -148,7 +148,7 @@ Procure Sherpa separates strategic competency acquisition from day-to-day operat
 
 * **11 Modules, 28 Functions**: Foundations/Strategy/Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk Management, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing & Order Execution (P2P), Supplier Management & Value Realization, Services/Software/Indirect Procurement, Risk/Compliance/Ethics/Sustainability, and Digital Procurement/Analytics/Category Strategy.
 * **The curriculum is always in module order.** Module 1 to Module 13, for every role. The module number is the sequence, and a page whose first badge reads 'Module 7' tells the reader the page is broken. The role does not rearrange the curriculum; it recommends, in a panel directly under the hero, which modules carry that job's work - a compliance officer is pointed at Modules 4, 6, 8 and 10, a buyer at 2, 7 and 9 - and the curriculum below still runs 1 to 13.
-* **Every function carries a worked example, in the explanation.** A case study is part of how a function works, not a separate reflection, so it sits in the Learn tab rather than the Think tab. The example links to the matching calculator with `?example=1`, so the reader arrives at a finished calculation rather than an empty form, and 36 of the 37 functions link to the workbench where that work is actually practised.
+* **Every function carries a worked example, in the explanation.** A case study is part of how a function works, not a separate reflection, so it sits in the Learn tab rather than the Think tab. The example links to the matching calculator with `?example=1`, so the reader arrives at a finished calculation rather than an empty form, and 39 of the 40 functions link to the workbench where that work is actually practised.
 * **Disciplined 5-Tab Learning Pedagogy** per function:
   1. **Core Concept**: Theoretical foundation, commercial relevance, a worked example you can see happening, process walkthroughs, common failure modes, and governance rules.
   2. **Procurement Mindset**: Executive perspective, commercial thinking points, and the full enterprise case study with the reflection prompts.
@@ -494,7 +494,7 @@ CIPS/ISM/Incoterms/ISO references describe the frameworks the *content* is writt
 
 Documented here deliberately, rather than left for someone to discover:
 
-* **Two locales, and the shell only.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence via preferences, and a working Settings language switcher) translates the persistent application shell - navigation sections, topbar and its search field, modal dialogs, and calculator action bars - across English (`en`) and Spanish (`es`). Wiring is not the weak point: `npm run audit:i18n` reports 43 catalog keys defined and **43 wired (100%), 0 unused**, and it fails the build if a key is defined but never reaches the screen, if the UI references a key no catalog defines, or if a registered locale is missing a key the English catalog has. **The weak point is breadth.** Those 43 keys are roughly one kilobyte of English text, while everything a user actually reads is outside them: the 234 records the content libraries register (`node tools/inventory.mjs` prints 66 concepts, 13 SOPs, 27 checklists, 33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6 scenarios, 19 calculators), plus the 37 Academy functions and their 164 quiz questions, all authored in English. In other words this is one translated shell around an English product, and the Spanish is real but thin.
+* **Two locales, and the shell only.** `PS.i18n` (`t()`, plural-safe substitution, locale persistence via preferences, and a working Settings language switcher) translates the persistent application shell - navigation sections, topbar and its search field, modal dialogs, and calculator action bars - across English (`en`) and Spanish (`es`). Wiring is not the weak point: `npm run audit:i18n` reports 43 catalog keys defined and **43 wired (100%), 0 unused**, and it fails the build if a key is defined but never reaches the screen, if the UI references a key no catalog defines, or if a registered locale is missing a key the English catalog has. **The weak point is breadth.** Those 43 keys are roughly one kilobyte of English text, while everything a user actually reads is outside them: the 248 records the content libraries register (`node tools/inventory.mjs` prints 72 concepts, 15 SOPs, 27 checklists, 33 templates, 17 decision guides, 18 KPIs, 41 glossary terms, 6 scenarios, 19 calculators), plus the 40 Academy functions and their 179 quiz questions, all authored in English. In other words this is one translated shell around an English product, and the Spanish is real but thin.
 * **Every check in `npm run qa` is a hard gate, including i18n.** Lint, the workflow-file gate, referential integrity, the unit tests, calculator correctness, the expected-value fixtures, interactive checks, content integrity, the quiz engine, route smoke, layout verification, the integrity gate, AST security, accessibility, the measured performance budget and the i18n coverage audit all exit non-zero on failure, and the i18n audit is what keeps the 44/44 figure above from becoming a claim nobody can check. (The i18n audit used to print its coverage and exit `0` whatever it saw - that is how a document could describe it as 20% wired for months.)
 * **Search engines see almost nothing.** The served markup is ~8 KB of shell; every page is rendered client-side behind a hash route (`#/academy`, `#/calc/...`), and fragments are never sent to the server, so there are no distinct indexable URLs. `sitemap.xml` therefore lists exactly one entry, and the canonical/Open Graph/JSON-LD tags describe the app as a whole rather than its pages. This is a straightforward consequence of the single-file architecture; making the content indexable would mean prerendering each route as a real URL, which is a different product. A `<noscript>` block gives crawlers and JS-disabled visitors a real description instead of a blank page, but it is a floor, not an SEO strategy.
 * **No `og:image`.** Facebook, LinkedIn and Twitter require a real raster asset for a large link preview. Generating a 1200×630 PNG honestly would mean adding a rasterizer dependency for one image, which is not a trade this project wants to make. The exact tags to add, once such an asset exists, are written out in a comment in `src/base/01a_head.html`.

@@ -30,6 +30,8 @@ PS.academy.tierName = function (id) {
    all have to be complete; `first` earns on any single completion; `all`
    earns when the whole curriculum is complete. */
 PS.academy.BADGES = [
+  { id: 'foundation_grounding', name: 'Grounded Foundations', icon: '🧱', desc: 'Mastered the mission, spend analysis, requirement scoping and channel selection - the four lessons everything else rests on.', requires: ['func-mission-value', 'func-spend-analysis', 'func-requirement-scope', 'func-rfx-strategy'] },
+  { id: 'cost_value_analyst', name: 'Cost & Value Analyst', icon: '🔬', desc: 'Mastered Category Management, Should-Cost Modelling and Multi-Criteria Supplier Evaluation.', requires: ['func-category-mgmt', 'func-should-cost', 'func-supplier-eval'] },
   { id: 'pioneer', name: 'Procurement Pioneer', icon: '🎖️', desc: 'Completed your first procurement function in the Academy.', first: true },
   { id: 'tco_tactician', name: 'TCO Tactician', icon: '⚖️', desc: 'Mastered Landed Cost & Total Cost of Ownership.', requires: ['func-landed-cost-tco'] },
   { id: 'rfq_architect', name: 'RFQ & Sourcing Architect', icon: '📐', desc: 'Mastered Tender Formulation, RFQ & Price Normalization.', requires: ['func-rfq-issuance', 'func-quote-normalization'] },
@@ -45,6 +47,7 @@ PS.academy.BADGES = [
   { id: 'portfolio_commander', name: 'Portfolio Commander', icon: '🧬', desc: 'Mastered the Tail, Supply Market Structure and Demand Management.', requires: ['func-tail-spend-program', 'func-market-structure', 'func-demand-management'] },
   { id: 'boardroom_ready', name: 'Boardroom Ready', icon: '🏛️', desc: 'Mastered the Operating Model, the Value Narrative and Transformation Sequencing.', requires: ['func-operating-model', 'func-value-narrative', 'func-transformation-roadmap'] },
   { id: 'influence_architect', name: 'Influence & Adoption Architect', icon: '🧲', desc: 'Mastered Stakeholder Mapping, the Executive Ask and Change Adoption.', requires: ['func-stakeholder-mapping', 'func-executive-ask', 'func-adoption-and-change'] },
+  { id: 'market_depth', name: 'Category Depth Specialist', icon: '🧭', desc: 'Mastered Freight and Customs, Regulated Procurement and the People-Time Categories.', requires: ['func-freight-and-landed-cost', 'func-regulated-procurement', 'func-people-time-categories'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

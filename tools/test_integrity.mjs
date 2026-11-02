@@ -1144,6 +1144,18 @@ if (g24Ruleless.length) {
 } else {
   ok('G24', 'every badge declares how it is earned');
 }
+/* And the other direction: a lesson that appears in no badge rule is a lesson
+   the recognition system cannot see. The roadmap claimed "every function
+   covered" from v2.4 onward while seven foundation and analysis lessons
+   earned nothing - the first-screen material was the least rewarded. */
+const badgeCovered = {};
+g24Badges.forEach((b) => (b.requires || []).forEach((id) => { badgeCovered[id] = 1; }));
+const unrewarded = g24Ids.filter((id) => !badgeCovered[id]);
+if (unrewarded.length) {
+  fail('G24', unrewarded.length + ' Academy functions appear in no badge rule: ' + unrewarded.join(', '));
+} else {
+  ok('G24', 'every Academy function contributes to at least one badge (' + g24Ids.length + ' functions, ' + g24Badges.length + ' badges)');
+}
 const g24DupBadgeIds = g24Badges.map((b) => b.id).filter((id, i, a) => a.indexOf(id) !== i);
 if (g24DupBadgeIds.length) fail('G24', 'duplicate badge ids: ' + g24DupBadgeIds.join(', '));
 else ok('G24', 'badge ids are unique');
