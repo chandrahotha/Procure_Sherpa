@@ -199,7 +199,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-contract-review',
   rel: {
     concepts: ['contract-structure', 'service-level-agreement', 'audit-trail', 'segregation-of-duties', 'supplier-performance-management', 'delegation-of-authority'],
-    sops: ['sop-contract-review', 'sop-supplier-performance-management', 'sop-procurement-lifecycle'],
+    sops: ['sop-contract-review', 'sop-contract-change-control', 'sop-supplier-performance-management', 'sop-procurement-lifecycle'],
     checklists: ['cl-contract-review', 'cl-supplier-performance-review', 'cl-procurement-file-completeness'],
     templates: ['tpl-contract-review-checklist', 'tpl-contract-performance-review', 'tpl-supplier-scorecard'],
     calcs: ['calc-multi-year-contract-cost', 'calc-kpi-calculator'],
@@ -413,7 +413,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-contract-review',
   rel: {
     concepts: ['change-control', 'contract-structure', 'statement-of-work', 'delegation-of-authority', 'price-vs-cost', 'should-cost'],
-    sops: ['sop-contract-review', 'sop-procurement-lifecycle', 'sop-emergency-procurement'],
+    sops: ['sop-contract-change-control', 'sop-contract-review', 'sop-procurement-lifecycle', 'sop-emergency-procurement'],
     checklists: ['cl-contract-review', 'cl-exception-approval', 'cl-requirement-definition'],
     templates: ['tpl-contract-change-request', 'tpl-exception-request', 'tpl-business-case'],
     calcs: ['calc-multi-year-contract-cost', 'calc-should-cost', 'calc-compare-quotes'],

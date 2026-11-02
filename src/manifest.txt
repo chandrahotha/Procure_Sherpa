@@ -117,6 +117,7 @@ src/content/10k_kb_markets.js
 src/content/10z_kb_v1.js
 src/content/11z_sop_v1.js
 src/content/11b_sop_markets.js
+src/content/11c_sop_contract.js
 src/content/12z_cl_v1.js
 src/content/12b_cl_sourcing.js
 src/content/12c_cl_steward.js

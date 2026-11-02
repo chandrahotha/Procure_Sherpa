@@ -384,8 +384,8 @@ Two items already have partial infrastructure worth knowing about:
   breadth. The catalog carries 44 short strings, roughly 1 KB of English
   text, and it covers the persistent shell: navigation sections, the
   topbar and its search field, modal dialogs, and the calculator action
-  bars. Everything a user actually reads is outside it: the 252 records
-  the content libraries register (72 concepts, 15 SOPs, 27 checklists,
+  bars. Everything a user actually reads is outside it: the 253 records
+  the content libraries register (72 concepts, 16 SOPs, 27 checklists,
   33 templates, 17 decision guides, 18 KPIs, 45 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
   plus the 43 Academy functions and their 194 quiz questions. Counting
