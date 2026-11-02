@@ -491,7 +491,12 @@ PS.ACADEMY_WORKBENCH = {
   'func-people-time-categories': 'suppliers',
   'func-obligation-register': 'contracts',
   'func-change-control': 'contracts',
-  'func-claims-and-remedies': 'contracts'
+  'func-claims-and-remedies': 'contracts',
+  'func-supplier-onboarding': 'suppliers',
+  'func-negotiation-record': 'contracts',
+  'func-contract-types-renewal': 'contracts',
+  'func-requisition-intake': 'approvals',
+  'func-corrective-action': 'suppliers'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

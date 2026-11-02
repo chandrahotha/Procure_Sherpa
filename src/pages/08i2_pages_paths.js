@@ -24,7 +24,7 @@ PS.learningPaths.PATHS = [
     tier: 'practitioner',
     level: 2,
     desc: 'The day-to-day skills: running a competitive event, evaluating bids, negotiating and placing the order.',
-    modules: ['func-rfx-strategy', 'func-rfq-issuance', 'func-quote-normalization', 'func-supplier-eval', 'func-negotiation-strategy', 'func-commercial-terms', 'func-po-execution'],
+    modules: ['func-rfx-strategy', 'func-rfq-issuance', 'func-quote-normalization', 'func-supplier-eval', 'func-supplier-onboarding', 'func-negotiation-strategy', 'func-negotiation-record', 'func-commercial-terms', 'func-requisition-intake', 'func-po-execution'],
     skills: ['Running a tender', 'Bid evaluation', 'Negotiation', 'Commercial terms', 'Order execution'],
     duration: '4-6 weeks',
     color: 'var(--warn-2)'
@@ -35,7 +35,7 @@ PS.learningPaths.PATHS = [
     tier: 'practitioner',
     level: 3,
     desc: 'Category strategy, cost engineering, contracting and the operational controls that make them hold.',
-    modules: ['func-category-mgmt', 'func-should-cost', 'func-contract-structuring', 'func-doa-controls', 'func-threeway-matching', 'func-software-licensing', 'func-professional-services'],
+    modules: ['func-category-mgmt', 'func-should-cost', 'func-contract-structuring', 'func-contract-types-renewal', 'func-doa-controls', 'func-threeway-matching', 'func-software-licensing', 'func-professional-services'],
     skills: ['Category strategy', 'Should-cost', 'Contract structuring', 'Delegation of authority', 'Three-way matching', 'Software and services buying'],
     duration: '6-8 weeks',
     color: 'var(--scen)'
@@ -46,7 +46,7 @@ PS.learningPaths.PATHS = [
     tier: 'executive',
     level: 4,
     desc: 'The work that decides whether the function survives an audit, a disclosure obligation or a disruption.',
-    modules: ['func-supplier-risk', 'func-ethics-compliance', 'func-sustainability', 'func-resilience-continuity', 'func-srm-scorecards', 'func-savings-reporting'],
+    modules: ['func-supplier-risk', 'func-corrective-action', 'func-ethics-compliance', 'func-sustainability', 'func-resilience-continuity', 'func-srm-scorecards', 'func-savings-reporting'],
     skills: ['Due diligence', 'Anti-bribery controls', 'Sustainable sourcing', 'Supply resilience', 'Supplier performance', 'Savings assurance'],
     duration: '4-6 weeks',
     color: 'var(--danger)'

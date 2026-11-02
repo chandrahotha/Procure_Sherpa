@@ -35,9 +35,9 @@ PS.academy.BADGES = [
   { id: 'pioneer', name: 'Procurement Pioneer', icon: '🎖️', desc: 'Completed your first procurement function in the Academy.', first: true },
   { id: 'tco_tactician', name: 'TCO Tactician', icon: '⚖️', desc: 'Mastered Landed Cost & Total Cost of Ownership.', requires: ['func-landed-cost-tco'] },
   { id: 'rfq_architect', name: 'RFQ & Sourcing Architect', icon: '📐', desc: 'Mastered Tender Formulation, RFQ & Price Normalization.', requires: ['func-rfq-issuance', 'func-quote-normalization'] },
-  { id: 'negotiation_ace', name: 'Strategic Negotiator', icon: '🤝', desc: 'Mastered BATNA, ZOPA and Commercial Term Optimization.', requires: ['func-negotiation-strategy', 'func-commercial-terms'] },
-  { id: 'contract_guardian', name: 'Contract Guardian', icon: '📜', desc: 'Mastered Contract Structuring, Legal Clauses and DOA Controls.', requires: ['func-contract-structuring', 'func-doa-controls'] },
-  { id: 'p2p_specialist', name: 'P2P Disciplinarian', icon: '📦', desc: 'Mastered PO Execution, Expediting and 3-Way Matching.', requires: ['func-po-execution', 'func-threeway-matching'] },
+  { id: 'negotiation_ace', name: 'Strategic Negotiator', icon: '🤝', desc: 'Mastered BATNA, ZOPA and Commercial Term Optimization.', requires: ['func-negotiation-strategy', 'func-negotiation-record', 'func-commercial-terms'] },
+  { id: 'contract_guardian', name: 'Contract Guardian', icon: '📜', desc: 'Mastered Contract Structuring, Legal Clauses and DOA Controls.', requires: ['func-contract-structuring', 'func-contract-types-renewal', 'func-doa-controls'] },
+  { id: 'p2p_specialist', name: 'P2P Disciplinarian', icon: '📦', desc: 'Mastered PO Execution, Expediting and 3-Way Matching.', requires: ['func-po-execution', 'func-requisition-intake', 'func-threeway-matching'] },
   { id: 'value_champion', name: 'Value & SRM Champion', icon: '💎', desc: 'Mastered Supplier Relationship Management and Savings Realization.', requires: ['func-srm-scorecards', 'func-savings-reporting'] },
   { id: 'indirect_navigator', name: 'Indirect Navigator', icon: '🧭', desc: 'Mastered Indirect & MRO sourcing and Professional Services buying.', requires: ['func-indirect-sourcing', 'func-professional-services'] },
   { id: 'saas_strategist', name: 'Software & SaaS Strategist', icon: '☁️', desc: 'Mastered Software, SaaS and Technology Licensing.', requires: ['func-software-licensing'] },
@@ -49,6 +49,7 @@ PS.academy.BADGES = [
   { id: 'influence_architect', name: 'Influence & Adoption Architect', icon: '🧲', desc: 'Mastered Stakeholder Mapping, the Executive Ask and Change Adoption.', requires: ['func-stakeholder-mapping', 'func-executive-ask', 'func-adoption-and-change'] },
   { id: 'market_depth', name: 'Category Depth Specialist', icon: '🧭', desc: 'Mastered Freight and Customs, Regulated Procurement and the People-Time Categories.', requires: ['func-freight-and-landed-cost', 'func-regulated-procurement', 'func-people-time-categories'] },
   { id: 'contract_steward', name: 'Contract Steward', icon: '⚖️', desc: 'Mastered the Obligation Register, Change Control and Claims & Remedies.', requires: ['func-obligation-register', 'func-change-control', 'func-claims-and-remedies'] },
+  { id: 'supplier_lifecycle', name: 'Supplier Lifecycle Discipline', icon: '🔁', desc: 'Mastered Supplier Onboarding & Segmentation and Corrective Action & Business Review.', requires: ['func-supplier-onboarding', 'func-corrective-action'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 
