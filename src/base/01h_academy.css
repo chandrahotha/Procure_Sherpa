@@ -1389,3 +1389,55 @@ html[data-theme="dark"] .quiz-tip-cta {
   .module-index-chip{flex:0 0 auto}
   .module-index-chip .mi-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
+
+/* ---------- v3: inside the lesson ----------
+   A lesson is five or six cards of prose. The jump bar says how long it is
+   and lets the reader come back to one part of it; the closing block says
+   what has not been done yet, which used to be discoverable only by opening
+   the fifth tab. */
+.lesson-toc{
+  display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:8px 9px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel-2);
+}
+.lesson-toc a{
+  font-size:.78rem;font-weight:650;color:var(--dim);text-decoration:none;
+  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border);background:var(--panel);
+  transition:border-color var(--dur),color var(--dur),background var(--dur);
+}
+.lesson-toc a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none}
+.lesson-toc a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.lesson-body .card[id^="lsec-"]{scroll-margin-top:calc(var(--top) + 104px)}
+
+.lesson-close{margin-top:26px;padding:22px 24px}
+.lesson-steps{list-style:none;margin:6px 0 0;padding:0}
+.lesson-steps li{
+  display:flex;align-items:center;gap:12px;padding:11px 2px;
+  border-top:1px solid var(--border);font-size:.95rem;line-height:1.5;
+}
+.lesson-steps li:first-child{border-top:0}
+.lesson-steps .lesson-step-mark{
+  flex:0 0 22px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--border-2);color:var(--mute);font-size:.72rem;background:var(--panel-2);
+}
+.lesson-steps li.is-done .lesson-step-mark{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-steps .lesson-step-label{flex:1;min-width:0}
+.lesson-steps li.is-done .lesson-step-label{color:var(--mute)}
+.lesson-steps-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+
+.lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.lesson-nav-card{
+  display:flex;flex-direction:column;gap:4px;padding:16px 18px;min-height:96px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel);
+  color:var(--text);text-decoration:none;box-shadow:var(--sh);
+  transition:border-color var(--dur),box-shadow var(--dur),transform .12s var(--ease);
+}
+.lesson-nav-card:hover{border-color:var(--accent);box-shadow:var(--sh-1);text-decoration:none;transform:translateY(-2px)}
+.lesson-nav-card:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.lesson-nav-card.is-prev{align-items:flex-start;text-align:left}
+.lesson-nav-card.is-next{align-items:flex-end;text-align:right;border-color:color-mix(in srgb,var(--accent) 32%,var(--border))}
+.lesson-nav-card.is-empty{border:1px dashed var(--border);background:none;box-shadow:none;pointer-events:none}
+.lesson-nav-card .lnav-kicker{font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+.lesson-nav-card.is-next .lnav-kicker{color:var(--accent)}
+.lesson-nav-card .lnav-title{font-family:var(--font-read);font-weight:600;font-size:1.06rem;line-height:1.3;letter-spacing:-.012em}
+.lesson-nav-card .lnav-module{font-size:.75rem;color:var(--mute);font-weight:600}
+@media (max-width:720px){.lesson-nav{grid-template-columns:1fr}.lesson-nav-card.is-next{align-items:flex-start;text-align:left}}

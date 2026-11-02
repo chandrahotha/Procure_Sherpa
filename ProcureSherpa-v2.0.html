@@ -2378,6 +2378,58 @@ html[data-theme="dark"] .quiz-tip-cta {
   .module-index-chip .mi-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
 
+/* ---------- v3: inside the lesson ----------
+   A lesson is five or six cards of prose. The jump bar says how long it is
+   and lets the reader come back to one part of it; the closing block says
+   what has not been done yet, which used to be discoverable only by opening
+   the fifth tab. */
+.lesson-toc{
+  display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:8px 9px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel-2);
+}
+.lesson-toc a{
+  font-size:.78rem;font-weight:650;color:var(--dim);text-decoration:none;
+  padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--border);background:var(--panel);
+  transition:border-color var(--dur),color var(--dur),background var(--dur);
+}
+.lesson-toc a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);text-decoration:none}
+.lesson-toc a:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.lesson-body .card[id^="lsec-"]{scroll-margin-top:calc(var(--top) + 104px)}
+
+.lesson-close{margin-top:26px;padding:22px 24px}
+.lesson-steps{list-style:none;margin:6px 0 0;padding:0}
+.lesson-steps li{
+  display:flex;align-items:center;gap:12px;padding:11px 2px;
+  border-top:1px solid var(--border);font-size:.95rem;line-height:1.5;
+}
+.lesson-steps li:first-child{border-top:0}
+.lesson-steps .lesson-step-mark{
+  flex:0 0 22px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--border-2);color:var(--mute);font-size:.72rem;background:var(--panel-2);
+}
+.lesson-steps li.is-done .lesson-step-mark{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-steps .lesson-step-label{flex:1;min-width:0}
+.lesson-steps li.is-done .lesson-step-label{color:var(--mute)}
+.lesson-steps-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+
+.lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.lesson-nav-card{
+  display:flex;flex-direction:column;gap:4px;padding:16px 18px;min-height:96px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel);
+  color:var(--text);text-decoration:none;box-shadow:var(--sh);
+  transition:border-color var(--dur),box-shadow var(--dur),transform .12s var(--ease);
+}
+.lesson-nav-card:hover{border-color:var(--accent);box-shadow:var(--sh-1);text-decoration:none;transform:translateY(-2px)}
+.lesson-nav-card:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
+.lesson-nav-card.is-prev{align-items:flex-start;text-align:left}
+.lesson-nav-card.is-next{align-items:flex-end;text-align:right;border-color:color-mix(in srgb,var(--accent) 32%,var(--border))}
+.lesson-nav-card.is-empty{border:1px dashed var(--border);background:none;box-shadow:none;pointer-events:none}
+.lesson-nav-card .lnav-kicker{font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+.lesson-nav-card.is-next .lnav-kicker{color:var(--accent)}
+.lesson-nav-card .lnav-title{font-family:var(--font-read);font-weight:600;font-size:1.06rem;line-height:1.3;letter-spacing:-.012em}
+.lesson-nav-card .lnav-module{font-size:.75rem;color:var(--mute);font-weight:600}
+@media (max-width:720px){.lesson-nav{grid-template-columns:1fr}.lesson-nav-card.is-next{align-items:flex-start;text-align:left}}
+
 /* ==========================================================
    Procure Sherpa v2.0 - Portal & User Account Styles
    Section: Topbar User Badge, Profile Modal, Dual-Hub Gateway
@@ -3655,7 +3707,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '3f97be9c166e';
+PS.BUILD = '9674e61f0911';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -14654,20 +14706,67 @@ PS.renderAcademyFunction = function (funcId, params) {
   html += PS.withDisclaimer('origin');
   html += '</div>';
 
-  // Next / Previous Navigation Footer
-  html += '<div class="card card-tight no-print" style="margin-top:24px"><div class="flex-between">' +
-    (prevFunc ? '<a class="btn btn-ghost" href="#/academy/' + encodeURIComponent(prevFunc.id) + '">&larr; ' + PS.esc(prevFunc.title) + '</a>' : '<div></div>') +
-    '<a class="btn" href="#/academy">All Modules</a>' +
-    (nextFunc ? '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">' + PS.esc(nextFunc.title) + ' &rarr;</a>' : '<a class="btn btn-primary" href="#/academy-progress">View Progress &rarr;</a>') +
+  /* What is left in this lesson, and where to go next.
+     The completion action used to live only inside the fifth tab, so a reader
+     who worked through the mission and the quiz had no way to record it
+     without hunting for the laboratory page. The list states each remaining
+     step, links straight to the tab that holds it, and disappears as the work
+     is done. */
+  var quizCount = (func.quizzes || []).length;
+  var steps = [];
+  steps.push({ label: 'Read the mission and the worked example', tab: 'learn', done: activeTab === 'learn' ? false : true, doneLabel: 'Open again', todoLabel: 'Start here' });
+  if (quizCount) steps.push({ label: 'Answer the ' + quizCount + ' practice ' + (quizCount === 1 ? 'question' : 'questions'), tab: 'practice', done: !!quizRes, doneLabel: quizRes ? quizRes.pct + '% - take again' : 'Take again', todoLabel: 'Not taken' });
+  if (func.labMission) steps.push({ label: 'Do the laboratory mission', tab: 'apply', done: false, doneLabel: 'Open the mission', todoLabel: 'Open the mission' });
+  var remaining = steps.filter(function (s) { return !s.done; }).length;
+
+  html += '<div class="lesson-close card no-print">' +
+    '<div class="card-head"><h2>' + (remaining ? 'What is left in this lesson' : 'This lesson is complete') + '</h2>' +
+    (isComp ? '<span class="badge badge-ok">✓ Mastered</span>' : '<span class="badge">' + remaining + ' step' + (remaining === 1 ? '' : 's') + ' left</span>') + '</div>' +
+    '<ul class="lesson-steps">' + steps.map(function (s) {
+      return '<li class="' + (s.done ? 'is-done' : '') + '">' +
+        '<span class="lesson-step-mark" aria-hidden="true">' + (s.done ? '✓' : '○') + '</span>' +
+        '<span class="lesson-step-label">' + PS.esc(s.label) + '</span>' +
+        '<a class="btn btn-sm" href="#/academy/' + encodeURIComponent(funcId) + '?tab=' + s.tab + '">' + PS.esc(s.done ? s.doneLabel : s.todoLabel) + '</a>' +
+        '</li>';
+    }).join('') + '</ul>' +
+    '<div class="lesson-steps-actions">' +
+    '<button type="button" class="btn ' + (isComp ? 'btn-ghost' : 'btn-primary') + '" data-act="academy-mark-done" data-func="' + PS.esc(funcId) + '">' +
+    (isComp ? '✓ Marked as studied' : 'Mark this lesson as studied') + '</button>' +
+    '<a class="btn" href="#/academy">All modules</a>' +
     '</div></div>';
+
+  /* Previous and next as cards rather than three buttons in a row: the
+     reader needs the title and the module of what comes next, not just an
+     arrow, because the curriculum is eighteen modules long and the next
+     lesson is often in a different subject area. */
+  html += '<div class="lesson-nav no-print">' +
+    (prevFunc
+      ? '<a class="lesson-nav-card is-prev" href="#/academy/' + encodeURIComponent(prevFunc.id) + '">' +
+        '<span class="lnav-kicker">&larr; Previous lesson</span>' +
+        '<span class="lnav-title">' + PS.esc(prevFunc.title) + '</span>' +
+        '<span class="lnav-module">' + PS.esc(prevFunc.kicker || prevFunc.module) + '</span></a>'
+      : '<span class="lesson-nav-card is-empty" aria-hidden="true"></span>') +
+    (nextFunc
+      ? '<a class="lesson-nav-card is-next" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">' +
+        '<span class="lnav-kicker">Next lesson &rarr;</span>' +
+        '<span class="lnav-title">' + PS.esc(nextFunc.title) + '</span>' +
+        '<span class="lnav-module">' + PS.esc(nextFunc.kicker || nextFunc.module) + '</span></a>'
+      : '<a class="lesson-nav-card is-next" href="#/academy-progress">' +
+        '<span class="lnav-kicker">Last lesson &rarr;</span>' +
+        '<span class="lnav-title">Review your progress</span>' +
+        '<span class="lnav-module">The curriculum is complete</span></a>') +
+    '</div>';
 
   return html;
 };
 
 /* ---------- Tab 1: Learn ---------- */
 PS.renderFuncTabLearn = function (f) {
-  var html = '<div class="grid grid-2">' +
-    '<div class="card">' +
+  var LSEC = [['lsec-1','What it is'],['lsec-2','Who is involved'],['lsec-3','Inputs and outputs'],['lsec-4','Controls and mistakes'],['lsec-5','Key terms']];
+  var html = '<nav class="lesson-toc" aria-label="Sections in this lesson">' + LSEC.map(function (s) {
+    return '<a href="#' + s[0] + '">' + PS.esc(s[1]) + '</a>';
+  }).join('') + '</nav>' + '<div class="grid grid-2">' +
+    '<div class="card" id="lsec-1">' +
     '<h2>What is this function?</h2>' +
     '<p>' + PS.esc(f.what) + '</p>' +
     '<h3>Why it is critical to the business</h3>' +
@@ -14675,7 +14774,7 @@ PS.renderFuncTabLearn = function (f) {
     '<h3>When is this function executed?</h3>' +
     '<ul>' + (f.when || []).map(function (w) { return '<li>' + PS.esc(w) + '</li>'; }).join('') + '</ul>' +
     '</div>' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-2">' +
     '<h2>Lifecycle & Stakeholder Engagement</h2>' +
     '<p><strong>Lifecycle Fit:</strong> ' + PS.esc(f.lifecycleDesc || f.lifecycleStage) + '</p>' +
     '<h3>Who is involved (RACI)</h3>' +
@@ -14686,14 +14785,14 @@ PS.renderFuncTabLearn = function (f) {
     '</tbody></table></div>' +
     '</div></div>' +
     '<div class="grid grid-2">' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-3">' +
     '<h2>Required Inputs & Deliverable Outputs</h2>' +
     '<h3>Inputs Required Before Starting</h3>' +
     '<ul>' + (f.inputs || []).map(function (i) { return '<li>' + PS.esc(i) + '</li>'; }).join('') + '</ul>' +
     '<h3>Outputs & Records Produced</h3>' +
     '<ul>' + (f.outputs || []).map(function (o) { return '<li>' + PS.esc(o) + '</li>'; }).join('') + '</ul>' +
     '</div>' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-4">' +
     '<h2>Controls, Risks & Best Practices</h2>' +
     '<h3>Mandatory Controls & Governance</h3>' +
     '<ul>' + (f.controls || []).map(function (c) { return '<li>' + PS.esc(c) + '</li>'; }).join('') + '</ul>' +
@@ -14706,7 +14805,7 @@ PS.renderFuncTabLearn = function (f) {
   html += PS.academyWorkedExample(f);
 
   if (f.terms && f.terms.length) {
-    html += '<div class="card"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
+    html += '<div class="card" id="lsec-5"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
       f.terms.map(function (t) {
         return '<div class="tile"><div class="t-kicker">Term</div><div class="t-title">' + PS.esc(t.term) + '</div><p class="t-desc">' + PS.esc(t.def) + '</p></div>';
       }).join('') + '</div></div>';
@@ -17574,6 +17673,7 @@ PS.whatsNew.CHANGES = [
       'Every lesson now states where its material comes from: examples are labelled Illustrative rather than real-world, and a provenance note says the lessons are written for this product and the figures are constructed to show how a mechanism behaves - not reports of real organisations or verified benchmarks',
       'A new controlled procedure where the curriculum had been pointing at a checklist: the Contract Change Control SOP, seven steps each with an owner, an output and a control. The SOP library is now 16 documents holding 125 procedure steps',
       'The five modules that had only two lessons each now have three: supplier onboarding and segmentation, concessions and the negotiation record, contract types and indexation and the renewal window, requisition intake and the approval matrix, and corrective action and the business review. The curriculum is 48 functions, 279 step sequences and 219 quiz questions',
+      'Inside a lesson: a section jump bar on the mission tab, a closing block that lists what is still to do in this lesson and holds the mark-as-studied control on every tab (it used to exist only inside the laboratory tab), and previous and next lesson as cards naming the title and the function number rather than three arrows in a row. A new gate owns all three',
       'The Academy hub got a way in: a sticky module index listing all seventeen modules with each module\'s mastered count, a status filter (Not started / Quiz taken / Mastered) that composes with the level filter instead of resetting it, and a per-module line saying how many lessons and how many minutes each module holds. Four new assertions check the filters against the completion record, so a strip that counts something the cards do not show now fails the build',
       'New Module 18: Disruption, Emergency Buying and Allocation - the pre-agreed fast route with a clock instead of a market check, how allocation actually works and what moves your position in it, and the three closures that decide whether anything changes afterwards. The curriculum is 54 functions across 18 modules, 321 step sequences and 249 quiz questions',
       'Two controlled procedures the required library named and the product did not have: the Supplier Onboarding SOP (ten steps, from tier assignment to the readiness gate) and the Savings Validation SOP (nine steps, from an agreed baseline to the annual re-baseline). The SOP library is now 18 documents holding 143 procedure steps',

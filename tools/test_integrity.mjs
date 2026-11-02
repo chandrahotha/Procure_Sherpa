@@ -1688,6 +1688,55 @@ console.log('\nG29  the theme owns every colour');
   }
 }
 
+/* ---------- G30: the lesson page works as a lesson ----------
+   The completion action used to exist only inside the fifth tab, so a reader
+   who finished the mission had no way to record it without discovering the
+   laboratory page. These rules assert the closing block, the next-lesson card
+   and the section jumps from the rendered page - and that a jump link has a
+   target, because a table of contents that scrolls nowhere is worse than none. */
+console.log('\nG30  the lesson page works as a lesson');
+{
+  const g30Funcs = PS.ACADEMY_FUNCTIONS || [];
+  const g30Id = g30Funcs[1].id;
+  const g30Next = g30Funcs[2];
+  w.location.hash = '#/academy/' + encodeURIComponent(g30Id) + '?tab=learn';
+  PS.renderRoute();
+  const g30Main = w.document.querySelector('#main');
+
+  const close = g30Main.querySelector('.lesson-close');
+  const markBtn = close && close.querySelector('[data-act="academy-mark-done"]');
+  if (!close) {
+    fail('G30', 'the lesson page shows no "what is left in this lesson" block');
+  } else if (!markBtn) {
+    fail('G30', 'the lesson closing block has no mark-as-studied control, so completion is only reachable from one tab');
+  } else {
+    ok('G30', 'every lesson tab ends with the remaining steps and a working completion control');
+  }
+
+  const navCards = [...g30Main.querySelectorAll('.lesson-nav-card.is-next')];
+  const nextTitle = navCards.length ? String(navCards[0].textContent).replace(/\s+/g, ' ').trim() : '';
+  if (!navCards.length) {
+    fail('G30', 'the lesson page has no next-lesson card');
+  } else if (g30Next && nextTitle.indexOf(g30Next.title.slice(0, 24)) < 0) {
+    fail('G30', 'the next-lesson card does not name the lesson that actually follows (' + g30Next.title + ')');
+  } else {
+    ok('G30', 'the next-lesson card names the lesson that actually follows it');
+  }
+
+  const tocLinks = [...g30Main.querySelectorAll('.lesson-toc a')];
+  const dangling = tocLinks.filter((a) => {
+    const ref = a.getAttribute('href') || '';
+    return !/^#lsec-\d+$/.test(ref) || !g30Main.querySelector(ref);
+  });
+  if (!tocLinks.length) {
+    fail('G30', 'the Learn tab renders no section jump bar, so a six-card lesson has no way in');
+  } else if (dangling.length) {
+    fail('G30', dangling.length + ' section jump links have no target on the page: ' + dangling.map((a) => a.getAttribute('href')).join(', '));
+  } else {
+    ok('G30', 'the Learn tab section jumps all resolve to a card on the page (' + tocLinks.length + ')');
+  }
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

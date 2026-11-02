@@ -346,20 +346,67 @@ PS.renderAcademyFunction = function (funcId, params) {
   html += PS.withDisclaimer('origin');
   html += '</div>';
 
-  // Next / Previous Navigation Footer
-  html += '<div class="card card-tight no-print" style="margin-top:24px"><div class="flex-between">' +
-    (prevFunc ? '<a class="btn btn-ghost" href="#/academy/' + encodeURIComponent(prevFunc.id) + '">&larr; ' + PS.esc(prevFunc.title) + '</a>' : '<div></div>') +
-    '<a class="btn" href="#/academy">All Modules</a>' +
-    (nextFunc ? '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">' + PS.esc(nextFunc.title) + ' &rarr;</a>' : '<a class="btn btn-primary" href="#/academy-progress">View Progress &rarr;</a>') +
+  /* What is left in this lesson, and where to go next.
+     The completion action used to live only inside the fifth tab, so a reader
+     who worked through the mission and the quiz had no way to record it
+     without hunting for the laboratory page. The list states each remaining
+     step, links straight to the tab that holds it, and disappears as the work
+     is done. */
+  var quizCount = (func.quizzes || []).length;
+  var steps = [];
+  steps.push({ label: 'Read the mission and the worked example', tab: 'learn', done: activeTab === 'learn' ? false : true, doneLabel: 'Open again', todoLabel: 'Start here' });
+  if (quizCount) steps.push({ label: 'Answer the ' + quizCount + ' practice ' + (quizCount === 1 ? 'question' : 'questions'), tab: 'practice', done: !!quizRes, doneLabel: quizRes ? quizRes.pct + '% - take again' : 'Take again', todoLabel: 'Not taken' });
+  if (func.labMission) steps.push({ label: 'Do the laboratory mission', tab: 'apply', done: false, doneLabel: 'Open the mission', todoLabel: 'Open the mission' });
+  var remaining = steps.filter(function (s) { return !s.done; }).length;
+
+  html += '<div class="lesson-close card no-print">' +
+    '<div class="card-head"><h2>' + (remaining ? 'What is left in this lesson' : 'This lesson is complete') + '</h2>' +
+    (isComp ? '<span class="badge badge-ok">✓ Mastered</span>' : '<span class="badge">' + remaining + ' step' + (remaining === 1 ? '' : 's') + ' left</span>') + '</div>' +
+    '<ul class="lesson-steps">' + steps.map(function (s) {
+      return '<li class="' + (s.done ? 'is-done' : '') + '">' +
+        '<span class="lesson-step-mark" aria-hidden="true">' + (s.done ? '✓' : '○') + '</span>' +
+        '<span class="lesson-step-label">' + PS.esc(s.label) + '</span>' +
+        '<a class="btn btn-sm" href="#/academy/' + encodeURIComponent(funcId) + '?tab=' + s.tab + '">' + PS.esc(s.done ? s.doneLabel : s.todoLabel) + '</a>' +
+        '</li>';
+    }).join('') + '</ul>' +
+    '<div class="lesson-steps-actions">' +
+    '<button type="button" class="btn ' + (isComp ? 'btn-ghost' : 'btn-primary') + '" data-act="academy-mark-done" data-func="' + PS.esc(funcId) + '">' +
+    (isComp ? '✓ Marked as studied' : 'Mark this lesson as studied') + '</button>' +
+    '<a class="btn" href="#/academy">All modules</a>' +
     '</div></div>';
+
+  /* Previous and next as cards rather than three buttons in a row: the
+     reader needs the title and the module of what comes next, not just an
+     arrow, because the curriculum is eighteen modules long and the next
+     lesson is often in a different subject area. */
+  html += '<div class="lesson-nav no-print">' +
+    (prevFunc
+      ? '<a class="lesson-nav-card is-prev" href="#/academy/' + encodeURIComponent(prevFunc.id) + '">' +
+        '<span class="lnav-kicker">&larr; Previous lesson</span>' +
+        '<span class="lnav-title">' + PS.esc(prevFunc.title) + '</span>' +
+        '<span class="lnav-module">' + PS.esc(prevFunc.kicker || prevFunc.module) + '</span></a>'
+      : '<span class="lesson-nav-card is-empty" aria-hidden="true"></span>') +
+    (nextFunc
+      ? '<a class="lesson-nav-card is-next" href="#/academy/' + encodeURIComponent(nextFunc.id) + '">' +
+        '<span class="lnav-kicker">Next lesson &rarr;</span>' +
+        '<span class="lnav-title">' + PS.esc(nextFunc.title) + '</span>' +
+        '<span class="lnav-module">' + PS.esc(nextFunc.kicker || nextFunc.module) + '</span></a>'
+      : '<a class="lesson-nav-card is-next" href="#/academy-progress">' +
+        '<span class="lnav-kicker">Last lesson &rarr;</span>' +
+        '<span class="lnav-title">Review your progress</span>' +
+        '<span class="lnav-module">The curriculum is complete</span></a>') +
+    '</div>';
 
   return html;
 };
 
 /* ---------- Tab 1: Learn ---------- */
 PS.renderFuncTabLearn = function (f) {
-  var html = '<div class="grid grid-2">' +
-    '<div class="card">' +
+  var LSEC = [['lsec-1','What it is'],['lsec-2','Who is involved'],['lsec-3','Inputs and outputs'],['lsec-4','Controls and mistakes'],['lsec-5','Key terms']];
+  var html = '<nav class="lesson-toc" aria-label="Sections in this lesson">' + LSEC.map(function (s) {
+    return '<a href="#' + s[0] + '">' + PS.esc(s[1]) + '</a>';
+  }).join('') + '</nav>' + '<div class="grid grid-2">' +
+    '<div class="card" id="lsec-1">' +
     '<h2>What is this function?</h2>' +
     '<p>' + PS.esc(f.what) + '</p>' +
     '<h3>Why it is critical to the business</h3>' +
@@ -367,7 +414,7 @@ PS.renderFuncTabLearn = function (f) {
     '<h3>When is this function executed?</h3>' +
     '<ul>' + (f.when || []).map(function (w) { return '<li>' + PS.esc(w) + '</li>'; }).join('') + '</ul>' +
     '</div>' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-2">' +
     '<h2>Lifecycle & Stakeholder Engagement</h2>' +
     '<p><strong>Lifecycle Fit:</strong> ' + PS.esc(f.lifecycleDesc || f.lifecycleStage) + '</p>' +
     '<h3>Who is involved (RACI)</h3>' +
@@ -378,14 +425,14 @@ PS.renderFuncTabLearn = function (f) {
     '</tbody></table></div>' +
     '</div></div>' +
     '<div class="grid grid-2">' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-3">' +
     '<h2>Required Inputs & Deliverable Outputs</h2>' +
     '<h3>Inputs Required Before Starting</h3>' +
     '<ul>' + (f.inputs || []).map(function (i) { return '<li>' + PS.esc(i) + '</li>'; }).join('') + '</ul>' +
     '<h3>Outputs & Records Produced</h3>' +
     '<ul>' + (f.outputs || []).map(function (o) { return '<li>' + PS.esc(o) + '</li>'; }).join('') + '</ul>' +
     '</div>' +
-    '<div class="card">' +
+    '<div class="card" id="lsec-4">' +
     '<h2>Controls, Risks & Best Practices</h2>' +
     '<h3>Mandatory Controls & Governance</h3>' +
     '<ul>' + (f.controls || []).map(function (c) { return '<li>' + PS.esc(c) + '</li>'; }).join('') + '</ul>' +
@@ -398,7 +445,7 @@ PS.renderFuncTabLearn = function (f) {
   html += PS.academyWorkedExample(f);
 
   if (f.terms && f.terms.length) {
-    html += '<div class="card"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
+    html += '<div class="card" id="lsec-5"><h2>Key Terminology Decoded</h2><div class="grid grid-3">' +
       f.terms.map(function (t) {
         return '<div class="tile"><div class="t-kicker">Term</div><div class="t-title">' + PS.esc(t.term) + '</div><p class="t-desc">' + PS.esc(t.def) + '</p></div>';
       }).join('') + '</div></div>';

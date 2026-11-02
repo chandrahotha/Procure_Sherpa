@@ -848,7 +848,7 @@ one `tools/check_drift.mjs` compares against `package.json` and
 | 2.5 | 2026-11-02 | Academy Modules 12 and 13 shipped and integrated, the storage suite written, the hostile-backup path closed, CI least privilege added, and 25 integrity gates |
 | 2.6 | 2026-11-02 | Module 14 (influence, the executive ask, adoption) - 37 functions in 14 modules; practice-exam integrity fixed; footer and sidebar rebuilt; 26 integrity gates |
 | 2.7 | 2026-11-02 | Module 15 (freight and customs, regulated buying, people-time categories) plus 6 new concepts, 2 new SOPs and 6 glossary terms - 40 functions in 15 modules, 248 library records, 19 badges |
-| 3.0 | 2026-11-02 | The reading edition: new design system (jade accent, dark navigation rail, 16px base, serif lesson prose, 1,440px content column), theme-aware charts, Module 16 (obligation register, change control, claims and remedies) - 54 functions in 18 modules, 244 step sequences, 194 questions; glossary relations complete (45 terms, 252 records); 29 integrity gates / 118 assertions |
+| 3.0 | 2026-11-02 | The reading edition: new design system (jade accent, dark navigation rail, 16px base, serif lesson prose, 1,440px content column), theme-aware charts, Module 16 (obligation register, change control, claims and remedies) - 54 functions in 18 modules, 244 step sequences, 194 questions; glossary relations complete (45 terms, 252 records); 30 integrity gates / 128 assertions |
 
 The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
 in Q2 2027. All three shipped inside four weeks of being planned, in

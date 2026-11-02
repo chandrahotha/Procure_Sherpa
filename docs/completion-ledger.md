@@ -779,3 +779,17 @@ Curriculum: **54 functions in 18 modules, 321 step sequences, 249 quiz questions
 **Verification.** `npm run qa` exit 0 — 29 integrity gates, G1 pinning 54/18/321/249 and 18/143, G12 grading all 249 questions, G13 eighteen modules in order and every one recommended, G15 a worked example on all 54, G21 each SOP document at six steps or more, G24 one path and one badge rule per function. Artifact 2,809 KB readable, 781 KB gzipped against the 1,152 KB ceiling.
 
 **The journey suite caught a real gap, not a test problem.** Journey C clicks from the problem-first entry to a supplier SOP by pattern (`/supplier|evaluation|due/`), and with onboarding now registered it landed on the new document — which linked to the concentration calculator but not to the scorecard the next step expected. The fix was the content, not the pattern: `calc-supplier-scorecard` is now linked from the onboarding SOP, where it belongs, because the tier decided at onboarding is what sets the scorecard depth. Loosening the journey pattern would have hidden a page that did not offer the obvious next tool.
+
+### Cycle 8 addendum 8 — the lesson page works as a lesson
+
+Three defects in the reading surface, all of them structural rather than cosmetic:
+
+- **The completion action was hidden.** "Mark as studied" existed only inside the fifth tab (Apply in Lab), so a reader who finished the mission and the quiz had to discover the laboratory page to record the work. It now sits in a closing block that renders on every tab, above a list of what is still to do in this lesson — read the mission, answer the n questions (with the score once taken), do the laboratory mission — each linking straight to the tab that holds it.
+- **No way into a six-card lesson.** The Learn tab now opens with a five-item section jump bar, and each target carries `scroll-margin-top` so it lands below the sticky tab strip rather than behind it.
+- **Previous and next were three arrows in a row.** They are two cards naming the lesson and its function number, because the next lesson in an eighteen-module curriculum is often in a different subject area and "Next" alone does not say so.
+
+**G30 owns it** — thirty gates now. It asserts the closing block and its control exist, that the next-lesson card names the function that actually follows in the taught sequence, and that every section jump resolves to a card on the page rather than scrolling nowhere. A table of contents with dead anchors is worse than none, so the rule checks the target, not the link.
+
+**Caught on the way, and worth recording:** the closing block threw on `quizRes.pct` because a `doneLabel` was computed eagerly even when no quiz had been taken — the ternary was inside the object literal, not at the point of use. G7 turned it into "renders the not-found card / no visible h1 / 142 chars", which is the failure signature this suite is designed to produce: the page contract caught a thrown render rather than a styled-but-broken one.
+
+**Verification.** `npm run qa` exit 0 — **30 integrity gates / 128 assertions**, a11y 0 findings over 64 renders, security 0, layout 29/29, 782 KB gzipped against the 1,152 KB ceiling. Checked in Chromium on a Module 16 lesson: 5 jump links, closing block with 3 steps and the completion control, 2 nav cards, next lesson reading "Change Control and the Variation Nobody Priced — Function 16.2".
