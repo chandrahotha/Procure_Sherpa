@@ -788,14 +788,14 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 
 /* Section 5: SaaS forms + tables + timeline + progress */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;min-width:0}
-.field>label{font-size:.8rem;font-weight:650;color:var(--dim)}
-.field .hint{font-size:.74rem;color:var(--mute);line-height:1.5}
-.field .err{font-size:.76rem;color:var(--danger);font-weight:600}
+.field>label{font-size:.85rem;font-weight:650;color:var(--dim);letter-spacing:-.005em}
+.field .hint{font-size:.79rem;color:var(--mute);line-height:1.5}
+.field .err{font-size:.81rem;color:var(--danger);font-weight:600}
 .req{color:var(--danger);font-weight:700}
 input[type=text],input[type=number],input[type=search],input[type=date],select,textarea{
-  font:inherit;font-size:.88rem;padding:10px 12px;border:1px solid var(--border-2);border-radius:10px;
+  font:inherit;font-size:.95rem;padding:11px 13px;border:1px solid var(--border-2);border-radius:11px;
   background:var(--panel);color:var(--text);width:100%;min-width:0;
-  transition:border-color .13s,box-shadow .13s,background .13s;
+  transition:border-color var(--dur),box-shadow var(--dur),background var(--dur);
 }
 input:hover,select:hover,textarea:hover{border-color:var(--dim)}
 textarea{min-height:80px;resize:vertical;line-height:1.6}
@@ -815,14 +815,14 @@ input.is-invalid:focus,select.is-invalid:focus{box-shadow:0 0 0 3px color-mix(in
 .check span{flex:1}
 .check input:checked+span{color:var(--mute);text-decoration:line-through}
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--panel);margin-bottom:14px;box-shadow:var(--sh)}
-table{border-collapse:collapse;width:100%;font-size:.84rem}
-caption{caption-side:top;text-align:left;padding:10px 14px;font-size:.78rem;color:var(--mute)}
-th,td{padding:9px 13px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
-thead th{background:var(--sunken);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);white-space:nowrap;position:sticky;top:0}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+caption{caption-side:top;text-align:left;padding:11px 14px;font-size:.83rem;color:var(--mute)}
+th,td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;line-height:1.5}
+thead th{background:var(--sunken);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);white-space:nowrap;position:sticky;top:0}
 tbody tr{transition:background .1s}
 tbody tr:hover{background:var(--panel-2)}
 tbody tr:last-child td{border-bottom:0}
-.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.82rem}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.87rem}
 tfoot td{font-weight:700;background:var(--panel-2)}
 tr.is-best td{background:var(--ok-soft)}
 tr.is-best td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
@@ -836,12 +836,12 @@ tr.is-worst td{background:var(--danger-soft)}
   transition:border-color .13s,color .13s;
 }
 .timeline li:hover::before{border-color:var(--accent);color:var(--accent)}
-.timeline .tl-title{font-weight:700;font-size:.91rem;letter-spacing:-.008em}
-.timeline .tl-body{font-size:.84rem;color:var(--dim);margin-top:3px;line-height:1.6}
+.timeline .tl-title{font-weight:700;font-size:.97rem;letter-spacing:-.008em}
+.timeline .tl-body{font-size:.9rem;color:var(--dim);margin-top:4px;line-height:1.65}
 .flow{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;align-items:center}
 .flow-step{
   border:1px solid var(--border);background:var(--panel);border-radius:999px;box-shadow:var(--sh);
-  padding:7px 14px;font-size:.78rem;font-weight:650;color:var(--dim);text-decoration:none;
+  padding:8px 15px;font-size:.83rem;font-weight:650;color:var(--dim);text-decoration:none;
   transition:border-color .12s,color .12s;
 }
 a.flow-step:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
@@ -849,28 +849,28 @@ a.flow-step:hover{border-color:var(--accent);color:var(--accent);text-decoration
 .progress{height:9px;border-radius:var(--r-pill);background:var(--sunken);overflow:hidden;border:1px solid var(--border)}
 .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0;border-radius:inherit;transition:width .25s}
 .progress-meta{display:flex;justify-content:space-between;font-size:.76rem;color:var(--mute);margin:6px 0}
-.calc-layout{display:grid;grid-template-columns:minmax(350px,430px) minmax(0,1fr);gap:16px;align-items:start;margin-bottom:16px}
+.calc-layout{display:grid;grid-template-columns:minmax(360px,440px) minmax(0,1fr);gap:20px;align-items:start;margin-bottom:16px}
 .calc-layout .card{margin-bottom:0}
 .calc-sticky{position:sticky;top:calc(var(--top) + 16px)}
 .calc-actions{position:sticky;bottom:0;background:linear-gradient(transparent,var(--panel) 30%);padding:14px 0 2px;margin-top:8px}
 @media (max-width:1020px){.calc-layout{grid-template-columns:1fr}.calc-sticky{position:static}}
 
 /* Section 6: SaaS results, lists, dashboard, overlays */
-.results{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--sh)}
+.results{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:12px;box-shadow:var(--sh)}
 .results-empty{color:var(--mute);font-size:.86rem;line-height:1.6;border:1.5px dashed var(--border-2);border-radius:var(--r-sm);padding:24px 16px;text-align:center;background:var(--panel-2)}
 .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
 .res-item{background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
 .res-item .r-lab{font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);font-weight:800}
-.res-item .r-val{font-size:1.22rem;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:2px}
+.res-item .r-val{font-size:1.4rem;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:2px}
 .res-item.pp{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 32%,transparent)}
-.res-item.pp .r-val{font-size:1.7rem;color:var(--accent)}
-.res-item .r-note{font-size:.73rem;color:var(--mute);margin-top:2px}
+.res-item.pp .r-val{font-size:1.95rem;color:var(--accent)}
+.res-item .r-note{font-size:.79rem;color:var(--mute);margin-top:2px}
 .res-item.is-ok .r-val{color:var(--ok)}
 .res-item.is-warn .r-val{color:var(--warn)}
 .res-item.is-danger .r-val{color:var(--danger)}
-.res-sub{font-size:.85rem;color:var(--dim);line-height:1.6}
+.res-sub{font-size:.92rem;color:var(--dim);line-height:1.65}
 details.acc{border:1px solid var(--border);border-radius:12px;background:var(--panel);margin-bottom:10px;box-shadow:var(--sh);overflow:hidden}
-details.acc>summary{cursor:pointer;padding:12px 40px 12px 15px;font-size:.87rem;font-weight:650;border-radius:12px;list-style:none;position:relative;transition:color .12s}
+details.acc>summary{cursor:pointer;padding:14px 40px 14px 16px;font-size:.95rem;font-weight:650;border-radius:12px;list-style:none;position:relative;transition:color .12s}
 details.acc>summary::-webkit-details-marker{display:none}
 details.acc>summary::after{
   content:"";position:absolute;right:15px;top:50%;width:8px;height:8px;transform:translateY(-70%) rotate(45deg);
@@ -878,18 +878,18 @@ details.acc>summary::after{
 }
 details.acc[open]>summary::after{transform:translateY(-30%) rotate(225deg)}
 details.acc>summary:hover{color:var(--accent)}
-details.acc .acc-body{padding:2px 15px 15px;font-size:.86rem;border-top:1px solid var(--border);line-height:1.6;color:var(--dim)}
+details.acc .acc-body{padding:4px 16px 16px;font-size:.93rem;border-top:1px solid var(--border);line-height:1.7;color:var(--dim)}
 .searchbox{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .searchbox input[type=text],.searchbox input[type=search]{flex:1;min-width:200px;padding:11px 14px;font-size:.9rem;border-radius:11px}
 .filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
 .filters .chip.is-on{background:var(--text);border-color:var(--text);color:var(--bg)}
 html[data-theme="dark"] .filters .chip.is-on{background:var(--accent);border-color:var(--accent);color:#fff}
 .res-list{list-style:none;margin:0;padding:0}
-.res-list li{border-bottom:1px solid var(--border);padding:11px 8px;display:flex;gap:11px;align-items:flex-start;border-radius:8px;transition:background .1s}
+.res-list li{border-bottom:1px solid var(--border);padding:13px 10px;display:flex;gap:11px;align-items:flex-start;border-radius:8px;transition:background .1s}
 .res-list li:hover{background:var(--panel-2)}
 .res-list li:last-child{border-bottom:0}
-.res-list .res-title{font-weight:650;font-size:.9rem;letter-spacing:-.005em}
-.res-list .res-desc{font-size:.79rem;color:var(--mute);margin-top:2px;line-height:1.5}
+.res-list .res-title{font-weight:650;font-size:.98rem;letter-spacing:-.005em}
+.res-list .res-desc{font-size:.85rem;color:var(--mute);margin-top:3px;line-height:1.55}
 .res-list .res-type{flex:0 0 auto}
 mark{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;border-radius:4px;padding:0 3px}
 .cmdk-hint{font-size:.72rem;color:var(--mute);text-align:right}
@@ -901,7 +901,7 @@ mark{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;bor
 }
 .modal-wide{max-width:920px}
 .modal h2{margin-top:0}
-.modal-body{color:var(--dim);font-size:.9rem;line-height:1.6}
+.modal-body{color:var(--dim);font-size:.95rem;line-height:1.65}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
 @keyframes pop-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
@@ -3592,7 +3592,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'e0b51885d270';
+PS.BUILD = '447f47b9f104';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4212,7 +4212,7 @@ PS.kbdHelp = {
       '@media print { .no-print { display: none !important; } }' +
       '</style></head><body>' +
       '<h1>Procure Sherpa — Keyboard Shortcuts Cheat Sheet</h1>' +
-      '<p style="margin: 4pt 0 16pt; color: #666;">Offline-first procurement toolkit | <span id="printDate"></span></p>';
+      '<p style="margin: 4pt 0 16pt; color: var(--dim);">Offline-first procurement toolkit | <span id="printDate"></span></p>';
 
     self.sections.forEach(function (sec) {
       html += '<h2>' + PS.esc(sec.title) + '</h2><table><tbody>';
@@ -6485,7 +6485,7 @@ PS.chart = {
 
       svg.push(
         '<g class="kraljic-node" tabindex="0">' +
-        '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + color + '" fill-opacity="0.85" stroke="#fff" stroke-width="2" />' +
+        '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + color + '" fill-opacity="0.85" stroke="' + C.surface + '" stroke-width="2" />' +
         '<text x="' + cx.toFixed(1) + '" y="' + (cy + r + 13).toFixed(1) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--text)">' +
         PS.esc(cat.name) + '</text>' +
         (cat.spend ? '<text x="' + cx.toFixed(1) + '" y="' + (cy + r + 24).toFixed(1) + '" text-anchor="middle" font-size="9.5" fill="var(--mute)">' + PS.esc(cat.spend) + '</text>' : '') +
@@ -6579,10 +6579,10 @@ PS.chart = {
       for (var p = 1; p < cumPoints.length; p++) {
         pathD += ' L ' + cumPoints[p].x.toFixed(1) + ' ' + cumPoints[p].y.toFixed(1);
       }
-      svg.push('<path d="' + pathD + '" fill="none" stroke=C.warn stroke-width="2.5" />');
+      svg.push('<path d="' + pathD + '" fill="none" stroke="' + C.warn + '" stroke-width="2.5" />');
       cumPoints.forEach(function (pt) {
         svg.push(
-          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke=C.warn stroke-width="2" />'
+          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="' + C.surface + '" stroke="' + C.warn + '" stroke-width="2" />'
         );
       });
     }
@@ -15226,7 +15226,7 @@ PS.executeAcademySandbox = function (type) {
       '</tr></thead>' +
       '<tbody>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Technical Quality &amp; Specs</td><td style="padding:7px 12px;">30%</td><td style="padding:7px 12px;">' + aQ.toFixed(1) + ' / 10 (' + (aQ * 0.3).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bQ.toFixed(1) + ' / 10 (' + (bQ * 0.3).toFixed(2) + ')</td></tr>' +
-      '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Commercial &amp; Landed Price</td><td style="padding:7px 12px;">25%</td><td style="padding:7px 12px;">' + aP.toFixed(1) + ' / 10 (' + (aP * 0.25).toFixed(2) + ')</td><td style="padding:7px 12px; font-weight:700; color:#059669;">' + bP.toFixed(1) + ' / 10 (' + (bP * 0.25).toFixed(2) + ')</td></tr>' +
+      '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Commercial &amp; Landed Price</td><td style="padding:7px 12px;">25%</td><td style="padding:7px 12px;">' + aP.toFixed(1) + ' / 10 (' + (aP * 0.25).toFixed(2) + ')</td><td style="padding:7px 12px; font-weight:700; color:var(--ok);">' + bP.toFixed(1) + ' / 10 (' + (bP * 0.25).toFixed(2) + ')</td></tr>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Delivery Capacity &amp; Lead Time</td><td style="padding:7px 12px;">20%</td><td style="padding:7px 12px;">' + aD.toFixed(1) + ' / 10 (' + (aD * 0.2).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bD.toFixed(1) + ' / 10 (' + (bD * 0.2).toFixed(2) + ')</td></tr>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">ESG &amp; Regulatory Compliance</td><td style="padding:7px 12px;">15%</td><td style="padding:7px 12px;">' + aE.toFixed(1) + ' / 10 (' + (aE * 0.15).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bE.toFixed(1) + ' / 10 (' + (bE * 0.15).toFixed(2) + ')</td></tr>' +
       '<tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 12px; font-weight:600;">Financial Health &amp; Solvency</td><td style="padding:7px 12px;">10%</td><td style="padding:7px 12px;">' + aF.toFixed(1) + ' / 10 (' + (aF * 0.1).toFixed(2) + ')</td><td style="padding:7px 12px;">' + bF.toFixed(1) + ' / 10 (' + (bF * 0.1).toFixed(2) + ')</td></tr>' +

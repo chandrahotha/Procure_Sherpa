@@ -199,7 +199,7 @@ PS.chart = {
 
       svg.push(
         '<g class="kraljic-node" tabindex="0">' +
-        '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + color + '" fill-opacity="0.85" stroke="#fff" stroke-width="2" />' +
+        '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + color + '" fill-opacity="0.85" stroke="' + C.surface + '" stroke-width="2" />' +
         '<text x="' + cx.toFixed(1) + '" y="' + (cy + r + 13).toFixed(1) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--text)">' +
         PS.esc(cat.name) + '</text>' +
         (cat.spend ? '<text x="' + cx.toFixed(1) + '" y="' + (cy + r + 24).toFixed(1) + '" text-anchor="middle" font-size="9.5" fill="var(--mute)">' + PS.esc(cat.spend) + '</text>' : '') +
@@ -293,10 +293,10 @@ PS.chart = {
       for (var p = 1; p < cumPoints.length; p++) {
         pathD += ' L ' + cumPoints[p].x.toFixed(1) + ' ' + cumPoints[p].y.toFixed(1);
       }
-      svg.push('<path d="' + pathD + '" fill="none" stroke=C.warn stroke-width="2.5" />');
+      svg.push('<path d="' + pathD + '" fill="none" stroke="' + C.warn + '" stroke-width="2.5" />');
       cumPoints.forEach(function (pt) {
         svg.push(
-          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="#fff" stroke=C.warn stroke-width="2" />'
+          '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="3.5" fill="' + C.surface + '" stroke="' + C.warn + '" stroke-width="2" />'
         );
       });
     }

@@ -1516,6 +1516,76 @@ if (!g28Rows.length) {
   ok('G28', 'the glossary table renders ' + g28Rows.length + ' rows, every one with links in the "Where to use it" column');
 }
 
+
+/* ---------- G29: the v3 theme is the only source of colour ----------
+   The 3.0 revamp replaced the palette wholesale. Two ways that silently
+   regress: a page writes a hex into an inline style (it looked right in the
+   theme the author was viewing, and is invisible in the other one), or a
+   chart hard-codes a fill, because an SVG presentation attribute cannot
+   resolve var() at all. Both happened in v2 and neither was ever measured. */
+console.log('\nG29  the theme owns every colour');
+{
+  const ALLOWED = /^#(?:fff|ffffff|000|000000)$/i; /* opaque ink on a saturated fill: theme-independent */
+  const dirs = ['src/pages', 'src/core'];
+  const offenders = [];
+  for (const d of dirs) {
+    for (const f of fs.readdirSync(path.join(ROOT, d))) {
+      if (!f.endsWith('.js')) continue;
+      const text = fs.readFileSync(path.join(ROOT, d, f), 'utf8')
+        /* A token fallback is not a hard-coded colour: `var(--danger,#dc3545)`
+           resolves to the theme and only paints the hex if the token is gone. */
+        .replace(/var\(--[a-z0-9-]+\s*,\s*#[0-9a-fA-F]{3,8}\)/g, 'var(--token)');
+      text.split(/\r?\n/).forEach((line, i) => {
+        const m = line.match(/style="[^"]*?#[0-9a-fA-F]{3,8}/g) || [];
+        m.forEach((hit) => {
+          const hex = (hit.match(/#[0-9a-fA-F]{3,8}/g) || []).filter((h) => !ALLOWED.test(h));
+          if (hex.length) offenders.push(d + '/' + f + ':' + (i + 1) + ' ' + hex.join(' '));
+        });
+      });
+    }
+  }
+  if (offenders.length) {
+    fail('G29', 'generated markup paints ' + offenders.length + ' inline colour(s) that no theme token owns: ' + offenders.slice(0, 6).join(', ') +
+      ' - use var(--accent)/var(--ok)/var(--danger), or a class');
+  } else {
+    ok('G29', 'no inline colour in generated markup escapes the theme tokens');
+  }
+
+  const chartsSrc = fs.readFileSync(path.join(ROOT, 'src', 'core', '03j_charts.js'), 'utf8');
+  const frozen = (chartsSrc.match(/(?:fill|stroke|stop-color)="#[0-9a-fA-F]{3,8}"/g) || []);
+  if (frozen.length) {
+    fail('G29', frozen.length + ' chart colour(s) are hard-coded and will not follow the theme: ' + frozen.slice(0, 5).join(', ') +
+      ' - resolve them through PS.chart.tokens()');
+  } else {
+    ok('G29', 'charts resolve their palette from the theme at render time (PS.chart.tokens)');
+  }
+
+  const cssText = fs.readFileSync(HTML, 'utf8');
+  const railTokens = ['--rail', '--rail-2', '--rail-line', '--rail-text', '--rail-dim', '--rail-hi'];
+  const missing = railTokens.filter((tk) => !cssText.includes(tk + ':'));
+  if (missing.length) {
+    fail('G29', 'the navigation rail tokens are incomplete: ' + missing.join(', '));
+  } else if (!/\.sidebar\{[^}]*var\(--rail\)/.test(cssText.replace(/\s+/g, ''))) {
+    fail('G29', 'the sidebar is no longer painted from the rail tokens');
+  } else {
+    ok('G29', 'the navigation rail is built from ' + railTokens.length + ' theme tokens, in both themes');
+  }
+
+  const lessonHtml = (() => {
+    w.location.hash = '#/academy/func-mission-value?tab=learn';
+    PS.renderRoute();
+    return w.document.querySelector('#main');
+  })();
+  const lessonBody = lessonHtml.querySelector('.lesson-body');
+  if (!lessonBody) {
+    fail('G29', 'the lesson page renders no .lesson-body, so the reading typography is not applied to any prose');
+  } else if (!/\.lesson-body\s+p\s*,\s*\.lesson-body\s+li\{font-family:var\(--font-read\)/.test(cssText.replace(/\r/g, ''))) {
+    fail('G29', '.lesson-body exists but the shipped CSS sets no reading face for it');
+  } else {
+    ok('G29', 'lesson prose is wrapped and set in the reading face (--font-read) by the shipped CSS');
+  }
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

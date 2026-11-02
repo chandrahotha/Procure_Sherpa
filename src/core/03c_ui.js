@@ -170,7 +170,7 @@ PS.kbdHelp = {
       '@media print { .no-print { display: none !important; } }' +
       '</style></head><body>' +
       '<h1>Procure Sherpa — Keyboard Shortcuts Cheat Sheet</h1>' +
-      '<p style="margin: 4pt 0 16pt; color: #666;">Offline-first procurement toolkit | <span id="printDate"></span></p>';
+      '<p style="margin: 4pt 0 16pt; color: var(--dim);">Offline-first procurement toolkit | <span id="printDate"></span></p>';
 
     self.sections.forEach(function (sec) {
       html += '<h2>' + PS.esc(sec.title) + '</h2><table><tbody>';
