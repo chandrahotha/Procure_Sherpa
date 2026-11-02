@@ -230,7 +230,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 10: Risk, Compliance, Ethics and Sustainability': ['risk', 'ethics', 'sustainability', 'learn'],
   'Module 11: Digital Procurement, Analytics and Category Strategy': ['analytics', 'strategy', 'learn'],
   'Module 12: Advanced Category & Portfolio Strategy': ['portfolio', 'strategy', 'cost', 'learn'],
-  'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn']
+  'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn'],
+  'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -243,8 +244,8 @@ PS.ACADEMY_MODULE_TAGS = {
    operational set. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
-  buyer: ['operations', 'sourcing', 'services', 'spend', 'learn'],
-  manager: ['strategy', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
+  buyer: ['operations', 'sourcing', 'negotiation', 'services', 'spend', 'learn'],
+  manager: ['strategy', 'influence', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'contract', 'governance', 'learn'],
   compliance: ['risk', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
 };

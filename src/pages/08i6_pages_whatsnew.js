@@ -7,6 +7,21 @@ PS.whatsNew = PS.whatsNew || {};
 
 PS.whatsNew.CHANGES = [
   {
+    version: '2.6',
+    date: '2026-11-02',
+    title: 'The craft that makes the other modules happen',
+    tag: 'Improvement',
+    items: [
+      'New Module 14: Stakeholder Influence, Internal Consulting & Change Adoption - three lessons on mapping who actually decides, building an ask someone can grant, and keeping a booked saving alive past year one. The curriculum is now 37 functions across 14 modules, 200 step sequences and 164 quiz questions',
+      'A matching learning track (Stakeholder Influence & Change Adoption), a new badge, workbench links for all three lessons, and role recommendations that now point at Module 14',
+      'Practice exams can no longer be submitted with questions blank: an unanswered question scores zero, so Submit now takes you to the first blank instead of recording an attempt that looks like a result',
+      'The exam result no longer shows the pass mark as a stat tile beside your score. It said "70%" in the same size and colour as your own number, and people read it as a score. The pass mark is now a caption on the score, and the fourth tile is how many questions you answered',
+      'Attempt history records answered-of-total and labels blanks, so a 0% row is never mistaken for a sat exam',
+      '"Certification exams" is now "Practice exams" everywhere - page, sidebar, command palette, dashboard tile, tips and the data-purge list. This product issues no credentials, and its own vocabulary should not imply otherwise',
+      'The footer was rebuilt around the Digi Tracks brand with www.digitracks.net, grouped links and a plain-language privacy line; the sidebar lost its duplicate padlocked privacy notice and the account row is now one clean clickable line'
+    ]
+  },
+  {
     version: '2.5',
     date: '2026-11-02',
     title: 'The curriculum grew up, and the toolkit was proved against itself',

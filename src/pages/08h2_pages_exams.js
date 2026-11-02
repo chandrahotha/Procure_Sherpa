@@ -1,8 +1,8 @@
 /* ==========================================================
-   Certification Exams page (roadmap 11.4)
+   Practice Exams page (roadmap 11.4)
    ========================================================== */
 PS.route('exams', function () {
-  PS.pageTitle = 'Certification Exams';
+  PS.pageTitle = 'Practice Exams';
   PS.exams.stopTimer();
   var banks = PS.exams.banks();
   var bankCards = banks.map(function (b) {
@@ -16,9 +16,9 @@ PS.route('exams', function () {
       (best ? '<p class="note">Best attempt: <strong>' + best.pct + '%</strong> (' + best.score + '/' + best.total + ') on ' + PS.esc(PS.dateStr(best.date)) + '</p>' : '<p class="note">No attempts yet.</p>') +
       '</div>';
   }).join('');
-  return PS.reportHead('Certification exams', 'Academy question bank') +
-    '<div class="card"><div class="card-head"><div><h1>Certification exams</h1>' +
-    '<p class="card-sub">Timed, randomised exams built from the Academy knowledge checks. Questions are sampled at random on every attempt; answers are graded locally and history is kept in this browser.</p></div>' +
+  return PS.reportHead('Practice exams', 'Academy question bank') +
+    '<div class="card"><div class="card-head"><div><h1>Practice exams</h1>' +
+    '<p class="card-sub">Timed, randomised practice exams built from the Academy knowledge checks. Questions are sampled at random on every attempt; answers are graded locally and history is kept in this browser.</p></div>' +
     '<div class="spacer"></div>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="exam-history">Attempt history</button></div>' +
     '<div class="field"><label for="examCount">Questions per exam</label>' +

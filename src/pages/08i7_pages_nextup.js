@@ -97,7 +97,7 @@ PS.nextUp.getRecommendation = function () {
   if (assessment && assessment.score >= 75) {
     recs.push({
       kind: 'stretch',
-      title: 'Sit a certification exam',
+      title: 'Sit a practice exam',
       why: 'Your assessment score was ' + assessment.score + '%. The timed exams are the strongest test of what has stuck.',
       href: '#/exams',
       cta: 'Exams'

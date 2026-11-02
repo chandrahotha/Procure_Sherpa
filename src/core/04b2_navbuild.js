@@ -246,9 +246,14 @@ PS.updateSidebarFoot = function (r) {
   var isAcademy = !!(r && PS.ACADEMY_ROUTE_NAMES[r.name]);
   var academyStats = PS.academy ? PS.academy.getStats() : { completedCount: 0, totalCount: 19 };
   var savedCount = (PS.saved && PS.saved.list) ? PS.saved.list().length : 0;
+  /* The line has to say something true about this browser. "0 Saved Drafts"
+     was accurate but read like a system count; a learner with nothing saved
+     is at the start, and the row is the most-looked-at place they check that
+     the app noticed them. */
   var subText = isAcademy ?
-    (academyStats.completedCount + ' of ' + academyStats.totalCount + ' Mastered') :
-    (savedCount + ' Saved Draft' + (savedCount === 1 ? '' : 's'));
+    (academyStats.completedCount === 0 ? 'Not started \u00B7 ' + academyStats.totalCount + ' lessons' :
+      academyStats.completedCount + ' of ' + academyStats.totalCount + ' mastered') :
+    (savedCount === 0 ? 'No saved drafts yet' : savedCount + ' saved draft' + (savedCount === 1 ? '' : 's'));
 
   /* The system pages live in a permanent footer strip, outside the
      collapsible tree: Settings, Help, Backup and the changelog are
@@ -262,18 +267,21 @@ PS.updateSidebarFoot = function (r) {
       (it.i18n ? ' data-i18n="' + PS.esc(it.i18n) + '"' : '') + '>' + PS.esc(lbl) + '</a>';
   }).join('');
 
+  /* Three blocks, in the order they are used: the navigation tree above,
+     then the system pages, then the account. The privacy line that used to
+     close this strip repeated the footer in jargon and added a fourth row of
+     text nobody acts on, so it is gone; the account row is one line with a
+     chevron, because the whole row is clickable and "View Profile" spelled
+     out was competing with the name for attention. */
   foot.innerHTML = '<div class="sidebar-foot-links"><span class="sidebar-foot-label">System</span>' + footLinks + '</div>' +
-    '<div class="sidebar-foot-account" data-act="user-profile-open" title="Click to view Account & Interlinked Profile">' +
-    '<div class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' +
-    PS.esc(PS.user.getInitials(prof.name)) + '</div>' +
-    '<div class="sidebar-foot-meta">' +
-    '<div class="sidebar-foot-name">' + PS.esc(prof.name) + '</div>' +
-    '<div class="sidebar-foot-sub">' + PS.esc(subText) + ' &bull; View Profile</div>' +
-    '</div></div>' +
-    '<div class="privacy-note">' +
-    '<span aria-hidden="true">&#128274;</span>' +
-    '<span>Enterprise Single-Tenant Session &middot; Zero Data Egress</span>' +
-    '</div>';
+    '<button type="button" class="sidebar-foot-account" data-act="user-profile-open" ' +
+    'title="' + PS.esc(prof.name) + ' \u2014 open account and role profile" aria-label="Open account and role profile">' +
+    '<span class="sidebar-foot-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '" aria-hidden="true">' +
+    PS.esc(PS.user.getInitials(prof.name)) + '</span>' +
+    '<span class="sidebar-foot-meta">' +
+    '<span class="sidebar-foot-name">' + PS.esc(prof.name) + '</span>' +
+    '<span class="sidebar-foot-sub">' + PS.esc(subText) + '</span>' +
+    '</span><span class="sidebar-foot-caret" aria-hidden="true">&rsaquo;</span></button>';
 };
 PS.setNavOpen = function (sec, isOpen, silent) {
   var el = PS.$$('#navRoot .nav-sec').filter(function (n) { return n.dataset.sec === sec; })[0];

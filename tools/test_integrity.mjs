@@ -1276,6 +1276,100 @@ if (!/Content quality report/i.test(auditText)) {
   ok('G25', 'the audit page shows the content report and agrees with PS.contentQA() (' + qaProblems.length + ' problems)');
 }
 
+/* ---------- G26: an exam attempt means answered questions ----------
+   Reported by the owner: clicking Next through a practice exam without
+   answering anything produced "70 percent". The engine had in fact graded it
+   0/5 and NOT PASSED - what read as a score was the pass mark, rendered as a
+   fourth stat tile in the same size and weight as the score and coloured by
+   the outcome. Two defects, both fixed, and both asserted here so neither can
+   come back: a blank attempt must not be submittable or recordable, and the
+   pass mark must never be presented as if it were the reader's result. */
+console.log('\nG26  exam attempt integrity');
+/* jsdom has no scrollIntoView, and the exam runner calls it on every render.
+   The other harnesses stub it the same way; without it this gate dies on the
+   second render instead of reporting anything. */
+w.HTMLElement.prototype.scrollIntoView = w.HTMLElement.prototype.scrollIntoView || function () {};
+w.location.hash = '#/exams';
+PS.renderRoute();
+const examsH1 = (w.document.querySelector('#main h1') || { textContent: '' }).textContent;
+if (/certification/i.test(examsH1)) {
+  fail('G26', 'the exams page is still titled "' + examsH1.trim() + '" while the product issues no credentials');
+} else {
+  ok('G26', 'the exams page calls itself practice, not certification ("' + examsH1.trim() + '")');
+}
+const startBtn = [...w.document.querySelectorAll('#main [data-act="exam-start"]')][0];
+if (!startBtn) {
+  fail('G26', 'no exam bank card offers a start button');
+} else {
+  startBtn.click();
+  const sess = PS.exams.session;
+  if (!sess || !sess.questions.length) {
+    fail('G26', 'starting an exam did not create a session');
+  } else {
+    /* Walk to the end pressing Next only - no answers at all. */
+    for (let i = 0; i < sess.questions.length + 2; i++) {
+      const nx = w.document.querySelector('#examRunner [data-act="exam-next"]');
+      if (nx) nx.click();
+    }
+    const attemptsBefore = PS.exams.history().length;
+    const submitBlank = w.document.querySelector('#examRunner [data-act="exam-submit"]');
+    if (!submitBlank) {
+      fail('G26', 'a blank exam reached the last question with no submit control');
+    } else {
+      submitBlank.click();
+      const attemptsAfter = PS.exams.history().length;
+      if (attemptsAfter !== attemptsBefore) {
+        fail('G26', 'a completely unanswered exam was recorded as an attempt');
+      } else if (!PS.exams.session || PS.exams.session.done) {
+        fail('G26', 'blocking the blank submission also ended the session, so the reader cannot fix it');
+      } else {
+        ok('G26', 'a blank exam cannot be submitted or recorded - the session stays open on the first unanswered question');
+      }
+    }
+    /* Now answer every question the way a reader does: click an option. */
+    const total = PS.exams.session.questions.length;
+    for (let i = 0; i < total; i++) {
+      PS.exams.session.current = i;
+      PS.exams.renderExamRunner();
+      const radio = w.document.querySelector('#examRunner input[name="examOpt"]');
+      if (!radio) break;
+      radio.checked = true;
+      radio.dispatchEvent(new w.Event('change', { bubbles: true }));
+    }
+    const answeredCount = Object.keys(PS.exams.session.answers).length;
+    if (answeredCount !== total) {
+      fail('G26', 'clicking an option on each question recorded ' + answeredCount + ' of ' + total + ' answers');
+    } else {
+      ok('G26', 'selecting an option records the answer for that question (' + total + ' of ' + total + ')');
+    }
+    const submit = w.document.querySelector('#examRunner [data-act="exam-submit"]');
+    submit.click();
+    const confirm = w.document.querySelector('[data-modal="ok"]');
+    if (confirm) confirm.click();
+    const attempt = PS.exams.history().slice(-1)[0];
+    if (!attempt) fail('G26', 'a fully answered exam recorded no attempt');
+    else if (attempt.answered !== total) fail('G26', 'the recorded attempt says ' + attempt.answered + ' answered of ' + total);
+    else ok('G26', 'the graded attempt records answered ' + attempt.answered + '/' + total + ' at ' + attempt.pct + '%');
+
+    const tiles = [...w.document.querySelectorAll('#examRunner .stat')];
+    const tileLabels = tiles.map((t) => ((t.querySelector('.s-lab') || {}).textContent || '').trim());
+    const barePassMark = tileLabels.some((l) => /^pass mark$/i.test(l));
+    if (!tiles.length) {
+      fail('G26', 'the result panel rendered no stats at all');
+    } else if (barePassMark) {
+      fail('G26', 'the result panel shows the pass mark as its own stat tile again: ' + tileLabels.join(' | '));
+    } else if (!tileLabels.some((l) => /pass mark/i.test(l))) {
+      fail('G26', 'the result panel no longer states the pass mark anywhere, so the score has no reference: ' + tileLabels.join(' | '));
+    } else if (!tileLabels.some((l) => /answered/i.test(l))) {
+      fail('G26', 'the result panel does not say how many questions were answered: ' + tileLabels.join(' | '));
+    } else {
+      ok('G26', 'result tiles are the reader\'s own numbers only (' + tileLabels.join(' | ') + ')');
+    }
+    PS.exams.stopTimer();
+    PS.exams.session = null;
+  }
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

@@ -1,5 +1,5 @@
 /* ==========================================================
-   Phase 11 - Certification Exams (roadmap 11.4)
+   Phase 11 - Practice Exams (roadmap 11.4)
    Timed, randomised exam banks assembled from the Academy
    question pool, with pass/fail thresholds and retake history.
    ========================================================== */
@@ -42,10 +42,10 @@ PS.exams.pool = function () {
   return pool;
 };
 
-/* Exam banks: full certification + one per academy module. */
+/* Exam banks: one full practice exam + one per academy module. */
 PS.exams.banks = function () {
   var pool = PS.exams.pool();
-  var banks = [{ id: 'cert-full', title: 'Full Certification Exam', desc: 'All academy knowledge checks, sampled at random.', pool: pool }];
+  var banks = [{ id: 'cert-full', title: 'Full practice exam', desc: 'Every Academy knowledge check, sampled at random. Scored in this browser; certifies nothing.', pool: pool }];
   var byMod = {};
   pool.forEach(function (p) { if (!byMod[p.module]) byMod[p.module] = []; byMod[p.module].push(p); });
   Object.keys(byMod).forEach(function (m) {
@@ -171,9 +171,25 @@ PS.exams.stopTimer = function () {
 PS.acts['exam-submit'] = function () {
   var s = PS.exams.session;
   if (!s) return;
+  /* A blank question is graded as wrong, so letting an exam be submitted
+     with questions untouched produces an attempt that looks like a result
+     and is really an accident. Manual submission now takes the reader to the
+     first unanswered question instead. The timer path still grades whatever
+     stands when time runs out, and records it as incomplete. */
+  var blanks = [];
+  for (var i = 0; i < s.questions.length; i++) {
+    if (s.answers[i] === undefined) blanks.push(i);
+  }
+  if (blanks.length) {
+    s.current = blanks[0];
+    PS.exams.renderExamRunner();
+    PS.toast('Question ' + (blanks[0] + 1) + ' is unanswered - ' + blanks.length +
+      ' of ' + s.questions.length + ' still blank. An unanswered question scores zero, so it is marked rather than skipped.', 'warn');
+    return;
+  }
   PS.confirm({
     title: 'Submit exam?',
-    body: '<p>You answered ' + Object.keys(s.answers).length + ' of ' + s.questions.length + ' questions. Once submitted, your score is recorded locally.</p>',
+    body: '<p>All ' + s.questions.length + ' questions are answered. Once submitted, your score is recorded in this browser only - it is practice, not a credential.</p>',
     okLabel: 'Submit & grade',
     onOk: function () { PS.exams.grade(); }
   });
@@ -193,26 +209,36 @@ PS.exams.grade = function () {
     review.push({ q: q, chosen: ans, correct: correct, correctText: correctOpt ? correctOpt.text : '' });
   });
   var total = s.questions.length;
+  var answeredTotal = Object.keys(s.answers).length;
   var pct = total ? Math.round((score / total) * 100) : 0;
   var passed = pct >= PS.exams.PASS_PCT;
   PS.exams.recordAttempt({
     bank: s.bank.id, bankTitle: s.bank.title, score: score, total: total, pct: pct,
-    passed: passed, date: new Date().toISOString(), seconds: Math.round((Date.now() - s.start) / 1000)
+    passed: passed, date: new Date().toISOString(), seconds: Math.round((Date.now() - s.start) / 1000),
+    answered: answeredTotal, incomplete: answeredTotal < total
   });
   PS.audit(passed ? 'exam-passed' : 'exam-failed', s.bank.title + ' ' + score + '/' + total);
   var box = PS.$('#examRunner');
   if (!box) { PS.renderRoute(); return; }
-  box.innerHTML = '<div class="exam-runner"><div class="card"><div class="card-head"><div><h2>Exam complete</h2>' +
+  var answeredCount = Object.keys(s.answers).length;
+  var unanswered = total - answeredCount;
+  /* The pass mark used to be rendered as a fourth stat tile, in the same
+     size and weight as the score, and coloured by the outcome. A reader who
+     finished a blank attempt saw "0%", "0:00" and a green-ish "70%" in a row
+     and one of those three was not theirs. The pass mark is now a caption on
+     the score, and the fourth tile is the thing that actually explains a low
+     score: how many questions were answered at all. */
+  box.innerHTML = '<div class="exam-runner"><div class="card"><div class="card-head"><div><h2>Practice exam complete</h2>' +
     '<p class="card-sub">' + PS.esc(s.bank.title) + '</p></div><div class="spacer"></div>' +
-    '<span class="badge ' + (passed ? 'badge-ok' : '') + '">' + (passed ? 'PASSED' : 'NOT PASSED') + '</span></div>' +
-    '<div class="grid grid-4">' +
-    '<div class="stat"><div class="s-val">' + score + '/' + total + '</div><div class="s-lab">Correct</div></div>' +
-    '<div class="stat"><div class="s-val">' + pct + '%</div><div class="s-lab">Score</div></div>' +
-    '<div class="stat"><div class="s-val">' + PS.exams.fmtTime(Math.round((Date.now() - s.start) / 1000)) + '</div><div class="s-lab">Time</div></div>' +
-    '<div class="stat ' + (passed ? 'is-ok' : 'is-warn') + '"><div class="s-val">' + PS.exams.PASS_PCT + '%</div><div class="s-lab">Pass mark</div></div>' +
+    '<span class="badge ' + (passed ? 'badge-ok' : '') + '">' + (passed ? 'Reached the pass mark' : 'Below the pass mark') + '</span></div>' +
+    '<div class="grid grid-3">' +
+    '<div class="stat ' + (passed ? 'is-ok' : 'is-warn') + '"><div class="s-val">' + pct + '%</div><div class="s-lab">Your score (pass mark ' + PS.exams.PASS_PCT + '%)</div></div>' +
+    '<div class="stat"><div class="s-val">' + score + '/' + total + '</div><div class="s-lab">Correct answers</div></div>' +
+    '<div class="stat"><div class="s-val">' + answeredCount + '/' + total + '</div><div class="s-lab">Answered' + (unanswered ? ' \u00B7 ' + unanswered + ' left blank' : '') + '</div></div>' +
     '</div>' +
-    (passed ? '<p class="note" style="color:var(--ok)">Congratulations - you reached the pass mark. Retake any time to improve your score.</p>'
-      : '<p class="note">You did not reach the ' + PS.exams.PASS_PCT + '% pass mark this time. Review the answers below and study the linked Academy modules before retaking.</p>') +
+    (passed
+      ? '<p class="note" style="color:var(--ok)">You reached the pass mark on this practice exam. It is recorded in this browser only and certifies nothing.</p>'
+      : '<p class="note">You did not reach the ' + PS.exams.PASS_PCT + '% pass mark' + (unanswered ? ', and ' + unanswered + ' question' + (unanswered === 1 ? ' was' : 's were') + ' left unanswered - a blank question scores zero, it is not skipped.' : '') + '. Review the answers below and study the linked Academy modules before retaking.</p>') +
     '<div class="btn-row"><button type="button" class="btn btn-primary" data-act="exam-retake" data-bank="' + PS.escAttr(s.bank.id) + '">Retake exam</button>' +
     '<button type="button" class="btn btn-ghost" data-act="exam-toggle-review">Review answers</button></div>' +
     '<div id="examReview" hidden>' + PS.exams.renderReview(review) + '</div>' +
@@ -248,12 +274,19 @@ PS.exams.historyHtml = function () {
   var h = PS.exams.history();
   if (!h.length) return '<p class="note">No exam attempts recorded yet.</p>';
   var rows = h.map(function (a) {
+    /* Attempts recorded before the answered count existed show a dash rather
+       than being guessed at. An attempt with blanks is labelled as such, so a
+       0% row in the history is never mistaken for a sat exam. */
+    var answered = (a.answered === undefined || a.total === undefined)
+      ? '\u2014'
+      : a.answered + '/' + a.total + (a.answered < a.total ? ' \u00B7 blanks' : '');
     return '<tr><td>' + PS.esc(PS.dateTime(a.date)) + '</td><td>' + PS.esc(a.bankTitle || a.bank) + '</td>' +
       '<td class="num">' + a.score + '/' + a.total + ' (' + a.pct + '%)</td>' +
-      '<td>' + (a.passed ? '<span style="color:var(--ok);font-weight:700">Passed</span>' : '<span style="color:var(--danger)">Not passed</span>') + '</td>' +
+      '<td class="num">' + answered + '</td>' +
+      '<td>' + (a.passed ? '<span style="color:var(--ok);font-weight:700">Reached pass mark</span>' : '<span style="color:var(--danger)">Below pass mark</span>') + '</td>' +
       '<td class="num">' + PS.exams.fmtTime(a.seconds || 0) + '</td></tr>';
   }).join('');
-  return '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Exam</th><th class="num">Score</th><th>Result</th><th class="num">Time</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  return '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Exam</th><th class="num">Score</th><th class="num">Answered</th><th>Result</th><th class="num">Time</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 };
 
 /* Stop any running exam timer when leaving the exams route. */

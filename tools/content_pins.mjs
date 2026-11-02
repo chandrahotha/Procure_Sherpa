@@ -6,8 +6,8 @@
    These numbers used to live only in tools/verify_deploy.mjs, which is a
    deploy step and does not run inside `npm run qa`. So the exact pins
    (13 SOPs, 27 checklists, 33 templates, 19 calculators, 9 maturity
-   areas, 21 lifecycle stages, 34 Academy functions in 13 modules, the
-   179/148 curriculum counts, the handoff edges and the documented search
+   areas, 21 lifecycle stages, 37 Academy functions in 14 modules, the
+   200/164 curriculum counts, the handoff edges and the documented search
    example) were only ever checked against the live site, while the gate
    that every developer runs held loose floors instead ("< 5", "< 10").
    A content regression could be merged and shipped, and `npm run qa`
@@ -52,16 +52,16 @@ export const PINS = {
   calc: 19,
   maturityAreas: 9,
   lifecycleStages: 21,
-  academyFunctions: 34,
-  academyModules: 13,
-  academySopSteps: 179,
-  academyQuizQuestions: 148,
+  academyFunctions: 37,
+  academyModules: 14,
+  academySopSteps: 200,
+  academyQuizQuestions: 164,
   /* The three altitudes the curriculum is written at. A function cannot
      be at two levels, and a level cannot gain or lose a function without
      these numbers moving - which is the point: changing a lesson's level
      now fails G1/G16 and G23 until every document that quotes the split
-     is re-read. Counts: 9 foundation, 13 practitioner, 12 executive. */
-  academyTierCounts: { core: 9, practitioner: 13, executive: 12 },
+     is re-read. Counts: 9 foundation, 15 practitioner, 13 executive. */
+  academyTierCounts: { core: 9, practitioner: 15, executive: 13 },
   /* G21: the SOP library's own procedure steps (master §18 part 7).
      This count was 106 before the torn steps were repaired: four of those
      were not steps at all, but halves of a step created by a ';' written
@@ -76,7 +76,7 @@ export const PINS = {
      practice tool, and every other function must have one or the library
      stops being a system. A key dropped from PS.ACADEMY_WORKBENCH moves
      this number and fails the gate. */
-  academyWorkbenchLinked: 33,
+  academyWorkbenchLinked: 36,
   workbenches: 8,
   navLearnSections: 5,
   navLearnItems: 26,

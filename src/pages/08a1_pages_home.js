@@ -47,7 +47,7 @@ PS.homeQuickCalc = function () {
 PS.homePhase11 = function () {
   var cards = [
     { href: '#/copilot', ico: '🤖', title: 'Procurement Copilot', desc: 'Ask the offline assistant about concepts, processes and calculators - answers with citations.' },
-    { href: '#/exams', ico: '📝', title: 'Certification Exams', desc: 'Timed, randomised exams from the Academy question bank with pass/fail grading.' },
+    { href: '#/exams', ico: '📝', title: 'Practice Exams', desc: 'Timed, randomised practice exams from the Academy question bank, scored against a pass mark. Recorded in this browser only.' },
     { href: '#/spend-model', ico: '📊', title: 'Spend Data Model', desc: 'One category-supplier hierarchy feeding the Pareto and Kraljic charts.' },
     { href: '#/docpack', ico: '📦', title: 'Document Pack Builder', desc: 'Assemble RFI / RFP / contract packs with a cover sheet and contents.' }
   ];

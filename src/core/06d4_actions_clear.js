@@ -24,7 +24,7 @@ PS.acts['clear-data'] = function () {
       '<tr><td>Favorites (' + PS.fav.list().length + ') and recently used (' + PS.recent.list().length + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Academy progress and badges</td><td>Deleted</td></tr>' +
       '<tr><td>Skill assessment results (' + (PS.store.get(PS.K.assessment, null) ? 1 : 0) + ')</td><td>Deleted</td></tr>' +
-      '<tr><td>Certification exam history</td><td>Deleted</td></tr>' +
+      '<tr><td>Practice exam history</td><td>Deleted</td></tr>' +
       '<tr><td>Practice lab progress (' + labs + ')</td><td>Deleted</td></tr>' +
       '<tr><td>Spend data model</td><td>Deleted</td></tr>' +
       '<tr><td>Copilot transcript</td><td>Deleted</td></tr>' +

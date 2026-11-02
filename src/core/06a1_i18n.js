@@ -40,7 +40,7 @@ PS.i18n.CATALOG = {
     'topbar.profile': 'My Account & Role Profile',
     'topbar.account': 'Account',
 
-    'footer.privacy': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress',
+    'footer.privacy': 'Runs entirely in your browser \u00B7 no accounts, no servers, no telemetry',
     'footer.note': 'Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.',
 
     'common.cancel': 'Cancel',
@@ -68,9 +68,7 @@ PS.i18n.CATALOG = {
     'calc.shareStatic': 'Static share page',
 
     'saved.items': '{n} item(s) stored',
-    'audit.events': 'local events',
-
-    'privacy.session': 'Enterprise Single-Tenant Session \u00B7 Zero Data Egress'
+    'audit.events': 'local events'
   },
 
   es: {
@@ -94,7 +92,7 @@ PS.i18n.CATALOG = {
     'topbar.profile': 'Mi cuenta y perfil de rol',
     'topbar.account': 'Cuenta',
 
-    'footer.privacy': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos',
+    'footer.privacy': 'Se ejecuta por completo en tu navegador \u00B7 sin cuentas, sin servidores, sin telemetr\u00EDa',
     'footer.note': 'Procure Sherpa. Plataforma interactiva de aprendizaje y apoyo a decisiones en compras. No es un ERP. Umbrales de aprobaci\u00F3n, tratamiento fiscal y requisitos legales var\u00EDan seg\u00FAn la organizaci\u00F3n: configure Ajustes y verifique localmente antes del uso operativo.',
 
     'common.cancel': 'Cancelar',
@@ -122,9 +120,7 @@ PS.i18n.CATALOG = {
     'calc.shareStatic': 'P\u00E1gina est\u00E1tica compartible',
 
     'saved.items': '{n} elemento(s) guardado(s)',
-    'audit.events': 'eventos locales',
-
-    'privacy.session': 'Sesi\u00F3n Empresarial de Inquilino \u00DAnico \u00B7 Cero Salida de Datos'
+    'audit.events': 'eventos locales'
   }
 };
 

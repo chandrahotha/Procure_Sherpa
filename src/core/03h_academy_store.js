@@ -44,6 +44,7 @@ PS.academy.BADGES = [
   { id: 'analytics_architect', name: 'Spend Analytics Architect', icon: '📊', desc: 'Mastered Digital Procurement, Spend Analytics and Category Strategy.', requires: ['func-digital-procurement', 'func-spend-analytics', 'func-category-strategy'] },
   { id: 'portfolio_commander', name: 'Portfolio Commander', icon: '🧬', desc: 'Mastered the Tail, Supply Market Structure and Demand Management.', requires: ['func-tail-spend-program', 'func-market-structure', 'func-demand-management'] },
   { id: 'boardroom_ready', name: 'Boardroom Ready', icon: '🏛️', desc: 'Mastered the Operating Model, the Value Narrative and Transformation Sequencing.', requires: ['func-operating-model', 'func-value-narrative', 'func-transformation-roadmap'] },
+  { id: 'influence_architect', name: 'Influence & Adoption Architect', icon: '🧲', desc: 'Mastered Stakeholder Mapping, the Executive Ask and Change Adoption.', requires: ['func-stakeholder-mapping', 'func-executive-ask', 'func-adoption-and-change'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

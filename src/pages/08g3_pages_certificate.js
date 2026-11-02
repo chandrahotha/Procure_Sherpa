@@ -23,7 +23,7 @@ PS.route('certificate', function () {
     '<p class="muted">This is planned as a possible future feature if a real ' +
     'verification or accreditation path is put in place. Your Academy progress and ' +
     'exam scores are still tracked - see <a href="#/academy-progress">My Progress</a> ' +
-    'and <a href="#/exams">Certification Exams</a>.</p>' +
+    'and <a href="#/exams">Practice Exams</a>.</p>' +
     '<p><a class="btn btn-sm" href="#/academy">&larr; Back to Academy</a></p>' +
     '</div>' +
     '</div>';

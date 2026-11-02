@@ -453,7 +453,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-demand-management': 'budget',
   'func-operating-model': 'approvals',
   'func-value-narrative': 'analytics',
-  'func-transformation-roadmap': 'analytics'
+  'func-transformation-roadmap': 'analytics',
+  'func-stakeholder-mapping': 'approvals',
+  'func-executive-ask': 'budget',
+  'func-adoption-and-change': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

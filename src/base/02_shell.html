@@ -61,12 +61,11 @@
     </div>
     <nav class="nav" id="navRoot" aria-label="Sections"></nav>
     <div class="nav-view-switch no-print" id="navViewSwitch"></div>
-    <div class="sidebar-foot" id="sidebarFoot">
-      <div class="privacy-note">
-        <span aria-hidden="true">&#128274;</span>
-        <span data-i18n="privacy.session">Enterprise Single-Tenant Session &middot; Zero Data Egress</span>
-      </div>
-    </div>
+    <!-- The sidebar ends with the system links and the account row, built in
+     04b2_navbuild.js. The privacy line that used to sit here said the same
+     thing as the footer, in jargon, next to a padlock - and the sidebar had
+     enough in it already. -->
+    <div class="sidebar-foot" id="sidebarFoot"></div>
   </aside>
 
   <button class="scrim" id="scrim" type="button" hidden aria-label="Close navigation"></button>
@@ -97,20 +96,31 @@
     <main class="main" id="main" tabindex="-1"></main>
 
     <footer class="footer no-print">
-      <div class="foot-links">
-        <a href="#/help">Help Center</a>
-        <a href="#/help/methodology">Methodology</a>
-        <a href="#/help/assumptions">Assumptions</a>
-        <a href="#/glossary">Glossary</a>
-        <a href="#/help/privacy">Privacy</a>
-        <a href="#/help/disclaimers">Disclaimers</a>
-        <a href="#/help/versions">Version history</a>
-        <a href="#/settings">Settings</a>
-        <a href="#/backup">Backup / Restore</a>
+      <div class="foot-inner">
+        <div class="foot-brand-block">
+          <span class="foot-mark" aria-hidden="true">PS</span>
+          <div class="foot-brand-text">
+            <strong class="foot-app-name">Procure Sherpa</strong>
+            <span class="foot-app-by">Built by <a class="foot-brand-link" href="https://www.digitracks.net" target="_blank" rel="noopener noreferrer">Digi&nbsp;Tracks</a></span>
+            <a class="foot-brand-site" href="https://www.digitracks.net" target="_blank" rel="noopener noreferrer">www.digitracks.net</a>
+          </div>
+        </div>
+        <nav class="foot-links" aria-label="Help, settings and legal pages">
+          <a href="#/help">Help Center</a>
+          <a href="#/help/methodology">Methodology</a>
+          <a href="#/help/assumptions">Assumptions</a>
+          <a href="#/glossary">Glossary</a>
+          <a href="#/help/versions">Version history</a>
+          <a href="#/settings">Settings</a>
+          <a href="#/backup">Backup / Restore</a>
+          <a href="#/help/privacy">Privacy</a>
+          <a href="#/help/disclaimers">Disclaimers</a>
+        </nav>
+        <div class="foot-meta">
+          <p class="foot-privacy" data-i18n="footer.privacy">Runs entirely in your browser &middot; no accounts, no servers, no telemetry</p>
+          <p id="footNote" data-i18n="footer.note">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</p>
+        </div>
       </div>
-      <div class="foot-privacy" data-i18n="footer.privacy">Enterprise Single-Tenant Session &middot; Zero Data Egress</div>
-      <div id="footNote" data-i18n="footer.note">Procure Sherpa. Interactive procurement learning and decision-support platform. Not an ERP. Approval thresholds, tax treatment, and legal requirements vary by organization and jurisdiction: configure Settings and verify locally before operational use.</div>
-      <div class="foot-brand">Built by <a href="https://digitracks.vercel.app" target="_blank" rel="noopener noreferrer">Digi Tracks</a> &middot; <a href="mailto:digi.tracks@outlook.com">digi.tracks@outlook.com</a></div>
     </footer>
   </div>
 </div>

@@ -74,6 +74,17 @@ PS.learningPaths.PATHS = [
     color: 'var(--warn-2)'
   },
   {
+    id: 'influence',
+    title: 'Stakeholder Influence & Change Adoption',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'The craft that decides whether the other thirteen modules ever get applied: who actually decides, how you ask without authority, and how a booked saving is kept alive.',
+    modules: ['func-stakeholder-mapping', 'func-adoption-and-change', 'func-executive-ask'],
+    skills: ['Reading a decision before it is made', 'Building an ask someone can grant', 'Designing the compliant route to beat the workaround', 'Holding a result past year one'],
+    duration: '3-5 weeks',
+    color: 'var(--accent)'
+  },
+  {
     id: 'boardroom',
     title: 'Executive & Board-Level Procurement',
     tier: 'executive',

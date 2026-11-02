@@ -174,7 +174,7 @@ PS.route('community', function () {
     '<a class="btn btn-sm" href="#/academy">Academy: the 28 procurement functions</a>' +
     '<a class="btn btn-sm" href="#/what">What should I do?</a>' +
     '<a class="btn btn-sm" href="#/scenarios">Worked scenarios</a>' +
-    '<a class="btn btn-sm" href="#/exams">Certification exams</a>' +
+    '<a class="btn btn-sm" href="#/exams">Practice exams</a>' +
     '<a class="btn btn-sm" href="#/glossary">Glossary</a>' +
     '<a class="btn btn-sm" href="#/backup">Back up these notes</a>' +
     '</div>' +

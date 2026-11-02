@@ -1,6 +1,6 @@
 # Procure Sherpa - Improvement Roadmap
 
-**Current Version:** 2.5 (`package.json` carries `2.5.0`, `PS.VERSION` carries `2.5`, and the application prints `Procure Sherpa v2.5` when it loads)  
+**Current Version:** 2.6 (`package.json` carries `2.6.0`, `PS.VERSION` carries `2.6`, and the application prints `Procure Sherpa v2.6` when it loads)  
 **Baseline Tag:** `HUBCHANGED`  
 **Last Updated:** 2026-11-02
 
@@ -68,8 +68,8 @@ strip, and the layout no longer overflows on a phone.
 | Academy functions | 19 | **28** |
 | Functions with a library link | 0 | **28** |
 | Content items with no inbound link | 201 | **0** |
-| Learning paths | 3, covering 8 functions | 4, covering all 34 |
-| Skill portfolio areas | 6, covering 8 functions | 7, covering all 34 |
+| Learning paths | 3, covering 8 functions | 4, covering all 37 |
+| Skill portfolio areas | 6, covering 8 functions | 7, covering all 37 |
 | Badges | 8, with 7 of 19 functions earning none | 12, with every function covered |
 | SOP steps | 96 | **140** |
 | Knowledge-check questions | 76 | **112** |
@@ -388,7 +388,7 @@ Two items already have partial infrastructure worth knowing about:
   the content libraries register (66 concepts, 13 SOPs, 27 checklists,
   33 templates, 17 decision guides, 18 KPIs, 35 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
-  plus the 34 Academy functions and their 148 quiz questions. Counting
+  plus the 37 Academy functions and their 164 quiz questions. Counting
   quoted string literals, `src/content` alone holds about 0.8 MB of
   English against the catalog's 1 KB. **The honest limit is one translated
   shell around an English product**, and the Spanish half is real but
@@ -696,7 +696,7 @@ not a schedule.
 - **Comparison table** - ✅ the rows ship (`PS.whatif` builds a base-vs-scenario table per varied result); 📋 **winner highlighting is not built** - nothing marks the better branch, `winner` appears nowhere in `06e2_whatif.js`
 - **Export** - 📋 **not built.** `06e2_whatif.js` calls neither `PS.download` nor `PS.toMarkdown`: a scenario tree exists only in this browser and cannot leave it
 
-### 11.4 Certification Exams
+### 11.4 Practice Exams
 - **Random question banks** - timed, proctored-style exams assembled from competency question pools
 - **Adaptive length** - 📋 **not built.** The count is a `Questions per exam` select (3/5/8/12) the reader sets; nothing scales it from demonstrated competency
 - **Pass/fail thresholds** - 📋 **not built as described.** One 70% pass mark is fixed for every bank, and it links to nothing, because certificate issuance is disabled (`#/certificate`)
@@ -846,12 +846,13 @@ one `tools/check_drift.mjs` compares against `package.json` and
 | 2.3 | 2026-10-08 | - |
 | 2.4 | 2026-10-20 | The revamp recorded in `docs/v2.4-delivery-report.md` |
 | 2.5 | 2026-11-02 | Academy Modules 12 and 13 shipped and integrated, the storage suite written, the hostile-backup path closed, CI least privilege added, and 25 integrity gates |
+| 2.6 | 2026-11-02 | Module 14 (influence, the executive ask, adoption) - 37 functions in 14 modules; practice-exam integrity fixed; footer and sidebar rebuilt; 26 integrity gates |
 
 The original target table said v2.1 in Q4 2026, v2.2 in Q1 2027 and v2.3
 in Q2 2027. All three shipped inside four weeks of being planned, in
 September and October 2026. It also parked the Phase 11 items at v3.1
 (Q1 2028) and v3.2 (Q2 2028); the offline copilot, static share pages,
-what-if branching, certification exams, spend data model and doc pack
+what-if branching, practice exams, spend data model and doc pack
 builder are all **shipped today** - the status legend at the top of this
 file marks all of Phase 11 as shipped. Anything still numbered v3.x here
 is a placeholder for work that has not been scoped, not a promise with a
@@ -873,7 +874,7 @@ is right and this table is the thing to fix.
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
 | Accessibility (`npm run audit:a11y`) | 0 issues, across the 64 routes the audit enumerates (52 registered routes, so the sweep is wider than the registry) | 0 issues, keyboard focus visible in both themes |
 | PWA score (Lighthouse) | **not measurable as things stand** - the artifact has no web manifest and no service worker (`serviceWorker` appears nowhere in `src/` or the built file), so there is no install surface for Lighthouse to score. This is Phase 7 work, not a missing measurement | decide first whether the product wants to be installable at all |
-| Supported languages | 2 registered (`en`, `es`), 44 of 44 shell catalog keys wired - `npm run audit:i18n`. The authored content is English-only; see the i18n entry in the status legend | 7+ |
+| Supported languages | 2 registered (`en`, `es`), 43 of 43 shell catalog keys wired - `npm run audit:i18n`. The authored content is English-only; see the i18n entry in the status legend | 7+ |
 | Calculator count | 19 | 25+ |
 | Academy functions | 28 (the original 24+ target is already exceeded) | re-baseline the target |
 

@@ -35,7 +35,7 @@
                               the rescued "Career Paths" page, which no
                               link pointed at before.
      My Progress & Badges  -> renamed "My Progress"
-     Certification Exams   kept
+     Practice Exams        kept
      Credential Transcript -> removed from the tree. It is an honest
                               "not available yet" placeholder; the link
                               stays on the My Progress page.
@@ -95,7 +95,7 @@ PS.NAV_UNIFIED = [
       { label: 'Learning Paths', href: '#/learning-paths' },
       { label: 'Skill Assessment', href: '#/assessment' },
       { label: 'Practice Labs', href: '#/labs' },
-      { label: 'Certification Exams', href: '#/exams' },
+      { label: 'Practice Exams', href: '#/exams' },
       { label: 'Skill Portfolio', href: '#/portfolio' },
       { label: 'My Progress', href: '#/academy-progress' },
       { label: 'Next Lesson', href: '#/next-up' },

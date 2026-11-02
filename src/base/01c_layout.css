@@ -3,20 +3,24 @@
 .app.has-no-sidebar .sidebar,.app.has-no-sidebar #scrim{display:none!important}
 .app.has-no-sidebar .main{max-width:1240px;width:100%;margin:0 auto}
 
-/* Sidebar Footer Account & Status */
+/* Sidebar account row. It is a <button>, so it has to shed the UA styling
+   before it can look like the rest of the strip: full width, left-aligned,
+   inherited font, no default border. */
 .sidebar-foot-account{
-  display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--panel-2);
-  border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;margin-bottom:8px;
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;
+  padding:8px 10px;background:var(--panel-2);color:inherit;
+  border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;
   transition:background .12s,border-color .12s;
 }
 .sidebar-foot-account:hover{background:var(--sunken);border-color:var(--border-2)}
 .sidebar-foot-avatar{
-  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
-  color:#fff;font-size:.72rem;font-weight:700;flex:0 0 28px;
+  width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+  color:#fff;font-size:.7rem;font-weight:700;flex:0 0 26px;
 }
-.sidebar-foot-meta{flex:1;min-width:0}
-.sidebar-foot-name{font-size:.78rem;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-foot-sub{font-size:.68rem;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-meta{flex:1;min-width:0;display:block}
+.sidebar-foot-name{display:block;font-size:.78rem;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-sub{display:block;font-size:.68rem;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-foot-caret{flex:0 0 auto;color:var(--mute);font-size:1rem;line-height:1;padding-bottom:2px}
 
 /* Section: Visual Data Analytics Charts */
 .chart-container{
@@ -185,27 +189,26 @@
 a.is-current .nav-badge{background:rgba(255,255,255,.65);color:inherit;border-color:transparent}
 html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)}
 .nav-empty{padding:18px 12px;text-align:center;color:var(--mute);font-size:.82rem}
-.sidebar-foot{padding:12px 14px}
+.sidebar-foot{padding:10px 12px 12px}
+/* Two tidy columns instead of a wrapping row of pills: four system links
+   used to break unpredictably as the sidebar narrowed, and the strip read as
+   three stacked blocks of small text. */
 .sidebar-foot-links{
-  display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:10px;
-  padding-bottom:10px;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:9px;
+  padding-bottom:9px;border-bottom:1px solid var(--border);
 }
 .sidebar-foot-label{
-  flex:0 0 100%;font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--mute);margin-bottom:2px;
+  grid-column:1 / -1;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:1px;
 }
 .sidebar-foot-link{
-  font-size:.7rem;font-weight:600;color:var(--dim);text-decoration:none;
-  padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--panel-2);
+  font-size:.69rem;font-weight:600;color:var(--dim);text-decoration:none;
+  padding:5px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--panel-2);
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   transition:color .12s,border-color .12s,background .12s;
 }
 .sidebar-foot-link:hover{color:var(--accent);border-color:var(--border-2);background:var(--sunken)}
 .sidebar-foot-link.is-current{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
-.privacy-note{
-  display:flex;gap:8px;align-items:flex-start;line-height:1.5;font-size:.7rem;color:var(--mute);
-  background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;
-}
-.privacy-note [aria-hidden="true"]{color:var(--ok);font-size:.8rem}
 .content{display:flex;flex-direction:column;min-width:0;min-height:100vh}
 .topbar{
   position:sticky;top:0;z-index:30;display:flex;gap:12px;align-items:center;flex-wrap:nowrap;
@@ -237,11 +240,50 @@ html[data-theme="dark"] a.is-current .nav-badge{background:rgba(255,255,255,.12)
 .crumb .sep{margin:0 3px;opacity:.45}
 .main{flex:1;padding:16px 28px 56px;max-width:1240px;width:100%;margin:0 auto;animation:page-in .16s ease-out}
 @keyframes page-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-.footer{border-top:1px solid var(--border);padding:14px 28px 24px;font-size:.72rem;color:var(--mute);background:transparent}
-.footer .foot-links{display:flex;flex-wrap:wrap;gap:2px 4px;margin-bottom:6px}
-.footer .foot-links a{padding:3px 8px;border-radius:6px;color:var(--dim);text-decoration:none;font-weight:550}
+.footer{border-top:1px solid var(--border);padding:18px 28px 26px;font-size:.72rem;color:var(--mute);background:var(--panel)}
+/* Three zones, aligned to the content column: who built it, where to get
+   help, and what the product is and is not. It used to be nine bare links,
+   then two paragraphs of disclaimer, then a brand line with an email address
+   in it - four stacked rows with no hierarchy and nothing to look at first. */
+.foot-inner{
+  max-width:1240px;margin:0 auto;display:grid;gap:16px 28px;align-items:start;
+  grid-template-columns:minmax(190px,1fr) minmax(240px,1.4fr) minmax(220px,1.6fr);
+}
+.foot-brand-block{display:flex;gap:11px;align-items:flex-start}
+.foot-mark{
+  flex:0 0 34px;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:var(--accent);color:#fff;font-size:.78rem;font-weight:800;letter-spacing:.02em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+}
+.foot-brand-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.foot-app-name{font-size:.82rem;font-weight:800;color:var(--text);letter-spacing:-.01em}
+.foot-app-by{font-size:.72rem;color:var(--mute)}
+.foot-brand-link{color:var(--dim);text-decoration:none;font-weight:700}
+.foot-brand-link:hover{color:var(--accent);text-decoration:underline}
+.foot-brand-site{
+  display:inline-block;margin-top:3px;font-size:.7rem;font-weight:650;color:var(--accent);
+  text-decoration:none;border:1px solid var(--border-2);border-radius:999px;padding:3px 9px;
+  background:var(--panel-2);transition:border-color .12s,background .12s;
+}
+.foot-brand-site:hover{border-color:var(--accent);background:var(--accent-soft)}
+.footer .foot-links{display:flex;flex-wrap:wrap;gap:4px 6px}
+.footer .foot-links a{padding:3px 8px;border-radius:6px;color:var(--dim);text-decoration:none;font-weight:600}
 .footer .foot-links a:hover{background:var(--sunken);color:var(--accent)}
-.footer .foot-brand{margin-top:6px;color:var(--mute)}
-.footer .foot-brand a{color:var(--dim);text-decoration:none;font-weight:600}
-.footer .foot-brand a:hover{color:var(--accent);text-decoration:underline}
+.foot-meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.foot-privacy{
+  font-size:.7rem;font-weight:650;color:var(--dim);margin:0;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.foot-privacy::before{
+  content:"";flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:var(--ok);
+}
+#footNote{margin:0;font-size:.69rem;line-height:1.55;color:var(--mute);max-width:60ch}
+@media (max-width:1080px){
+  .foot-inner{grid-template-columns:1fr 1fr}
+  .foot-meta{grid-column:1 / -1}
+}
+@media (max-width:720px){
+  .foot-inner{grid-template-columns:1fr;gap:14px}
+  .footer{padding:16px 18px 22px}
+}
 .scrim{position:fixed;inset:0;background:rgba(9,13,26,.5);backdrop-filter:blur(2px);z-index:35;border:0;padding:0}
