@@ -360,6 +360,39 @@ if (!hasManifestLink) {
   }
 }
 
+/* Phase 11 statuses, read against the source.
+   The roadmap carries a status word per capability bullet, and six bullets
+   claimed work that is not in the build. The prose audit above catches numbers;
+   this catches the other direction - a document saying a thing ships when the
+   file that would ship it has no such code, and (because the rule runs both
+   ways) a document still calling it not built the day somebody implements it.
+
+   A capability is treated as present when any probe file contains its
+   signature. Absence is only ever an absence of code, never of a word: these
+   are the constructs the feature would have to use to exist at all. */
+const CAPABILITIES = [
+  { bullet: 'Context awareness', probes: ['src/core/06e3_copilot.js'], sig: /routeMeta|PS\.calcState|saved\.list\(/, what: 'the copilot reading the current route, calculator inputs or saved work' },
+  { bullet: 'Comparison table', probes: ['src/core/06e2_whatif.js'], sig: /winner/i, what: 'winner highlighting in the what-if comparison table' },
+  { bullet: 'Export', probes: ['src/core/06e2_whatif.js'], sig: /PS\.download|toMarkdown|toCSV/, what: 'a scenario tree leaving the browser as JSON or Markdown' },
+  { bullet: 'Period snapshots', probes: ['src/core/06e5_spend.js'], sig: /snapshot|period/i, what: 'spend period captures to compare against' },
+  { bullet: 'Import/export', probes: ['src/core/06e5_spend.js'], sig: /parseCSV|fromCSV|readCsv|text\.split\(.\\n/i, what: 'a CSV or JSON path reading the spend model back in' }
+];
+const roadmap = read('IMPROVEMENT_ROADMAP.md');
+for (const cap of CAPABILITIES) {
+  const present = cap.probes.some((f) => cap.sig.test(read(f)));
+  const line = roadmap.split(/\r?\n/).find((l) => l.startsWith('- **(' + cap.bullet + ')**') || l.startsWith('- **' + cap.bullet + '**'));
+  if (!line) {
+    docProblems.push({ label: 'a gated capability bullet is gone from the roadmap', detail: 'no line begins "- **' + cap.bullet + '**"', measure: cap.probes.join(', ') + ' is still probed', fix: 'keep the bullet, or drop the capability from tools/check_drift.mjs as well' });
+    continue;
+  }
+  const saysNotBuilt = /not built/i.test(line);
+  if (!present && !saysNotBuilt) {
+    docProblems.push({ label: 'the roadmap claims a capability the source does not have', detail: line.trim().slice(0, 120), measure: 'nothing in ' + cap.probes.join(' or ') + ' implements ' + cap.what, fix: 'mark the bullet 📋 not built, or build ' + cap.what });
+  } else if (present && saysNotBuilt) {
+    docProblems.push({ label: 'the roadmap still calls a shipped capability not built', detail: line.trim().slice(0, 120), measure: cap.what + ' is now present in ' + cap.probes.join(', '), fix: 'the feature exists - update the bullet and assert it somewhere' });
+  }
+}
+
 if (docProblems.length) {
   console.error('--- documentation drift ---');
   console.error('FAIL: ' + docProblems.length + ' claim(s) in the documents no longer match the source.');

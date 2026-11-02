@@ -681,7 +681,7 @@ not a schedule.
 - **Local answer engine** - rule-based/retrieval assistant answering procurement questions from the bundled KB, SOPs, and glossary (no network)
 - **Intent router** - maps natural-language questions to calculators, checklists, or decision guides
 - **Inline citations** - every answer links back to the source competency/KB fragment
-- **Context awareness** - uses current route, open calculator inputs, and saved workspace for answers
+- **Context awareness** - 📋 **not built.** Nothing in `06e3_copilot.js` reads `PS.routeMeta`, `PS.calcState` or the saved workspace: the copilot answers from the question text and the index alone
 - **Transcript log** - session history saved to the workspace, exportable to JSON/Markdown
 
 ### 11.2 Static Share Pages
@@ -693,21 +693,21 @@ not a schedule.
 ### 11.3 What-If Branching
 - **Scenario branching** on any calculator - vary one input, see the delta
 - **Decision trees** - saveable multi-branch explorations with labels and timestamps
-- **Comparison table** - side-by-side scenario rows with winner highlighting
-- **Export** - scenario trees export as JSON/Markdown for audit trails
+- **Comparison table** - ✅ the rows ship (`PS.whatif` builds a base-vs-scenario table per varied result); 📋 **winner highlighting is not built** - nothing marks the better branch, `winner` appears nowhere in `06e2_whatif.js`
+- **Export** - 📋 **not built.** `06e2_whatif.js` calls neither `PS.download` nor `PS.toMarkdown`: a scenario tree exists only in this browser and cannot leave it
 
 ### 11.4 Certification Exams
 - **Random question banks** - timed, proctored-style exams assembled from competency question pools
-- **Adaptive length** - question count scales with competency depth
-- **Pass/fail thresholds** - configurable per exam, linked to certificate issuance
+- **Adaptive length** - 📋 **not built.** The count is a `Questions per exam` select (3/5/8/12) the reader sets; nothing scales it from demonstrated competency
+- **Pass/fail thresholds** - 📋 **not built as described.** One 70% pass mark is fixed for every bank, and it links to nothing, because certificate issuance is disabled (`#/certificate`)
 - **Answer review** - post-exam breakdown with explanations and lab links
 - **Attempt history** - retake tracking with best-score persistence
 
 ### 11.5 Spend Data Model
 - **Drag-drop hierarchy editor** - build category > sub-category > supplier tree
 - **Auto-populates charts** - Pareto, Kraljic, and dashboards derive from the same model
-- **Period snapshots** - monthly spend captures with time-travel comparison
-- **Import/export** - CSV/JSON round-trip for bulk population
+- **Period snapshots** - 📋 **not built.** `06e5_spend.js` keeps one current model; `snapshot` and `period` appear nowhere in it, so there is nothing to compare a month against
+- **Import/export** - 📋 **not built.** The spend model exports; no CSV or JSON path reads it back in, so a thousand rows have to be typed
 
 ### 11.6 Doc Pack Builder
 - **RFI/RFP/contract pack assembly** - select templates + data, compose a package
