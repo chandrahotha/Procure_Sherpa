@@ -35,6 +35,9 @@ build on:
 * a missing Content-Security-Policy, or one that has dropped
   `default-src 'none'` or `connect-src 'none'`
 * a script that will not parse at all
+* untrusted-JSON guards (`PS.isSafeKey`, `PS.untrustedClone`,
+  `PS.safeAssign`) that have been deleted or left unused, with the
+  `JSON.parse` call-site count reported next to them
 
 It also reports (informationally, not blocking) every dynamic `innerHTML`
 assignment it finds, so they can be spot-checked for escaping; the audit
@@ -63,10 +66,29 @@ versions). Internet Explorer is not supported.
   handles quota-exceeded and storage-disabled (private browsing)
   gracefully, falling back to an in-memory session store rather than
   crashing.
-* **Imports are validated, not trusted.** Backup/restore JSON goes
-  through `PS.safeJSON()` ([src/core/03b_safeio.js](src/core/03b_safeio.js)),
-  which rejects anything that isn't a JSON object before it touches
-  application state.
+* **Imports are validated, and then treated as hostile data.** Backup and
+  restore JSON goes through `PS.safeJSON()`
+  ([src/core/03b_safeio.js](src/core/03b_safeio.js)), which rejects anything
+  that is not a JSON object before it touches application state, and then
+  through `PS.validateBackup()`
+  ([src/core/06d2_actions_backup.js](src/core/06d2_actions_backup.js)), which
+  rebuilds every section with `PS.untrustedClone()`.
+* **`__proto__` cannot reach a live object.** `JSON.parse` makes `__proto__`
+  an *own* property, so a plain `target[k] = v` copy of a parsed file runs the
+  prototype setter instead of adding a property, and the poisoned object is
+  then written back to `localStorage` and re-applied on every load. For a
+  costing tool that is not code execution, it is quieter and worse to
+  discover: a file someone else wrote decides which tax rate and which
+  calculator defaults the reader's numbers use. `PS.isSafeKey()`,
+  `PS.untrustedClone()` and `PS.safeAssign()`
+  ([src/core/03a_util.js](src/core/03a_util.js)) refuse `__proto__`,
+  `constructor` and `prototype` at both ends - the choke point where the file
+  is cleaned, and the sinks in `PS.prefs()`, `PS.savePrefs()`,
+  `PS.user.saveProfile()` and `PS.applyRestore()` - so a value that reached
+  storage by an older build, a hand-edited profile or any future caller that
+  forgot the filter is still refused. `tools/test_storage.mjs` proves the
+  behaviour in both directions, and `tools/security_audit.mjs` fails the build
+  if the guards are deleted.
 * **CSV export is injection-safe.** `PS.csvCell()` neutralizes leading
   `=`, `+`, `-`, `@` characters that spreadsheet software would
   otherwise interpret as formulas.

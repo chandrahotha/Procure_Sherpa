@@ -29,7 +29,15 @@ PS.prefs = function () {
     var p = {};
     Object.keys(PS.DEFAULT_PREFS).forEach(function (k) { p[k] = PS.DEFAULT_PREFS[k]; });
     if (stored && typeof stored === 'object') {
-      Object.keys(stored).forEach(function (k) { if (stored[k] !== undefined && stored[k] !== null) p[k] = stored[k]; });
+      /* The key test is the sink guard. PS.validateBackup already strips
+         unsafe names from a restored file, but stored preferences can also
+         arrive from an older backup, a hand-edited localStorage, or a future
+         caller that forgot the filter - and `p.__proto__ = v` does not create
+         a property, it replaces p's prototype, which every later read of
+         every preference then inherits. */
+      Object.keys(stored).forEach(function (k) {
+        if (PS.isSafeKey(k) && stored[k] !== undefined && stored[k] !== null) p[k] = stored[k];
+      });
     }
     if (!p.thresholds || !p.thresholds.length) p.thresholds = PS.DEFAULT_PREFS.thresholds;
     if (!p.defaults) p.defaults = PS.DEFAULT_PREFS.defaults;
@@ -39,7 +47,7 @@ PS.prefs = function () {
 };
 PS.savePrefs = function (patch, silent) {
   var p = PS.prefs();
-  Object.keys(patch || {}).forEach(function (k) { p[k] = patch[k]; });
+  Object.keys(patch || {}).forEach(function (k) { if (PS.isSafeKey(k)) p[k] = patch[k]; });
   PS._prefsCache = p;
   var ok = PS.store.set(PS.K.prefs, p);
   if (!silent) PS.audit('settings-changed', Object.keys(patch || {}).join(', '));

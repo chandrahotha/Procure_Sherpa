@@ -143,7 +143,40 @@ if (secretMatches) {
   });
 }
 
+/* 6. untrusted JSON is guarded before it is merged
+   The five checks above are all about code that runs. This one is about the
+   only external file the application accepts: PS.readJsonFile parses a
+   backup, and every value that comes out of JSON.parse is then copied into
+   live objects. `target[k] = v` with k === "__proto__" does not add a
+   property, it replaces the target's prototype, and the poisoned object is
+   written back to localStorage - so a file someone else wrote can decide
+   which tax rate and costing defaults the reader's calculators use, on every
+   load, in their own browser. Nothing executes, which is why the eval/
+   Function/js-URL checks stayed green while it was reachable.
+
+   The AST walk counts the guards, so deleting one is a blocking finding here
+   and a failing behaviour test in tools/test_storage.mjs. */
+checks++;
+const guards = ['PS.isSafeKey', 'PS.untrustedClone', 'PS.safeAssign'];
+const missingGuards = [];
+const guardCounts = {};
+for (const g of guards) {
+  const re = new RegExp(g.replace('.', '\\.') + '\\s*=\\s*function');
+  const defined = re.test(script);
+  const used = (script.match(new RegExp(g.replace('.', '\\.') + '\\(', 'g')) || []).length;
+  guardCounts[g] = (defined ? 'defined, ' : 'NOT DEFINED, ') + used + ' call sites';
+  if (!defined || used < 2) missingGuards.push(g + ' (' + guardCounts[g] + ')');
+}
+const bareParse = (script.match(/JSON\.parse\(/g) || []).length;
+if (missingGuards.length) {
+  hard.push('[pollution] untrusted-JSON guards missing or unused: ' + missingGuards.join('; '));
+} else {
+  info.push('[pollution] guards present: ' + guards.map((g) => g + ' ' + guardCounts[g]).join('; '));
+}
+info.push('[pollution] JSON.parse call sites in the artifact: ' + bareParse);
+
 console.log('--- AST-based security audit: ' + HTML + ' (' + (html.length / 1024).toFixed(0) + ' KB, ' + checks + ' audit checks) ---');
+
 console.log('AST parser:           Espree (ECMAScript 2022 AST traversal)');
 console.log('eval() calls:         ' + (hard.some((f) => f.startsWith('[eval]')) ? 'FAIL' : 'none - ok'));
 console.log('new Function():       ' + (hard.some((f) => f.startsWith('[newFunction]')) ? 'FAIL' : 'none - ok'));
@@ -151,6 +184,7 @@ console.log('javascript: URLs:     ' + (hard.some((f) => f.startsWith('[jsUrl]')
 console.log('inline handlers:      ' + (hard.some((f) => f.startsWith('[inlineHandler]')) ? 'FAIL' : 'none - ok'));
 console.log('runtime network calls:' + (hard.some((f) => f.startsWith('[network]')) ? 'FAIL' : 'none - ok'));
 console.log('CSP policy:           connect-src none & default-src none enforced');
+console.log('untrusted JSON:       ' + (hard.some((f) => f.startsWith('[pollution]')) ? 'FAIL' : guards.length + ' guards in place over ' + bareParse + ' JSON.parse sites'));
 
 console.log('\nINFORMATIONAL (review, not blocking): ' + info.length + ' innerHTML sinks audited');
 

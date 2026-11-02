@@ -70,7 +70,7 @@ PS.user = {
     var current = this.getProfile();
     var updated = {};
     Object.keys(current).forEach(function (k) { updated[k] = current[k]; });
-    Object.keys(patch || {}).forEach(function (k) { updated[k] = patch[k]; });
+    Object.keys(patch || {}).forEach(function (k) { if (PS.isSafeKey(k)) updated[k] = patch[k]; });
     
     this._cache = updated;
     PS.store.set(PS.K.user, updated);

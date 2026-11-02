@@ -74,6 +74,68 @@ PS.clean = function (v, max) {
 };
 PS.escAttr = PS.esc;
 
+/* ---------- object safety (Section 34: input security) ---------- */
+
+/**
+ * A key that must never be copied onto a live object. `__proto__` looks up
+ * the prototype SETTER rather than creating a property, so `target[k] = v`
+ * with an attacker-chosen k replaces the prototype of the object;
+ * `constructor` and `prototype` reach the same chain sideways.
+ * @param {string} k - Property name
+ * @returns {boolean} True when the name is safe to assign
+ */
+PS.isSafeKey = function (k) {
+  return k !== '__proto__' && k !== 'constructor' && k !== 'prototype';
+};
+
+/**
+ * Copy own keys from one or more sources onto a target, skipping unsafe
+ * names. Object.assign assigns with [[Set]], so a source holding an own
+ * "__proto__" key replaces the target's prototype instead of copying it.
+ * @param {object} target - Plain object to write into
+ * @param {...object} sources - Objects to read from, left to right
+ * @returns {object} target
+ */
+PS.safeAssign = function (target) {
+  var out = target || {};
+  Array.prototype.slice.call(arguments, 1).forEach(function (src) {
+    if (!src || typeof src !== 'object') return;
+    Object.keys(src).forEach(function (k) { if (PS.isSafeKey(k)) out[k] = src[k]; });
+  });
+  return out;
+};
+
+/**
+ * Copy a parsed-JSON structure into plain objects, dropping unsafe keys at
+ * every depth. Used on anything that came from a file the user did not
+ * write, before it is merged into stored state.
+ *
+ * A backup JSON is the untrusted input here: PS.safeJSON parses it, and
+ * JSON.parse makes "__proto__" an OWN property, so Object.keys reports it and
+ * a plain copy loop hands it to the setter. The restore path writes that
+ * object straight back into localStorage, where it is re-applied on every
+ * load - so a preference object can be made to carry an injected tax rate or
+ * calculator default, in the reader's own browser, from a file someone sent
+ * them. Nothing executes: the product just starts doing arithmetic the
+ * attacker chose, which for a costing tool is the outcome that matters.
+ * @param {*} v - Value from parsed JSON
+ * @param {number} [depth] - Internal recursion guard
+ * @returns {*} A plain deep copy, or null when nesting is too deep
+ */
+PS.untrustedClone = function (v, depth) {
+  var d = depth || 0;
+  if (d > 12) return null;
+  if (Array.isArray(v)) return v.slice(0, 5000).map(function (x) { return PS.untrustedClone(x, d + 1); });
+  if (v && typeof v === 'object') {
+    var out = {};
+    Object.keys(v).forEach(function (k) {
+      if (PS.isSafeKey(k)) out[k] = PS.untrustedClone(v[k], d + 1);
+    });
+    return out;
+  }
+  return v;
+};
+
 /* ---------- numbers ---------- */
 
 /**

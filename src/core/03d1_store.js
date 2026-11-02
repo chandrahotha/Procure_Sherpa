@@ -95,15 +95,32 @@ PS.store = {
   },
 
   /**
+   * The keys this application writes, by name. Four of them - academy
+   * progress, practice labs, the skill assessment and community notes - were
+   * registered without the ps_ prefix, so a listing built from the prefix
+   * alone missed them and the "Local storage usage" panel reported fewer keys
+   * and fewer bytes than the browser actually held for this app.
+   * @returns {object} A lookup table of owned key names
+   */
+  ownedKeys: function () {
+    var out = {};
+    Object.keys(PS.K).forEach(function (name) { out[PS.K[name]] = 1; });
+    if (PS.wb && PS.wb.KEY) out[PS.wb.KEY] = 1;
+    (PS.LEGACY || []).forEach(function (k) { out[k] = 1; });
+    return out;
+  },
+
+  /**
    * List all Procure Sherpa keys in localStorage
    * @returns {string[]}
    */
   rawKeys: function () {
+    var owned = PS.store.ownedKeys();
     var out = [];
     try {
       for (var i = 0; i < window.localStorage.length; i++) {
         var k = window.localStorage.key(i);
-        if (k && k.indexOf(PS.NS) === 0) out.push(k);
+        if (k && (k.indexOf(PS.NS) === 0 || owned[k])) out.push(k);
       }
     } catch (e) { }
     return out;

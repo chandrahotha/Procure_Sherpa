@@ -55,23 +55,28 @@ PS.validateBackup = function (obj) {
   };
   return {
     ok: true, summary: summary,
+    /* Every branch of `clean` goes through PS.untrustedClone, because this
+       is the one place a file from outside the browser becomes data the app
+       will merge with. Filtering here covers all of applyRestore's copies,
+       Object.assign calls and store writes; filtering in each of those
+       instead would leave the next one added to be forgotten. */
     clean: {
-      saved: saved,
-      prefs: (obj.prefs && typeof obj.prefs === 'object') ? obj.prefs : null,
-      favorites: Array.isArray(obj.favorites) ? obj.favorites.filter(function (x) { return x && x.id; }) : [],
-      recent: Array.isArray(obj.recent) ? obj.recent.filter(function (x) { return x && x.id; }) : [],
-      checklists: (obj.checklists && typeof obj.checklists === 'object') ? obj.checklists : {},
-      templates: (obj.templates && typeof obj.templates === 'object') ? obj.templates : {},
-      academy: (obj.academy && typeof obj.academy === 'object') ? obj.academy : null,
-      exams: (obj.exams && typeof obj.exams === 'object') ? obj.exams : null,
-      spend: (obj.spend && typeof obj.spend === 'object') ? obj.spend : null,
-      copilot: (obj.copilot && typeof obj.copilot === 'object') ? obj.copilot : null,
-      docpacks: (obj.docpacks && typeof obj.docpacks === 'object') ? obj.docpacks : null,
-      labs: (obj.labs && typeof obj.labs === 'object') ? obj.labs : null,
-      assessment: (obj.assessment && typeof obj.assessment === 'object') ? obj.assessment : null,
-      community: Array.isArray(obj.community) ? obj.community : null,
-      workbench: (obj.workbench && typeof obj.workbench === 'object') ? obj.workbench : null,
-      audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX) : []
+      saved: saved.map(function (x) { return PS.untrustedClone(x); }),
+      prefs: (obj.prefs && typeof obj.prefs === 'object') ? PS.untrustedClone(obj.prefs) : null,
+      favorites: Array.isArray(obj.favorites) ? obj.favorites.filter(function (x) { return x && x.id; }).map(function (x) { return PS.untrustedClone(x); }) : [],
+      recent: Array.isArray(obj.recent) ? obj.recent.filter(function (x) { return x && x.id; }).map(function (x) { return PS.untrustedClone(x); }) : [],
+      checklists: (obj.checklists && typeof obj.checklists === 'object') ? PS.untrustedClone(obj.checklists) : {},
+      templates: (obj.templates && typeof obj.templates === 'object') ? PS.untrustedClone(obj.templates) : {},
+      academy: (obj.academy && typeof obj.academy === 'object') ? PS.untrustedClone(obj.academy) : null,
+      exams: (obj.exams && typeof obj.exams === 'object') ? PS.untrustedClone(obj.exams) : null,
+      spend: (obj.spend && typeof obj.spend === 'object') ? PS.untrustedClone(obj.spend) : null,
+      copilot: (obj.copilot && typeof obj.copilot === 'object') ? PS.untrustedClone(obj.copilot) : null,
+      docpacks: (obj.docpacks && typeof obj.docpacks === 'object') ? PS.untrustedClone(obj.docpacks) : null,
+      labs: (obj.labs && typeof obj.labs === 'object') ? PS.untrustedClone(obj.labs) : null,
+      assessment: (obj.assessment && typeof obj.assessment === 'object') ? PS.untrustedClone(obj.assessment) : null,
+      community: Array.isArray(obj.community) ? PS.untrustedClone(obj.community) : null,
+      workbench: (obj.workbench && typeof obj.workbench === 'object') ? PS.untrustedClone(obj.workbench) : null,
+      audit: Array.isArray(obj.audit) ? obj.audit.slice(0, PS.AUDIT_MAX).map(function (x) { return PS.untrustedClone(x); }) : []
     }
   };
 };

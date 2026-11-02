@@ -53,6 +53,7 @@ PS.applyRestore = function (c, mode, filename) {
         } else {
           var cur = PS.wb.load();
           Object.keys(c.workbench).forEach(function (k) {
+            if (!PS.isSafeKey(k)) return;
             if (Array.isArray(c.workbench[k]) && Array.isArray(cur[k])) {
               var have = {};
               cur[k].forEach(function (r) { have[r.id] = 1; });
@@ -70,10 +71,10 @@ PS.applyRestore = function (c, mode, filename) {
       PS.saved.list().forEach(function (x) { ids[x.id] = 1; });
       PS.store.set(PS.K.saved, PS.saved.list().concat(c.saved.filter(function (x) { return !ids[x.id]; })).slice(0, PS.MAX_SAVED));
       var cl = PS.clState.all();
-      Object.keys(c.checklists).forEach(function (k) { if (!cl[k]) cl[k] = c.checklists[k]; });
+      Object.keys(c.checklists).forEach(function (k) { if (PS.isSafeKey(k) && !cl[k]) cl[k] = c.checklists[k]; });
       PS.store.set(PS.K.cl, cl);
       var tp = PS.tplState.all();
-      Object.keys(c.templates).forEach(function (k) { if (!tp[k]) tp[k] = c.templates[k]; });
+      Object.keys(c.templates).forEach(function (k) { if (PS.isSafeKey(k) && !tp[k]) tp[k] = c.templates[k]; });
       PS.store.set(PS.K.tpl, tp);
       var fav = PS.fav.list(), fk = {};
       fav.forEach(function (x) { fk[x.type + '|' + x.id] = 1; });
@@ -82,17 +83,17 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.prefs) { PS._prefsCache = null; PS.store.set(PS.K.prefs, c.prefs); }
       if (c.academy && PS.academy) {
         var curA = PS.academy.getAll();
-        var mergedA = Object.assign({}, curA, c.academy);
-        mergedA.completed = Object.assign({}, curA.completed || {}, (c.academy && c.academy.completed) || {});
-        mergedA.badges = Object.assign({}, curA.badges || {}, (c.academy && c.academy.badges) || {});
-        mergedA.scores = Object.assign({}, curA.scores || {}, (c.academy && c.academy.scores) || {});
+        var mergedA = PS.safeAssign({}, curA, c.academy);
+        mergedA.completed = PS.safeAssign({}, curA.completed || {}, (c.academy && c.academy.completed) || {});
+        mergedA.badges = PS.safeAssign({}, curA.badges || {}, (c.academy && c.academy.badges) || {});
+        mergedA.scores = PS.safeAssign({}, curA.scores || {}, (c.academy && c.academy.scores) || {});
         PS.academy.save(mergedA);
       }
-      if (c.exams) { var curE = PS.store.get(PS.K.exams, {}); PS.store.set(PS.K.exams, Object.assign({}, curE, c.exams)); }
-      if (c.spend) { var curS = PS.store.get(PS.K.spend, {}); PS.store.set(PS.K.spend, Object.assign({}, curS, c.spend)); }
-      if (c.copilot) { var curC = PS.store.get(PS.K.copilot, {}); PS.store.set(PS.K.copilot, Object.assign({}, curC, c.copilot)); }
-      if (c.docpacks) { var curD = PS.store.get(PS.K.docpacks, {}); PS.store.set(PS.K.docpacks, Object.assign({}, curD, c.docpacks)); }
-      if (c.labs) { var curL = PS.store.get(PS.K.labs, {}); PS.store.set(PS.K.labs, Object.assign({}, curL, c.labs)); }
+      if (c.exams) { var curE = PS.store.get(PS.K.exams, {}); PS.store.set(PS.K.exams, PS.safeAssign({}, curE, c.exams)); }
+      if (c.spend) { var curS = PS.store.get(PS.K.spend, {}); PS.store.set(PS.K.spend, PS.safeAssign({}, curS, c.spend)); }
+      if (c.copilot) { var curC = PS.store.get(PS.K.copilot, {}); PS.store.set(PS.K.copilot, PS.safeAssign({}, curC, c.copilot)); }
+      if (c.docpacks) { var curD = PS.store.get(PS.K.docpacks, {}); PS.store.set(PS.K.docpacks, PS.safeAssign({}, curD, c.docpacks)); }
+      if (c.labs) { var curL = PS.store.get(PS.K.labs, {}); PS.store.set(PS.K.labs, PS.safeAssign({}, curL, c.labs)); }
       if (c.assessment) { PS.store.set(PS.K.assessment, c.assessment); }
       if (c.community) { var curC2 = PS.store.get(PS.K.community, []); PS.store.set(PS.K.community, curC2.concat(c.community).slice(-50)); }
       /* Merged collection by collection, so a merge does not quietly
@@ -100,6 +101,7 @@ PS.applyRestore = function (c, mode, filename) {
       if (c.workbench) {
         var curW = PS.wb.load();
         Object.keys(c.workbench).forEach(function (k) {
+          if (!PS.isSafeKey(k)) return;
           if (Array.isArray(c.workbench[k]) && Array.isArray(curW[k])) {
             var haveW = {};
             curW[k].forEach(function (r) { haveW[r.id] = 1; });
