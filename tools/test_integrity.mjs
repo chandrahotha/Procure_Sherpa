@@ -1272,6 +1272,34 @@ if (missingDisclaimer.length) {
   fail('G25', 'pages reporting a result without saying the result certifies nothing: ' + missingDisclaimer.join(', '));
 } else {
   ok('G25', 'every page that reports a result states that it is not a credential (' + disclaimerNeeded.join(', ') + ')');
+
+/* Where the teaching material comes from, and what its examples are. The
+   product's own editorial rule is that an invented case study must not be
+   presented as a real one, and a lesson page that stops saying "these
+   figures are constructed" is the way a learning product drifts into
+   fabricated authority without anyone deciding to. */
+{
+  const lessonHashes = ['#/academy/func-obligation-register?tab=learn', '#/academy/func-claims-and-remedies?tab=think'];
+  const noOrigin = [];
+  for (const h of lessonHashes) {
+    w.location.hash = h;
+    PS.renderRoute();
+    const txt = w.document.querySelector('#main').textContent;
+    if (!/illustrative/i.test(txt) || !/constructed/i.test(txt)) noOrigin.push(h);
+  }
+  if (noOrigin.length) {
+    fail('G25', 'lesson pages with no statement of where the material comes from: ' + noOrigin.join(', '));
+  } else {
+    ok('G25', 'lesson pages state that the material is written for this product and the examples are constructed');
+  }
+  const allSrc = ['src/pages/08g1_pages_academy.js', 'src/pages/08g2_pages_quiz_engine.js']
+    .map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
+  if (/Real-?World (Enterprise|Situation|Rationale)/i.test(allSrc)) {
+    fail('G25', 'an invented case is labelled as a real-world one again - constructed examples must read as illustrative');
+  } else {
+    ok('G25', 'no invented case study is presented as a real-world report');
+  }
+}
 }
 
 /* The content-quality report the build already computes, shown to the person

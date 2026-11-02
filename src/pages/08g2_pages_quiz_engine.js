@@ -170,7 +170,7 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
     html += '</div>';
 
     var correctOpt = q.options.filter(function (o) { return o.isCorrect; })[0];
-    html += '<div class="feedback-rationale"><strong>The Real-World Rationale:</strong> ' + PS.esc(correctOpt ? correctOpt.rationale : '') + '</div>';
+    html += '<div class="feedback-rationale"><strong>Why this holds in practice:</strong> ' + PS.esc(correctOpt ? correctOpt.rationale : '') + '</div>';
 
     var distractorNotes = q.options.filter(function (o) { return !o.isCorrect && o.rationale; });
     if (distractorNotes.length) {

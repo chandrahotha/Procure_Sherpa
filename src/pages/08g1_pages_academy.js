@@ -267,6 +267,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   } else if (activeTab === 'apply') {
     html += PS.renderFuncTabApply(func);
   }
+  html += PS.withDisclaimer('origin');
   html += '</div>';
 
   // Next / Previous Navigation Footer
@@ -564,7 +565,7 @@ PS.renderFuncTabThink = function (f) {
       '<div class="thinking-point-eyebrow">💡 Thought-Provoking Procurement Principle</div>' +
       '<blockquote class="thinking-point-quote">&ldquo;' + PS.esc(tp.quote) + '&rdquo;</blockquote>' +
       '<div class="thinking-point-explain">' + PS.esc(tp.explanation) + '</div>' +
-      (tp.realWorldExample ? '<div class="thinking-point-case"><strong>Real-World Enterprise Situation</strong>' + PS.esc(tp.realWorldExample) + '</div>' : '') +
+      (tp.realWorldExample ? '<div class="thinking-point-case"><strong>Illustrative scenario</strong>' + PS.esc(tp.realWorldExample) + '</div>' : '') +
       (tp.reflectionPrompt ? '<div class="thinking-point-reflect"><strong>Reflect as a Procurement Professional:</strong> ' + PS.esc(tp.reflectionPrompt) + '</div>' : '') +
       '</div>';
   });

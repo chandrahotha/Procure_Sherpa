@@ -63,18 +63,18 @@ mark{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;bor
 }
 .dash-eyebrow-row{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .dash-date{margin-left:auto;font-size:.75rem;color:var(--mute);font-weight:600}
-.dash-head h1{position:relative;font-size:1.75rem;margin:0 0 4px;letter-spacing:-.028em}
-.dash-sub{position:relative;color:var(--dim);font-size:.92rem;margin:0 0 16px;max-width:76ch;line-height:1.6}
+.dash-head h1{position:relative;font-family:var(--font-read);font-size:2.3rem;font-weight:600;margin:0 0 6px;letter-spacing:-.022em;line-height:1.1}
+.dash-sub{position:relative;color:var(--dim);font-size:1.02rem;margin:0 0 18px;max-width:var(--measure);line-height:1.7}
 .dash-search{position:relative;max-width:600px}
 .dash-head .btn-row{position:relative}
-.util-links{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:.8rem;color:var(--mute);margin:2px 2px 0}
+.util-links{display:flex;flex-wrap:wrap;gap:5px 7px;align-items:center;font-size:.86rem;color:var(--mute);margin:4px 2px 0}
 .util-links a{padding:3px 8px;border-radius:7px;font-weight:600}
 .util-links a:hover{background:var(--sunken);text-decoration:none}
 /* key-value + empty */
-.kv{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:5px 16px;font-size:.85rem;margin:0 0 12px}
+.kv{display:grid;grid-template-columns:minmax(140px,auto) 1fr;gap:6px 18px;font-size:.92rem;margin:0 0 14px}
 .kv dt{color:var(--mute);font-weight:600}
 .kv dd{margin:0;color:var(--text)}
-.empty{border:1.5px dashed var(--border-2);border-radius:var(--r);padding:26px 20px;text-align:center;color:var(--mute);font-size:.86rem;background:var(--panel-2)}
+.empty{border:1.5px dashed var(--border-2);border-radius:var(--r);padding:34px 22px;text-align:center;color:var(--mute);font-size:.95rem;line-height:1.65;background:var(--panel-2)}
 /* badge tint variants per content type - using semantic CSS variables */
 .badge.acc-kb{background:var(--kb-soft);color:var(--kb);border-color:color-mix(in srgb,var(--kb) 30%,transparent)}
 .badge.acc-sop{background:var(--sop-soft);color:var(--sop);border-color:color-mix(in srgb,var(--sop) 30%,transparent)}
@@ -119,3 +119,12 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 .step-check{position:absolute;right:12px;top:14px}
 .tl-title{font-weight:700;font-size:.92rem}
 .tl-body{font-size:.83rem;color:var(--dim);margin-top:3px;line-height:1.6}
+
+/* v3: the front door. The greeting is the one place a serif reads as an
+   authored product rather than a tool, so the dashboard and home headline
+   use the reading face; everything functional stays in the interface face. */
+@media (max-width:720px){
+  .dash-head{padding:20px 18px}
+  .dash-head h1{font-size:1.7rem}
+  .dash-sub{font-size:.98rem}
+}

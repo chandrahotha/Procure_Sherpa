@@ -351,6 +351,10 @@ PS.withDisclaimer = function (kind) {
        kept in one browser, and the difference matters to anyone who would
        otherwise put it on a CV, so it is said in the same voice as the other
        disclaimers and asserted by G25 on every page that reports a result. */
+    /* The Academy's case studies are constructed, not reported. Saying so is
+       the difference between a teaching example and a fabricated credential,
+       and it is asserted by G25 on the lesson page. */
+    origin: 'Lessons here are written for this product from procurement practice, not reproduced from a named textbook or standard. Company examples and figures are illustrative: they are constructed to show how a mechanism behaves, and are not reports of real organisations, real benchmarks or verified outcomes. Regulatory and legal points name where they vary and need local qualified advice.',
     credential: 'Exam results, badges and progress are recorded in this browser only. Procure Sherpa is not an authorized issuer of procurement credentials, so nothing here is a certification, an accredited qualification, or verifiable by a third party.'
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';

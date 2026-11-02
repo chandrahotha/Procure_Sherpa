@@ -920,18 +920,18 @@ mark{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;bor
 }
 .dash-eyebrow-row{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .dash-date{margin-left:auto;font-size:.75rem;color:var(--mute);font-weight:600}
-.dash-head h1{position:relative;font-size:1.75rem;margin:0 0 4px;letter-spacing:-.028em}
-.dash-sub{position:relative;color:var(--dim);font-size:.92rem;margin:0 0 16px;max-width:76ch;line-height:1.6}
+.dash-head h1{position:relative;font-family:var(--font-read);font-size:2.3rem;font-weight:600;margin:0 0 6px;letter-spacing:-.022em;line-height:1.1}
+.dash-sub{position:relative;color:var(--dim);font-size:1.02rem;margin:0 0 18px;max-width:var(--measure);line-height:1.7}
 .dash-search{position:relative;max-width:600px}
 .dash-head .btn-row{position:relative}
-.util-links{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:.8rem;color:var(--mute);margin:2px 2px 0}
+.util-links{display:flex;flex-wrap:wrap;gap:5px 7px;align-items:center;font-size:.86rem;color:var(--mute);margin:4px 2px 0}
 .util-links a{padding:3px 8px;border-radius:7px;font-weight:600}
 .util-links a:hover{background:var(--sunken);text-decoration:none}
 /* key-value + empty */
-.kv{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:5px 16px;font-size:.85rem;margin:0 0 12px}
+.kv{display:grid;grid-template-columns:minmax(140px,auto) 1fr;gap:6px 18px;font-size:.92rem;margin:0 0 14px}
 .kv dt{color:var(--mute);font-weight:600}
 .kv dd{margin:0;color:var(--text)}
-.empty{border:1.5px dashed var(--border-2);border-radius:var(--r);padding:26px 20px;text-align:center;color:var(--mute);font-size:.86rem;background:var(--panel-2)}
+.empty{border:1.5px dashed var(--border-2);border-radius:var(--r);padding:34px 22px;text-align:center;color:var(--mute);font-size:.95rem;line-height:1.65;background:var(--panel-2)}
 /* badge tint variants per content type - using semantic CSS variables */
 .badge.acc-kb{background:var(--kb-soft);color:var(--kb);border-color:color-mix(in srgb,var(--kb) 30%,transparent)}
 .badge.acc-sop{background:var(--sop-soft);color:var(--sop);border-color:color-mix(in srgb,var(--sop) 30%,transparent)}
@@ -976,6 +976,15 @@ ol.stepper>li.is-current::before{border-color:var(--accent);color:var(--accent)}
 .step-check{position:absolute;right:12px;top:14px}
 .tl-title{font-weight:700;font-size:.92rem}
 .tl-body{font-size:.83rem;color:var(--dim);margin-top:3px;line-height:1.6}
+
+/* v3: the front door. The greeting is the one place a serif reads as an
+   authored product rather than a tool, so the dashboard and home headline
+   use the reading face; everything functional stays in the interface face. */
+@media (max-width:720px){
+  .dash-head{padding:20px 18px}
+  .dash-head h1{font-size:1.7rem}
+  .dash-sub{font-size:.98rem}
+}
 
 /* ==========================================================
    Procure Sherpa v2.0 - Academy & Interactive Learning Styles
@@ -2316,6 +2325,18 @@ html[data-theme="dark"] .quiz-tip-cta {
 .academy-tab-btn{font-size:.9rem;padding:11px 16px;border-radius:10px 10px 0 0}
 .academy-tab-btn.is-active{box-shadow:inset 0 -2px 0 var(--accent)}
 
+/* ---------- v3: hub and hero typography ---------- */
+.academy-hero h1, .academy-hero .display{font-family:var(--font-read);font-weight:600;letter-spacing:-.02em;font-size:2.1rem;line-height:1.12}
+.academy-hero .lead{font-size:1.02rem;line-height:1.7;max-width:var(--measure)}
+.module-head h2{font-family:var(--font-read);font-weight:600;font-size:1.42rem;letter-spacing:-.018em;line-height:1.2}
+.module-head .section-sub{font-size:.94rem;line-height:1.65;max-width:var(--measure)}
+.func-card-title{font-family:var(--font-read);font-weight:600;font-size:1.12rem;letter-spacing:-.012em}
+.func-card-desc{font-size:.9rem;line-height:1.62}
+@media (max-width:720px){
+  .academy-hero h1,.academy-hero .display{font-size:1.6rem}
+  .module-head h2{font-size:1.2rem}
+}
+
 /* ==========================================================
    Procure Sherpa v2.0 - Portal & User Account Styles
    Section: Topbar User Badge, Profile Modal, Dual-Hub Gateway
@@ -3334,20 +3355,21 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
    colored level pills. Uses the existing design tokens so these
    adapt to dark mode and print like the rest of the UI. */
 .opt-card{
-  display:block;padding:11px 14px;border:1px solid var(--border);border-radius:10px;
-  margin-bottom:8px;cursor:pointer;transition:border-color .13s,background .13s;
+  display:block;padding:13px 15px;border:1px solid var(--border);border-radius:11px;
+  margin-bottom:9px;cursor:pointer;font-size:.95rem;line-height:1.5;
+  transition:border-color var(--dur),background var(--dur),box-shadow var(--dur);
 }
-.opt-card:hover{border-color:var(--border-2);background:var(--panel-2)}
+.opt-card:hover{border-color:var(--accent);background:var(--panel-2);box-shadow:var(--sh)}
 .opt-card input{margin-right:9px;accent-color:var(--accent);cursor:pointer}
-.bar-track{background:var(--sunken);border-radius:4px;height:8px;overflow:hidden}
+.bar-track{background:var(--sunken);border:1px solid var(--border);border-radius:5px;height:9px;overflow:hidden}
 .bar-fill{height:100%;background:var(--accent);border-radius:4px}
 .level-pill{
   display:inline-block;font-size:.72rem;font-weight:700;line-height:1.6;
   padding:0 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);
 }
 .hub-note{
-  background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
-  padding:12px 14px;font-size:.84rem;color:var(--dim);line-height:1.55;
+  background:var(--panel-2);border:1px solid var(--border);border-radius:11px;
+  padding:14px 16px;font-size:.92rem;color:var(--dim);line-height:1.65;
 }
 
 /* ---------- learning path cards ----------
@@ -3360,13 +3382,13 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .path-card{display:flex;flex-direction:column;gap:0;padding:20px 20px 18px}
 .path-card-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;min-height:26px}
 .path-card-title{
-  margin:0 0 8px;font-size:1.06rem;line-height:1.3;letter-spacing:-.015em;color:var(--text);
+  margin:0 0 9px;font-family:var(--font-read);font-weight:600;font-size:1.2rem;line-height:1.25;letter-spacing:-.015em;color:var(--text);
   /* Two lines' worth, so the progress row sits at the same height in
      every card regardless of how long the title is. */
   min-height:2.6em;
 }
 .path-card-desc{
-  margin:0 0 16px;font-size:.88rem;line-height:1.55;color:var(--dim);min-height:4.65em;
+  margin:0 0 16px;font-size:.93rem;line-height:1.6;color:var(--dim);min-height:4.8em;
 }
 .path-progress{margin:0 0 16px}
 .path-progress-meta{
@@ -3592,7 +3614,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '125c7aeb7cf7';
+PS.BUILD = 'afd4b65ee4aa';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4393,6 +4415,10 @@ PS.withDisclaimer = function (kind) {
        kept in one browser, and the difference matters to anyone who would
        otherwise put it on a CV, so it is said in the same voice as the other
        disclaimers and asserted by G25 on every page that reports a result. */
+    /* The Academy's case studies are constructed, not reported. Saying so is
+       the difference between a teaching example and a fabricated credential,
+       and it is asserted by G25 on the lesson page. */
+    origin: 'Lessons here are written for this product from procurement practice, not reproduced from a named textbook or standard. Company examples and figures are illustrative: they are constructed to show how a mechanism behaves, and are not reports of real organisations, real benchmarks or verified outcomes. Regulatory and legal points name where they vary and need local qualified advice.',
     credential: 'Exam results, badges and progress are recorded in this browser only. Procure Sherpa is not an authorized issuer of procurement credentials, so nothing here is a certification, an accredited qualification, or verifiable by a third party.'
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';
@@ -14503,6 +14529,7 @@ PS.renderAcademyFunction = function (funcId, params) {
   } else if (activeTab === 'apply') {
     html += PS.renderFuncTabApply(func);
   }
+  html += PS.withDisclaimer('origin');
   html += '</div>';
 
   // Next / Previous Navigation Footer
@@ -14800,7 +14827,7 @@ PS.renderFuncTabThink = function (f) {
       '<div class="thinking-point-eyebrow">💡 Thought-Provoking Procurement Principle</div>' +
       '<blockquote class="thinking-point-quote">&ldquo;' + PS.esc(tp.quote) + '&rdquo;</blockquote>' +
       '<div class="thinking-point-explain">' + PS.esc(tp.explanation) + '</div>' +
-      (tp.realWorldExample ? '<div class="thinking-point-case"><strong>Real-World Enterprise Situation</strong>' + PS.esc(tp.realWorldExample) + '</div>' : '') +
+      (tp.realWorldExample ? '<div class="thinking-point-case"><strong>Illustrative scenario</strong>' + PS.esc(tp.realWorldExample) + '</div>' : '') +
       (tp.reflectionPrompt ? '<div class="thinking-point-reflect"><strong>Reflect as a Procurement Professional:</strong> ' + PS.esc(tp.reflectionPrompt) + '</div>' : '') +
       '</div>';
   });
@@ -15629,7 +15656,7 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
     html += '</div>';
 
     var correctOpt = q.options.filter(function (o) { return o.isCorrect; })[0];
-    html += '<div class="feedback-rationale"><strong>The Real-World Rationale:</strong> ' + PS.esc(correctOpt ? correctOpt.rationale : '') + '</div>';
+    html += '<div class="feedback-rationale"><strong>Why this holds in practice:</strong> ' + PS.esc(correctOpt ? correctOpt.rationale : '') + '</div>';
 
     var distractorNotes = q.options.filter(function (o) { return !o.isCorrect && o.rationale; });
     if (distractorNotes.length) {
@@ -17388,6 +17415,8 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'The front door is authored now: the home and dashboard headline uses the reading face, learning-path and lesson cards are set the same way, and empty states say more kindly what to do next',
+      'Every lesson now states where its material comes from: examples are labelled Illustrative rather than real-world, and a provenance note says the lessons are written for this product and the figures are constructed to show how a mechanism behaves - not reports of real organisations or verified benchmarks',
       'New Module 16: Contract Risk, Claims and Disputes - the obligation register that turns a signed agreement into owned dated duties, the change mechanism that stops a negotiated discount being given back through variations, and the commercial judgement of whether a claim is worth pursuing. The curriculum is now 43 functions across 16 modules, 244 step sequences and 194 quiz questions, with a matching learning track and a badge',
       'A new design system: a warm-neutral canvas, one jade accent in place of the old indigo, and a dark navigation rail that stays put in both themes so the menu reads as furniture rather than as another panel. Every colour now comes from a token, in both light and dark',
       'The lesson finally looks like a lesson. Body text is set in a serif reading face at 16-17px with a capped measure, section headings are typographic rather than UI labels, and the five lesson tabs stick under the top bar so you always know where you are in a long mission',

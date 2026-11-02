@@ -1336,3 +1336,15 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 .academy-tab-btn{font-size:.9rem;padding:11px 16px;border-radius:10px 10px 0 0}
 .academy-tab-btn.is-active{box-shadow:inset 0 -2px 0 var(--accent)}
+
+/* ---------- v3: hub and hero typography ---------- */
+.academy-hero h1, .academy-hero .display{font-family:var(--font-read);font-weight:600;letter-spacing:-.02em;font-size:2.1rem;line-height:1.12}
+.academy-hero .lead{font-size:1.02rem;line-height:1.7;max-width:var(--measure)}
+.module-head h2{font-family:var(--font-read);font-weight:600;font-size:1.42rem;letter-spacing:-.018em;line-height:1.2}
+.module-head .section-sub{font-size:.94rem;line-height:1.65;max-width:var(--measure)}
+.func-card-title{font-family:var(--font-read);font-weight:600;font-size:1.12rem;letter-spacing:-.012em}
+.func-card-desc{font-size:.9rem;line-height:1.62}
+@media (max-width:720px){
+  .academy-hero h1,.academy-hero .display{font-size:1.6rem}
+  .module-head h2{font-size:1.2rem}
+}

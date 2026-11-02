@@ -12,6 +12,8 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'The front door is authored now: the home and dashboard headline uses the reading face, learning-path and lesson cards are set the same way, and empty states say more kindly what to do next',
+      'Every lesson now states where its material comes from: examples are labelled Illustrative rather than real-world, and a provenance note says the lessons are written for this product and the figures are constructed to show how a mechanism behaves - not reports of real organisations or verified benchmarks',
       'New Module 16: Contract Risk, Claims and Disputes - the obligation register that turns a signed agreement into owned dated duties, the change mechanism that stops a negotiated discount being given back through variations, and the commercial judgement of whether a claim is worth pursuing. The curriculum is now 43 functions across 16 modules, 244 step sequences and 194 quiz questions, with a matching learning track and a badge',
       'A new design system: a warm-neutral canvas, one jade accent in place of the old indigo, and a dark navigation rail that stays put in both themes so the menu reads as furniture rather than as another panel. Every colour now comes from a token, in both light and dark',
       'The lesson finally looks like a lesson. Body text is set in a serif reading face at 16-17px with a capped measure, section headings are typographic rather than UI labels, and the five lesson tabs stick under the top bar so you always know where you are in a long mission',
