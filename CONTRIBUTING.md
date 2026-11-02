@@ -270,7 +270,7 @@ repo can vouch for:
   informationally so they can be spot-checked, but it does not verify
   escaping for you.
 * **No invented authority or accreditation claims.** See
-  [README § Credential Transcript](README.md#5-credential-transcript-certificate--disabled-future-feature)
+  [README § Procurement Academy](README.md#procurement-academy)
   for why the certificate feature was disabled — this project states
   exactly what happened and who issued it, never more.
 * **No new runtime dependencies.** Zero-dependency, offline-first and
