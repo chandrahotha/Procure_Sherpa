@@ -33,6 +33,14 @@
    Settings, Connections, GitHub) so the commit author maps to the team
    owner. This script is the path that needs no such change.
 
+   Update 2026-11-03: the push of a57df72 to main triggered a
+   Git-integration deployment that went through and served stamp
+   ff0833a77dcc to production, verified by verify_deploy.mjs - so the
+   block described above is no longer happening, and this CLI path is
+   the fallback for when it returns (or when no Vercel session exists
+   locally, which is why this run aborted after QA with
+   "No existing credentials found").
+
    Usage:
      npm run deploy            build, verify, deploy to production
      npm run deploy -- --dry   do everything except the deploy
