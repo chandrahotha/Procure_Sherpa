@@ -353,7 +353,7 @@ PS.academyRoleRecommendation = function (funcs) {
   if (!PS.user || typeof PS.user.recommendedModules !== 'function') return '';
   var prof = PS.user.getProfile();
   var roleMeta = PS.user.getRoleMeta(prof.role);
-  var mods = PS.user.recommendedModules(4);
+  var mods = PS.user.recommendedModules(6);
   if (!mods.length) return '';
   /* The first recommended module that still has work in it is the one
      to open: a recommendation to a module you have already finished
@@ -496,7 +496,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-negotiation-record': 'contracts',
   'func-contract-types-renewal': 'contracts',
   'func-requisition-intake': 'approvals',
-  'func-corrective-action': 'suppliers'
+  'func-corrective-action': 'suppliers',
+  'func-supplier-development': 'suppliers',
+  'func-quality-and-audit': 'receipts',
+  'func-dual-source-resilience': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

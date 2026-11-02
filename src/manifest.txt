@@ -143,6 +143,7 @@ src/content/19h_academy_functions_part8.js
 src/content/19i_academy_functions_part9.js
 src/content/19j_academy_functions_part10.js
 src/content/19k_academy_functions_part11.js
+src/content/19l_academy_functions_part12.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js

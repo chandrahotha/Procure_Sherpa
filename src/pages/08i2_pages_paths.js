@@ -116,6 +116,17 @@ PS.learningPaths.PATHS = [
     skills: ['Reading a contract as a list of obligations', 'Pricing and bounding a variation', 'Assembling a provable position', 'Deciding whether a claim is worth pursuing'],
     duration: '4-5 weeks',
     color: 'var(--dec)'
+  },
+  {
+    id: 'sourcing-operations',
+    title: 'Global Sourcing Operations',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The operational half of the job: developing a source you cannot replace, proving that what arrived conforms, and deciding which lines are worth protecting.',
+    modules: ['func-supplier-development', 'func-quality-and-audit', 'func-dual-source-resilience'],
+    skills: ['Building capability where substitution is impossible', 'Choosing where conformity is verified', 'Pricing protection against expected loss', 'Keeping a second source alive'],
+    duration: '4-6 weeks',
+    color: 'var(--ops)'
   }
 ];
 

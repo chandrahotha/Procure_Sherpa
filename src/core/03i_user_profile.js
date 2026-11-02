@@ -233,7 +233,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 13: Executive & Board-Level Procurement': ['executive', 'governance', 'value', 'learn'],
   'Module 14: Stakeholder Influence, Internal Consulting & Change Adoption': ['influence', 'stakeholder', 'learn'],
   'Module 15: Specialised Markets and Category Depth': ['specialist', 'analytics', 'learn'],
-  'Module 16: Contract Risk, Claims and Disputes': ['contract', 'claims', 'learn']
+  'Module 16: Contract Risk, Claims and Disputes': ['contract', 'claims', 'learn'],
+  'Module 17: Global Sourcing Operations - Development, Quality and Continuity': ['quality', 'operations', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -246,10 +247,10 @@ PS.ACADEMY_MODULE_TAGS = {
    operational set. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'learn'],
-  buyer: ['operations', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
+  buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
   manager: ['strategy', 'influence', 'portfolio', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'contract', 'governance', 'learn'],
-  compliance: ['risk', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
+  compliance: ['risk', 'quality', 'ethics', 'governance', 'executive', 'contract', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {
   var p = this.getProfile();
@@ -263,7 +264,7 @@ PS.academyModuleNumber = function (moduleName) {
    number order. The role decides WHICH modules, never the order they
    appear in. */
 PS.user.recommendedModules = function (limit) {
-  var max = limit || 5;
+  var max = limit || 6;
   var pri = this.rolePriority();
   var names = Object.keys(PS.ACADEMY_MODULE_TAGS);
   var picked = [];

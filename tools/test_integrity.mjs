@@ -593,6 +593,20 @@ if (!recPanel) {
   if (!recNums.length) fail('G13', 'the role recommendation names no modules');
   else if (!recAsc) fail('G13', 'the role recommendation is not in module order: ' + recNums.join(' '));
   else ok('G13', 'the role recommends modules in order (' + recNums.join(', ') + ')');
+
+  /* The panel must show what the picker chose. A gate that measures
+     coverage at one limit while the interface renders another proves a
+     recommendation nobody can see - which is exactly how this drifted:
+     the hub asked for four modules and the gate checked five. */
+  const recWanted = (PS.user.recommendedModules() || []).length;
+  const recShown = recPanel.querySelectorAll('.academy-role-rec .chip').length
+    || recPanel.querySelectorAll('.chip').length;
+  if (recShown < recWanted) {
+    fail('G13', 'the role recommends ' + recWanted + ' modules but the panel shows ' + recShown +
+      ' - a recommendation the interface hides is not a recommendation');
+  } else {
+    ok('G13', 'the panel displays every module the picker recommended (' + recShown + ')');
+  }
 }
 
 /* A module the tag map does not know can never be recommended, and the
