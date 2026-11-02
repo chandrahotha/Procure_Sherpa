@@ -36,7 +36,13 @@ PS.planGroups = [
   { type: 'kpi', title: 'KPIs to measure or report', lead: 'Show whether the outcome improved and how it will be tracked.' }
 ];
 PS.renderWhatResult = function (q) {
-  var res = PS.search(q, { limit: 40 });
+  /* The plan is grouped by what kind of thing the reader needs, so the pool
+     it draws from has to be deep enough that a type cannot be squeezed out.
+     At 40, "my supplier increased prices by 12 percent" returned 15 concepts,
+     16 academy functions, 5 SOPs and 3 checklists - and no decision guide and
+     no calculator, because the concepts and lessons filled the page first.
+     §78's journeys run through exactly those two groups. */
+  var res = PS.search(q, { limit: 120 });
   var scen = PS.search(q, { type: 'scen', limit: 3 }).results;
   var html = '<div class="card"><div class="card-head"><h2>Your plan for: &ldquo;' + PS.esc(PS.clean(q, 200)) + '&rdquo;</h2>' +
     '<div class="spacer"></div><span class="badge badge-type">Guided route</span></div>' +

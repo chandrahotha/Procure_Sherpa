@@ -207,7 +207,7 @@ PS.SSOP({
     checklists: ["cl-supplier-evaluation", "cl-supplier-due-diligence"],
     sops: ["sop-procurement-intake"],
     templates: ["tpl-supplier-evaluation", "tpl-supplier-due-diligence", "tpl-weighted-scoring"],
-    calcs: ["calc-tco"],
+    calcs: ["calc-tco", "calc-supplier-scorecard", "calc-supplier-concentration"],
     decisions: ["supplier-financial-risk", "supplier-concentration"],
     kpis: ["kpi-sourcing-coverage", "kpi-supplier-concentration"],
     scenarios: ["scn-supplier-risk"]
@@ -289,8 +289,8 @@ PS.SSOP({
   rel: {
     checklists: ["cl-negotiation", "cl-negotiation-closeout"],
     sops: ["sop-supplier-price-increase-review"],
-    templates: ["tpl-negotiation-planner", "tpl-negotiation-agenda", "tpl-negotiation-concession-log", "tpl-negotiation-summary"],
-    calcs: ["calc-negotiation-savings"],
+    templates: ["tpl-negotiation-planner", "tpl-negotiation-agenda", "tpl-negotiation-concession-log", "tpl-negotiation-summary", "tpl-award-recommendation", "tpl-bid-comparison"],
+    calcs: ["calc-negotiation-savings", "calc-tco", "calc-should-cost"],
     decisions: ["negotiate-or-accept"],
     kpis: ["kpi-savings", "kpi-cost-avoidance"],
     concepts: ["batna", "zopa"],

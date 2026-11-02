@@ -74,6 +74,35 @@ for (const r of rels) {
     }
   }
 }
+/* Hard-coded links in copy are relations too.
+   PS.ACADEMY_FUNCTIONS[].labMission.ctaHref, the "Apply in Laboratory"
+   button on every lesson, is written as a literal '#/calc/calc-scorecard'
+   string. Nothing above read those: rel objects were validated, hrefs in
+   page templates were not, so twelve Academy lessons - across four content
+   files - were pointing at calculator, checklist and template ids that had
+   never existed, and a learner pressing the button was served the not-found
+   card. The app cannot show them otherwise, because it renders the string.
+
+   Every '#/<type>/<id>' the source writes as a link is checked here against
+   the same registry and the same legacy-id map the runtime uses. A comment
+   giving an example of a bad link is allowed; a link is not. */
+const LINK_TYPE = { k: 'kb', sop: 'sop', cl: 'cl', tpl: 'tpl', dec: 'dec', kpi: 'kpi', scen: 'scen', calc: 'calc' };
+const hrefHits = [];
+for (const f of files) {
+  const body = readSrc(f);
+  for (const m of body.matchAll(/(?:href="#|Href:\s*['"])(#\/(k|sop|cl|tpl|dec|kpi|scen|calc)\/([A-Za-z0-9_-]+))/g)) {
+    const ty = LINK_TYPE[m[2]];
+    const rid = norm(ty, m[3]);
+    if (!ids[ty] || !ids[ty].has(rid)) hrefHits.push(f + ' -> ' + m[1] + ' (no ' + ty + ' with id ' + rid + ')');
+  }
+}
+if (hrefHits.length) {
+  hrefHits.forEach((h) => console.log('BROKEN hard-coded link', h));
+  bad += hrefHits.length;
+} else {
+  console.log('hard-coded item links in copy: all resolve');
+}
+
 for (const [k, from] of Object.entries(broken)) console.log('BROKEN', k, '<-', [...from].join(','));
 console.log('registered:', Object.entries(ids).map(([k, v]) => k + '=' + v.size).join(' '));
 console.log('checked', rels.length, 'rel objects; broken refs:', bad);

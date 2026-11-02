@@ -946,9 +946,9 @@ PS.ACADEMY_FUNCTIONS.push({
       'Input scores for 3 competing suppliers and review the automated weighted ranking.'
     ],
     ctaLabel: 'Launch Scorecard Tool',
-    ctaHref: '#/calc/calc-scorecard',
+    ctaHref: '#/calc/calc-supplier-scorecard',
     secondaryLabel: 'Open Evaluation Template',
-    secondaryHref: '#/tpl/tpl-eval-matrix'
+    secondaryHref: '#/tpl/tpl-weighted-scoring'
   }
 });
 
@@ -1183,6 +1183,6 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch Sourcing Decision Guide',
     ctaHref: '#/dec',
     secondaryLabel: 'Check Audit Checklist',
-    secondaryHref: '#/cl/cl-audit'
+    secondaryHref: '#/cl/cl-procurement-audit'
   }
 });

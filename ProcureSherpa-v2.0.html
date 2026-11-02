@@ -3412,7 +3412,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '1ac6d1c62535';
+PS.BUILD = 'b0519a0fe5a2';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4871,6 +4871,73 @@ PS.SEARCH_STOPWORDS = ('a an the and or of for to in on at by with from into ove
   'may might if then than so such very just also more most some any all each both few ' +
   'other same too only up down out off again further once here there about').split(' ');
 
+/* Procurement has several words for the same thing, and the library is
+   written with some of them while people type the others. "Prepare a savings
+   report for the CFO" found no calculator, because the calculator is called
+   Savings Analysis and nothing in its record says report or CFO - while the
+   single word "savings" found it immediately. That is not a ranking bug, it
+   is a vocabulary gap, and it is the difference between a toolkit a buyer
+   can use by describing their problem and one that requires the file name.
+
+   Variants are only tried when the word itself misses, so an exact term
+   keeps its score; each token is capped, because the reach pass and the
+   scoring pass both walk this per record. */
+PS.SEARCH_SYNONYMS = {
+  report: ['analysis', 'summary', 'dashboard'],
+  reporting: ['analysis', 'dashboard', 'kpi'],
+  prepare: ['plan', 'template'],
+  cfo: ['finance', 'executive', 'business case'],
+  board: ['executive', 'governance'],
+  supplier: ['vendor'],
+  vendor: ['supplier'],
+  increase: ['escalation', 'rise'],
+  increased: ['escalation', 'rise'],
+  raise: ['increase'],
+  raised: ['increase', 'escalation'],
+  rising: ['increase', 'escalation'],
+  price: ['cost', 'pricing'],
+  cost: ['price'],
+  savings: ['saving', 'reduction'],
+  saving: ['savings'],
+  reduce: ['reduction', 'savings'],
+  reduction: ['savings', 'reduce'],
+  evaluate: ['evaluation', 'scorecard', 'assessment'],
+  evaluation: ['scorecard', 'assessment'],
+  score: ['scorecard', 'scoring', 'rating'],
+  scorecard: ['scoring', 'rating'],
+  contract: ['agreement'],
+  agreement: ['contract'],
+  renew: ['renewal'],
+  renewal: ['renew', 'contract'],
+  negotiate: ['negotiation'],
+  negotiation: ['negotiate'],
+  tender: ['rfq', 'rfp', 'bid'],
+  bid: ['tender', 'rfq'],
+  quote: ['quotation', 'bid'],
+  quotes: ['quote', 'bids'],
+  budget: ['spend', 'forecast'],
+  analyse: ['analysis', 'analytics'],
+  analyze: ['analysis', 'analytics'],
+  analysis: ['analytics'],
+  analytics: ['analysis', 'data'],
+  dashboard: ['report'],
+  kpi: ['metric', 'measure', 'indicator'],
+  metrics: ['kpi', 'measure'],
+  template: ['document', 'form'],
+  document: ['template'],
+  approval: ['sign off', 'authorise'],
+  onboard: ['onboarding', 'registration'],
+  tail: ['maverick', 'consumables'],
+  maverick: ['tail', 'unmanaged'],
+  category: ['portfolio'],
+  portfolio: ['category'],
+  demand: ['consumption', 'usage'],
+  tco: ['total cost of ownership', 'landed cost'],
+  landed: ['tco', 'freight', 'duty'],
+  tax: ['gst', 'vat'],
+  pay: ['payment']
+};
+
 /* Light stemmer: strip the endings that stop a buyer from finding the
    right page because they said "increased" and the page says "increase",
    or "suppliers" and the page says "supplier". */
@@ -4893,6 +4960,15 @@ PS.tokenVariants = function (t) {
     out.push(stem);
     /* raised -> rais -> raise; increased -> increas -> increase */
     if (/ed$|ing$/.test(t) && !/e$/.test(stem)) out.push(stem + 'e');
+  }
+  var syn = PS.SEARCH_SYNONYMS[t];
+  if (syn && syn.length) {
+    /* Three, not all: the reach pass runs this for every token against
+       every record, and a long synonym list is a linear cost multiplied by
+       the whole library. */
+    for (var si = 0; si < syn.length && out.length < 6; si++) {
+      if (out.indexOf(syn[si]) < 0) out.push(syn[si]);
+    }
   }
   return out;
 };
@@ -12353,6 +12429,21 @@ PS.route('kpi', function (id, params) {
     (it.practice ? '<h3>Practical guidance</h3>' + PS.ul(it.practice) : '') +
     (it.target ? '<h3>Targets</h3><p>' + PS.esc(it.target) + '</p>' : '') +
     '</div>' +
+    /* A KPI is a number you agree to keep measuring, and the product already
+       has the place where it is measured. §78's savings journey ends at the
+       dashboard, and a reader who has just read the definition of Savings
+       Realisation should be shown where to look at it, not sent back to the
+       sidebar to find it. */
+    (function () {
+      var onSavingsDash = /saving|avoidance|realization|realisation|cost/i.test((it.id || '') + ' ' + (it.cat || '') + ' ' + (it.title || ''));
+      return '<div class="card"><div class="card-head"><h2>Where this is reported</h2></div>' +
+        '<p class="card-sub">Procure Sherpa keeps the figures you enter in this browser; these are the views that read them back.</p>' +
+        '<div class="btn-row no-print">' +
+        (onSavingsDash ? '<a class="btn btn-primary" href="#/dash-savings">Open the Savings Dashboard</a>' : '') +
+        '<a class="btn" href="#/dash">Open the Analytics dashboard</a>' +
+        '<a class="btn btn-ghost" href="#/search?q=' + encodeURIComponent(it.title) + '">Find the work that feeds this number</a>' +
+        '</div></div>';
+    }()) +
     PS.relatedCard('kpi', it) +
     PS.disclaimer(it.disclaimerKind || 'data');
   return html;
@@ -12635,7 +12726,13 @@ PS.planGroups = [
   { type: 'kpi', title: 'KPIs to measure or report', lead: 'Show whether the outcome improved and how it will be tracked.' }
 ];
 PS.renderWhatResult = function (q) {
-  var res = PS.search(q, { limit: 40 });
+  /* The plan is grouped by what kind of thing the reader needs, so the pool
+     it draws from has to be deep enough that a type cannot be squeezed out.
+     At 40, "my supplier increased prices by 12 percent" returned 15 concepts,
+     16 academy functions, 5 SOPs and 3 checklists - and no decision guide and
+     no calculator, because the concepts and lessons filled the page first.
+     §78's journeys run through exactly those two groups. */
+  var res = PS.search(q, { limit: 120 });
   var scen = PS.search(q, { type: 'scen', limit: 3 }).results;
   var html = '<div class="card"><div class="card-head"><h2>Your plan for: &ldquo;' + PS.esc(PS.clean(q, 200)) + '&rdquo;</h2>' +
     '<div class="spacer"></div><span class="badge badge-type">Guided route</span></div>' +
@@ -19092,7 +19189,7 @@ PS.SSOP({
     checklists: ["cl-supplier-evaluation", "cl-supplier-due-diligence"],
     sops: ["sop-procurement-intake"],
     templates: ["tpl-supplier-evaluation", "tpl-supplier-due-diligence", "tpl-weighted-scoring"],
-    calcs: ["calc-tco"],
+    calcs: ["calc-tco", "calc-supplier-scorecard", "calc-supplier-concentration"],
     decisions: ["supplier-financial-risk", "supplier-concentration"],
     kpis: ["kpi-sourcing-coverage", "kpi-supplier-concentration"],
     scenarios: ["scn-supplier-risk"]
@@ -19174,8 +19271,8 @@ PS.SSOP({
   rel: {
     checklists: ["cl-negotiation", "cl-negotiation-closeout"],
     sops: ["sop-supplier-price-increase-review"],
-    templates: ["tpl-negotiation-planner", "tpl-negotiation-agenda", "tpl-negotiation-concession-log", "tpl-negotiation-summary"],
-    calcs: ["calc-negotiation-savings"],
+    templates: ["tpl-negotiation-planner", "tpl-negotiation-agenda", "tpl-negotiation-concession-log", "tpl-negotiation-summary", "tpl-award-recommendation", "tpl-bid-comparison"],
+    calcs: ["calc-negotiation-savings", "calc-tco", "calc-should-cost"],
     decisions: ["negotiate-or-accept"],
     kpis: ["kpi-savings", "kpi-cost-avoidance"],
     concepts: ["batna", "zopa"],
@@ -19427,7 +19524,7 @@ PS.SSOP({
 
 /* ============ Checklist library: Core Standard Checklists ============ */
 PS.SCL({ i: "cl-procurement-intake", t: "Procurement Intake Checklist", c: "Intake & Planning", d: "Validate business need, approved budget code, and Delegation of Authority threshold before sourcing begins.", sc: [{"g":"Prepare and verify","items":["Business need clearly identified and documented","Budget code and funding availability confirmed with Finance","Technical specification clear, unambiguous, and complete","Delegation of Authority approval tier determined ($10k, $100k, or $250k)","Contract registry searched to eliminate duplicate supplier commitments","Overlapping demand across business units consolidated"]},{"g":"Execute and decide","items":["Category and spend classification assigned","Approval requirements and governance gates established","Competitive versus single-source route selected with written justification","Sourcing Lead assigned with conflict of interest declaration signed","Requisition approved in ERP by authorized budget holder","Required-by delivery date validated with requisitioner","Procurement file opened with named audit owner"]}] });
-PS.SCL({ i: "cl-rfq-preparation", t: "RFQ Preparation & Execution Checklist", c: "Sourcing", d: "Issue compliant specifications, maintain clarification logs, and normalize competitive quotations.", sc: [{"g":"Prepare and verify","items":["Technical requirement definition approved and frozen","Specification finalized without restrictive brand naming","Quantity, delivery schedules, and Incoterms 2020 rules confirmed","Evaluation criteria and minimum qualification gates locked","Supplier longlist built from verified market directories","Minimum three independent suppliers confirmed for competitive tension","Bid validity period agreed to cover evaluation and approval cycles"]},{"g":"Execute and decide","items":["Standard RFQ document drafted with terms and conditions attached","Internal peer review completed before market issuance","Simultaneous issuance to all shortlisted suppliers","Clarification log maintained with all Q and A shared identically to all bidders","Sealed bids received by formal deadline timestamp","Formal bids validated for completeness and specification adherence","Price normalization completed adjusting for freight, duties, and payment terms"]},{"g":"Close out and record","items":["Technical evaluation sign-off completed","Commercial price evaluation and landed cost comparison completed","Negotiation concessions documented in agreed minutes","Award recommendation prepared and routed to authorized signatory","Approval secured before award notification is released","Procurement records archived under 7-year retention policy"]}] });
+PS.SCL({ i: "cl-rfq-preparation", t: "RFQ Preparation & Execution Checklist", c: "Sourcing", d: "Issue compliant specifications, maintain clarification logs, and normalize competitive quotations.", sc: [{"g":"Prepare and verify","items":["Technical requirement definition approved and frozen","Specification finalized without restrictive brand naming","Quantity, delivery schedules, and Incoterms 2020 rules confirmed","Evaluation criteria and minimum qualification gates locked","Supplier longlist built from verified market directories","Minimum three independent suppliers confirmed for competitive tension","Bid validity period agreed to cover evaluation and approval cycles"]},{"g":"Execute and decide","items":["Standard RFQ document drafted with terms and conditions attached","Internal peer review completed before market issuance","Simultaneous issuance to all shortlisted suppliers","Clarification log maintained with all Q and A shared identically to all bidders","Sealed bids received by formal deadline timestamp","Formal bids validated for completeness and specification adherence","Price normalization completed adjusting for freight, duties, and payment terms"]},{"g":"Close out and record","items":["Technical evaluation sign-off completed","Commercial price evaluation and landed cost comparison completed","Negotiation concessions documented in agreed minutes","Award recommendation prepared and routed to authorized signatory","Approval secured before award notification is released","Procurement records archived under 7-year retention policy"]}], rel: { sops: ["sop-rfq"], calcs: ["calc-compare-quotes", "calc-landed-cost"], templates: ["tpl-rfq", "tpl-bid-comparison", "tpl-award-recommendation"], decisions: ["sourcing-method", "rfq-or-rfp"], checklists: ["cl-quote-comparison", "cl-award-recommendation"] } });
 PS.SCL({ i: "cl-supplier-evaluation", t: "Supplier Evaluation Checklist", c: "Evaluation & Award", d: "Evaluate supplier capability, Altman Z-Score financial liquidity, quality systems, and verified references.", sc: [{"g":"Prepare and verify","items":["Evaluation criteria defined, weighted, and approved prior to review","Standard supplier evaluation questionnaire issued","Financial statements collected for 24-month solvency review","Altman Z-Score or credit rating assessed to eliminate insolvency risk","ISO 9001 quality certifications and environmental standards verified","Mandatory on-site facility audit completed for critical Tier 1 suppliers","Minimum three client reference checks completed on identical scope","Manufacturing capacity and equipment redundancy verified"]},{"g":"Execute and decide","items":["Technical capability scored blind to commercial pricing","Commercial evaluation and fee structure benchmarked against market","Supply chain continuity and tier-2 dependency risks assessed","Legal compliance, sanctions, and anti-bribery screening completed","Composite evaluation matrix reconciled by cross-functional panel","Evaluation report signed by all panel members","Approved supplier added to Approved Vendor List with 24-month validity","Unsuccessful suppliers notified with objective debrief offered"]}] });
 PS.SCL({ i: "cl-negotiation", t: "Negotiation Checklist", c: "Negotiation", d: "Establish mandated targets, walk-away reservation prices, and tradeable concession matrices.", sc: [{"g":"Prepare and verify","items":["Negotiation objectives defined with executive stakeholder alignment","Target price and stretch commercial outcomes established","Walk-away reservation price locked with written authorization","Best Alternative to a Negotiated Agreement (BATNA) valued in cash terms","Zone of Possible Agreement (ZOPA) modeled against supplier should-cost","Supplier power levers and margin pressures analyzed","Internal demand flexibility and volume aggregation levers identified"]},{"g":"Execute and decide","items":["Tradeable concession matrix built with costed commercial giveaways","Negotiation team roles assigned (Lead Negotiator, Technical SME, Commercial Scribe)","Internal alignment briefing conducted to rehearse strategy","Opening commercial position documented and approved","Supporting market benchmarks and volume forecasts assembled","Standard contract template prepared for markup review","Meeting logistics and recorded agenda distributed"]},{"g":"Close out and record","items":["Negotiation conducted strictly within mandated authority","Agreed meeting minutes drafted and signed same day by both parties","Outcome reconciled against target and walk-away reservation price","Formal commercial approval obtained for any deviations","Binding contract amendment or agreement drafted from agreed minutes","Implementation milestones and supplier performance commitments assigned"]}] });
 PS.SCL({ i: "cl-contract-review", t: "Contract Review Checklist", c: "Contract", d: "Converge commercial, legal, and financial reviews to verify Delegation of Authority compliance prior to signature.", sc: [{"g":"Prepare and verify","items":["Final award recommendation approved by authorized authority","Approved enterprise contract template selected","All negotiated commercial terms and pricing schedules reconciled","Detailed Scope of Work (SOW) and technical specifications attached","Milestone payment terms and delivery Incoterms 2020 rules verified","Service Level Agreements (SLAs) and liquidated damages defined"]},{"g":"Execute and decide","items":["Warranty period and remedy obligations verified","Limitation of liability and indemnification clauses approved by Legal Counsel","Termination for convenience and termination for cause clauses included","Formal contract variation and change control procedure specified","Force majeure definitions aligned with enterprise risk guidelines","Governing law, jurisdiction, and dispute escalation ladder confirmed","Signatory authority verified against Delegation of Authority matrix"]},{"g":"Close out and record","items":["Finance review completed confirming tax treatment and working capital","Legal review sign-off secured with all deviations documented","Requisitioner and business unit head approval obtained","Contract executed via authorized electronic or wet signatures","Executed contract filed in central contract management repository","Purchase Order released in ERP with contract reference linked"]}] });
@@ -20480,7 +20577,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the calculated Herfindahl-Hirschman Index and identify whether your category has healthy competition or dangerous monopolistic risk.'
     ],
     ctaLabel: 'Launch Concentration Tool',
-    ctaHref: '#/calc/calc-concentration',
+    ctaHref: '#/calc/calc-supplier-concentration',
     secondaryLabel: 'Open Spend Analysis SOP',
     secondaryHref: '#/sop/sop-savings-calculation'
   }
@@ -20715,7 +20812,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Analyze the break-even production volume to determine the optimal strategic route.'
     ],
     ctaLabel: 'Launch Make-vs-Buy Tool',
-    ctaHref: '#/calc/calc-make-buy',
+    ctaHref: '#/calc/calc-make-vs-buy',
     secondaryLabel: 'Open Sourcing Strategy Guide',
     secondaryHref: '#/dec'
   }
@@ -21426,7 +21523,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch RFQ Template',
     ctaHref: '#/tpl/tpl-rfq',
     secondaryLabel: 'Check Tender Checklist',
-    secondaryHref: '#/cl/cl-rfq'
+    secondaryHref: '#/cl/cl-rfq-preparation'
   }
 });
 
@@ -22378,9 +22475,9 @@ PS.ACADEMY_FUNCTIONS.push({
       'Input scores for 3 competing suppliers and review the automated weighted ranking.'
     ],
     ctaLabel: 'Launch Scorecard Tool',
-    ctaHref: '#/calc/calc-scorecard',
+    ctaHref: '#/calc/calc-supplier-scorecard',
     secondaryLabel: 'Open Evaluation Template',
-    secondaryHref: '#/tpl/tpl-eval-matrix'
+    secondaryHref: '#/tpl/tpl-weighted-scoring'
   }
 });
 
@@ -22615,7 +22712,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch Sourcing Decision Guide',
     ctaHref: '#/dec',
     secondaryLabel: 'Check Audit Checklist',
-    secondaryHref: '#/cl/cl-audit'
+    secondaryHref: '#/cl/cl-procurement-audit'
   }
 });
 
@@ -22857,7 +22954,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch Negotiation Calculator',
     ctaHref: '#/calc/calc-negotiation-savings',
     secondaryLabel: 'Open Negotiation Template',
-    secondaryHref: '#/tpl/tpl-neg-plan'
+    secondaryHref: '#/tpl/tpl-negotiation-planner'
   }
 });
 
@@ -23327,7 +23424,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Log audit notes and verify that sign-off complies with Delegation of Authority thresholds.'
     ],
     ctaLabel: 'Open Contract Checklist',
-    ctaHref: '#/cl/cl-contract',
+    ctaHref: '#/cl/cl-contract-review',
     secondaryLabel: 'View SLA Template',
     secondaryHref: '#/tpl'
   }
@@ -23564,7 +23661,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch PO Value Check Tool',
     ctaHref: '#/calc/calc-po-value-check',
     secondaryLabel: 'Open Procurement Audit Checklist',
-    secondaryHref: '#/cl/cl-audit'
+    secondaryHref: '#/cl/cl-procurement-audit'
   }
 });
 
@@ -23797,7 +23894,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the Purchase Order Template for standard commercial protections.'
     ],
     ctaLabel: 'Open Buying Checklist',
-    ctaHref: '#/cl/cl-rfq',
+    ctaHref: '#/cl/cl-rfq-preparation',
     secondaryLabel: 'View PO Template',
     secondaryHref: '#/tpl'
   }
@@ -24267,7 +24364,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the composite supplier rating and generate a formal Performance Summary.'
     ],
     ctaLabel: 'Launch Scorecard Tool',
-    ctaHref: '#/calc/calc-scorecard',
+    ctaHref: '#/calc/calc-supplier-scorecard',
     secondaryLabel: 'Open SRM Template',
     secondaryHref: '#/tpl'
   }
@@ -24504,7 +24601,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Open the Savings Dashboard to view consolidated enterprise value tracking.'
     ],
     ctaLabel: 'Launch Savings Calculator',
-    ctaHref: '#/calc/calc-savings',
+    ctaHref: '#/calc/calc-savings-analysis',
     secondaryLabel: 'Open Savings Dashboard',
     secondaryHref: '#/dash-savings'
   }
@@ -28287,7 +28384,7 @@ PS_CALC.push({
   ],
   example: { qty: 2500, insurance: 300, taxRecoverable: true, aPrice: 12.4, aFreight: 1800, aDuty: 6, aDiscount: 2, bPrice: 11.9, bFreight: 3200, bDuty: 6, bDiscount: 0, cPrice: 13.25, cFreight: 600, cDuty: 6, cDiscount: 5 },
   handoffTo: ['calc-tco', 'calc-negotiation-savings'],
-  rel: { sops: ['sop-quote-comparison', 'sop-bid-normalization', 'sop-commercial-evaluation'], cl: ['cl-quote-comparison'], tpl: ['tpl-bid-comparison'], calc: ['calc-landed-cost', 'calc-tco'], decisions: ['dec-unit-price-vs-tco'] },
+  rel: { sops: ['sop-quote-comparison', 'sop-bid-normalization', 'sop-commercial-evaluation', 'sop-negotiation-preparation'], cl: ['cl-quote-comparison'], tpl: ['tpl-bid-comparison', 'tpl-negotiation-planner'], calc: ['calc-landed-cost', 'calc-tco'], decisions: ['dec-unit-price-vs-tco', 'negotiate-or-accept'] },
   run: function (v) { return PS.calcImpl.compareQuotes(v); }
 });
 /* ============ Calc logic: Compare Quotes ============ */

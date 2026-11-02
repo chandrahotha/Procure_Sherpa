@@ -236,7 +236,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch Negotiation Calculator',
     ctaHref: '#/calc/calc-negotiation-savings',
     secondaryLabel: 'Open Negotiation Template',
-    secondaryHref: '#/tpl/tpl-neg-plan'
+    secondaryHref: '#/tpl/tpl-negotiation-planner'
   }
 });
 
@@ -706,7 +706,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Log audit notes and verify that sign-off complies with Delegation of Authority thresholds.'
     ],
     ctaLabel: 'Open Contract Checklist',
-    ctaHref: '#/cl/cl-contract',
+    ctaHref: '#/cl/cl-contract-review',
     secondaryLabel: 'View SLA Template',
     secondaryHref: '#/tpl'
   }
@@ -943,7 +943,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch PO Value Check Tool',
     ctaHref: '#/calc/calc-po-value-check',
     secondaryLabel: 'Open Procurement Audit Checklist',
-    secondaryHref: '#/cl/cl-audit'
+    secondaryHref: '#/cl/cl-procurement-audit'
   }
 });
 
@@ -1176,7 +1176,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the Purchase Order Template for standard commercial protections.'
     ],
     ctaLabel: 'Open Buying Checklist',
-    ctaHref: '#/cl/cl-rfq',
+    ctaHref: '#/cl/cl-rfq-preparation',
     secondaryLabel: 'View PO Template',
     secondaryHref: '#/tpl'
   }
@@ -1646,7 +1646,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the composite supplier rating and generate a formal Performance Summary.'
     ],
     ctaLabel: 'Launch Scorecard Tool',
-    ctaHref: '#/calc/calc-scorecard',
+    ctaHref: '#/calc/calc-supplier-scorecard',
     secondaryLabel: 'Open SRM Template',
     secondaryHref: '#/tpl'
   }
@@ -1883,7 +1883,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Open the Savings Dashboard to view consolidated enterprise value tracking.'
     ],
     ctaLabel: 'Launch Savings Calculator',
-    ctaHref: '#/calc/calc-savings',
+    ctaHref: '#/calc/calc-savings-analysis',
     secondaryLabel: 'Open Savings Dashboard',
     secondaryHref: '#/dash-savings'
   }

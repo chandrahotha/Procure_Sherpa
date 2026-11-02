@@ -25,6 +25,21 @@ PS.route('kpi', function (id, params) {
     (it.practice ? '<h3>Practical guidance</h3>' + PS.ul(it.practice) : '') +
     (it.target ? '<h3>Targets</h3><p>' + PS.esc(it.target) + '</p>' : '') +
     '</div>' +
+    /* A KPI is a number you agree to keep measuring, and the product already
+       has the place where it is measured. §78's savings journey ends at the
+       dashboard, and a reader who has just read the definition of Savings
+       Realisation should be shown where to look at it, not sent back to the
+       sidebar to find it. */
+    (function () {
+      var onSavingsDash = /saving|avoidance|realization|realisation|cost/i.test((it.id || '') + ' ' + (it.cat || '') + ' ' + (it.title || ''));
+      return '<div class="card"><div class="card-head"><h2>Where this is reported</h2></div>' +
+        '<p class="card-sub">Procure Sherpa keeps the figures you enter in this browser; these are the views that read them back.</p>' +
+        '<div class="btn-row no-print">' +
+        (onSavingsDash ? '<a class="btn btn-primary" href="#/dash-savings">Open the Savings Dashboard</a>' : '') +
+        '<a class="btn" href="#/dash">Open the Analytics dashboard</a>' +
+        '<a class="btn btn-ghost" href="#/search?q=' + encodeURIComponent(it.title) + '">Find the work that feeds this number</a>' +
+        '</div></div>';
+    }()) +
     PS.relatedCard('kpi', it) +
     PS.disclaimer(it.disclaimerKind || 'data');
   return html;

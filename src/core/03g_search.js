@@ -135,6 +135,73 @@ PS.SEARCH_STOPWORDS = ('a an the and or of for to in on at by with from into ove
   'may might if then than so such very just also more most some any all each both few ' +
   'other same too only up down out off again further once here there about').split(' ');
 
+/* Procurement has several words for the same thing, and the library is
+   written with some of them while people type the others. "Prepare a savings
+   report for the CFO" found no calculator, because the calculator is called
+   Savings Analysis and nothing in its record says report or CFO - while the
+   single word "savings" found it immediately. That is not a ranking bug, it
+   is a vocabulary gap, and it is the difference between a toolkit a buyer
+   can use by describing their problem and one that requires the file name.
+
+   Variants are only tried when the word itself misses, so an exact term
+   keeps its score; each token is capped, because the reach pass and the
+   scoring pass both walk this per record. */
+PS.SEARCH_SYNONYMS = {
+  report: ['analysis', 'summary', 'dashboard'],
+  reporting: ['analysis', 'dashboard', 'kpi'],
+  prepare: ['plan', 'template'],
+  cfo: ['finance', 'executive', 'business case'],
+  board: ['executive', 'governance'],
+  supplier: ['vendor'],
+  vendor: ['supplier'],
+  increase: ['escalation', 'rise'],
+  increased: ['escalation', 'rise'],
+  raise: ['increase'],
+  raised: ['increase', 'escalation'],
+  rising: ['increase', 'escalation'],
+  price: ['cost', 'pricing'],
+  cost: ['price'],
+  savings: ['saving', 'reduction'],
+  saving: ['savings'],
+  reduce: ['reduction', 'savings'],
+  reduction: ['savings', 'reduce'],
+  evaluate: ['evaluation', 'scorecard', 'assessment'],
+  evaluation: ['scorecard', 'assessment'],
+  score: ['scorecard', 'scoring', 'rating'],
+  scorecard: ['scoring', 'rating'],
+  contract: ['agreement'],
+  agreement: ['contract'],
+  renew: ['renewal'],
+  renewal: ['renew', 'contract'],
+  negotiate: ['negotiation'],
+  negotiation: ['negotiate'],
+  tender: ['rfq', 'rfp', 'bid'],
+  bid: ['tender', 'rfq'],
+  quote: ['quotation', 'bid'],
+  quotes: ['quote', 'bids'],
+  budget: ['spend', 'forecast'],
+  analyse: ['analysis', 'analytics'],
+  analyze: ['analysis', 'analytics'],
+  analysis: ['analytics'],
+  analytics: ['analysis', 'data'],
+  dashboard: ['report'],
+  kpi: ['metric', 'measure', 'indicator'],
+  metrics: ['kpi', 'measure'],
+  template: ['document', 'form'],
+  document: ['template'],
+  approval: ['sign off', 'authorise'],
+  onboard: ['onboarding', 'registration'],
+  tail: ['maverick', 'consumables'],
+  maverick: ['tail', 'unmanaged'],
+  category: ['portfolio'],
+  portfolio: ['category'],
+  demand: ['consumption', 'usage'],
+  tco: ['total cost of ownership', 'landed cost'],
+  landed: ['tco', 'freight', 'duty'],
+  tax: ['gst', 'vat'],
+  pay: ['payment']
+};
+
 /* Light stemmer: strip the endings that stop a buyer from finding the
    right page because they said "increased" and the page says "increase",
    or "suppliers" and the page says "supplier". */
@@ -157,6 +224,15 @@ PS.tokenVariants = function (t) {
     out.push(stem);
     /* raised -> rais -> raise; increased -> increas -> increase */
     if (/ed$|ing$/.test(t) && !/e$/.test(stem)) out.push(stem + 'e');
+  }
+  var syn = PS.SEARCH_SYNONYMS[t];
+  if (syn && syn.length) {
+    /* Three, not all: the reach pass runs this for every token against
+       every record, and a long synonym list is a linear cost multiplied by
+       the whole library. */
+    for (var si = 0; si < syn.length && out.length < 6; si++) {
+      if (out.indexOf(syn[si]) < 0) out.push(syn[si]);
+    }
   }
   return out;
 };

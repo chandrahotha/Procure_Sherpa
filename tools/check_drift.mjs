@@ -257,7 +257,10 @@ if (devCount > 1) {
    finding, an 63 left over from before the workbenches arrived is. */
 {
   const claimed = docs
-    .map((d) => ({ file: d.file, m: d.text.match(/(\d{2,3})(?:-route smoke| route renders| paths)/g) }))
+    /* The lookbehind is not decoration: "§78 paths" is a section number
+       followed by a noun, and without it the rule read it as a claim that
+       the smoke table has 78 routes. */
+    .map((d) => ({ file: d.file, m: d.text.match(/(?<![§\d])(\d{2,3})(?:-route smoke| route renders| paths)/g) }))
     .filter((x) => x.m);
   claimed.forEach((c) => c.m.forEach((phrase) => {
     const n = Number(phrase.match(/\d{2,3}/)[0]);

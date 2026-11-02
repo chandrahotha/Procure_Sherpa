@@ -476,7 +476,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Review the calculated Herfindahl-Hirschman Index and identify whether your category has healthy competition or dangerous monopolistic risk.'
     ],
     ctaLabel: 'Launch Concentration Tool',
-    ctaHref: '#/calc/calc-concentration',
+    ctaHref: '#/calc/calc-supplier-concentration',
     secondaryLabel: 'Open Spend Analysis SOP',
     secondaryHref: '#/sop/sop-savings-calculation'
   }
@@ -711,7 +711,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Analyze the break-even production volume to determine the optimal strategic route.'
     ],
     ctaLabel: 'Launch Make-vs-Buy Tool',
-    ctaHref: '#/calc/calc-make-buy',
+    ctaHref: '#/calc/calc-make-vs-buy',
     secondaryLabel: 'Open Sourcing Strategy Guide',
     secondaryHref: '#/dec'
   }
@@ -1422,6 +1422,6 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Launch RFQ Template',
     ctaHref: '#/tpl/tpl-rfq',
     secondaryLabel: 'Check Tender Checklist',
-    secondaryHref: '#/cl/cl-rfq'
+    secondaryHref: '#/cl/cl-rfq-preparation'
   }
 });
