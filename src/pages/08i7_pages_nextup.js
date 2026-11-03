@@ -84,6 +84,19 @@ PS.nextUp.getRecommendation = function () {
     }
   }
 
+  /* A lesson that is due is the most useful thing this page can offer a
+     returning learner: it is specific, dated and already theirs. */
+  var revQ = PS.revise ? PS.revise.queue() : null;
+  if (revQ && revQ.due.length) {
+    recs.push({
+      kind: 'revise',
+      title: 'Review ' + revQ.due.length + (revQ.due.length === 1 ? ' lesson that is due' : ' lessons that are due'),
+      why: 'You read these a while ago and they have reached their review date. Re-reading the lesson and retaking its quiz is what moves them onto a longer gap.',
+      href: '#/revise',
+      cta: 'Review queue'
+    });
+  }
+
   if (labsDone < labsTotal) {
     recs.push({
       kind: 'lab',

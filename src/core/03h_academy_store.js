@@ -146,6 +146,7 @@ PS.academy.markStudied = function (funcId) {
   data.studied[funcId] = true;
   data.current = funcId;
   PS.academy.save(data);
+  if (PS.revise && PS.revise.record) PS.revise.record(funcId, 'studied');
 };
 PS.academy.isStudied = function (funcId) {
   var data = PS.academy.getAll();
@@ -158,6 +159,7 @@ PS.academy.markCompleted = function (funcId) {
   data.completed[funcId] = true;
   data.current = funcId;
   PS.academy.save(data);
+  if (PS.revise && PS.revise.record) PS.revise.record(funcId, 'completed');
   return PS.academy.checkBadges();
 };
 

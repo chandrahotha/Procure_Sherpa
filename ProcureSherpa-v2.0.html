@@ -3745,7 +3745,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '61dd56b37793';
+PS.BUILD = '16d3031a1353';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -6002,6 +6002,7 @@ PS.academy.markStudied = function (funcId) {
   data.studied[funcId] = true;
   data.current = funcId;
   PS.academy.save(data);
+  if (PS.revise && PS.revise.record) PS.revise.record(funcId, 'studied');
 };
 PS.academy.isStudied = function (funcId) {
   var data = PS.academy.getAll();
@@ -6014,6 +6015,7 @@ PS.academy.markCompleted = function (funcId) {
   data.completed[funcId] = true;
   data.current = funcId;
   PS.academy.save(data);
+  if (PS.revise && PS.revise.record) PS.revise.record(funcId, 'completed');
   return PS.academy.checkBadges();
 };
 
@@ -6903,6 +6905,180 @@ PS.chart = {
       svg.join('') +
       '</svg></div></div>';
   }
+};
+
+/* ==========================================================
+   Procure Sherpa v3.0 - Revision scheduling (spaced review)
+   The Academy records that a lesson was studied and whether the
+   quiz was passed, and then the curriculum behaves like a list:
+   a lesson read in September is never mentioned again, which is
+   how a learning product loses what it taught. This is the
+   forgetting-curve half of the portal - a local, deterministic
+   review queue built from the reader's own progress record.
+
+   Two design decisions worth stating:
+
+   * The ladder is short and honest. Intervals of 7/21/60/180
+     days after a passed quiz, 3/14/45 after a shaky or missing
+     one. These are a teaching convention, not a calibrated
+     memory model, and the page says so rather than implying
+     that the app knows how fast this particular reader forgets.
+
+   * Nothing is invented about the past. Completions written
+     before this feature existed carry no date, because the
+     record stored `true`. A lesson in that state is scheduled
+     from today and labelled as having no recorded date; it is
+     never presented as though it was read last month.
+   ========================================================== */
+
+PS.revise = PS.revise || {};
+
+PS.revise.DAY = 86400000;
+PS.revise.STRONG = [7, 21, 60, 180];
+PS.revise.SHAKY = [3, 14, 45];
+PS.revise.PASS = 70;
+
+/* Timestamps live in their own map rather than replacing the boolean
+   completion flag, because every other surface - badges, hub rails,
+   the transcript, G24 and G27 - reads `completed[id]` as a truthy
+   value. Changing that shape to an object would have been a silent
+   behavioural change in six places that do not belong to this feature. */
+PS.revise.record = function (funcId, kind) {
+  if (!funcId || !PS.academy) return;
+  var data = PS.academy.getAll();
+  data.log = data.log || {};
+  var e = data.log[funcId] || {};
+  e[kind] = Date.now();
+  data.log[funcId] = e;
+  PS.academy.save(data);
+};
+
+PS.revise.entry = function (funcId) {
+  var data = PS.academy.getAll();
+  return (data.log || {})[funcId] || {};
+};
+
+/* The most recent touch of any kind is what the next interval is
+   measured from: re-reading a lesson resets the clock the same way
+   passing its quiz does. */
+PS.revise.lastTouch = function (e) {
+  var keys = ['reviewed', 'quiz', 'completed', 'studied'];
+  var best = 0;
+  for (var i = 0; i < keys.length; i++) {
+    var t = Number(e[keys[i]] || 0);
+    if (t > best) best = t;
+  }
+  return best;
+};
+
+PS.revise.ladderFor = function (funcId) {
+  var res = PS.academy.getQuizResult ? PS.academy.getQuizResult(funcId) : null;
+  var pct = res && typeof res.pct === 'number' ? res.pct : -1;
+  return { strong: pct >= PS.revise.PASS, pct: pct, steps: pct >= PS.revise.PASS ? PS.revise.STRONG : PS.revise.SHAKY };
+};
+
+/* Quiz attempts already carry an ISO date in the score record, so a
+   reader who passed a lesson last month has real history to schedule
+   from even though they never wrote a revision log entry. */
+PS.revise.scoreDate = function (funcId) {
+  var res = PS.academy.getQuizResult ? PS.academy.getQuizResult(funcId) : null;
+  if (!res || !res.date) return 0;
+  var t = Date.parse(res.date);
+  return isNaN(t) ? 0 : t;
+};
+
+/* Returns null when there is nothing to schedule: a lesson that was
+   never studied or completed has no interval, and it is not "due". */
+PS.revise.nextDue = function (funcId) {
+  var data = PS.academy.getAll();
+  var e = (data.log || {})[funcId] || {};
+  var completed = !!(data.completed && data.completed[funcId]);
+  var studied = !!(data.studied && data.studied[funcId]);
+  if (!completed && !studied) return null;
+  var lad = PS.revise.ladderFor(funcId);
+  var reps = Number(e.reps || 0);
+  var step = Math.min(reps, lad.steps.length - 1);
+  var days = lad.steps[step];
+  var touch = Math.max(PS.revise.lastTouch(e), PS.revise.scoreDate(funcId));
+  var inherited = !touch;
+  var base = touch || Date.now();
+  return {
+    due: base + days * PS.revise.DAY,
+    days: days,
+    reps: reps,
+    strong: lad.strong,
+    pct: lad.pct,
+    inherited: inherited,
+    last: touch || null
+  };
+};
+
+/* One pass over the curriculum, sorted by urgency: overdue first, then
+   what is due, then what is coming inside a fortnight. `later` is a
+   count rather than a list because a learner who is caught up does not
+   need fourteen rows of lessons they are not due for yet. */
+PS.revise.queue = function () {
+  var now = Date.now();
+  var due = [];
+  var soon = [];
+  var later = 0;
+  var noDate = 0;
+  var tracked = 0;
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  for (var i = 0; i < funcs.length; i++) {
+    var f = funcs[i];
+    var s = PS.revise.nextDue(f.id);
+    if (!s) continue;
+    tracked++;
+    if (s.inherited) noDate++;
+    var item = {
+      id: f.id,
+      title: f.title,
+      module: f.module,
+      tier: f.tier,
+      due: s.due,
+      days: s.days,
+      reps: s.reps,
+      strong: s.strong,
+      pct: s.pct,
+      inherited: s.inherited,
+      last: s.last,
+      overdueDays: Math.floor((now - s.due) / PS.revise.DAY)
+    };
+    if (now >= s.due) due.push(item);
+    else if (s.due - now <= 14 * PS.revise.DAY) soon.push(item);
+    else later++;
+  }
+  due.sort(function (a, b) { return a.due - b.due; });
+  soon.sort(function (a, b) { return a.due - b.due; });
+  return { due: due, soon: soon, later: later, tracked: tracked, noDate: noDate, now: now };
+};
+
+/* Reviewing is a recorded act, not a page view: it advances the ladder
+   so a lesson that keeps being revisited earns longer intervals rather
+   than staying in the queue forever. */
+PS.revise.markReviewed = function (funcId) {
+  var data = PS.academy.getAll();
+  data.log = data.log || {};
+  var e = data.log[funcId] || {};
+  e.reps = Number(e.reps || 0) + 1;
+  e.reviewed = Date.now();
+  data.log[funcId] = e;
+  PS.academy.save(data);
+  return e.reps;
+};
+
+PS.revise.whenPhrase = function (ts) {
+  var now = Date.now();
+  var diff = ts - now;
+  var days = Math.round(diff / PS.revise.DAY);
+  if (days <= -1) return Math.abs(days) + ' days overdue';
+  if (days < 0) return 'overdue today';
+  if (days === 0) return 'due today';
+  if (days === 1) return 'due tomorrow';
+  if (days <= 14) return 'due in ' + days + ' days';
+  var months = Math.round(days / 30);
+  return 'due in about ' + (months < 1 ? 1 : months) + ' months';
 };
 
 /* ==========================================================
@@ -14494,6 +14670,7 @@ PS.route('academy-progress', function () {
   var html = '<div class="card">' +
     '<div class="card-head"><h1>Academy Mastery Transcript</h1><div class="spacer"></div>' +
     '<a class="btn btn-sm" href="#/certificate">🎓 Credential Transcript (Future)</a> ' +
+    '<a class="btn btn-sm" href="#/revise">📆 Review queue</a> ' +
     '<button type="button" class="btn btn-sm" data-act="print">Print / PDF Transcript</button></div>' +
     '<p class="lead">Complete record of your procurement competency progression, assessment scores, and practical laboratory completion.</p>' +
     '<div class="grid grid-3 mb16">' +
@@ -14665,6 +14842,22 @@ PS.renderAcademyHub = function (params) {
     '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
     '</strong> functions across ' + modNames.length + ' modules' +
     (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
+
+  /* What is due is progress information too, and it belongs on the same
+     screen that says how much has been read. Zero is stated rather than
+     hidden, so a reader who is caught up knows the queue is working. */
+  var hubQueue = PS.revise ? PS.revise.queue() : null;
+  if (hubQueue) {
+    var qLine;
+    if (hubQueue.due.length) {
+      qLine = '<a href="#/revise">' + hubQueue.due.length + (hubQueue.due.length === 1 ? ' lesson is' : ' lessons are') + ' due for review &rarr; open the review queue</a>';
+    } else if (hubQueue.tracked) {
+      qLine = 'Nothing is due for review today. <a href="#/revise">The review queue</a> has ' + hubQueue.soon.length + ' coming up within a fortnight.';
+    } else {
+      qLine = 'Once you study a lesson it gets a review date. <a href="#/revise">How the review queue works</a>.';
+    }
+    html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
+  }
 
   /* A jump strip, because seventeen modules of three lessons is a page more
      than one screen long per module, and "go to the contracts one" should not
@@ -17890,6 +18083,7 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'Finished lessons come back instead of evaporating: a review queue (#/revise) puts a dated interval on everything you have studied. A passed quiz earns 7, 21, 60 and 180 day gaps; a shaky or missing one earns 3, 14 and 45, and each review you mark moves the lesson up its ladder. The Academy hub states what is due, the What to learn next page picks it up, and completions recorded before dates existed are labelled as measured from today rather than backdated. The page also says in plain terms that these intervals are a teaching convention, not a measurement of how fast you personally forget',
       'New Module 21: Sustainable and Responsible Sourcing - Carbon, Circularity and Social Value - where the emissions actually sit and what a spend-based proxy can and cannot support, how a returnable system or a remanufactured part has to be priced per cycle achieved rather than per unit bought, and what the labour and due diligence rules now in force expect as evidence rather than as a signed code of conduct. Comes with six new concepts in a Sustainable and Responsible Sourcing category, the Sustainable Sourcing Verification SOP, a matching learning path and an award. The curriculum is 63 functions across 21 modules, 384 step sequences and 294 quiz questions',
       'Every worked example now says what it is, where it lives: the lesson example card, the calculator example panel, the KPI worked example and every scenario page carry a line stating that the company, figures and outcome are constructed for teaching - illustrative, not reports of real organisations. A gate now fails the build if any of those surfaces loses the label',
       'The front door is authored now: the home and dashboard headline uses the reading face, learning-path and lesson cards are set the same way, and empty states say more kindly what to do next',
@@ -18166,6 +18360,19 @@ PS.nextUp.getRecommendation = function () {
     }
   }
 
+  /* A lesson that is due is the most useful thing this page can offer a
+     returning learner: it is specific, dated and already theirs. */
+  var revQ = PS.revise ? PS.revise.queue() : null;
+  if (revQ && revQ.due.length) {
+    recs.push({
+      kind: 'revise',
+      title: 'Review ' + revQ.due.length + (revQ.due.length === 1 ? ' lesson that is due' : ' lessons that are due'),
+      why: 'You read these a while ago and they have reached their review date. Re-reading the lesson and retaking its quiz is what moves them onto a longer gap.',
+      href: '#/revise',
+      cta: 'Review queue'
+    });
+  }
+
   if (labsDone < labsTotal) {
     recs.push({
       kind: 'lab',
@@ -18245,6 +18452,121 @@ PS.route('next-up', function () {
 
   return html;
 });
+
+/* ==========================================================
+   Procure Sherpa v3.0 - Review queue (#/revise)
+   The surface that turns a finished lesson into a scheduled
+   one. Everything here is computed from the reader's own
+   progress record; nothing is invented about when something
+   was read, and the honesty of the intervals is stated rather
+   than implied.
+   ========================================================== */
+
+PS.route('revise', function () {
+  PS.pageTitle = 'Review queue';
+  var q = PS.revise.queue();
+  var dueN = q.due.length;
+  var soonN = q.soon.length;
+
+  var day = function (ts) {
+    if (!ts) return 'no date recorded';
+    var d = new Date(ts);
+    var mo = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return d.getDate() + ' ' + mo[d.getMonth()] + ' ' + d.getFullYear();
+  };
+
+  var reason = function (it) {
+    var bits = [];
+    bits.push(it.strong
+      ? 'passed at ' + (it.pct < 0 ? 'n/a' : it.pct + '%') + ', so it earns the longer ladder'
+      : (it.pct < 0 ? 'no quiz taken yet, so it earns the shorter ladder' : 'last quiz was ' + it.pct + '%, below the 70% mark, so it earns the shorter ladder'));
+    bits.push('every ' + it.days + ' days' + (it.reps ? ', review ' + (it.reps + 1) + ' scheduled' : ''));
+    bits.push(it.inherited ? 'started today (your record for this lesson has no date on it)' : 'last touched ' + day(it.last));
+    return bits;
+  };
+
+  var row = function (it, showActions) {
+    return '<li class="revise-item">' +
+      '<div class="tl-title"><a href="#/academy/' + encodeURIComponent(it.id) + '">' + PS.esc(it.title) + '</a></div>' +
+      '<div class="tl-body"><span class="badge">' + PS.esc(PS.revise.whenPhrase(it.due)) + '</span> ' +
+      '<span class="eyebrow">' + PS.esc(it.module) + '</span></div>' +
+      (showActions ? '<ul>' + reason(it).map(function (b) { return '<li>' + PS.esc(b) + '</li>'; }).join('') + '</ul>' : '') +
+      '<div class="chips" style="margin-top:6px">' +
+      '<a class="btn btn-sm' + (showActions ? ' btn-primary' : '') + '" href="#/academy/' + encodeURIComponent(it.id) + '?tab=learn">Open lesson</a>' +
+      (showActions ? '<button type="button" class="btn btn-sm" data-act="revise-review" data-id="' + PS.escAttr(it.id) + '">Mark reviewed</button>' : '') +
+      '</div></li>';
+  };
+
+  var html = PS.reportHead('Review queue', 'Spaced revision from your own progress') +
+    '<div class="card"><div class="card-head"><div><h1>Review queue</h1>' +
+    '<p class="card-sub">A lesson you have read is worth reading again. This page works out when, from the record this browser already holds: a passed quiz earns a longer gap, a shaky one earns a shorter one, and each review you mark pushes the next one further out.</p></div>' +
+    '<div class="spacer"></div>' +
+    '<span class="badge' + (dueN ? ' badge-primary' : ' badge-ok') + '">' + dueN + (dueN === 1 ? ' lesson due' : ' lessons due') + '</span></div>' +
+    '<div class="grid grid-4 mb16">' +
+    '<div class="stat"><span class="s-val">' + q.tracked + '</span><span class="s-lab">In the schedule</span></div>' +
+    '<div class="stat"><span class="s-val">' + dueN + '</span><span class="s-lab">Due now</span></div>' +
+    '<div class="stat"><span class="s-val">' + soonN + '</span><span class="s-lab">Due within 14 days</span></div>' +
+    '<div class="stat"><span class="s-val">' + q.later + '</span><span class="s-lab">Not due yet</span></div>' +
+    '</div>';
+
+  if (!q.tracked) {
+    html += '<div class="empty"><h3>Nothing to schedule yet</h3>' +
+      '<p>The queue fills up as you study. Once you have read a lesson or passed its quiz, it gets a review date here, and the interval lengthens each time you mark it reviewed.</p>' +
+      '<div class="btn-row" style="justify-content:center">' +
+      '<a class="btn btn-primary" href="#/academy">Open the Academy</a>' +
+      '<a class="btn" href="#/next-up">What to learn next</a>' +
+      '</div></div>';
+  } else {
+    if (dueN) {
+      html += '<div class="card"><div class="card-head"><h2>Due now</h2><div class="spacer"></div>' +
+        '<span class="badge">' + dueN + '</span></div>' +
+        '<p class="note" style="margin-top:0">These are past their review date. Re-reading the Learn tab and retaking the quiz is the point - the quiz result is what moves a lesson onto the longer ladder.</p>' +
+        '<ol class="stepper">' + q.due.map(function (it) { return row(it, true); }).join('') + '</ol></div>';
+    } else {
+      html += '<div class="card" style="border-left:4px solid var(--ok)">' +
+        '<h2>Nothing due today</h2>' +
+        '<p>Everything you have studied is inside its review window. ' + (soonN ? 'The next ones arrive within a fortnight.' : 'The next review is more than two weeks away.') + '</p>' +
+        '<div class="btn-row"><a class="btn btn-primary" href="#/next-up">What to learn next</a>' +
+        '<a class="btn" href="#/academy">Keep reading the curriculum</a></div></div>';
+    }
+
+    if (soonN) {
+      html += '<div class="card"><div class="card-head"><h2>Coming up</h2><div class="spacer"></div>' +
+        '<span class="badge">' + soonN + '</span></div>' +
+        '<p class="note" style="margin-top:0">Not due yet, listed so you can see what is around the corner.</p>' +
+        '<ol class="stepper">' + q.soon.map(function (it) { return row(it, false); }).join('') + '</ol></div>';
+    }
+
+    html += '<div class="card"><h2>How the dates are worked out</h2>' +
+      '<ul>' +
+      '<li>A passed quiz (70% or more) uses gaps of 7, 21, 60 and 180 days. Anything below that, or a lesson with no quiz yet, uses 3, 14 and 45.</li>' +
+      '<li>Marking a review pushes the lesson to the next gap in its ladder, so a lesson you keep returning to is asked about less often, not more.</li>' +
+      '<li>The baseline is the most recent thing your record actually says: a review you marked, a quiz you sat, or a completion you confirmed. ' + (q.noDate ?
+        q.noDate + ' of the ' + q.tracked + ' lessons in the schedule were completed before dates were recorded at all, so they are measured from today and labelled as such.' :
+          'Every lesson in your schedule has a real date behind it.') + '</li>' +
+      '<li>These intervals are a teaching convention borrowed from spaced practice, not a measurement of how fast you personally forget. Nothing leaves this browser and no account is involved.</li>' +
+      '</ul>' +
+      '<div class="btn-row" style="margin-top:12px"><a class="btn btn-sm" href="#/academy-progress">Progress transcript</a>' +
+      '<a class="btn btn-sm" href="#/exams">Practice exams</a>' +
+      '<a class="btn btn-sm" href="#/next-up">What to learn next</a></div></div>';
+  }
+
+  html += PS.disclaimer('data');
+  return html;
+});
+
+/* Reviewing is recorded, then the page is redrawn so the counts, the
+   ladders and the "coming up" list all move together - the same idiom
+   the scenario checklist uses. */
+PS.acts['revise-review'] = function (el) {
+  var id = el && el.dataset ? el.dataset.id : '';
+  if (!id || !PS.revise) { PS.toast('That review could not be recorded.', 'warn'); return; }
+  var reps = PS.revise.markReviewed(id);
+  var next = PS.revise.nextDue(id);
+  PS.renderRoute();
+  PS.toast('Recorded. ' + (next ? 'Next review ' + PS.revise.whenPhrase(next.due).replace('due ', '') + '.' : 'Next review scheduled.'), 'ok');
+  void reps;
+};
 
 /* ==========================================================
    Workbench pages: the registry workbenches

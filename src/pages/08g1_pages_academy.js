@@ -18,6 +18,7 @@ PS.route('academy-progress', function () {
   var html = '<div class="card">' +
     '<div class="card-head"><h1>Academy Mastery Transcript</h1><div class="spacer"></div>' +
     '<a class="btn btn-sm" href="#/certificate">🎓 Credential Transcript (Future)</a> ' +
+    '<a class="btn btn-sm" href="#/revise">📆 Review queue</a> ' +
     '<button type="button" class="btn btn-sm" data-act="print">Print / PDF Transcript</button></div>' +
     '<p class="lead">Complete record of your procurement competency progression, assessment scores, and practical laboratory completion.</p>' +
     '<div class="grid grid-3 mb16">' +
@@ -189,6 +190,22 @@ PS.renderAcademyHub = function (params) {
     '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
     '</strong> functions across ' + modNames.length + ' modules' +
     (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
+
+  /* What is due is progress information too, and it belongs on the same
+     screen that says how much has been read. Zero is stated rather than
+     hidden, so a reader who is caught up knows the queue is working. */
+  var hubQueue = PS.revise ? PS.revise.queue() : null;
+  if (hubQueue) {
+    var qLine;
+    if (hubQueue.due.length) {
+      qLine = '<a href="#/revise">' + hubQueue.due.length + (hubQueue.due.length === 1 ? ' lesson is' : ' lessons are') + ' due for review &rarr; open the review queue</a>';
+    } else if (hubQueue.tracked) {
+      qLine = 'Nothing is due for review today. <a href="#/revise">The review queue</a> has ' + hubQueue.soon.length + ' coming up within a fortnight.';
+    } else {
+      qLine = 'Once you study a lesson it gets a review date. <a href="#/revise">How the review queue works</a>.';
+    }
+    html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
+  }
 
   /* A jump strip, because seventeen modules of three lessons is a page more
      than one screen long per module, and "go to the contracts one" should not

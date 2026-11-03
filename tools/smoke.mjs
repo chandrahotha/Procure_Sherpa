@@ -58,7 +58,7 @@ const ROUTES = [
   '#/saved', '#/fav', '#/recent', '#/backup', '#/settings', '#/audit',
   '#/copilot', '#/exams', '#/spend-model', '#/docpack',
   '#/assessment', '#/learning-paths', '#/labs', '#/portfolio',
-  '#/daily-tip', '#/career-paths', '#/community', '#/next-up', '#/whats-new',
+  '#/daily-tip', '#/career-paths', '#/community', '#/next-up', '#/revise', '#/whats-new',
   '#/rfx', '#/suppliers', '#/contracts', '#/catalogue', '#/receipts', '#/budget', '#/approvals', '#/analytics',
   '#/notfound',
   /* detail fixtures: the §81 deliverables, one real id per kind */

@@ -133,6 +133,19 @@ const fromCurriculum = !!tpc && funcs.some((f) =>
 check('The featured thinking point quotes the Academy curriculum and links to its lesson',
   !!tpc && fromCurriculum && !!tpc.querySelector('a[href^="#/academy/"]'));
 
+// 4d. The review queue renders as a workspace, and the hub reaches it
+window.location.hash = '#/revise';
+await new Promise((r) => setTimeout(r, 150));
+const reviseH1 = d.querySelector('#main h1');
+const reviseLinks = Array.from(d.querySelectorAll('#main a[href^="#/"]'));
+check('The review queue renders a heading and a way forward on an empty record',
+  !!reviseH1 && /Review queue/i.test(reviseH1.textContent) && reviseLinks.length > 0);
+
+window.location.hash = '#/academy';
+await new Promise((r) => setTimeout(r, 150));
+check('The Academy hub carries an entry point to the review queue',
+  !!d.querySelector('#main a[href="#/revise"]'));
+
 // 5. Theme token consistency
 const styleText = Array.from(d.querySelectorAll('style')).map((s) => s.textContent).join('\n');
 check('CSS defines :root color variables (--bg, --panel, --text, --accent)',

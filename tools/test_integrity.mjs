@@ -1593,6 +1593,90 @@ try {
   } else {
     ok('G27', 'an empty filter result states why and links back to the whole curriculum');
   }
+
+  /* ---- Revision scheduling: the dates behind the review queue ----
+     A queue that invents a study date, or that calls a lesson overdue
+     when nothing was ever recorded, is worse than no queue: it is a
+     progress claim with no evidence behind it. These assertions measure
+     the ladder against the record the browser actually holds. */
+  const DAY = 86400000;
+  const setAcademy = (obj) => { PS.academy._cache = null; PS.academy.save(obj); PS.academy._cache = null; };
+
+  setAcademy({ completed: {}, scores: {}, badges: {}, current: 'func-mission-value' });
+  const freshQ = PS.revise.queue();
+  if (freshQ.tracked !== 0 || freshQ.due.length !== 0) {
+    fail('G27', 'a learner with no recorded progress is shown ' + freshQ.tracked + ' scheduled and ' + freshQ.due.length + ' due - nothing may be due before anything was read');
+  } else {
+    ok('G27', 'a fresh record schedules nothing: no lesson is invented as due');
+  }
+
+  const rA = PS.ACADEMY_FUNCTIONS[3].id;
+  setAcademy({ completed: {}, studied: { [rA]: true }, scores: {}, badges: {}, log: { [rA]: { studied: Date.now() - 2 * DAY } }, current: rA });
+  const studied = PS.revise.nextDue(rA);
+  if (!studied || studied.days !== 3 || studied.inherited) {
+    fail('G27', 'a lesson studied two days ago with no quiz should sit on the 3-day step of the shorter ladder, got ' + JSON.stringify(studied));
+  } else if (Date.now() >= studied.due) {
+    fail('G27', 'a lesson studied two days ago is already marked due');
+  } else {
+    ok('G27', 'a lesson studied two days ago without a quiz is scheduled ahead, not overdue (' + PS.revise.whenPhrase(studied.due) + ')');
+  }
+
+  const rB = PS.ACADEMY_FUNCTIONS[4].id;
+  const passedAgo = new Date(Date.now() - 30 * DAY).toISOString();
+  setAcademy({ completed: { [rB]: true }, scores: { [rB]: { score: 4, total: 5, pct: 80, date: passedAgo } }, badges: {}, log: {}, current: rB });
+  const passed = PS.revise.nextDue(rB);
+  const qPassed = PS.revise.queue();
+  if (!passed || passed.days !== 7 || !passed.strong) {
+    fail('G27', 'a lesson passed at 80% thirty days ago should be on the 7-day step of the longer ladder, got ' + JSON.stringify(passed));
+  } else if (Date.now() < passed.due || qPassed.due.filter((x) => x.id === rB).length !== 1) {
+    fail('G27', 'a lesson passed thirty days ago is not listed as due');
+  } else if (passed.last !== Date.parse(passedAgo)) {
+    fail('G27', 'the schedule is not measuring from the quiz date the record already holds');
+  } else {
+    ok('G27', 'a lesson passed thirty days ago is due now, measured from the real quiz date in the record');
+  }
+
+  PS.revise.markReviewed(rB);
+  const afterOne = PS.revise.nextDue(rB);
+  PS.revise.markReviewed(rB);
+  const afterTwo = PS.revise.nextDue(rB);
+  if (!(afterOne.days > passed.days) || !(afterTwo.days > afterOne.days)) {
+    fail('G27', 'marking a review did not lengthen the interval: ' + passed.days + ' -> ' + afterOne.days + ' -> ' + afterTwo.days);
+  } else if (afterTwo.reps !== 2) {
+    fail('G27', 'the review count did not persist (expected 2, got ' + afterTwo.reps + ')');
+  } else {
+    ok('G27', 'each marked review moves the lesson up the ladder (' + passed.days + ' -> ' + afterOne.days + ' -> ' + afterTwo.days + ' days)');
+  }
+
+  const rC = PS.ACADEMY_FUNCTIONS[5].id;
+  setAcademy({ completed: { [rB]: true, [rC]: true }, scores: {}, badges: {}, log: {}, current: rC });
+  const inherited = PS.revise.nextDue(rC);
+  const qInherited = PS.revise.queue();
+  if (!inherited || !inherited.inherited || Date.now() >= inherited.due) {
+    fail('G27', 'a completion with no date anywhere must be scheduled from today and labelled, not called overdue');
+  } else if (qInherited.noDate !== 2) {
+    fail('G27', 'the queue counts ' + qInherited.noDate + ' undated completions but the record holds 2');
+  } else {
+    ok('G27', 'undated completions are scheduled from today and counted as having no recorded date (' + qInherited.noDate + ')');
+  }
+
+  setAcademy({ completed: { [rB]: true, [rC]: true }, studied: { [rA]: true }, scores: { [rB]: { score: 4, total: 5, pct: 80, date: passedAgo } }, badges: {}, log: { [rA]: { studied: Date.now() - 2 * DAY } }, current: rA });
+  const qPage = PS.revise.queue();
+  w.location.hash = '#/revise';
+  PS.renderRoute();
+  const revText = w.document.querySelector('#main').textContent;
+  const statedDue = (revText.match(/(\d+)\s+lessons?\s+due/) || [])[1];
+  const pageLinks = [...w.document.querySelectorAll('#main a[href^="#/academy/"]')].length;
+  if (Number(statedDue) !== qPage.due.length) {
+    fail('G27', 'the review queue page states ' + statedDue + ' due while PS.revise.queue() reports ' + qPage.due.length);
+  } else if (!pageLinks) {
+    fail('G27', 'the review queue lists no way into the lessons it says are due');
+  } else if (!/dates were recorded|no date/.test(revText) || !/7, 21, 60/.test(revText)) {
+    fail('G27', 'the review queue does not state how its dates are worked out, or hides the undated completions');
+  } else {
+    ok('G27', 'the review queue page states the same counts the scheduler computes and explains the ladder');
+  }
+  setAcademy(g27Keep);
 } finally {
   PS.academy._cache = null;
   PS.academy.save(g27Keep);
