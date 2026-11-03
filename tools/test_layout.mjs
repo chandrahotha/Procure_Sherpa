@@ -184,6 +184,40 @@ const readyBars = readyCard ? readyCard.closest('.card').querySelectorAll('.pbar
 check('The Academy hub readiness panel renders three altitude rails with aria labels',
   !!readyCard && readyBars === 3 && Array.from(readyCard.closest('.card').querySelectorAll('.pbar[aria-label]')).length === 3);
 
+// 4d. The dashboard states its own shape instead of leaving it to the viewport
+window.location.hash = '#/dash';
+await new Promise((r) => setTimeout(r, 200));
+const statGrid = d.querySelector('#main .stat-grid');
+const panelGrid = d.querySelector('#main .panel-grid');
+const styleAll = Array.from(d.querySelectorAll('style')).map((x) => x.textContent).join('\n');
+check('the dashboard stats use a definite four-column grid, not auto-fit',
+  !!statGrid && statGrid.children.length === 8 &&
+  /\.stat-grid\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\)\}/.test(styleAll.replace(/\s+/g, '')),
+  statGrid ? statGrid.children.length + ' tiles' : 'no .stat-grid');
+check('the dashboard panels use a definite two-column grid',
+  !!panelGrid && panelGrid.children.length === 4 &&
+  /\.panel-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/.test(styleAll.replace(/\s+/g, '')),
+  panelGrid ? panelGrid.children.length + ' panels' : 'no .panel-grid');
+check('the route is published so layout can be scoped per page',
+  d.body.getAttribute('data-route') === 'dash', d.body.getAttribute('data-route'));
+
+// 4e. The activity feed speaks in record titles and collapses repeats
+window.PS.audit('academy-marked-studied', 'func-mission-value');
+window.PS.audit('academy-marked-studied', 'func-mission-value');
+window.PS.audit('academy-marked-studied', 'func-mission-value');
+/* Re-assigning the same hash fires nothing, so the page is rendered directly:
+   the feed is built from the log at render time, not from a cached copy. */
+window.PS.renderRoute();
+await new Promise((r) => setTimeout(r, 150));
+const feed = d.querySelector('#main .res-list');
+const feedText = feed ? feed.textContent.replace(/\s+/g, ' ') : '';
+const lesson = (window.PS.byId('academy', 'func-mission-value') || {}).title || '';
+check('repeated identical events collapse into one row with a count',
+  /\u00d73/.test(feedText) || /×3/.test(feedText), feedText.slice(0, 80));
+check('the feed shows the lesson title rather than an internal id',
+  !!lesson && feedText.indexOf(lesson) >= 0 && feedText.indexOf('func-mission-value') < 0,
+  lesson || 'no lesson title resolved');
+
 // 5. Theme token consistency
 const styleText = Array.from(d.querySelectorAll('style')).map((s) => s.textContent).join('\n');
 check('CSS defines :root color variables (--bg, --panel, --text, --accent)',

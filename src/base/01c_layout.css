@@ -270,3 +270,16 @@ a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);bo
   .footer{padding:16px 18px 22px}
 }
 .scrim{position:fixed;inset:0;background:rgba(9,13,26,.5);backdrop-filter:blur(2px);z-index:35;border:0;padding:0}
+
+/* A dashboard of tiles is not a page of prose. The reading measure that keeps
+   a lesson line short was capping the tile grid at 1440px and centring it, so
+   the widest screens saw gutters on both sides of the work area. Scoped by
+   route, because the measure is still right for everything you read. */
+body[data-route="dash"] .main,body[data-route="dash-savings"] .main{max-width:min(1680px,100%)}
+
+/* The nav scrollbar was reading as a rule drawn down the middle of the
+   sidebar. It is a control, so it appears when the list is being used. */
+.nav{scrollbar-color:transparent transparent}
+.nav:hover,.nav:focus-within{scrollbar-color:var(--rail-line) transparent}
+.nav::-webkit-scrollbar-thumb{background:transparent;border-radius:9px}
+.nav:hover::-webkit-scrollbar-thumb{background:var(--rail-line)}

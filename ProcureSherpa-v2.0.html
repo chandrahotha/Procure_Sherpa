@@ -525,6 +525,19 @@ a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);bo
 }
 .scrim{position:fixed;inset:0;background:rgba(9,13,26,.5);backdrop-filter:blur(2px);z-index:35;border:0;padding:0}
 
+/* A dashboard of tiles is not a page of prose. The reading measure that keeps
+   a lesson line short was capping the tile grid at 1440px and centring it, so
+   the widest screens saw gutters on both sides of the work area. Scoped by
+   route, because the measure is still right for everything you read. */
+body[data-route="dash"] .main,body[data-route="dash-savings"] .main{max-width:min(1680px,100%)}
+
+/* The nav scrollbar was reading as a rule drawn down the middle of the
+   sidebar. It is a control, so it appears when the list is being used. */
+.nav{scrollbar-color:transparent transparent}
+.nav:hover,.nav:focus-within{scrollbar-color:var(--rail-line) transparent}
+.nav::-webkit-scrollbar-thumb{background:transparent;border-radius:9px}
+.nav:hover::-webkit-scrollbar-thumb{background:var(--rail-line)}
+
 /* Section 4: SaaS components :  buttons, cards, page heads, tiles, badges, alerts */
 .btn{
   display:inline-flex;align-items:center;gap:8px;justify-content:center;
@@ -572,7 +585,7 @@ a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);bo
 .btn-row.tight{gap:6px}
 .icon-btn{
   display:inline-grid;place-items:center;min-width:38px;height:38px;padding:0 7px;border-radius:10px;
-  border:1px solid transparent;background:transparent;color:var(--dim);cursor:pointer;font-size:1.02rem;text-decoration:none;
+  border:1px solid transparent;background:transparent;color:var(--mute);cursor:pointer;font-size:1.08rem;text-decoration:none;
   transition:background .12s,color .12s,border-color .12s,box-shadow .12s;
 }
 .icon-btn:hover{background:var(--panel-2);color:var(--text);text-decoration:none;border-color:var(--border);box-shadow:var(--sh)}
@@ -818,6 +831,21 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 @media (max-width:900px){
   .list-jump{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
   .list-jump a{flex:0 0 auto}
+}
+
+/* Definite grids on the pages where the column count is a design decision.
+   grid-N with auto-fit is a suggestion: the browser fits as many as the width
+   allows, so a "two column" panel row rendered four across and a four column
+   stat row rendered five plus three with two holes in it. Where a page knows
+   its shape, the class says the shape. */
+.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.panel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:1080px){
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .stat-grid{grid-template-columns:minmax(0,1fr)}
 }
 
 /* Section 5: SaaS forms + tables + timeline + progress */
@@ -3763,7 +3791,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '8d66f10e0b31';
+PS.BUILD = '9b34f426d08c';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4823,6 +4851,28 @@ PS.audit = function (event, detail) {
     PS.store.set(PS.K.audit, log);
   } catch (e) { /* auditing must never break the app */ }
 };
+/* An audit row is read by a person, so it must not show an internal id.
+   Details that are exactly a record id become that record title, and an
+   unrecognised value is left alone rather than guessed at. */
+PS.auditLabel = function (a) {
+  var ev = String(a.e || '').replace(/-/g, ' ');
+  var detail = String(a.d || '');
+  var out = detail;
+  if (detail) {
+    var f = PS.byId('academy', detail);
+    if (f) out = f.title;
+    else {
+      var pools = ['sop', 'cl', 'tpl', 'calc', 'kpi', 'dec', 'scen'];
+      for (var i = 0; i < pools.length && !out.match; i++) {
+        var rec = PS.byId(pools[i], detail);
+        if (rec) { out = rec.title; break; }
+      }
+      if (out === detail && /^#?[a-z]+-[a-z0-9-]+$/.test(detail)) out = detail.replace(/-/g, ' ');
+    }
+  }
+  return { event: ev, detail: out, time: a.t };
+};
+
 PS.auditList = function () {
   var log = PS.store.get(PS.K.audit, []);
   return Array.isArray(log) ? log : [];
@@ -7293,6 +7343,10 @@ PS.renderRoute = function () {
      one thing a reader should not have to look for. */
   var appEl = PS.$('#app');
   if (appEl) appEl.classList.toggle('is-exam-focus', r.name === 'exam');
+  /* Layout is a property of the page, not of the viewport alone: a dashboard
+     of tiles wants the width a prose page must refuse. The route name goes on
+     the body so the CSS can say which pages get which measure. */
+  if (document.body) document.body.setAttribute('data-route', r.name);
   if (PS.syncNavForRoute) PS.syncNavForRoute(r);
   var fn = PS.routes[r.name] || PS.routes.notfound;
   var html = '';
@@ -13925,7 +13979,7 @@ PS.route('dash', function () {
   var html = PS.reportHead('Dashboard', 'Your local work') +
     '<div class="card"><h1>Dashboard</h1>' +
     '<p class="lead">A summary of the analysis you have saved in this browser. These are your own working figures - they are not enterprise KPIs, they are not benchmarks and they exclude anything you have not entered here.</p>' +
-    '<div class="grid grid-4">' +
+    '<div class="grid stat-grid">' +
     '<div class="stat"><div class="s-lab">Saved analyses</div><div class="s-val">' + saved.length + '</div></div>' +
     '<div class="stat is-ok"><div class="s-lab">Savings analysed</div><div class="s-val">' + PS.moneyR(sumS) + '</div></div>' +
     '<div class="stat is-warn"><div class="s-lab">Cost avoidance recorded</div><div class="s-val">' + PS.moneyR(sumA) + '</div></div>' +
@@ -13939,7 +13993,7 @@ PS.route('dash', function () {
     '<a class="btn" href="#/dash-savings">Savings dashboard</a>' +
     '<button type="button" class="btn" data-act="backup-export">Export backup</button>' +
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button></div></div>' +
-    '<div class="grid grid-2">' +
+    '<div class="grid panel-grid">' +
     '<div class="card"><h2>Saved work by type</h2>' +
     (saved.length ? '<div class="table-wrap"><table><thead><tr><th>Type</th><th class="num">Items</th><th class="num">Most recent</th></tr></thead><tbody>' +
       Object.keys(byType).sort().map(function (t) {
@@ -13955,10 +14009,26 @@ PS.route('dash', function () {
     }).join('') + '</ul>' : '<p class="note">No checklist is part-complete. Open a checklist from the sidebar to start one.</p>') +
     '</div>' +
     '<div class="card"><h2>Recent activity</h2>' +
-    (audit.length ? '<ul class="res-list">' + audit.map(function (a) {
-      return '<li><span><span class="res-title">' + PS.esc(a.e.replace(/-/g, ' ')) + '</span>' +
-        '<div class="res-desc">' + PS.esc(a.d) + ' &middot; ' + PS.esc(PS.dateTime(a.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
+    (audit.length ? '<ul class="res-list">' + (function () {
+      /* Three rows saying the same thing at the same second is not three
+         pieces of information, and a row reading func-mission-value is not
+         something a reader can act on. Consecutive identical events collapse
+         into one row with a count, and the detail becomes the record title. */
+      var rows = [], prev = null;
+      audit.forEach(function (a) {
+        var L = PS.auditLabel(a);
+        var key = L.event + '|' + L.detail;
+        if (prev && prev.key === key) { prev.n++; prev.timeEnd = a.t; return; }
+        prev = { key: key, n: 1, label: L.event, detail: L.detail, timeStart: a.t, timeEnd: a.t };
+        rows.push(prev);
+      });
+      return rows.map(function (r) {
+        return '<li><span><span class="res-title">' + PS.esc(r.label) +
+          (r.n > 1 ? ' <span class="badge">&times;' + r.n + '</span>' : '') + '</span>' +
+          '<div class="res-desc">' + PS.esc(r.detail) + ' &middot; ' + PS.esc(PS.dateTime(r.timeStart)) +
+          (r.n > 1 ? ' to ' + PS.esc(PS.dateTime(r.timeEnd)) : '') + '</div></span></li>';
+      }).join('');
+    })() + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
     '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
     '<div class="card"><h2>Favourite tools and recent SOPs</h2>' +
     (favs.length ? '<h3>Favorites</h3><div class="chips">' + favs.map(function (f) {
@@ -18487,6 +18557,7 @@ PS.whatsNew.CHANGES = [
     tag: 'Major',
     items: [
       'A practice exam now opens on its own full-screen page instead of a panel inside the menu: the sidebar, the search box and the breadcrumb are three ways to leave a running clock, so the exam route drops the shell chrome, adds a question rail that shows answered and unanswered at a glance and jumps to any question, keeps the timer in the sticky header, and offers a button to move the attempt into a separate window - the attempt is saved in this browser either way. The Start control also became a real link, which is how the inbound-link gate can see it at all',
+      'The dashboard stopped letting the browser decide its shape. A grid class named for two columns was rendering four across, and a four-column stat row was rendering five plus three with two holes in it, because auto-fit fits as many tracks as the width allows and the name was only ever a suggestion. The tile row is now a definite four columns and the panel row a definite two, with the fallbacks written down; the work pages take the width a reading page must refuse, scoped by route so a lesson keeps its short line length; the sidebar scrollbar no longer reads as a rule drawn down the menu; and the activity feed collapses repeated events into one row with a count and shows the lesson title instead of an internal id',
       'New Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing - buying where someone who is not in the room has standing in the transaction. Qualifying a supplier to an evidential standard, because approval belongs to a site and a process rather than a corporate name, a certificate attests to a system and not to your line, and the expensive surprise is the change nobody told you about - so significance is defined by category with a notice period long enough to requalify. Controlled goods and clearances, because control follows the item or the technology and a drawing emailed abroad can be an export, because classification and screening fail independently, and because a materially cheap bid in a controlled category is usually a price that excludes an obligation. And at board level, continuity as a duty rather than a preference: the obligation reduced to one paragraph, the resilience options priced including the cheapest, an exit plan written for the uncooperative incumbent, and an annual exercise that turns a claim into dated evidence. Five new concepts in a Regulated and Constrained Markets category, a twenty-first learning path and the Regulated Market Lead award. The curriculum is 81 functions across 27 modules, 510 step sequences and 384 quiz questions',
       'New Module 26: Services Should-Cost and Negotiation Analytics - Rates, Risk and the Price Arc - joining Module 3 cost modelling to Module 9 services buying, which is where the money actually moves. The rate pyramid, because a blended day rate is a receipt and the distribution of hours across grades is the purchase: two bids within 3 percent on the blended figure were a third apart once the pyramids were rebuilt. Utilisation and the bench, because a rate funds on-costs, overhead and roughly four months of unbillable time before it funds margin, which is why a wage story can be an occupancy claim. Commercial structure as a risk transfer with a price on it - fixed price buys certainty and costs scope rigidity, time and materials buys redirection and needs a cap and a burn report, a retainer sells availability that should be measured in days used, and a gainshare without an agreed baseline, a method and a named measurer is a dispute with a payment attached. And at executive level, the price arc rather than the entry rate: a five-year deal signed 6 percent under the incumbent and stepped up against an unclosed index is not a saving, it is a discount in year one. Five new concepts in a Services Cost and Negotiation Analytics category, a twentieth learning path and the Services Cost Analyst award. The curriculum is 78 functions across 26 modules, 489 step sequences and 369 quiz questions',
       'A new kind of gate: the surface check (`npm run surfaces`) asks the running application whether the newest content reaches a learner at all - hub listing, lesson render, every declared relation resolving, lab links, search by title and by concept name, an exam bank for the newest module, a learning path claiming its lessons, and the governing SOP rendering as a procedure. Thirty-eight checks, derived from the data rather than pinned to a module number, so the next tranche is covered the moment it lands. It exists because every other content check proves the data agrees with itself',

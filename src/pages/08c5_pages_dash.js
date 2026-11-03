@@ -25,7 +25,7 @@ PS.route('dash', function () {
   var html = PS.reportHead('Dashboard', 'Your local work') +
     '<div class="card"><h1>Dashboard</h1>' +
     '<p class="lead">A summary of the analysis you have saved in this browser. These are your own working figures - they are not enterprise KPIs, they are not benchmarks and they exclude anything you have not entered here.</p>' +
-    '<div class="grid grid-4">' +
+    '<div class="grid stat-grid">' +
     '<div class="stat"><div class="s-lab">Saved analyses</div><div class="s-val">' + saved.length + '</div></div>' +
     '<div class="stat is-ok"><div class="s-lab">Savings analysed</div><div class="s-val">' + PS.moneyR(sumS) + '</div></div>' +
     '<div class="stat is-warn"><div class="s-lab">Cost avoidance recorded</div><div class="s-val">' + PS.moneyR(sumA) + '</div></div>' +
@@ -39,7 +39,7 @@ PS.route('dash', function () {
     '<a class="btn" href="#/dash-savings">Savings dashboard</a>' +
     '<button type="button" class="btn" data-act="backup-export">Export backup</button>' +
     '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button></div></div>' +
-    '<div class="grid grid-2">' +
+    '<div class="grid panel-grid">' +
     '<div class="card"><h2>Saved work by type</h2>' +
     (saved.length ? '<div class="table-wrap"><table><thead><tr><th>Type</th><th class="num">Items</th><th class="num">Most recent</th></tr></thead><tbody>' +
       Object.keys(byType).sort().map(function (t) {
@@ -55,10 +55,26 @@ PS.route('dash', function () {
     }).join('') + '</ul>' : '<p class="note">No checklist is part-complete. Open a checklist from the sidebar to start one.</p>') +
     '</div>' +
     '<div class="card"><h2>Recent activity</h2>' +
-    (audit.length ? '<ul class="res-list">' + audit.map(function (a) {
-      return '<li><span><span class="res-title">' + PS.esc(a.e.replace(/-/g, ' ')) + '</span>' +
-        '<div class="res-desc">' + PS.esc(a.d) + ' &middot; ' + PS.esc(PS.dateTime(a.t)) + '</div></span></li>';
-    }).join('') + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
+    (audit.length ? '<ul class="res-list">' + (function () {
+      /* Three rows saying the same thing at the same second is not three
+         pieces of information, and a row reading func-mission-value is not
+         something a reader can act on. Consecutive identical events collapse
+         into one row with a count, and the detail becomes the record title. */
+      var rows = [], prev = null;
+      audit.forEach(function (a) {
+        var L = PS.auditLabel(a);
+        var key = L.event + '|' + L.detail;
+        if (prev && prev.key === key) { prev.n++; prev.timeEnd = a.t; return; }
+        prev = { key: key, n: 1, label: L.event, detail: L.detail, timeStart: a.t, timeEnd: a.t };
+        rows.push(prev);
+      });
+      return rows.map(function (r) {
+        return '<li><span><span class="res-title">' + PS.esc(r.label) +
+          (r.n > 1 ? ' <span class="badge">&times;' + r.n + '</span>' : '') + '</span>' +
+          '<div class="res-desc">' + PS.esc(r.detail) + ' &middot; ' + PS.esc(PS.dateTime(r.timeStart)) +
+          (r.n > 1 ? ' to ' + PS.esc(PS.dateTime(r.timeEnd)) : '') + '</div></span></li>';
+      }).join('');
+    })() + '</ul>' : '<p class="note">No activity recorded yet.</p>') +
     '<p class="note">The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.</p></div>' +
     '<div class="card"><h2>Favourite tools and recent SOPs</h2>' +
     (favs.length ? '<h3>Favorites</h3><div class="chips">' + favs.map(function (f) {

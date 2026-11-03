@@ -45,7 +45,7 @@
 .btn-row.tight{gap:6px}
 .icon-btn{
   display:inline-grid;place-items:center;min-width:38px;height:38px;padding:0 7px;border-radius:10px;
-  border:1px solid transparent;background:transparent;color:var(--dim);cursor:pointer;font-size:1.02rem;text-decoration:none;
+  border:1px solid transparent;background:transparent;color:var(--mute);cursor:pointer;font-size:1.08rem;text-decoration:none;
   transition:background .12s,color .12s,border-color .12s,box-shadow .12s;
 }
 .icon-btn:hover{background:var(--panel-2);color:var(--text);text-decoration:none;border-color:var(--border);box-shadow:var(--sh)}
@@ -291,4 +291,19 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 @media (max-width:900px){
   .list-jump{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
   .list-jump a{flex:0 0 auto}
+}
+
+/* Definite grids on the pages where the column count is a design decision.
+   grid-N with auto-fit is a suggestion: the browser fits as many as the width
+   allows, so a "two column" panel row rendered four across and a four column
+   stat row rendered five plus three with two holes in it. Where a page knows
+   its shape, the class says the shape. */
+.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.panel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:1080px){
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .stat-grid{grid-template-columns:minmax(0,1fr)}
 }

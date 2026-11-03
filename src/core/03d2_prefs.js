@@ -75,6 +75,28 @@ PS.audit = function (event, detail) {
     PS.store.set(PS.K.audit, log);
   } catch (e) { /* auditing must never break the app */ }
 };
+/* An audit row is read by a person, so it must not show an internal id.
+   Details that are exactly a record id become that record title, and an
+   unrecognised value is left alone rather than guessed at. */
+PS.auditLabel = function (a) {
+  var ev = String(a.e || '').replace(/-/g, ' ');
+  var detail = String(a.d || '');
+  var out = detail;
+  if (detail) {
+    var f = PS.byId('academy', detail);
+    if (f) out = f.title;
+    else {
+      var pools = ['sop', 'cl', 'tpl', 'calc', 'kpi', 'dec', 'scen'];
+      for (var i = 0; i < pools.length && !out.match; i++) {
+        var rec = PS.byId(pools[i], detail);
+        if (rec) { out = rec.title; break; }
+      }
+      if (out === detail && /^#?[a-z]+-[a-z0-9-]+$/.test(detail)) out = detail.replace(/-/g, ' ');
+    }
+  }
+  return { event: ev, detail: out, time: a.t };
+};
+
 PS.auditList = function () {
   var log = PS.store.get(PS.K.audit, []);
   return Array.isArray(log) ? log : [];

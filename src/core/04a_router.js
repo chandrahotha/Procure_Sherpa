@@ -48,6 +48,10 @@ PS.renderRoute = function () {
      one thing a reader should not have to look for. */
   var appEl = PS.$('#app');
   if (appEl) appEl.classList.toggle('is-exam-focus', r.name === 'exam');
+  /* Layout is a property of the page, not of the viewport alone: a dashboard
+     of tiles wants the width a prose page must refuse. The route name goes on
+     the body so the CSS can say which pages get which measure. */
+  if (document.body) document.body.setAttribute('data-route', r.name);
   if (PS.syncNavForRoute) PS.syncNavForRoute(r);
   var fn = PS.routes[r.name] || PS.routes.notfound;
   var html = '';
