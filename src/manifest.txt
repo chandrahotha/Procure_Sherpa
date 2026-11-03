@@ -149,6 +149,7 @@ src/content/15d_gloss_value.js
 src/content/16z_scn_v1.js
 src/content/17z_kpi_v1.js
 src/content/18a_help_content.js
+src/content/18b_help_policies.js
 src/content/19a_academy_functions_part1.js
 src/content/19b_academy_functions_part2.js
 src/content/19c_academy_functions_part3.js

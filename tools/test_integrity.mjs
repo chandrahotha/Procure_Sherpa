@@ -181,6 +181,10 @@ const routeArgs = {
   scen: PS.data.scen && PS.data.scen[0] ? [PS.data.scen[0].id] : [],
   calc: PS.data.calc && PS.data.calc[0] ? [PS.data.calc[0].id] : [],
   academy: (PS.ACADEMY_FUNCTIONS || []).length ? [PS.ACADEMY_FUNCTIONS[0].id] : [],
+  /* Every help topic, not one: the four footer links that pointed at topics
+     which had never been written survived because no gate ever rendered a
+     topic page at all, so an empty or missing article was invisible. */
+  help: (PS.HELP || []).map((t) => t.id),
   list: ['kb']
 };
 const visited = [];
@@ -244,6 +248,19 @@ for (const hash of ROUTE_VISITS) {
       const h = a.getAttribute('href').split('?')[0].replace(/^#\//, '');
       allHrefs.add(h);
       const segs = h.split('/');
+      /* A route existing is not the same as the page it points at existing.
+         help, academy and lab take an argument that names a record, and the
+         router answers any unknown one with a fallback list - so a footer
+         link to a topic that was never written renders a page and looks
+         fine. This checks the argument, because that is the promise in the
+         link text. */
+      if (segs.length > 1 && segs[0] === 'help' && !(PS.HELP || []).some((t) => t.id === segs[1])) {
+        sentinelHits.push(hash + ' links to a help topic that does not exist: ' + a.getAttribute('href'));
+      }
+      if (segs.length > 1 && segs[0] === 'academy' && segs[1] !== 'progress' &&
+          !(PS.ACADEMY_FUNCTIONS || []).some((f) => f.id === decodeURIComponent(segs[1]))) {
+        sentinelHits.push(hash + ' links to an Academy function that does not exist: ' + a.getAttribute('href'));
+      }
       if (!PS.routes[segs[0]]) {
         const id = segs[1];
         const type = { k: 'kb', sop: 'sop', cl: 'cl', tpl: 'tpl', dec: 'dec', kpi: 'kpi', scen: 'scen', calc: 'calc' }[segs[0]];
@@ -261,6 +278,26 @@ for (const hash of ROUTE_VISITS) {
     });
   }
 }
+/* The shell is not inside #main. The sidebar and footer are rendered once
+   outside the page container, so every link check above misses them - which
+   is exactly where a footer link promised a "Version history" pointing at a
+   help topic that was never written, and the router answered with its
+   fallback list so nothing looked broken. */
+w.document.querySelectorAll('a[href^="#/"]').forEach((a) => {
+  const h = String(a.getAttribute('href')).split('?')[0].replace(/^#\//, '');
+  const segs = h.split('/');
+  if (!segs[0] || !PS.routes[segs[0]]) {
+    sentinelHits.push('shell links to an unknown route: ' + a.getAttribute('href'));
+    return;
+  }
+  if (segs.length > 1 && segs[0] === 'help' && !(PS.HELP || []).some((t) => t.id === segs[1])) {
+    sentinelHits.push('shell links to a help topic that does not exist: ' + a.getAttribute('href'));
+  }
+  if (segs.length > 1 && segs[0] === 'academy' && !(PS.ACADEMY_FUNCTIONS || []).some((f) => f.id === decodeURIComponent(segs[1]))) {
+    sentinelHits.push('shell links to an Academy function that does not exist: ' + a.getAttribute('href'));
+  }
+});
+
 if (sentinelHits.length) {
   sentinelHits.slice(0, 20).forEach((s) => fail('G2/G3', s));
   if (sentinelHits.length > 20) fail('G2/G3', '... and ' + (sentinelHits.length - 20) + ' more');
