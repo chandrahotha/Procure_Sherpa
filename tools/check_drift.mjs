@@ -33,6 +33,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { stampFor, applyStamp } from './build_stamp.mjs';
 
@@ -280,6 +281,93 @@ if (devCount > 1) {
       });
     }
   }));
+}
+
+/* ---------- the two compressed sizes, and which ceiling they belong to ----------
+   There are two gzip figures and they are not interchangeable: the readable
+   artifact a user downloads is budgeted against the 1,152 KB transfer
+   ceiling, the minified build the deployment serves against the 979 KB
+   deployed ceiling. Both ways this pairing went wrong in prose within one
+   cycle - a remembered served size sat a hundred KB below the measured one,
+   and a downloadable size was quoted as if it were the deployed one, which
+   made the remaining headroom look like a third of what it is. A number
+   that is correct against the wrong ceiling is still a false claim about
+   how much room the product has, so the sentence is checked, not just the
+   digit. */
+{
+  const gzipKb = (f) => zlib.gzipSync(fs.readFileSync(f), { level: 9 }).length / 1024;
+  const dist = path.join(ROOT, 'dist', 'index.html');
+  const sizes = {
+    download: { kb: gzipKb(OUT), name: 'the downloaded artifact (ProcureSherpa-v2.0.html), ceiling 1,152 KB' },
+    deploy: { kb: fs.existsSync(dist) ? gzipKb(dist) : null, name: 'the deployed build (dist/index.html), ceiling 979 KB' }
+  };
+  /* Documents round to whole KB and the gzip figure moves between builds;
+     2 KB is the difference between "quoted from the tool" and "remembered". */
+  const near = (n, kb) => kb !== null && Math.abs(n - kb) <= 2;
+  /* A pass record is a record of a pass. The completion ledger writes one
+     per cycle under a dated heading, and every byte figure inside it is a
+     measurement taken then - not a claim about now. The heading is the
+     label, so the exemption follows the heading rather than the digit, and
+     the live rows elsewhere in the same file stay checked. */
+  const DATED_SECTION = /^#{2,4}\s.*(addendum|Cycle \d+ — 20\d\d)/i;
+  for (const d of docs) {
+    let inPassRecord = false;
+    for (const line of d.text.split(/\r?\n/)) {
+      if (DATED_SECTION.test(line.trim())) inPassRecord = true;
+      if (/^#{2,4}\s/.test(line.trim()) && !DATED_SECTION.test(line.trim())) inPassRecord = false;
+      if (inPassRecord || HISTORICAL.test(line)) continue;
+      /* One line can carry both figures, each with its own ceiling, so the
+         pairing is read from the clause around the number rather than from
+         anywhere in the row - a table row that ends by naming the transfer
+         ceiling is not thereby claiming that every size in it is the
+         download size. */
+      for (const m of line.matchAll(/~?(\d[\d,]*(?:\.\d+)?) KB gzipped/gi)) {
+        const got = Number(m[1].replace(/,/g, ''));
+        /* Read the clause around the figure, not the whole row: the words
+           that say which file is being measured usually sit just before the
+           number ("the deployed build is 900.1 KB gzipped"), and a table row
+           can name both files. So the clause starts after the PREVIOUS
+           figure rather than anywhere in the row - otherwise the qualifier
+           belonging to one size is read as the qualifier of the next - and
+           ends at the next clause mark, with a period inside a decimal and
+           the comma in 1,152 neither of them a boundary. */
+        const prev = line.lastIndexOf('KB gzipped', m.index - 1);
+        const from = Math.max(prev < 0 ? 0 : prev + 10, m.index - 60);
+        const before = line.slice(from, m.index);
+        const after = line.slice(m.index + m[0].length, m.index + m[0].length + 90).split(/[,;|]|\.(?!\d)/)[0];
+        const clause = before + after;
+        /* A budget is not a measurement. "1,152 KB gzipped" as the transfer
+           ceiling and "979 KB" as the deployed warning are the rules
+           themselves, and a sentence about how much room is left names a
+           difference, not a size - neither is the claim this rule guards. */
+        if (got === 1152 || got === 979 || /headroom|of margin|to spare/i.test(clause)) continue;
+        /* "roughly 120 KB gzipped" about a library somebody might vendor is an
+           estimate, not a figure quoted from the build, and this rule guards
+           the figures that claim to be measured. */
+        if (/roughly|about|an estimated/i.test(before)) continue;
+        /* And it has to read as a claim about this build. A sentence setting
+           a cost limit for some future feature ("any row whose honest cost
+           exceeds ~50 KB gzipped") names a size without measuring the
+           artifact, and a rule that flags those teaches the documents to
+           stop writing numbers at all. */
+        const window = line.slice(Math.max(0, m.index - 90), m.index + m[0].length + 90).toLowerCase();
+        if (!/artifact|bundle|committed|deployed|served|serves|download|minified|perf|the file/.test(window)) continue;
+        const which = /1,?152 KB/.test(clause) ? 'download'
+          : /979 KB/.test(clause) ? 'deploy'
+          : /minified|deployed|served|serves|deployment/.test(clause) ? 'deploy' : 'download';
+        const want = sizes[which];
+        if (want.kb === null) continue;
+        if (!near(got, want.kb)) {
+          docProblems.push({
+            label: 'a gzipped size in the docs does not match the file the sentence names',
+            detail: d.file + ': ' + line.trim().slice(0, 120),
+            measure: want.name + ' is ' + want.kb.toFixed(1) + ' KB gzipped (' + sizes.download.kb.toFixed(1) + ' KB downloadable / ' + (sizes.deploy.kb === null ? 'n/a' : sizes.deploy.kb.toFixed(1)) + ' KB deployed)',
+            fix: 'quote `npm run perf` for the figure, and pair each number with its own ceiling: 1,152 KB is the download budget, 979 KB the deployed one'
+          });
+        }
+      }
+    }
+  }
 }
 
 /* ---------- the curriculum counts the documents quote ----------

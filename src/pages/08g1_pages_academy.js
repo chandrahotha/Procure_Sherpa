@@ -752,7 +752,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-ai-supplier-assurance': 'suppliers',
   'func-supplier-financial-health': 'suppliers',
   'func-supplier-early-warning-response': 'contracts',
-  'func-distress-exit-and-recovery': 'analytics'
+  'func-distress-exit-and-recovery': 'analytics',
+  'func-lotting-and-call-off-architecture': 'rfx',
+  'func-award-criteria-and-low-bids': 'suppliers',
+  'func-standstill-challenge-defensible-file': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

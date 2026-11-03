@@ -241,7 +241,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 21: Sustainable and Responsible Sourcing - Carbon, Circularity and Social Value': ['responsible', 'sustainability', 'learn'],
   'Module 22: Category Depth II - Energy, Works and Creative Markets': ['markets', 'specialist', 'learn'],
   'Module 23: Artificial Intelligence, Model Services and Data Licensing': ['ai', 'digital', 'learn'],
-  'Module 24: Supplier Financial Distress, Turnaround and Exit': ['distress', 'risk', 'learn']
+  'Module 24: Supplier Financial Distress, Turnaround and Exit': ['distress', 'risk', 'learn'],
+  'Module 25: Public and Regulated Tendering - Lots, Criteria, Low Bids and Challenges': ['tendering', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -255,7 +256,7 @@ PS.ACADEMY_MODULE_TAGS = {
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'distress', 'learn'],
   buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
-  manager: ['strategy', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
+  manager: ['strategy', 'tendering', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],
   compliance: ['assurance', 'risk', 'quality', 'ethics', 'governance', 'contract', 'executive', 'supplier', 'learn']
 };

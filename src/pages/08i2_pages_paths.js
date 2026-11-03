@@ -204,6 +204,17 @@ PS.learningPaths.PATHS = [
     skills: ['Reading the operating cycle, not the current ratio', 'Turning signals into dated actions', 'Proving what your assets are while it is cheap', 'Ranking a claim realistically', 'Minuting a rescue or replace decision'],
     duration: '5-7 weeks',
     color: 'var(--ops)'
+  },
+  {
+    id: 'public-tendering',
+    title: 'Public and Regulated Tendering',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The mechanics that decide an award before a bid is read: dividing a requirement into lots a smaller supplier can actually reach, choosing between a framework, a dynamic system and a one-off competition, publishing criteria and weights that can be defended, enquiring into a price too low to believe, and holding the signature until the mandatory pause has run.',
+    modules: ['func-lotting-and-call-off-architecture', 'func-award-criteria-and-low-bids', 'func-standstill-challenge-defensible-file'],
+    skills: ['Designing lots that change who can bid', 'Setting the call-off rule at framework design', 'Writing anchored scoring bands', 'Running a documented low-bid enquiry', 'Debriefing with reasoning rather than totals'],
+    duration: '5-7 weeks',
+    color: 'var(--accent)'
   }
 ];
 
