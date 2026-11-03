@@ -41,7 +41,7 @@
    ========================================================== */
 
 export const PINS = {
-  kb: 106,
+  kb: 111,
   sop: 21,
   cl: 27,
   tpl: 33,
@@ -52,16 +52,16 @@ export const PINS = {
   calc: 19,
   maturityAreas: 9,
   lifecycleStages: 21,
-  academyFunctions: 75,
-  academyModules: 25,
-  academySopSteps: 468,
-  academyQuizQuestions: 354,
+  academyFunctions: 78,
+  academyModules: 26,
+  academySopSteps: 489,
+  academyQuizQuestions: 369,
   /* The three altitudes the curriculum is written at. A function cannot
      be at two levels, and a level cannot gain or lose a function without
      these numbers moving - which is the point: changing a lesson's level
      now fails G1/G16 and G23 until every document that quotes the split
      is re-read. Counts: 10 foundation, 41 practitioner, 24 executive. */
-  academyTierCounts: { core: 10, practitioner: 41, executive: 24 },
+  academyTierCounts: { core: 10, practitioner: 43, executive: 25 },
   /* G21: the SOP library's own procedure steps (master §18 part 7).
      This count was 106 before the torn steps were repaired: four of those
      were not steps at all, but halves of a step created by a ';' written
@@ -76,8 +76,8 @@ export const PINS = {
      practice tool, and every other function must have one or the library
      stops being a system. A key dropped from PS.ACADEMY_WORKBENCH moves
      this number and fails the gate. */
-  academyWorkbenchLinked: 74,
-  learningPaths: 19,
+  academyWorkbenchLinked: 77,
+  learningPaths: 20,
   workbenches: 8,
   navLearnSections: 5,
   navLearnItems: 26,

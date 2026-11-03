@@ -209,7 +209,7 @@ nothing ran".
   ceiling derived from "3 seconds at 3 Mbps" (1152 KB), the script's full
   V8 compile against a 400 ms budget, and the application boot to a
   rendered first page against a 500 ms budget. `npm run perf` prints the
-  live figures - the size is a fact about the file (988.4 KB gzipped,
+  live figures - the size is a fact about the file (993.5 KB gzipped,
   2.22 s at 3 Mbps), the two timings are wall-clock and belong to the
   machine that took them, which is why ADR 0002 keeps its measurement
   dated instead of asserting it as a property of the build. The previous
@@ -385,7 +385,7 @@ Two items already have partial infrastructure worth knowing about:
   the content libraries register (72 concepts, 18 SOPs, 27 checklists,
   33 templates, 17 decision guides, 18 KPIs, 45 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
-  plus the 75 Academy functions and their 354 quiz questions. Counting
+  plus the 78 Academy functions and their 369 quiz questions. Counting
   quoted string literals, `src/content` alone holds about 0.8 MB of
   English against the catalog's 1 KB. **The honest limit is one translated
   shell around an English product**, and the Spanish half is real but
@@ -869,7 +869,7 @@ is right and this table is the thing to fix.
 |--------|---------|--------|
 | Routes passing smoke test | 87 of 87 (`node tools/smoke.mjs` - "routes: 87 failing: 0") | 80+ - met |
 | Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 261 rel objects; broken refs: 0") | 0 broken |
-| Payload | 3,553.8 KB readable, 3,045.2 KB minified; the minified served build is 903.3 KB gzipped and the readable artifact is 988.4 KB gzipped. Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
+| Payload | 3,618.1 KB readable, 3,101.5 KB minified; the minified served build is 906.8 KB gzipped and the readable artifact is 993.5 KB gzipped. Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
 | Accessibility (`npm run audit:a11y`) | 0 issues, across the 64 routes the audit enumerates (52 registered routes, so the sweep is wider than the registry) | 0 issues, keyboard focus visible in both themes |
 | PWA score (Lighthouse) | **not measurable as things stand** - the artifact has no web manifest and no service worker (`serviceWorker` appears nowhere in `src/` or the built file), so there is no install surface for Lighthouse to score. This is Phase 7 work, not a missing measurement | decide first whether the product wants to be installable at all |

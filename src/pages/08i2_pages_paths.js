@@ -215,6 +215,17 @@ PS.learningPaths.PATHS = [
     skills: ['Designing lots that change who can bid', 'Setting the call-off rule at framework design', 'Writing anchored scoring bands', 'Running a documented low-bid enquiry', 'Debriefing with reasoning rather than totals'],
     duration: '5-7 weeks',
     color: 'var(--accent)'
+  },
+  {
+    id: 'services-cost-analytics',
+    title: 'Services Should-Cost and Negotiation Analytics',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The cost model behind an effort-based price: reading a proposal as a rate pyramid rather than a blended rate, what a day rate has to fund before it funds margin, which commercial structure transfers effort risk and what that transfer costs, and how to negotiate the price arc of a multi-year contract rather than its entry rate.',
+    modules: ['func-service-rate-pyramid-should-cost', 'func-service-risk-and-pricing-structures', 'func-service-negotiation-analytics'],
+    skills: ['Rebuilding a bid as hours by grade', 'Bounding a fully loaded rate', 'Mapping who carries effort risk', 'Modelling the price arc across a term', 'Valuing both sides of a concession'],
+    duration: '5-7 weeks',
+    color: 'var(--ok)'
   }
 ];
 

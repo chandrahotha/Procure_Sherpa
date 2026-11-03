@@ -755,7 +755,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-distress-exit-and-recovery': 'analytics',
   'func-lotting-and-call-off-architecture': 'rfx',
   'func-award-criteria-and-low-bids': 'suppliers',
-  'func-standstill-challenge-defensible-file': 'contracts'
+  'func-standstill-challenge-defensible-file': 'contracts',
+  'func-service-rate-pyramid-should-cost': 'budget',
+  'func-service-risk-and-pricing-structures': 'contracts',
+  'func-service-negotiation-analytics': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',
