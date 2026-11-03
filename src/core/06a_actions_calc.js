@@ -111,9 +111,12 @@ PS.acts['copy-share'] = function () {
 };
 /* ---------- canonical commercial quantities ----------
    The nineteen calculators share 110 distinct field keys and only six of
-   them matched between tools, so 27 of the 41 declared handoffs carried
+   them matched between tools, so most of the declared handoffs carried
    nothing: the buyer pressed "Send to another tool" and was told that
-   none of the fields matched.
+   none of the fields matched. The count moved as the registry grew, so it
+   is not quoted here - npm run handoff measures it against the live
+   registry on every QA run (30 pairs today) and fails if any of them
+   carries nothing or lands in a field holding a different quantity.
 
    This map gives the calculators a shared vocabulary. A field names the
    commercial quantity it holds, and a handoff matches on the quantity
