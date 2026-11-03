@@ -226,6 +226,17 @@ PS.learningPaths.PATHS = [
     skills: ['Rebuilding a bid as hours by grade', 'Bounding a fully loaded rate', 'Mapping who carries effort risk', 'Modelling the price arc across a term', 'Valuing both sides of a concession'],
     duration: '5-7 weeks',
     color: 'var(--ok)'
+  },
+  {
+    id: 'regulated-markets',
+    title: 'Regulated and Constrained Markets',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'Buying where a third authority has standing in the transaction: qualifying a supplier to an evidential standard and holding change notification to a category list, classifying controlled goods and screening the whole counterparty structure, and treating continuity as a licence obligation that must be priced, contracted and exercised rather than preferred.',
+    modules: ['func-regulated-supplier-qualification', 'func-controlled-goods-and-clearance-constraints', 'func-essential-service-continuity-obligation'],
+    skills: ['Scoping an approval to a site and process', 'Writing a quality agreement decision matrix', 'Classifying before contracting', 'Separating obligation from preference', 'Exercising an exit plan on a schedule'],
+    duration: '6-8 weeks',
+    color: 'var(--info)'
   }
 ];
 

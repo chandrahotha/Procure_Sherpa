@@ -758,7 +758,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-standstill-challenge-defensible-file': 'contracts',
   'func-service-rate-pyramid-should-cost': 'budget',
   'func-service-risk-and-pricing-structures': 'contracts',
-  'func-service-negotiation-analytics': 'analytics'
+  'func-service-negotiation-analytics': 'analytics',
+  'func-regulated-supplier-qualification': 'suppliers',
+  'func-controlled-goods-and-clearance-constraints': 'rfx',
+  'func-essential-service-continuity-obligation': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

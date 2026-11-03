@@ -125,6 +125,7 @@ src/content/10o_kb_ai_data.js
 src/content/10p_kb_distress.js
 src/content/10q_kb_tendering.js
 src/content/10r_kb_services_cost.js
+src/content/10s_kb_regulated.js
 src/content/10z_kb_v1.js
 src/content/11z_sop_v1.js
 src/content/11b_sop_markets.js
@@ -168,6 +169,7 @@ src/content/19r_academy_functions_part18.js
 src/content/19s_academy_functions_part20.js
 src/content/19t_academy_functions_part21.js
 src/content/19u_academy_functions_part22.js
+src/content/19v_academy_functions_part23.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js
