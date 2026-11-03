@@ -237,6 +237,17 @@ PS.learningPaths.PATHS = [
     skills: ['Scoping an approval to a site and process', 'Writing a quality agreement decision matrix', 'Classifying before contracting', 'Separating obligation from preference', 'Exercising an exit plan on a schedule'],
     duration: '6-8 weeks',
     color: 'var(--info)'
+  },
+  {
+    id: 'supplier-innovation',
+    title: 'Supplier Innovation and Early Engagement',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The part of the process that happens before a tender exists: consulting the market while the requirement is still negotiable, structuring an innovation purchase as a priced option with stage gates, kill criteria and scale-up terms agreed before the dependency, and holding the rights that decide who can use what was learned - including the data your own operations generate on someone else platform.',
+    modules: ['func-early-supplier-involvement', 'func-innovation-deal-structure', 'func-rights-and-dependency-in-joint-work'],
+    skills: ['Running a defensible consultation round', 'Separating outcome from mechanism in a draft', 'Pricing a pilot as an option', 'Writing kill criteria with the budget', 'Scheduling background and foreground rights'],
+    duration: '5-7 weeks',
+    color: 'var(--academy)'
   }
 ];
 

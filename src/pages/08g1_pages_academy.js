@@ -761,7 +761,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-service-negotiation-analytics': 'analytics',
   'func-regulated-supplier-qualification': 'suppliers',
   'func-controlled-goods-and-clearance-constraints': 'rfx',
-  'func-essential-service-continuity-obligation': 'contracts'
+  'func-essential-service-continuity-obligation': 'contracts',
+  'func-early-supplier-involvement': 'rfx',
+  'func-innovation-deal-structure': 'budget',
+  'func-rights-and-dependency-in-joint-work': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

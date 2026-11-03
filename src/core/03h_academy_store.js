@@ -61,6 +61,7 @@ PS.academy.BADGES = [
   { id: 'regulated_tender_lead', name: 'Regulated Tender Lead', icon: '⚖️', desc: 'Mastered Lotting and Call-Off Architecture, Award Criteria and Low Bids, and Standstill, Debrief and Challenge.', requires: ['func-lotting-and-call-off-architecture', 'func-award-criteria-and-low-bids', 'func-standstill-challenge-defensible-file'] },
   { id: 'services_cost_analyst', name: 'Services Cost Analyst', icon: '📐', desc: 'Mastered the Rate Pyramid Should-Cost, Service Risk and Pricing Structures, and Services Negotiation Analytics.', requires: ['func-service-rate-pyramid-should-cost', 'func-service-risk-and-pricing-structures', 'func-service-negotiation-analytics'] },
   { id: 'regulated_market_lead', name: 'Regulated Market Lead', icon: '🜲', desc: 'Mastered Regulated Supplier Qualification, Controlled Goods and Clearances, and the Continuity Obligation.', requires: ['func-regulated-supplier-qualification', 'func-controlled-goods-and-clearance-constraints', 'func-essential-service-continuity-obligation'] },
+  { id: 'innovation_sourcing_lead', name: 'Innovation Sourcing Lead', icon: '💡', desc: 'Mastered Early Supplier Involvement, Innovation Deal Structure, and Rights and Dependency in Joint Work.', requires: ['func-early-supplier-involvement', 'func-innovation-deal-structure', 'func-rights-and-dependency-in-joint-work'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

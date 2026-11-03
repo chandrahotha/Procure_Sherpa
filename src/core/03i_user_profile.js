@@ -244,7 +244,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 24: Supplier Financial Distress, Turnaround and Exit': ['distress', 'risk', 'learn'],
   'Module 25: Public and Regulated Tendering - Lots, Criteria, Low Bids and Challenges': ['tendering', 'learn'],
   'Module 26: Services Should-Cost and Negotiation Analytics - Rates, Risk and the Price Arc': ['rates', 'cost', 'learn'],
-  'Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing': ['regulated', 'risk', 'learn']
+  'Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing': ['regulated', 'risk', 'learn'],
+  'Module 28: Supplier Innovation and Early Engagement - Shaping the Work Before It Is Priced': ['innovation', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -257,7 +258,7 @@ PS.ACADEMY_MODULE_TAGS = {
    operational set. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'distress', 'learn'],
-  buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
+  buyer: ['innovation', 'operations', 'negotiation', 'services', 'specialist', 'quality', 'sourcing', 'spend', 'learn'],
   manager: ['regulated', 'tendering', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'rates', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],
   compliance: ['assurance', 'risk', 'quality', 'ethics', 'governance', 'contract', 'executive', 'supplier', 'learn']
