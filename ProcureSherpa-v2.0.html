@@ -829,8 +829,25 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 .list-group{scroll-margin-top:calc(var(--top) + 96px)}
 .list-group:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 @media (max-width:900px){
-  .list-jump{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
-  .list-jump a{flex:0 0 auto}
+  /* Was flex-wrap:nowrap with overflow-x:auto, which put 2,934px of category
+     chips into a 730px bar: 15 of the 20 links sat off the right edge with
+     nothing but an invisible scrollbar to hint at them. The bar wraps at
+     every width now, the same way it always did above this breakpoint. */
+  .list-jump{position:static;flex-wrap:wrap;overflow-x:visible;padding-bottom:9px}
+  .list-jump a{flex:0 1 auto}
+}
+
+/* Tables whose last column is the action. A wide table scrolls sideways by
+   design, but when it does the Open button leaves the screen - on the
+   Academy progress table that was 88 rows whose action none of them could
+   reach without discovering the horizontal scroll. Pinning the last column
+   keeps the way forward visible while the rest of the row scrolls under it. */
+@media (max-width:1100px){
+  .pin-action th:last-child,.pin-action td:last-child{
+    position:sticky;right:0;background:var(--panel);
+    box-shadow:-1px 0 0 var(--border);
+  }
+  .pin-action thead th:last-child{background:var(--sunken)}
 }
 
 /* Definite grids on the pages where the column count is a design decision.
@@ -847,6 +864,51 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 @media (max-width:620px){
   .stat-grid{grid-template-columns:minmax(0,1fr)}
 }
+
+/* .btn is white-space:nowrap by design, and at a phone width a long label
+   ("Open Budget vs Actual with worked example", "Execute Procurement File")
+   becomes a control wider than the screen with no scrollable ancestor, so
+   it cannot be reached at all - which is what the reachability gate reports
+   for two routes at 390px. Below this width the label is allowed to break;
+   the button stays the same size and the text takes a second line. */
+@media (max-width: 560px){
+  .btn{white-space:normal;line-height:1.35}
+  .btn-sm{white-space:normal}
+}
+
+/* Two reachability findings, both measured before being fixed rather than
+   guessed at a second time.
+
+   The settings page puts four cards, one of them a table, in the shared
+   grid-2 class - which is built on auto-fit, so at 1440 it fitted more
+   columns than its name promises and the wrapper the reachability gate
+   measured was 301px wide against a 391px table. At 1024 the same page
+   gave the table 620px and passed, which is how the defect survived a
+   narrow-viewport sweep. The page knows it wants two columns, so it now
+   says so, scoped to this page rather than by changing grid-2 for
+   everyone.
+
+   The home learning card clips (overflow:hidden, so nothing scrolls it
+   back) a 117px button whose label cannot break, inside 318px of card.
+   Inside these cards a button label is allowed to take a second line and
+   the button is allowed to shrink. */
+.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:1100px){.settings-grid{grid-template-columns:minmax(0,1fr)}}
+.hub-portal-card .btn{white-space:normal;min-width:0}
+
+/* A flex item defaults to min-width:auto, which means it refuses to become
+   narrower than its longest unbreakable word. Recent searches are stored
+   verbatim and the search box allows 120 characters, so one long token made
+   a chip 158px wider than the screen at 768px - and the chips row has no
+   scroll, so the chip was simply unreachable. The row already wrapped; what it
+   could not do was shrink one item, which is what min-width:0 fixes. */
+.chip{min-width:0;overflow-wrap:anywhere;max-width:100%}
+
+/* The library jump bar is sticky and the category tiles that follow it in
+   DOM order are position:relative, so without an explicit stack the tiles
+   paint over the bar and the top strip of every chip becomes unclickable.
+   Found by the reachability gate hit-testing at 1024 px. */
+.list-jump{z-index:3}
 
 /* Section 5: SaaS forms + tables + timeline + progress */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;min-width:0}
@@ -916,6 +978,26 @@ a.flow-step:hover{border-color:var(--accent);color:var(--accent);text-decoration
 .calc-sticky{position:sticky;top:calc(var(--top) + 16px)}
 .calc-actions{position:sticky;bottom:0;background:linear-gradient(transparent,var(--panel) 30%);padding:14px 0 2px;margin-top:8px}
 @media (max-width:1020px){.calc-layout{grid-template-columns:1fr}.calc-sticky{position:static}}
+
+/* Two table defects the reachability gate named. At 1440 the settings
+   threshold table was 90px wider than its own wrapper, which is not a
+   responsive problem but an unbreakable value in a cell. And at 390 the
+   glossary table put 235 term links behind a sideways scroll, because the
+   header row refuses to wrap and the padding was sized for a desktop.
+   Anywhere-breaking plus narrower cells at phone width lets the table fit
+   the screen it is on. */
+.table-wrap td,.table-wrap th{overflow-wrap:anywhere}
+@media (max-width: 900px){
+  .table-wrap thead th{white-space:normal}
+  .table-wrap th,.table-wrap td{padding:8px 10px}
+  .table-wrap{font-size:.86rem}
+}
+
+/* The settings threshold table was 90px wider than its own wrapper at
+   1440 - not a responsive defect. A text input keeps an intrinsic width
+   based on its default size and does not compress, so the row could never
+   fit the card it sits in. Inputs in a table now take the cell and shrink. */
+.table-wrap input[type="text"],.table-wrap input[type="number"]{width:100%;max-width:170px;min-width:0}
 
 /* Section 6: SaaS results, lists, dashboard, overlays */
 .results{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:12px;box-shadow:var(--sh)}
@@ -2389,6 +2471,21 @@ html[data-theme="dark"] .quiz-tip-cta {
 .lesson-progress{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
 .lesson-progress-fill{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
 
+/* The tab rail is one nowrap flex row of five labelled buttons plus a
+   badge, and it measured 957px of content against 730px of rail at a
+   768px viewport: two of the five tabs sat off-screen behind an
+   overflow-x scrollbar whose thumb read as a rendering artefact, and the
+   progress line - absolutely positioned across the rail - was clipped with
+   them. Below this width the rail wraps instead of scrolling, so every tab
+   is reachable and the progress line keeps its full width. The breakpoint
+   is 1200 rather than 1000 because the reachability gate measured 285px of
+   overflow at 1024: the rail is beside a 280px sidebar, so the row runs
+   out of room long before the viewport does. */
+@media (max-width: 1200px){
+  .academy-tabs{flex-wrap:wrap;overflow-x:visible;row-gap:3px}
+  .academy-tab-btn{font-size:.82rem;padding:9px 11px}
+}
+
 /* ---------- v3: hub and hero typography ---------- */
 .academy-hero h1, .academy-hero .display{font-family:var(--font-read);font-weight:600;letter-spacing:-.02em;font-size:2.1rem;line-height:1.12}
 .academy-hero .lead{font-size:1.02rem;line-height:1.7;max-width:var(--measure)}
@@ -2534,7 +2631,11 @@ html[data-theme="dark"] .quiz-tip-cta {
   flex-shrink: 0;
 }
 .user-name-label {
-  max-width: 120px;
+  /* 120px fitted a first name but not a role-as-name default: the profile
+     that ships with the app is called "Procurement Specialist", and the
+     chip rendered it as "Procurement Sp...". The label hides below the
+     small-screen breakpoint, so the room is only taken when there is room. */
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3213,6 +3314,16 @@ html[data-theme="dark"] .quiz-tip-cta {
 }
 
 
+/* .hub-portal-card carries overflow:hidden, which is the one combination
+   that makes content genuinely unreachable: it is clipped, and nothing
+   scrolls it into view. The reachability gate measured 58px of two control
+   labels hidden that way at 1024. Below this width the card lets its chips
+   and badges wrap instead of being cut. */
+@media (max-width: 1100px){
+  .hub-portal-card .chips{flex-wrap:wrap}
+  .hub-portal-card .chip,.hub-portal-card .badge{white-space:normal}
+}
+
 /* ==========================================================
    Procure Sherpa v2.1 - Global Responsive & Chrome Utilities
    Section: breakpoints, mobile sheet, toasts, kbd help,
@@ -3791,7 +3902,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'f1ef77eb829a';
+PS.BUILD = '03f23dae0900';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -5184,6 +5295,25 @@ PS._flattenSearchable = function flat(v, out) {
   return out;
 };
 
+/* A record's own type name is part of what makes it findable. Searching
+   "glossary" used to return nothing at all, because no glossary entry
+   spells the word in its title or definition - the reader had to know the
+   term, not the container. Each registry therefore contributes its plain
+   English names to the searchable text of every record inside it. */
+PS.SEARCH_TYPE_WORDS = {
+  academy: 'academy lesson module learning function curriculum',
+  sop: 'sop procedure standard operating process',
+  calc: 'calculator tool calculation',
+  cl: 'checklist',
+  tpl: 'template',
+  dec: 'decision guide matrix',
+  kpi: 'kpi measure metric indicator',
+  kb: 'concept knowledge guide',
+  gloss: 'glossary term definition',
+  scen: 'scenario case walkthrough',
+  command: 'command shortcut navigation'
+};
+
 PS.buildIndex = function () {
   if (PS._index) return PS._index;
   var idx = [];
@@ -5201,7 +5331,7 @@ PS.buildIndex = function () {
       tags: (item.tags || []).join(' '),
       route: customRoute || PS.routeFor(type, item.id),
       desc: PS.clean(desc, 220),
-      text: (title + ' ' + (item.cat || '') + ' ' + (item.module || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
+      text: (title + ' ' + (PS.SEARCH_TYPE_WORDS[type] || '') + ' ' + (item.cat || '') + ' ' + (item.module || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
     });
   }
 
@@ -5426,9 +5556,12 @@ PS.search = function (q, opts) {
   if (!raw) return { query: '', results: [], total: 0 };
   var tokens = PS.searchTokens(q);
   if (!tokens.length) {
-    /* Everything the user typed was a stop word. Fall back to the raw
-       words rather than returning nothing. */
-    tokens = raw.split(/[\s,;]+/).filter(function (t) { return t.length > 1; });
+    /* Everything the user typed was a stop word. This used to fall back
+       to the raw words - which re-admitted the very stop words the
+       tokenizer had just removed, so "the and of a to in" matched 388 of
+       415 records. A query with no content words has no answer; the page
+       says so instead of showing the library. */
+    return { query: raw, results: [], total: 0, stopWordsOnly: true };
   }
   if (!tokens.length) return { query: '', results: [], total: 0 };
   var out = [];
@@ -5485,6 +5618,13 @@ PS.search = function (q, opts) {
         else if (title.indexOf(' ' + v) >= 0) hit = 75;
         else if (title.indexOf(v) > 0) hit = 55;
         else if (rec.type === v) hit = 50;
+        /* Naming the container beats mentioning the word. Searching
+           "decision" used to return lessons and concepts that happen to
+           use the word in a paragraph, while the seventeen decision
+           guides - the thing the reader asked for - ranked below them,
+           because a type word buried in the body scored the same as any
+           other body match. */
+        else if ((PS.SEARCH_TYPE_WORDS[rec.type] || '').split(' ').indexOf(v) >= 0) hit = 46;
         else if (rec.tags.indexOf(v) >= 0) hit = 42;
         else if (rec.cat.toLowerCase().indexOf(v) >= 0) hit = 32;
         else if (rec.text.indexOf(v) >= 0) hit = 18;
@@ -5996,6 +6136,7 @@ PS.academy.BADGES = [
   { id: 'regulated_market_lead', name: 'Regulated Market Lead', icon: '🜲', desc: 'Mastered Regulated Supplier Qualification, Controlled Goods and Clearances, and the Continuity Obligation.', requires: ['func-regulated-supplier-qualification', 'func-controlled-goods-and-clearance-constraints', 'func-essential-service-continuity-obligation'] },
   { id: 'innovation_sourcing_lead', name: 'Innovation Sourcing Lead', icon: '💡', desc: 'Mastered Early Supplier Involvement, Innovation Deal Structure, and Rights and Dependency in Joint Work.', requires: ['func-early-supplier-involvement', 'func-innovation-deal-structure', 'func-rights-and-dependency-in-joint-work'] },
   { id: 'transition_control_lead', name: 'Transition Control Lead', icon: '🔁', desc: 'Mastered Service Transition Planning and the Economics of the Tail Period.', requires: ['func-service-transition-planning', 'func-tail-period-and-exit-cooperation'] },
+  { id: 'inventory_economics_lead', name: 'Inventory Economics Lead', icon: '📦', desc: 'Mastered Order Quantity and Reorder Point, and who owns the stock.', requires: ['func-order-quantity-and-reorder-point', 'func-who-owns-the-stock'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 
@@ -6373,6 +6514,10 @@ PS.user = {
     }
     if (nameEl) {
       nameEl.textContent = prof.name || 'Account';
+      /* The label still truncates past 200px, so the chip has to say what
+         it is hiding rather than hide it. */
+      var btn = nameEl.closest ? nameEl.closest('.user-btn') : null;
+      if (btn) btn.setAttribute('title', (prof.name ? prof.name + ' - ' : '') + 'My Account & Role Profile');
     }
   },
 
@@ -6514,7 +6659,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 26: Services Should-Cost and Negotiation Analytics - Rates, Risk and the Price Arc': ['rates', 'cost', 'learn'],
   'Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing': ['regulated', 'risk', 'learn'],
   'Module 28: Supplier Innovation and Early Engagement - Shaping the Work Before It Is Priced': ['innovation', 'learn'],
-  'Module 29: Service Transition and Exit - Moving Work Without Losing It': ['transition', 'claims', 'learn']
+  'Module 29: Service Transition and Exit - Moving Work Without Losing It': ['transition', 'claims', 'learn'],
+  'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It': ['inventory', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -6524,12 +6670,17 @@ PS.ACADEMY_MODULE_TAGS = {
    Module 8 were too. 'portfolio', 'executive' and 'ethics' are the tags that
    give the senior and the compliance material its own slot instead of
    sharing one with a neighbouring module; beginner and buyer keep the
-   operational set. */
+   operational set.
+   Every list below is saturated, so a new tag does not add a module to a
+   role's six - it displaces one, and the displaced module has to stay
+   reachable from somewhere else. 'inventory' takes finance's sixth slot and
+   pushes 'cost' out; Module 3, which finance used to be sent to for cost, is
+   still recommended, because beginner carries 'cost' in its third slot. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'distress', 'learn'],
   buyer: ['innovation', 'operations', 'negotiation', 'services', 'specialist', 'quality', 'sourcing', 'spend', 'learn'],
   manager: ['regulated', 'tendering', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
-  finance: ['cost', 'rates', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],
+  finance: ['rates', 'analytics', 'executive', 'value', 'finance', 'inventory', 'cost', 'contract', 'governance', 'learn'],
   compliance: ['transition', 'assurance', 'risk', 'ethics', 'governance', 'claims', 'quality', 'contract', 'executive', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {
@@ -7342,6 +7493,12 @@ PS.link = function (type, id, label, cls) {
 PS.renderRoute = function () {
   var r = PS.parseHash();
   PS.routeMeta = r;
+  /* currentItem is what the star, the copy, the share and the print
+     actions act on. It was only ever assigned by a route and never
+     cleared, so on any page that does not declare one - the Academy
+     hub, a dashboard, a search result - those actions quietly used the
+     item from the page you had just left. */
+  PS.currentItem = null;
   /* An exam session takes the whole viewport. The menu, the search box and the
      breadcrumb are three ways to leave a running clock, and the timer is the
      one thing a reader should not have to look for. */
@@ -7410,6 +7567,13 @@ PS.updateFavBtn = function (r) {
   if (!btn) return;
   var type = (r && r.name === 'k') ? 'kb' : (r && PS.TYPE_ROUTE) ? Object.keys(PS.TYPE_ROUTE).filter(function (k) { return PS.TYPE_ROUTE[k] === r.name; })[0] : null;
   var item = (type && r.arg) ? PS.byId(type, r.arg) : null;
+  /* A route that declares its own item wins. The reverse lookup above only
+     knows the library registries in PS.TYPE_ROUTE, so an Academy lesson
+     came back with no type, no item, and a disabled star - on all 88 of
+     them, which is the single most bookmarkable thing in a learning
+     portal. The button was never broken; it was being switched off on
+     purpose for a page type the lookup did not know. */
+  if (!item && PS.currentItem && PS.currentItem.item) { type = PS.currentItem.type; item = PS.currentItem.item; }
   if (!item) { btn.disabled = true; btn.classList.remove('is-on'); btn.title = 'Open a page to add it to favorites'; return; }
   btn.disabled = false;
   btn.dataset.favType = type; btn.dataset.favId = item.id;
@@ -10995,15 +11159,27 @@ PS.copilot.ask = function (q) {
   if (!tokens.length) return { hits: [], confidence: 0, answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
   var scored = [];
   idx.forEach(function (rec) {
-    var score = 0, matched = 0;
+    var score = 0, matched = 0, titled = 0;
     tokens.forEach(function (t) {
       var titleHit = PS.copilot.matches(rec.title.toLowerCase(), t);
       var bodyHit = PS.copilot.matches(rec.text, t);
-      if (titleHit) score += 5;
+      /* A record whose TITLE matches is the thing the reader named; a
+         body match only means the phrase appears in someone else's
+         explanation. Body text is longer, so before this weighting an
+         exact-title calculator could lose to a concept that merely
+         mentioned it - ask "supplier concentration risk" and the
+         concentration calculator ranked below the definition. */
+      if (titleHit) { score += 8; titled++; }
       if (bodyHit) { score += 2; matched++; }
       if (PS.copilot.matches(rec.cat.toLowerCase(), t)) score += 2;
     });
-    if (matched) scored.push({ rec: rec, score: score });
+    /* A record was dropped unless some token hit its BODY. That silently
+       excluded exactly the short records a reader names: the calculator
+       titled "Supplier Concentration" never appeared for "supplier
+       concentration risk", because its description does not repeat the
+       words. A title match is the strongest signal there is, and is
+       enough on its own to be a candidate. */
+    if (matched || titled) scored.push({ rec: rec, score: score });
   });
   scored.sort(function (a, b) {
     if (b.score !== a.score) return b.score - a.score;
@@ -11024,6 +11200,14 @@ PS.copilot.ask = function (q) {
   var confidence = tokens.length ? Math.round((matchedTokens / tokens.length) * 100) : 0;
   var hits = scored.slice(0, 5).map(function (s) { return s.rec; });
   var answer = PS.copilot.answerFor(q, hits, tokens, confidence);
+  /* The engine found SOMETHING for "xylophone quantum flurbow" - two
+     records that share a token - and the page presented them as an
+     answer. A weak match is not a wrong question, so the hits stay; but
+     this product's own stance is that it says what it does not know, and
+     a cited answer at 33 percent confidence did not say so. */
+  if (hits.length && confidence < 40) {
+    answer = 'I am not confident this answers "' + PS.clean(q, 100) + '". The closest records are listed below - treat them as leads rather than as an answer, and rephrase with procurement terms if none of them fits.';
+  }
   return { hits: hits, confidence: confidence, answer: answer };
 };
 
@@ -11857,6 +12041,12 @@ PS.docpack.buildPackHtml = function (title, items, opts) {
     '<h1>' + PS.esc(title) + '</h1>' +
     '<p class="lead">' + PS.esc(p.orgName || 'Procurement') + (p.deptName ? ' \u00B7 ' + PS.esc(p.deptName) : '') + '</p>' +
     '<p class="note">Prepared ' + PS.esc(PS.dateTime()) + ' \u00B7 ' + items.length + ' documents \u00B7 ' + PS.esc(PS.APP) + '</p>' +
+    /* Every other artefact this product exports carries a statement of
+       what it is - the report footer, the markdown export, the help
+       page. The pack was the exception, and it is the one document
+       most likely to be handed to someone who did not build it and has
+       no way to know where the numbers came from. */
+    '<p class="note">Assembled from records held in this browser. Worked examples are constructed to show how a mechanism behaves, not reports of real organisations. Decision-support output - validate assumptions before committing funds.</p>' +
     '<div style="margin-top:18px;text-align:left"><h3>Contents</h3>' + toc + '</div>' +
     '</div>';
   items.forEach(function (c, i) {
@@ -13837,7 +14027,7 @@ PS.crumbFor = function (r) {
     scenarios: 'Scenario Library',
     maturity: 'Procurement Maturity Assessment',
     lifecycle: 'Procurement Lifecycle Map',
-    dash: 'Operations Dashboard',
+    dash: 'Dashboard',
     'dash-savings': 'Savings Dashboard'
   };
   if (opLabels[r.name]) {
@@ -14499,7 +14689,7 @@ PS.route('settings', function () {
     '<p class="card-sub">Configure Procure Sherpa to match your organization. These values feed calculators, approval checks, reports and formatting. They are stored locally and never transmitted.</p>' +
     '<p class="note">Procure Sherpa deliberately ships with no universal thresholds. Where your policy differs from the defaults, change it here. It will never assert that &ldquo;every purchase above X needs three quotes&rdquo;, because that rule is organizational rather than universal.</p>' +
     '</div>' +
-    '<div class="grid grid-2">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
+    '<div class="grid grid-2 settings-grid">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
     PS.settingsThresholdCard(p) + PS.settingsAssumptionCard(p) + '</div>' +
     '<div class="card"><h2>Storage usage</h2>' +
     '<div id="storageUsageBar" style="margin-bottom:8px">' +
@@ -14988,7 +15178,7 @@ PS.route('academy-progress', function () {
     '<div class="stat"><span class="s-val">' + stats.badgesEarned + '/' + stats.badgesTotal + '</span><span class="s-lab">Badges Earned</span></div>' +
     '</div>' +
     '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
-    '<div class="table-wrap"><table><thead><tr>' +
+    '<div class="table-wrap pin-action"><table><thead><tr>' +
     '<th>Module & Function</th><th>Lifecycle Fit</th><th>Assessment Score</th><th>Status</th><th>Action</th>' +
     '</tr></thead><tbody>' +
     funcs.map(function (f) {
@@ -15319,6 +15509,11 @@ PS.renderAcademyFunction = function (funcId, params) {
   if (!func) return PS.notFound('Academy Function', funcId);
 
   PS.pageTitle = func.title + ' | Academy';
+  /* Every other content type declares the item the top-bar star operates
+     on; the lesson route never did, so favouriting a lesson - the most
+     obvious action in a learning portal - answered "Open a page before
+     adding it to favorites" while the reader was standing on one. */
+  PS.currentItem = { type: 'academy', id: funcId, item: func };
   PS.academy.currentFuncQuizzesCount = (func.quizzes || []).length;
   
   // Set current function in state
@@ -15345,14 +15540,14 @@ PS.renderAcademyFunction = function (funcId, params) {
     '<p class="lead" style="margin-bottom:14px">' + PS.esc(func.tagline || func.desc) + '</p>' +
     '<div class="chips">' +
     '<span class="chip">🎓 Level: <strong>' + PS.esc(PS.academy.tierName(func.tier)) + '</strong></span>' +
-    '<span class="chip">📍 Lifecycle Stage: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
+    '<span class="chip">📍 Lifecycle: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
     '<span class="chip">⏱️ Duration: <strong>' + PS.esc(func.duration || '15 mins') + '</strong></span>' +
     (function () {
       var pos = PS.academy.positionIn(funcId);
       var mp = PS.academy.moduleProgress(func.module);
       if (!pos) return '';
       return '<span class="chip">\uD83D\uDCCD Lesson <strong>' + pos + ' of ' + (PS.ACADEMY_FUNCTIONS || []).length +
-        '</strong> \u00B7 ' + mp.done + '/' + mp.total + ' of this module mastered</span>';
+        '</strong> \u00B7 ' + mp.done + ' of ' + mp.total + ' in this module mastered</span>';
     }()) +
     (quizRes ? '<span class="chip">🏆 Quiz Score: <strong>' + quizRes.pct + '%</strong></span>' : '') +
     '</div>' +
@@ -15726,7 +15921,9 @@ PS.ACADEMY_WORKBENCH = {
   'func-innovation-deal-structure': 'budget',
   'func-rights-and-dependency-in-joint-work': 'contracts',
   'func-service-transition-planning': 'contracts',
-  'func-tail-period-and-exit-cooperation': 'budget'
+  'func-tail-period-and-exit-cooperation': 'budget',
+  'func-order-quantity-and-reorder-point': 'catalogue',
+  'func-who-owns-the-stock': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',
@@ -17647,6 +17844,17 @@ PS.learningPaths.PATHS = [
     skills: ['Building the exception catalogue from incident data', 'Running an exercised acceptance scenario', 'Pricing a tail rate card and its cap', 'Writing obligations that survive termination', 'Testing a data extract before you need it'],
     duration: '4-6 weeks',
     color: 'var(--sop)'
+  },
+  {
+    id: 'inventory-economics',
+    title: 'Inventory and Stock Economics',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'How much to hold and who owns it: measuring the real cost per order line instead of assuming it, reading the flat region of the cost curve rather than the optimum, setting a reorder point from lead-time dispersion instead of the average, deciding which item classes are worth a service level, and separating the stock you hold from the stock you own before a supplier fails.',
+    modules: ['func-order-quantity-and-reorder-point', 'func-who-owns-the-stock'],
+    skills: ['Measuring cost per order line from goods-in effort', 'Telling a bound answer from an optimum', 'Re-basing a buffer on the observed tail', 'Registering stock held but not owned', 'Reporting a write-down into the category that caused it'],
+    duration: '4-6 weeks',
+    color: 'var(--ops)'
   }
 ];
 
@@ -17780,7 +17988,7 @@ PS.route('learning-paths', function () {
 
   html += '<div class="card">' +
     '<h2>All modules</h2>' +
-    '<div class="table-wrap"><table><thead><tr><th class="num">Module</th><th>Function</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
+    '<div class="table-wrap pin-action"><table><thead><tr><th class="num">Module</th><th>Function</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
 
   /* One row per function per path, sorted by module number so the table
      reads in curriculum order rather than in track order. The path
@@ -18587,6 +18795,14 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'New Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It. Carrying cost, economic order quantity, obsolescence and consignment had each appeared four times in this product, always as a term inside a freight, landed-cost or distress discussion and never as the decision itself. Order quantity and reorder point, because a habitual buying pattern is a number nobody has to defend: the fight is between the measured cost of raising and receiving an order and the cost of holding what the order buys, the curve is flat near the optimum and steep at the extremes so the large habitual errors are the expensive ones, constraints like pack size, shelf life and storage override the formula and are usually the real answer, and a buffer set from average lead time is a mean with a label rather than protection - the dispersion is what breaks you. At executive level, who owns the stock, because a warehouse holds yours, somebody else\u2019s, and quantities that are legally yours but economically someone else decision: consignment trades unit price for float, supplier-managed inventory trades control for availability, bonded stock trades release speed for cash, and in-transit stock depends on an Incoterm nobody checked, so retention of title protects identifiable goods and leaves opened, commingled or transformed stock to a liquidator. Write-down exposure lands in a different budget line than the saving that created it, which is why a buy ahead of forecast should name an owner for the residual and an expiry review date at the moment it is approved. Four new concepts in an Inventory and Stock Economics category, a twenty-fourth learning path and the Inventory Economics Lead award. The curriculum is 88 functions across 30 modules, 559 step sequences and 419 quiz questions',
+      'The document pack now says what it is. Every other thing this product exports carries a statement of its own limits - the report footer, the markdown export, the help page - but the pack, which is the document most likely to be handed to someone who did not build it and has no way to know where the numbers came from, had none. Its cover now records that it was assembled from records held in this browser, that worked examples are constructed to show how a mechanism behaves rather than reports of real organisations, and that the output is decision support to be validated before funds are committed. A new gate also checks the three surfaces that do arithmetic on what you enter: the spend model total against an independent sum of the same records, its supplier list, and its Pareto and Kraljic markup for finite coordinates; the maturity score against the mean of the nine answers, and that saving it writes exactly one record into your own work; and that a pack of three documents contains all three and lists on its page',
+      'Search now finds the kind of thing you asked for, not only the word. Searching glossary returned nothing at all, because no glossary entry spells the word glossary in its title or definition - you had to know the term, not the container. Every registry now contributes its own plain English names to what is searchable, and naming the container outranks merely mentioning the word: a search for decision finds the seventeen decision guides rather than the lessons that happen to use the word in a paragraph. A query made only of small words - the and of a to in - used to fall back to those same words and match 388 of the 415 records in the library, which is not an answer; it now says there is nothing to go on. A new gate holds all of this: 24 assertions over named-record lookups, one per registry, case and spacing insensitivity, nonsense and stop-word queries, the result limit, and every result resolving to something real',
+      'That sweep became a gate. `npm run reachability` starts the browser that is already on the machine, drives it over the DevTools protocol with no new dependency, walks all 54 routes at 1440, 1024, 768 and 390 pixels, and asks whether every control the application renders can actually be reached - separating a control outside the screen with no way to scroll it in from a wide table that legitimately scrolls. It named 12 findings on its first run, including two tabs still hidden at 1024 by a breakpoint I had set from the wrong arithmetic, and it cleared to zero: button labels now break on phones, table headers wrap and tighten below 900 pixels, the settings page states two columns instead of letting auto-fit fit four and squeeze a 391 pixel table into a 301 pixel wrapper, and the learning card on the home page no longer clips a button it cannot scroll. It is now part of `npm run qa`, and it prints SKIPPED out loud when a machine has no browser rather than reporting a check it did not perform\n',
+      'The star in the top bar did nothing on any Academy lesson - all 88 of them. It was not a broken listener: the button was being switched off on purpose, because the code that decides what a favorite points at recognised only the library registries and had never been told that a lesson is a thing worth returning to. A lesson now declares itself the current item, the star enables for it, and the page you bookmarked is the page you get back. The same fix clears a subtler one: the current item used to survive navigation, so on a page that declared nothing - the Academy hub, a dashboard, a search result - the star, the copy and the share buttons quietly acted on the item from the page you had just left',
+      'The budget workbench would let you add a budget line and never let you take one back. Its table was drawn with the plain summary renderer instead of the workbench renderer, so it had no Edit and no Delete column - every other collection on the Work side of the product had both, and a wrong budget line could only be worked around by adding another. It now carries the same actions as the rest, and a new gate drives the whole lifecycle for all six collections that hold your records: save an empty form and it is refused, fill one in and exactly one row appears with every value you typed, edit it and nothing duplicates, delete it and the app asks first, and the totals on the page still equal the sum of what is stored',
+      'A sweep was run asking a question no gate had ever asked: is every control that exists in the DOM also on the screen? Measured across 54 routes in a real browser at 768 pixels, three places failed it. The library category jump bar was forced into a single scrolling row at that width, so 2,934 pixels of chips sat in a 730 pixel bar and 15 of the 20 category links were off the right edge behind an invisible scrollbar - it wraps now, the way it always did on a desktop. The Academy progress table scrolls sideways by design, which put its Open button - 88 of them, one per lesson - off screen as well; the action column is pinned to the right edge, so the row still scrolls and the way forward stays where the eye is. After the change the sweep reports zero off-screen controls on every route, and what it still reports is two tables that scroll sideways, which is what a wide table is meant to do',
+      'Five places where the interface was not telling the truth about itself. The dashboard breadcrumb read Operations Dashboard while the page itself was titled Dashboard, so the label now matches the heading it sits above. The account chip in the top bar truncated the name it was holding, because a 120 pixel label cannot carry the default profile this app ships with - it now has room for the whole of it, and the tooltip states the name in full so a longer one is never simply hidden. The lesson tab rail was hiding two of its five tabs on a narrow screen: the row measured 957 pixels of tabs against 730 of rail, so Practice and Test was cut in half, Apply in Lab was off the edge entirely, and the reading-progress line ended in what looks like a stray white square. Below 1,200 pixels the rail wraps instead of scrolling, so every tab is reachable and the progress line keeps its full width; on a desktop nothing moved, because there the row has always fitted. And two lesson chips said the same fact twice or in two different notations: the lifecycle chip read Lifecycle Stage: Stage 17: Purchase Order Issuance, and the progress chip read Lesson 87 of 88 next to 0/2 of this module mastered. They now read Lifecycle: Stage 17: Purchase Order Issuance, and 0 of 2 in this module mastered - one label, one notation. All five were found by looking at rendered pages at full width and at 768 pixels, which is the check no automated gate performs',
       'A practice exam now opens on its own full-screen page instead of a panel inside the menu: the sidebar, the search box and the breadcrumb are three ways to leave a running clock, so the exam route drops the shell chrome, adds a question rail that shows answered and unanswered at a glance and jumps to any question, keeps the timer in the sticky header, and offers a button to move the attempt into a separate window - the attempt is saved in this browser either way. The Start control also became a real link, which is how the inbound-link gate can see it at all',
       'The dashboard stopped letting the browser decide its shape. A grid class named for two columns was rendering four across, and a four-column stat row was rendering five plus three with two holes in it, because auto-fit fits as many tracks as the width allows and the name was only ever a suggestion. The tile row is now a definite four columns and the panel row a definite two, with the fallbacks written down; the work pages take the width a reading page must refuse, scoped by route so a lesson keeps its short line length; the sidebar scrollbar no longer reads as a rule drawn down the menu; and the activity feed collapses repeated events into one row with a count and shows the lesson title instead of an internal id',
       'Four promises in the footer were links to pages that did not exist. Privacy, Disclaimers, Assumptions and Version history all routed at a help topic that was never written, and because the Help route answers an unknown topic with its own list, every link looked alive while delivering a menu instead of the page it named. Three of them are now real articles - what is stored and where, what the tool is not (including that a practice exam here is not a credential and that every worked example is constructed), and which assumptions the calculators make on your behalf with the settings that change them. Version history points at the changelog, which is what it always was. A gate now checks the argument of a help and Academy link, not just the route name, so a promise without a page behind it fails the build',
@@ -18649,7 +18865,7 @@ PS.whatsNew.CHANGES = [
       'Two full controlled procedures added where none existed - the Freight, Duty and Customs Clearance SOP and the Contingent Workforce and Managed Services SOP - so the SOP library is 15 documents holding 118 procedure steps, each with an owner, an output and a control',
       'Six new glossary terms, and these ones carry relations, so the "Where to use it" column finally renders for them - proof that the column was a data gap rather than a code gap',
       'Recognition completed: two new badges cover the foundation and cost-analysis lessons that no badge could previously be earned from, so all 40 functions now contribute to at least one award, and G24 fails if a lesson is ever left out again',
-      'The Academy hub now shows where you are: a progress rail in every module header, a summary line above the curriculum ("you have mastered 5 of 40 functions across 15 modules - about 11.5 hours of lessons left"), and a position line on every lesson ("Lesson 9 of 40 - 1/3 of this module mastered"). G27 compares each rail count and bar width against the completion record, so a progress bar that disagrees with the data fails the build',
+      'The Academy hub now shows where you are: a progress rail in every module header, a summary line above the curriculum ("you have mastered 5 of 40 functions across 15 modules - about 11.5 hours of lessons left"), and a position line on every lesson ("Lesson 9 of 40 - 2 of 3 in this module mastered"). G27 compares each rail count and bar width against the completion record, so a progress bar that disagrees with the data fails the build',
       'Role recommendations now name up to five modules instead of four, which is what keeps every module reachable by some role as the curriculum grows'
     ]
   },
@@ -19969,14 +20185,16 @@ PS.route('budget', function () {
 
   html += '<div class="card"><div class="card-head"><h2>Budget position</h2></div>' +
     '<p class="card-sub">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
-    (lines.length ? PS.renderSimpleTable({
-      headers: ['Line', 'Category', 'Holder', 'Budget', 'Committed', 'Spent', 'Available', 'Used'],
-      rows: lines.map(function (l) {
-        var b = PS.num(l.budget) || 0, c = PS.num(l.committed) || 0, a = PS.num(l.actual) || 0;
-        return [l.line, l.category || '', l.owner || '', PS.moneyR(b), PS.moneyR(c), PS.moneyR(a),
-          PS.moneyR(b - c - a), b > 0 ? Math.round((c + a) / b * 100) + '%' : ''];
-      })
-    }) : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
+    (lines.length ? PS.wb.tableHtml('budget', [
+      { label: 'Line', k: 'line' },
+      { label: 'Category', k: 'category' },
+      { label: 'Holder', k: 'owner' },
+      { label: 'Budget', num: true, render: function (l) { return PS.moneyR(PS.num(l.budget) || 0); } },
+      { label: 'Committed', num: true, render: function (l) { return PS.moneyR(PS.num(l.committed) || 0); } },
+      { label: 'Spent', num: true, render: function (l) { return PS.moneyR(PS.num(l.actual) || 0); } },
+      { label: 'Available', num: true, render: function (l) { return PS.moneyR((PS.num(l.budget) || 0) - (PS.num(l.committed) || 0) - (PS.num(l.actual) || 0)); } },
+      { label: 'Used', num: true, render: function (l) { var b = PS.num(l.budget) || 0; return b > 0 ? Math.round(((PS.num(l.committed) || 0) + (PS.num(l.actual) || 0)) / b * 100) + '%' : ''; } }
+    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
     '</div>';
 
   html += PS.wb.editorCard('budget', 'Add or edit a budget line');
@@ -21906,8 +22124,93 @@ PS.SKB({ i: "knowledge-transfer-evidence", t: "Evidence that knowledge actually 
          kpis: ["kpi-defect-rate", "kpi-otif", "kpi-contract-compliance"],
          glossary: ["gloss-sla", "gloss-segregation-of-duties", "gloss-run-rate"] } });
 
+/* ==========================================================
+   Procure Sherpa v3.0 - Knowledge additions: Inventory and Stock
+   Economics. Carrying cost, EOQ, obsolescence and consignment
+   appear across four lessons - always as a term inside a freight,
+   landed-cost or distress discussion, never as the decision itself.
+   These four records make it a decision that can be taught and
+   argued. Added with Academy Module 30.
+   ========================================================== */
+
+PS.SKB({ i: "order-quantity-economics", t: "Order quantity: what EOQ assumes and when it is wrong", c: "Inventory and Stock Economics",
+  d: "The trade-off that sets how much to buy at once: the fixed cost of raising an order and receiving it against the cost of holding the resulting stock, expressed as the quantity where the two curves stop fighting - and the assumptions that make that quantity the wrong answer in practice.",
+  w: "It turns a habitual buying pattern into a number someone can defend;Its value is in the sensitivity, not the optimum - the curve is flat near the bottom and steep at the extremes;It exposes order-processing cost as a real per-transaction cost for the first time",
+  n: "Setting reorder quantities for repeat-purchased items;Reviewing a catalogue where every line is ordered weekly;Deciding whether to buy a full pallet or a case;Justifying a price break that requires volume",
+  h: "Measure the true cost per order line rather than assuming it: receipt, inspection, matching, payment, and the buyer time;Use demand and holding cost as ranges, not point figures, and report the flat region;Check the constraints before optimising - shelf life, minimum order quantity, transport unit, storage capacity, supplier lead time;Re-run on the calendar rather than on complaint, because the inputs drift",
+  e: "A maintenance consumables review found 1,100 lines ordered weekly with an assumed order cost of 40 each. The measured cost per order line, including goods-in and three-way match effort, was 96; moving 300 low-value lines to a monthly quantity bought 31,000 a year of avoided transaction cost and cut goods-in queue time by a third.",
+  r: "The classical formula assumes steady demand, a single item, no quantity discounts and unlimited storage - rarely true;Order cost is genuinely hard to measure, and a bad estimate is still better than an unexamined habit",
+  m: "Treating the computed quantity as an instruction rather than a starting point;Optimising quantity while ignoring the pack size the supplier can actually ship;Assuming holding cost equals the interest rate",
+  rel: { concepts: ["working-capital", "price-vs-cost", "cost-breakdown", "demand-management", "should-cost"],
+         sops: ["sop-procurement-lifecycle", "sop-savings-calculation"],
+         checklists: ["cl-requirement-definition", "cl-sourcing-strategy", "cl-quote-comparison"],
+         templates: ["tpl-cost-avoidance", "tpl-business-case"],
+         calcs: ["calc-moq", "calc-landed-cost", "calc-tco"],
+         decisions: ["unit-or-tco", "make-or-buy", "consolidate-suppliers"],
+         kpis: ["kpi-working-capital-impact", "kpi-cycle-time", "kpi-sum"],
+         glossary: ["gloss-eoq", "gloss-moq", "gloss-run-rate"] } });
+
+PS.SKB({ i: "safety-stock-and-service-level", t: "Safety stock is a service level with a price", c: "Inventory and Stock Economics",
+  d: "The buffer held against variation in demand and in supply, expressed as the probability of not running out: how much is needed depends on how variable the demand is, how variable the lead time is, and what a stock-out costs - not on what feels safe.",
+  w: "It converts an emotional argument about buffer into an arithmetic one about risk;Lead-time variability usually matters more than demand variability, and it is the cheaper thing to fix;It makes the cost of a service level explicit instead of burying it in stock",
+  n: "Setting stock levels for critical spares, production inputs or seasonal goods;Deciding between holding stock and holding a faster re-supply route;Reviewing stock that has grown without demand changing;Designing a continuity position for a single-source item",
+  h: "State the target service level per item class and let the calculation follow it, rather than setting stock and reverse-engineering a promise;Measure lead-time dispersion, not just the average - the tail is what breaks the buffer;Compare the cost of holding against the cost of a stock-out per event before choosing the level;Fix variability at source where it is cheaper than buffering against it",
+  e: "A plant held six weeks of a imported seal because the average lead time was four weeks. The dispersion was the problem: two deliveries in a year had taken eleven weeks. Re-basing the buffer on the observed tail and agreeing a bonded stock position with the supplier cut held inventory by a third while removing the two stock-outs a year the old level had still not prevented.",
+  r: "A high service level on every line is the expensive way to be safe; the classification is the point;Safety stock set on average lead time is not protection - it is a mean with a label",
+  m: "Setting buffers from the last stock-out rather than from dispersion;Treating a longer quoted lead time as a supplier failing rather than as information;Holding stock instead of fixing a supply route that varies",
+  rel: { concepts: ["business-continuity", "supply-chain-risk", "concentration-risk", "demand-management", "working-capital"],
+         sops: ["sop-supplier-performance-management", "sop-emergency-procurement", "sop-procurement-lifecycle"],
+         checklists: ["cl-supplier-risk-review", "cl-emergency-procurement", "cl-sourcing-strategy"],
+         templates: ["tpl-supplier-risk-assessment", "tpl-emergency-justification"],
+         calcs: ["calc-supplier-concentration", "calc-moq", "calc-multi-year-contract-cost"],
+         decisions: ["dual-source", "supplier-concentration", "re-source"],
+         kpis: ["kpi-otif", "kpi-otd", "kpi-working-capital-impact"],
+         glossary: ["gloss-sla", "gloss-run-rate", "gloss-hhi"] } });
+
+PS.SKB({ i: "obsolescence-and-carrying-risk", t: "What holding stock really costs, including being wrong", c: "Inventory and Stock Economics",
+  d: "The full carrying cost - capital, storage, insurance, handling, shrinkage and, most under-weighted, the risk that the item is no longer wanted - and the write-down exposure that turns a volume saving into a loss.",
+  w: "The unit-price saving is visible and immediate while the carrying and obsolescence cost is delayed and diffuse, which is why the trade is usually mis-decided;Obsolescence is the component that can exceed the entire saving;Naming the write-down owner is what makes the risk visible in time",
+  n: "Evaluating a price break or a last-time-buy;Buying ahead of a price increase or a suspected disruption;Stocking items tied to a product with a short life or a pending engineering change;Reviewing slow-moving inventory",
+  h: "Build carrying cost as components with a rate each, and state the rate;Test any volume saving against the shelf life and the planned engineering change, not only against the annual usage;Require a named owner and a review date for stock bought ahead of a forecast;Report ageing and write-downs back into the category so the pattern is learned",
+  e: "A last-time-buy of a controller board was justified by a 22 percent unit-price saving and 18 months of forecast usage. The board was superseded in month seven by a design change the engineering team had already scheduled. The write-down exceeded the saving, and the person who approved the buy had not been told the change was coming because nobody had asked the design roadmap.",
+  r: "A forecast that is wrong is not dishonesty, and the risk is symmetric: under-buying also costs;Obsolescence provisions are an accounting answer to an operational question, and the provision is not the fix",
+  m: "Counting carrying cost as the interest rate alone;Approving a forward buy without checking the engineering change roadmap;Letting the write-down land in a different budget than the saving was claimed in",
+  rel: { concepts: ["working-capital", "cost-avoidance", "price-vs-cost", "should-cost", "savings-baseline"],
+         sops: ["sop-savings-validation", "sop-savings-calculation", "sop-supplier-price-increase-review"],
+         checklists: ["cl-savings-validation", "cl-commercial-evaluation", "cl-exception-approval"],
+         templates: ["tpl-savings-validation", "tpl-cost-avoidance", "tpl-exception-request"],
+         calcs: ["calc-should-cost", "calc-tco", "calc-price-escalation"],
+         decisions: ["accept-price-increase", "negotiate-or-accept", "approve-exception"],
+         kpis: ["kpi-working-capital-impact", "kpi-cost-avoidance", "kpi-savings-realization"],
+         glossary: ["gloss-cost-avoidance", "gloss-run-rate", "gloss-capex"] } });
+
+PS.SKB({ i: "stock-ownership-models", t: "Who owns the stock: consignment, VMI, bonded and supplier-held", c: "Inventory and Stock Economics",
+  d: "The arrangements that decide when title and risk pass - buying and owning, holding on consignment until use, supplier-managed inventory against agreed levels, bonded stock before duty, and pipeline stock held by a freight party - and what each one costs in control, cash and exposure.",
+  w: "It moves the working-capital question from how much stock to how much of it is yours;Each model trades control for cash or for speed, and the trade should be deliberate;It changes what happens in a supplier insolvency, which is where an unexamined model becomes a loss",
+  n: "Setting up a stocking arrangement with a critical supplier;Reducing working capital without reducing availability;Holding imported stock before duty is due;Placing stock at a customer or a third-party site;Deciding who carries insurance on goods held for another party",
+  h: "State in the contract when title passes, who insures, who may count it, and what happens on termination or insolvency;Use consignment where usage is predictable and the supplier can afford the float - and expect to pay for that in price;Record supplier-owned stock accurately, because an audit or a liquidator will;Check the duty and tax consequences before choosing bonded or in-transit positions",
+  e: "A manufacturer ran consignment consumables across three sites and reconciled usage monthly. When the supplier went into administration, the buyer found that retention-of-title wording covered only identifiable unopened packs: 40 percent of the stock on site had been opened, commingled or consumed into kits, and the liquidator treated it as available to sell. Availability continued; the settlement cost more than two years of the consignment discount.",
+  r: "Consignment usually carries a price premium because the supplier is financing you;VMI improves availability and can quietly reduce your control over the reorder decision",
+  m: "Assuming retention of title works once goods are opened or mixed;Leaving the insurance obligation unstated for stock held at your site but owned by someone else;Choosing bonded stock purely for cash and forgetting it constrains how fast goods can be released",
+  rel: { concepts: ["working-capital", "payment-terms", "insolvency-claims-ranking", "customs-and-duty", "supply-chain-risk"],
+         sops: ["sop-contract-review", "sop-freight-and-customs", "sop-supplier-onboarding"],
+         checklists: ["cl-contract-review", "cl-supplier-risk-review", "cl-procurement-file-completeness"],
+         templates: ["tpl-contract-review-checklist", "tpl-supplier-risk-assessment", "tpl-business-case"],
+         calcs: ["calc-payment-terms", "calc-landed-cost", "calc-multi-year-contract-cost"],
+         decisions: ["negotiate-or-accept", "supplier-concentration", "make-or-buy"],
+         kpis: ["kpi-working-capital-impact", "kpi-contract-compliance", "kpi-otif"],
+         glossary: ["gloss-working-capital", "gloss-ddp", "gloss-blanket-po"] } });
+
 /* ============ Knowledge base: converted from v1.1.0 ============ */
-PS.SKB({ i: "c-procurement", t: "Procurement", c: "Fundamentals", d: "Procurement is the end-to-end process of acquiring goods, services, or works from external suppliers. It encompasses requirement identification, supplier identification, negotiation, purchasing, and contract management.", w: "Procurement directly impacts cost, quality, delivery, and organizational competitiveness. Effective procurement reduces costs, manages risk, ensures compliance, and supports strategic objectives.", n: "Every organization that buys external goods/services uses procurement. The process applies from low-value operational purchases to complex strategic sourcing initiatives.", h: "Requirement identification and validation;Development of sourcing strategy;Market assessment and supplier identification;Supplier qualification and due diligence;Solicitation (RFI/RFQ/RFP);Bid evaluation (technical and commercial);Negotiation;Supplier selection and approval;Contract/PO issuance;Delivery management and performance monitoring;Savings validation and contract renewal/re-source", e: "A manufacturing company needs 10,000 units of a component. Procurement identifies the requirement, sources three qualified suppliers, issues an RFQ, evaluates quotes, negotiates price and terms, selects the winning supplier, issues a purchase order, and monitors delivery performance.", r: "Supplier failure or non-performance;Price escalation;Quality issues;Delivery delays;Compliance failures;Maverick spend;Single-source dependency", m: "Insufficient specification clarity leading to scope disputes;Skipping supplier qualification;Accepting first quote without comparison;Inadequate contract terms;Poor performance monitoring;Failure to document decisions" });
+PS.SKB({ i: "c-procurement", t: "Procurement", c: "Fundamentals", d: "Procurement is the end-to-end process of acquiring goods, services, or works from external suppliers. It encompasses requirement identification, supplier identification, negotiation, purchasing, and contract management.", w: "Procurement directly impacts cost, quality, delivery, and organizational competitiveness. Effective procurement reduces costs, manages risk, ensures compliance, and supports strategic objectives.", n: "Every organization that buys external goods/services uses procurement. The process applies from low-value operational purchases to complex strategic sourcing initiatives.", h: "Requirement identification and validation;Development of sourcing strategy;Market assessment and supplier identification;Supplier qualification and due diligence;Solicitation (RFI/RFQ/RFP);Bid evaluation (technical and commercial);Negotiation;Supplier selection and approval;Contract/PO issuance;Delivery management and performance monitoring;Savings validation and contract renewal/re-source", e: "A manufacturing company needs 10,000 units of a component. Procurement identifies the requirement, sources three qualified suppliers, issues an RFQ, evaluates quotes, negotiates price and terms, selects the winning supplier, issues a purchase order, and monitors delivery performance.", r: "Supplier failure or non-performance;Price escalation;Quality issues;Delivery delays;Compliance failures;Maverick spend;Single-source dependency", m: "Insufficient specification clarity leading to scope disputes;Skipping supplier qualification;Accepting first quote without comparison;Inadequate contract terms;Poor performance monitoring;Failure to document decisions",
+  rel: { concepts: ["spend-analysis", "category-management", "should-cost", "price-vs-cost", "total-cost-of-ownership"],
+         sops: ["sop-procurement-lifecycle", "sop-procurement-intake"],
+         checklists: ["cl-requirement-definition", "cl-sourcing-strategy"],
+         templates: ["tpl-business-case"],
+         calcs: ["calc-tco", "calc-should-cost", "calc-compare-quotes"],
+         decisions: ["make-or-buy", "unit-or-tco"],
+         kpis: ["kpi-savings", "kpi-cycle-time"],
+         glossary: ["gloss-tco", "gloss-run-rate"] } });
 PS.SKB({ i: "c-purchasing", t: "Purchasing", c: "Fundamentals", d: "Purchasing is the operational, transactional subset of procurement focused on placing orders, receiving goods/services, and processing payments. It is tactical rather than strategic.", w: "Efficient purchasing ensures goods arrive on time, at the right price, and in the correct quantity. It is the execution layer of the procurement strategy.", n: "Purchasing occurs throughout the procurement lifecycle, especially during the order and delivery phase. It applies to both spot buys and planned purchases.", h: "Receive approved purchase requisition;Verify budget availability;Select supplier per sourcing decision;Create and issue purchase order;Track order status;Receive and inspect goods/services;Process invoice for payment;File procurement records", e: "A requisition for office supplies is approved. The buyer places an order with the preferred supplier, tracks delivery, receives the goods, and matches the invoice to the PO and receipt for three-way match.", r: "Maverick spend;Incorrect orders;Price variance;Fraud;Duplicate payments", m: "Ordering without approval;Ignoring contract terms;Poor receipt documentation;Manual matching errors" });
 PS.SKB({ i: "c-strategic-procurement", t: "Strategic Procurement", c: "Fundamentals", d: "Strategic procurement is a proactive, long-term approach to acquiring goods and services that aligns with organizational objectives. It involves category management, supplier relationship management, total cost analysis, and strategic sourcing.", w: "Strategic procurement drives sustainable savings, innovation, risk mitigation, and competitive advantage. It transforms procurement from a cost center to a value driver.", n: "Strategic procurement applies to high-value, high-risk, or high-volume spend categories. It is essential for complex purchases, long-term contracts, and supplier partnerships.", h: "Spend analysis and category segmentation;Market research and opportunity identification;Development of category strategy;Supplier market engagement;Strategic sourcing events;Supplier relationship management;Performance monitoring and continuous improvement", e: "An organization identifies IT hardware as a strategic category. The procurement team analyzes spend across all departments, segments the market, develops a 3-year category strategy, runs a competitive sourcing event, selects two strategic suppliers, and implements joint business planning.", r: "Strategy misalignment;Supplier concentration;Market changes;Technology disruption;Relationship dependency", m: "Treating all spend equally;Ignoring supplier innovation;Short-term focus;Lack of stakeholder engagement" });
 PS.SKB({ i: "c-strategic-sourcing", t: "Strategic Sourcing", c: "Sourcing", d: "Strategic sourcing is a systematic process that analyzes procurement spend, supply markets, and internal requirements to develop and implement optimized sourcing strategies. It goes beyond simple price comparison.", w: "Strategic sourcing delivers sustainable cost reduction, risk mitigation, and value creation. It ensures procurement decisions are based on data, market intelligence, and total cost rather than just unit price.", n: "Strategic sourcing applies to significant spend categories, new purchases, contract renewals, and when current supplier performance is unsatisfactory.", h: "Analyze current spend;Define sourcing requirements;Conduct market research;Develop sourcing strategy;Identify and prequalify suppliers;Issue RFI/RFQ/RFP;Evaluate proposals;Negotiate with preferred suppliers;Select supplier and award contract;Implement and transition;Manage supplier performance", e: "A retail company sources 50,000 units annually of packaging material. Strategic sourcing involves analyzing spend across regions, researching sustainable packaging markets, developing a sustainability-focused strategy, issuing an RFP with environmental criteria, evaluating proposals, negotiating, and awarding a 3-year contract.", r: "Inadequate market research;Supplier non-response;Bid manipulation;Hidden costs;Implementation failure", m: "Skipping market research;Over-specifying requirements;Ignoring total cost;Poor supplier communication" });
@@ -43436,6 +43739,459 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaHref: '#/calc/calc-payment-terms',
     secondaryLabel: 'Open the Contract Review Checklist',
     secondaryHref: '#/cl/cl-contract-review'
+  }
+});
+
+/* ==========================================================
+   Procure Sherpa v3.0 - Academy Module 30: Inventory and Stock
+   Economics - How Much to Hold and Who Owns It. Carrying cost,
+   EOQ, obsolescence and consignment appear in four earlier
+   lessons, always as a term inside a freight, landed-cost or
+   distress discussion and never as the decision itself. Two
+   lessons and four concepts: the tranche is two lessons because
+   the deployed margin was 14.5 KB. Written with no apostrophes,
+   since these strings are single quoted and the build reads them
+   literally.
+   ========================================================== */
+
+PS.ACADEMY_FUNCTIONS.push({
+  id: 'func-order-quantity-and-reorder-point',
+  title: 'Order Quantity and Reorder Point: How Much to Buy, and When to Ask',
+  module: 'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It',
+  kicker: 'Function 30.1',
+  tier: 'practitioner',
+  tagline: 'Nobody argues about how much stock to hold. They inherit a reorder quantity from the last person who thought about it, and the number survives every change in demand, lead time and cost since.',
+  desc: "This function covers the two quantities that decide most inventory spend - how much to order at a time and how much buffer to hold against variation - with the arithmetic, the assumptions each model makes, the constraints that override the formula, and the way to tell whether the current numbers are still answering the current question.",
+  duration: '21 mins',
+  lifecycleStage: 'Stage 17: Purchase Order Issuance',
+  lifecycleDesc: 'Owned where replenishment is decided, which is usually an operational habit and rarely a reviewed position.',
+
+  what: "Two numbers decide most of the inventory on a site. One is how much to buy at a time; the other is when to place the order. Both were probably set years ago, and both are still working - silently - against demand, prices and lead times that have moved. Start with the order quantity, because its logic is a simple fight between two costs. Every order costs something to raise, place, receive, inspect, match and pay. Holding the resulting stock costs something for every unit for every period: the capital tied up, the space, the insurance, the handling, the shrinkage, and the risk that nobody wants it later. Order more and the transaction cost per unit falls while the holding cost rises; order less and the reverse. The quantity where the two stop fighting is the economic order quantity, and the formula is easy. The useful part is not the answer - it is the shape of the curve around it. Near the optimum the total cost is flat, so being 20 percent off the computed quantity costs almost nothing; away from it, the curve is steep, so a weekly order on a line that should be ordered quarterly is a real and recurring leak. That is why the practical finding in this area is rarely a clever calculation and usually a habit: a maintenance consumables review found 1,100 lines ordered weekly with an assumed 40 cost per order. Measured properly - goods-in time, inspection, three-way match, payment handling - the cost per order line was 96. Moving 300 low-value lines to a monthly quantity saved 31,000 a year in transaction cost and cut the goods-in queue by a third. Nothing about the supplier changed. So measure the order cost rather than assume it, and be honest that a rough measured figure beats a precise invented one. Then check the constraints before optimising, because the formula assumes steady demand, no quantity breaks, one item and unlimited space, and reality has none of those. The pack the supplier can ship, the pallet the transport unit requires, the shelf life, the storage space that actually exists, the minimum order quantity, and the lead time all bind the answer. Where a constraint binds, the constraint is the answer and the calculation is the explanation. The reorder point is the second number and the one people get wrong more often. It is the stock level that triggers an order, and it has to cover demand during the lead time plus a buffer for the two things that vary: how much you use, and how long the supply takes. Most buffers are set from average lead time, which is not protection - it is a mean with a label. The dispersion is what breaks you. A plant held six weeks of an imported seal because the average lead time was four weeks, and still had two stock-outs that year because two deliveries in the sample had taken eleven weeks. Re-based on the observed tail, and combined with a bonded stock position agreed with the supplier, held inventory fell by a third while the stock-outs stopped. That is the general result: the buffer is a service level with a price, so state the target per item class first - what probability of not running out is worth what cost - and let the arithmetic follow, rather than setting a stock level and reverse-engineering a promise afterwards. Two consequences worth carrying into the conversation. First, variability is usually cheaper to fix than to buffer: a supplier whose lead time swings between three and eleven weeks can often be pinned with a booked capacity slot, a shorter-lead backup, or a consignment position at your site - all of which beat holding six weeks of the same part. Second, the classification matters more than the calculation. A high service level on every line is the expensive way to be safe; the point of ABC or criticality work is to decide which lines deserve protection and which deserve cheap, fast replacement. Finally, this is a reviewable position, not a one-off study. Demand drifts, prices move, suppliers change lead times, and the optimum walks. Put the re-run on a calendar with the item classes, the measured order cost, the dispersion figures and the service targets on one page - and when someone proposes a volume discount or a forward buy, they will be arguing against a number that exists rather than a habit that does not.",
+  why: [
+    'Order quantity is a fight between transaction cost and holding cost, and the habit usually wins because neither is measured.',
+    'The cost curve is flat near the optimum and steep at the extremes, so big habitual errors matter more than precise ones.',
+    'Constraints - pack size, shelf life, space, minimum order quantity - override the formula and are often the real answer.',
+    'The reorder point must cover lead-time dispersion, not the average; a buffer set on the mean is not protection.',
+    'A service level is a decision with a price, so state the target first and let the calculation follow.',
+    'Fixing variability at source is usually cheaper than buffering against it, and the item class decides which is worth it.'
+  ],
+  when: [
+    'Reviewing a catalogue where every line is replenished on the same cadence.',
+    'Before accepting or refusing a quantity price break.',
+    'When stock has grown without demand changing.',
+    'When a supplier quotes a longer lead time and the buffer has not moved.',
+    'At the periodic review of service targets for critical spares.'
+  ],
+
+  raci: [
+    { role: 'Category Manager', resp: 'Owns the order-cost measurement, the item classes and the service targets.' },
+    { role: 'Demand or Planning', resp: 'Provides usage and dispersion figures, and flags where the forecast is a hope.' },
+    { role: 'Operations or Goods-In', resp: 'Measures the real cost per order line and the effort the cadence creates.' },
+    { role: 'Supplier', resp: 'States lead-time dispersion honestly and offers capacity or stock positions that reduce it.' },
+    { role: 'Finance', resp: 'Sets the capital charge and the write-down policy that make holding cost real.' }
+  ],
+  inputs: [
+    'Usage history per item with the variability, not only the average.',
+    'Measured cost per order line, including receipt, inspection, matching and payment.',
+    'Lead time distribution per supplier, with the tail observed.',
+    'Constraints: minimum order quantity, pack and pallet size, shelf life, storage capacity, engineering change dates.'
+  ],
+  outputs: [
+    'An order quantity and reorder point per item class, with the binding constraint named.',
+    'A stated service target per class and the holding cost it implies.',
+    'A list of variability fixes cheaper than the buffer they would replace.',
+    'A dated review cycle with the inputs that move the numbers.'
+  ],
+  controls: [
+    'Order cost is measured at least annually, including the internal handling it creates.',
+    'Service targets are set per item class and approved, not inherited per line.',
+    'Buffers are calculated from observed lead-time dispersion, with the tail stated.',
+    'Any quantity break or forward buy is tested against shelf life and the change roadmap before it is claimed as a saving.',
+    'Reorder parameters are re-run on a calendar, and the review date is recorded per class.'
+  ],
+  bestPractices: [
+    'Report the flat region of the cost curve, not just the optimum - it is where the argument actually is.',
+    'Ask the supplier for their worst recent lead time, not their quoted one.',
+    'Classify first: the calculation only matters on the lines worth protecting.',
+    'Put the measured order cost on one page; it changes behaviour in finance, not just in procurement.'
+  ],
+  mistakes: [
+    'Optimising quantity while ignoring the pack size the supplier can ship.',
+    'Setting a buffer from the average lead time and calling it risk management.',
+    'Treating a longer quoted lead time as a supplier failing rather than as information about the tail.',
+    'Running the calculation once and never re-running it as demand and prices move.'
+  ],
+  terms: [
+    { term: 'Economic order quantity', def: 'The order size where the cost of ordering and the cost of holding stop fighting each other.' },
+    { term: 'Reorder point', def: 'The stock level that triggers a new order, covering demand during lead time plus a buffer for variability.' },
+    { term: 'Service level', def: 'The stated probability of not running out, which sets how large the buffer has to be.' },
+    { term: 'Lead-time dispersion', def: 'The spread of actual delivery times around the average, whose tail is what the buffer must cover.' }
+  ],
+
+  thinkingPoints: [
+    {
+      quote: 'One thousand lines ordered weekly because someone once did.',
+      explanation: 'A maintenance consumables catalogue had 1,100 lines on a weekly replenishment cycle. The assumed cost per order was 40; measuring goods-in, inspection, matching and payment put it at 96. Moving 300 low-value lines to a monthly quantity saved 31,000 a year in transaction cost and cut goods-in queue time by a third, with no supplier change and no price renegotiation.',
+      realWorldExample: 'Illustrative example, constructed to show the mechanism: the leak is in the cadence, and the cadence is invisible because nobody measures the cost of placing an order.',
+      reflectionPrompt: 'What does one order line actually cost you to process end to end, and how many lines are on a cycle shorter than their usage justifies?',
+    },
+    {
+      quote: 'Six weeks of stock and two stock-outs.',
+      explanation: 'A plant held six weeks of an imported seal because the average lead time was four weeks. Two deliveries in the preceding year had taken eleven weeks, and those were the stock-outs. Re-basing the buffer on the observed tail and agreeing a bonded position with the supplier cut held inventory by a third and removed the stock-outs, because the buffer was finally sized against the risk rather than against the mean.',
+      realWorldExample: 'Illustrative example, constructed to show the mechanism: an average is not a distribution, and stock set against an average buys the illusion of protection.',
+      reflectionPrompt: 'For your most critical imported item, what is the worst lead time you have actually experienced, and what buffer would that imply?',
+    }
+  ],
+
+  sopSteps: [
+    { title: 'Measure the cost of one order line', role: 'Operations or Goods-In',
+      desc: 'Time and cost the full path a line creates: raising, placing, following up, receiving, inspecting, matching and paying. Use a measured figure with its basis, not a finance assumption.',
+      control: 'The cost per order line is measured at least annually with its components shown, and it is the same figure used in every quantity decision.',
+      record: 'Order cost note with components, sample size, date and the reviewer.',
+      pitfall: 'Using a generic administrative rate that excludes goods-in effort, which is where the volume actually lands.'
+    },
+    { title: 'Classify items before calculating anything', role: 'Category Manager',
+      desc: 'Group by criticality and value: what stops the operation if it runs out, how often it is used, how long replacement takes. The service target is a class decision, and the calculation only matters on protected lines.',
+      control: 'Every stocked item carries a class with a service target, and the class list is approved rather than derived silently.',
+      record: 'Item class register with service targets and the approval date.',
+      pitfall: 'Optimising 1,000 cheap lines while the three that stop production have no stated target at all.'
+    },
+    { title: 'Compute the quantity and read the curve, not the point', role: 'Category Manager',
+      desc: 'Calculate the economic order quantity from measured order and holding costs, then report the flat region around it. Where a constraint binds - pack size, pallet, shelf life, space, minimum order quantity - state the constraint as the answer.',
+      control: 'Each protected line shows its computed quantity, its binding constraint and the cost of the constraint being wrong.',
+      record: 'Quantity sheet per class with computation, constraint and the cost of deviation.',
+      pitfall: 'Defending a calculated quantity that the supplier cannot physically ship, and calling the supplier unreasonable.'
+    },
+    { title: 'Size the buffer on dispersion', role: 'Demand or Planning',
+      desc: 'Use the observed lead-time distribution and usage variability, not the averages, and state which percentile the service target implies. Ask the supplier for their worst recent delivery, because the quoted figure is a promise and the tail is the risk.',
+      control: 'Buffers are recalculated when the dispersion changes, and the tail used is recorded with its source.',
+      record: 'Buffer calculation with distribution, percentile, source and review date.',
+      pitfall: 'Setting stock against a four-week average and being surprised by an eleven-week delivery.'
+    },
+    { title: 'Compare buffering against fixing the variability', role: 'Supplier',
+      desc: 'For each protected line, price the buffer against at least one variability fix: a booked capacity slot, a consignment or bonded position, a shorter-lead backup source, or a specification that widens the eligible suppliers.',
+      control: 'Where the buffer exceeds the cost of a fix, the fix is proposed and the buffer reduced only after it is in place.',
+      record: 'Variability options sheet per line with the buffer cost, the fix cost and the decision.',
+      pitfall: 'Carrying six weeks of stock forever because nobody asked why the lead time swings.'
+    },
+    { title: 'Test forward buys and price breaks against the real cost', role: 'Finance',
+      desc: 'Evaluate a volume discount or a last-time buy against shelf life, the engineering change roadmap, storage capacity and the write-down policy - not only against annual usage and unit price.',
+      control: 'No forward buy above a stated value is approved without a change-roadmap check and a named owner for the residual risk.',
+      record: 'Forward-buy assessment with usage cover, change dates, write-down owner and approval.',
+      pitfall: 'Booking the unit-price saving and letting the write-down land in someone else budget two quarters later.'
+    },
+    { title: 'Re-run on a calendar', role: 'Category Manager',
+      desc: 'Put the parameters on one page per class - order cost, usage and dispersion, service target, binding constraints - and re-run them on a stated interval, because the optimum moves with demand, prices and lead times.',
+      control: 'Each class has a review date, and lines whose review has lapsed are reported rather than left running.',
+      record: 'Parameter sheet per class with the review date and the changes since the last run.',
+      pitfall: 'Treating a one-off study as a permanent setting in a category where everything drifts.'
+    }
+  ],
+
+  quizzes: [
+    {
+      type: 'scenario',
+      context: 'A catalogue of 900 lines is replenished weekly. Finance quotes an order cost of 35; goods-in reports that a line takes eleven minutes to receive and check, and the site processes 2,400 lines a week.',
+      q: 'What is the correct first move?',
+      options: [
+        { text: 'Reduce the line count by deleting slow movers.', isCorrect: false, rationale: 'Reasonable eventually, but it is not what the arithmetic says first.' },
+        { text: 'Measure the true cost per order line end to end, then compute the quantity where holding cost and transaction cost cross, and report the flat region so the decision is about the extremes rather than decimals.', isCorrect: true, rationale: 'Correct. The visible cost is the weekly cadence, and it can only be argued with a measured order cost rather than an assumed one.' },
+        { text: 'Ask suppliers for a discount for larger orders.', isCorrect: false, rationale: 'That presumes the quantity should rise, which the measurement decides.' },
+        { text: 'Move every line to monthly ordering.', isCorrect: false, rationale: 'A blanket change ignores shelf life, usage variability and the lines that genuinely need weekly cover.' }
+      ],
+      calcWork: 'Eleven minutes at 2,400 lines a week is roughly 440 hours of goods-in effort per week - the transaction cost is a staffing decision disguised as a purchasing habit.',
+      principle: 'Measure the cost of ordering before arguing about the cost of goods.',
+    },
+    {
+      type: 'scenario',
+      context: 'A critical bearing has an average lead time of five weeks and a worst observed lead time of thirteen. Current stock covers six weeks of usage, and the item has stocked out twice in a year.',
+      q: 'What does the evidence support?',
+      options: [
+        { text: 'Increase the buffer to nine weeks, since six has clearly failed.', isCorrect: false, rationale: 'That is a guess at the percentile and it may cost more than the fix.' },
+        { text: 'State the service target the business will accept, size the buffer on the observed distribution rather than the mean, and price at least one variability fix - booked capacity, bonded position, a second approved source - against the holding cost.', isCorrect: true, rationale: 'Correct. The buffer is a service level with a price, and dispersion plus a fix comparison is what makes the number defensible.' },
+        { text: 'Hold the supplier to the five-week average contractually.', isCorrect: false, rationale: 'The average was never the risk; the tail is.' },
+        { text: 'Accept the stock-outs as the cost of working capital discipline.', isCorrect: false, rationale: 'That may be the decision, but it should be a stated target rather than an accident.' }
+      ],
+      principle: 'A buffer sized on the mean is a mean with a label; size it on the tail and compare it to fixing the tail.',
+    },
+    {
+      type: 'knowledge',
+      q: 'Why is the flat region of the order-cost curve more useful than the optimum?',
+      options: [
+        { text: 'Because the optimum cannot be calculated accurately.', isCorrect: false, rationale: 'It can be calculated; it just is not where the decision lives.' },
+        { text: 'Because small deviations near the optimum cost almost nothing while habitual deviations far from it cost a great deal, so the flat region shows which lines are worth changing and which are noise.', isCorrect: true, rationale: 'Correct. It turns the argument into the size of the error rather than the precision of the formula.' },
+        { text: 'Because suppliers prefer round numbers.', isCorrect: false, rationale: 'Irrelevant to the shape.' },
+        { text: 'Because holding cost is fixed.', isCorrect: false, rationale: 'It is the variable term by definition.' }
+      ],
+      principle: 'Report the region where being wrong is cheap, and the outliers where it is not.',
+    },
+    {
+      type: 'knowledge',
+      q: 'Which constraint most often overrides a computed order quantity?',
+      options: [
+        { text: 'The storage capacity, which is rarely measured.', isCorrect: false, rationale: 'It binds sometimes; it is not the common case.' },
+        { text: 'The shipping unit the supplier can actually send - pack, case or pallet - which sets a floor the calculation cannot go below.', isCorrect: true, rationale: 'Correct. Where it binds, the unit is the answer and the calculation becomes the explanation for why the extra stock is acceptable.' },
+        { text: 'The finance year end.', isCorrect: false, rationale: 'That affects timing, not quantity.' },
+        { text: 'The approval threshold on the purchase order.', isCorrect: false, rationale: 'That affects routing, not the optimum.' }
+      ],
+      principle: 'Name the binding constraint; a formula that ignores physics is a report, not a decision.',
+    },
+    {
+      type: 'scenario',
+      context: 'A supplier offers 22 percent off a controller board on a 18-month forward buy. Engineering has a design change scheduled that supersedes that board, and the change is in the roadmap but was not mentioned in the buying paper.',
+      q: 'What is the correct handling?',
+      options: [
+        { text: 'Take it; 22 percent on 18 months of usage is a large, immediate saving.', isCorrect: false, rationale: 'The saving is real only if the boards are consumed, which the roadmap says they will not be.' },
+        { text: 'Test the buy against the change date and the write-down policy, quantify the exposure if the change lands as scheduled, and require a named owner for the residual risk before approving - or decline and record why.', isCorrect: true, rationale: 'Correct. A forward buy is a bet on the forecast and the design; both belong in the paper that claims the saving.' },
+        { text: 'Ask for 15 percent on a six-month buy instead.', isCorrect: false, rationale: 'A smaller bet is still an unpriced one.' },
+        { text: 'Take it and resell the surplus.', isCorrect: false, rationale: 'That is a hope, not a control.' }
+      ],
+      principle: 'A volume saving is only a saving after shelf life and the change roadmap have been read.',
+    }
+  ],
+  relSop: 'sop-procurement-lifecycle',
+  rel: {
+    concepts: ['order-quantity-economics', 'safety-stock-and-service-level', 'obsolescence-and-carrying-risk', 'demand-management', 'working-capital', 'price-vs-cost'],
+    sops: ['sop-procurement-lifecycle', 'sop-savings-calculation', 'sop-supplier-price-increase-review'],
+    checklists: ['cl-requirement-definition', 'cl-savings-validation', 'cl-supplier-risk-review'],
+    templates: ['tpl-cost-avoidance', 'tpl-business-case', 'tpl-savings-calculation'],
+    calcs: ['calc-moq', 'calc-landed-cost', 'calc-tco', 'calc-should-cost'],
+    decisions: ['unit-or-tco', 'consolidate-suppliers', 'accept-price-increase'],
+    kpis: ['kpi-working-capital-impact', 'kpi-cycle-time', 'kpi-otif'],
+    glossary: ['gloss-eoq', 'gloss-moq', 'gloss-run-rate']
+  },
+  labMission: {
+    title: 'Mission 30.1: Measure What an Order Costs You',
+    desc: 'Find the two numbers that decide most of your stock, and check whether anyone has ever measured them.',
+    tasks: [
+      'Time one order line end to end - raising, placing, follow-up, receipt, inspection, matching, payment - and turn it into a cost per line.',
+      'For your three most critical stocked items, write the average and the worst observed lead time, then the buffer each implies at a service level you state out loud.',
+      'Find one forward buy or price break on the table and test it against shelf life and the engineering change roadmap before it is claimed as a saving.'
+    ],
+    ctaLabel: 'Open Minimum Order Quantity',
+    ctaHref: '#/calc/calc-moq',
+    secondaryLabel: 'Open Landed Cost',
+    secondaryHref: '#/calc/calc-landed-cost'
+  }
+});
+
+PS.ACADEMY_FUNCTIONS.push({
+  id: 'func-who-owns-the-stock',
+  title: 'Who Owns the Stock, and Who Carries the Loss',
+  module: 'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It',
+  kicker: 'Function 30.2',
+  tier: 'executive',
+  tagline: 'The working-capital conversation is usually about how much stock you hold. The better question is how much of it is yours - and what happens to the part that is not when someone else fails.',
+  desc: "This function covers the governance of stock ownership: the difference between holding stock and owning it, what consignment, supplier-managed inventory and bonded positions really trade, the retention-of-title limits that surface in an insolvency, and the reporting that makes a write-down exposure visible before it lands.",
+  duration: '19 mins',
+  lifecycleStage: 'Category strategy and supplier management',
+  lifecycleDesc: 'Held at category and board level, because the trade is between cash, control and counterparty risk rather than between prices.',
+
+  what: "A warehouse can hold three kinds of stock: yours, somebody elses, and a quantity that is legally yours but economically someone elses decision. Most organisations can only count the first, which is why the working-capital conversation in this area is usually the wrong conversation. Start with what each arrangement actually trades. Consignment moves the ownership date to consumption: the supplier finances the stock, you pay as you use it, and the balance sheet improves without availability falling. The price is rarely zero - the supplier carries a float and will charge for it, usually in unit price, sometimes in a minimum usage commitment that turns into a volume obligation. Supplier-managed inventory goes further: the supplier decides when to replenish against agreed levels, which usually improves availability and service and quietly transfers your control over the reorder decision to someone whose optimisation is theirs, not yours. Bonded stock defers duty and therefore cash, and constrains release speed, because the goods cannot simply be moved until the customs position is settled. Pipeline or in-transit stock is the one most often double-counted: whether it is yours depends on the Incoterm, and the same pallet can appear on two balance sheets if nobody checked who held the risk at the moment of loss. Then the question that only appears when it is expensive: what happens in a supplier insolvency. Retention of title is the standard answer and it is narrower than it sounds. It generally protects identifiable goods in their original state - unopened packs, marked and segregated. It does not comfortably protect stock that has been opened, commingled, consumed into a kit, or transformed. A manufacturer running consignment consumables across three sites found that 40 percent of what was on site fell into those categories when the supplier went into administration, and the liquidator treated it as an asset available to sell. The operation kept running; the settlement cost more than the two years of consignment discount that had been earned. The board-level point is that this is a counterparty risk in disguise. Consignment and supplier-held stock concentrate your exposure on the financial health of the party that owns the goods, and the exposure is invisible in normal reporting because it sits in your warehouse as a line you do not pay for until use. So the position needs three things. First, a register: what stock on your sites is not yours, who owns it, on what terms title passes, and what your own records would show a liquidator. Records matter more than intentions here - an accurate consignment ledger, countersigned by the supplier, is the difference between a claim and a loss. Second, the insurance and access questions answered in the contract rather than assumed: who insures goods they do not own but hold, what happens on termination, and what right of entry exists to identify or recover stock. Third, an agreed answer to the concentration question: is the consignment supplier also the only source, and if so, does the arrangement improve resilience or merely improve working capital while making the failure larger? Finally, the write-down discipline, which is where the executive conversation usually starts. Forward buys, seasonal stock and last-time-buys create exposure that is real but diffuse: it lands as an obsolescence provision two or three quarters later, in a different budget line than the saving was claimed in, and nobody connects the two. The fix is procedural and cheap. Require any buy ahead of forecast to name an owner for the residual risk, an expiry review date, and the change or demand assumption it rests on; report ageing and write-downs back into the category that created them; and put the total value of stock bought ahead of a forecast on the same paper as the savings claim, so the trade is visible at the moment of decision. A provision is an accounting answer to an operational question. Boards should be interested in the operational one: whether the organisation knows what it holds, who owns it, and what it would lose if the wrong person failed.",
+  why: [
+    'Holding stock and owning stock are different balance sheets, and the gap is where the surprise lives.',
+    'Every ownership model trades control, cash and speed - consignment trades price for float, VMI trades control for availability, bonded trades release speed for cash.',
+    'Retention of title protects identifiable goods; opened, commingled or transformed stock is usually lost to a liquidator.',
+    'Consignment concentrates counterparty risk in a way normal reporting cannot see.',
+    'Write-down exposure lands in a different budget than the saving was claimed in, which is why forward buys are systematically over-approved.',
+    'Records decide claims: an accurate, countersigned stock ledger is the difference between recovering and writing off.'
+  ],
+  when: [
+    'Setting up or renewing a consignment or supplier-managed arrangement.',
+    'At the annual working-capital review of held stock.',
+    'When a supplier with stock on your site shows financial distress.',
+    'Before approving a forward buy, last-time-buy or seasonal build.',
+    'When duty or tax timing makes a bonded position attractive.'
+  ],
+
+  raci: [
+    { role: 'Board or Executive Sponsor', resp: 'Decides the working-capital position and accepts the counterparty risk it creates.' },
+    { role: 'Head of Procurement', resp: 'Owns the ownership register, the terms negotiated and the concentration question.' },
+    { role: 'Finance', resp: 'Sets the capital charge, the write-down policy and the reporting of stock bought ahead of forecast.' },
+    { role: 'Legal', resp: 'Drafts title transfer, insurance, access, termination and recovery terms, and states the retention limits honestly.' },
+    { role: 'Operations', resp: 'Keeps the records a third party would have to accept, and segregates and marks stock that is not owned.' }
+  ],
+  inputs: [
+    'The stock position by ownership model, with value, sites and usage rates.',
+    'Contract terms: title transfer point, insurance, access, termination, recovery and reporting duties.',
+    'Counterparty standing for every supplier owning stock on your sites.',
+    'The forward-buy register with the forecast, the change dates and the claimed saving.'
+  ],
+  outputs: [
+    'An ownership register showing what is held, who owns it and what the records would prove.',
+    'Contract terms with title, insurance, access and recovery addressed, and retention limits stated.',
+    'A concentration view where consignment or supplier-held stock overlaps with single sourcing.',
+    'A write-down report that connects each provision to the decision that created it.'
+  ],
+  controls: [
+    'Stock not owned is recorded, marked and reconciled with the owner on a stated cycle.',
+    'Title transfer, insurance, access and termination recovery are contractual and tested against a scenario.',
+    'Any forward buy above a threshold names an owner, an expiry review date and the assumption it rests on.',
+    'Write-downs are reported back into the category that created them, alongside the saving claimed.',
+    'The concentration question is answered where supplier-owned stock sits with a sole source.'
+  ],
+  bestPractices: [
+    'Ask what a liquidator would see in your records, not what the contract says you intended.',
+    'Price the consignment discount against the float cost and the concentration it adds.',
+    'Put the value of stock bought ahead of forecast on the same page as the savings claim.',
+    'Review the ownership register when a supplier shows distress, not when it fails.'
+  ],
+  mistakes: [
+    'Assuming retention of title covers opened or commingled stock.',
+    'Leaving the insurance obligation for supplier-owned goods unstated.',
+    'Treating a bonded position purely as a cash lever without checking release speed.',
+    'Counting in-transit stock on your side of the ledger because the goods are on your order.'
+  ],
+  terms: [
+    { term: 'Consignment', def: 'Stock held at your site and owned by the supplier until it is used or drawn down.' },
+    { term: 'Supplier-managed inventory', def: 'An arrangement where the supplier decides replenishment against agreed minimum and maximum levels.' },
+    { term: 'Retention of title', def: 'A clause keeping ownership with the supplier until paid, which protects identifiable goods and little else.' },
+    { term: 'Write-down', def: 'The accounting recognition that held stock is worth less than its cost, usually because it is no longer wanted.' }
+  ],
+
+  thinkingPoints: [
+    {
+      quote: 'Forty percent of the stock was not recoverable.',
+      explanation: 'A manufacturer ran consignment consumables across three sites, reconciled monthly, and held a retention-of-title clause. When the supplier entered administration, 40 percent of the stock on site had been opened, commingled into kits or consumed into work in progress, and the liquidator treated it as an asset available for sale. Operations continued; the settlement cost more than two years of the consignment discount that had made the arrangement attractive.',
+      realWorldExample: 'Illustrative example, constructed to show the mechanism: title clauses protect identifiable goods, and the identifiability is a records and physical-segregation question, not a drafting one.',
+      reflectionPrompt: 'If the supplier owning stock on your site failed this month, what would your records prove - and how much of that stock is opened or mixed?',
+    },
+    {
+      quote: 'The saving and the provision never met.',
+      explanation: 'A category claimed a 22 percent saving on a last-time-buy and booked it in the current year. The design change superseded the item in month seven; the write-down landed eighteen months later in an operations budget, in a different reporting line, and the two numbers were never presented together. The next forward buy was approved with the same arithmetic.',
+      realWorldExample: 'Illustrative example, constructed to show the mechanism: when the saving and the write-down are reported apart, the organisation learns nothing and repeats the trade.',
+      reflectionPrompt: 'Where does an obsolescence write-down land in your reporting, and does it ever appear next to the decision that caused it?',
+    }
+  ],
+
+  sopSteps: [
+    { title: 'Register stock by owner, not by location', role: 'Head of Procurement',
+      desc: 'List what is held on your sites by ownership model, with value, usage rate, the owner, the title terms and the last reconciliation date. The register is the artefact a third party would read.',
+      control: 'The register is maintained on a stated cycle and reconciled with each owner, with exceptions escalated.',
+      record: 'Ownership register with values, terms, reconciliation dates and exceptions.',
+      pitfall: 'A stock report that shows everything in the warehouse as one number, because location was mistaken for ownership.'
+    },
+    { title: 'State the title terms and their limits honestly', role: 'Legal',
+      desc: 'Define when title and risk pass, what retention of title actually covers, and how opened, commingled or transformed goods are treated. Write the limits in the advice rather than leaving them to be discovered in a dispute.',
+      control: 'Every supplier-owned stock arrangement has a written position on opened and commingled goods, and it is reviewed with the terms.',
+      record: 'Title position note with the pass point, retention scope and the commingling treatment.',
+      pitfall: 'Relying on a clause that protects unopened packs while 40 percent of the stock is in kits.'
+    },
+    { title: 'Answer insurance, access and recovery in the contract', role: 'Operations',
+      desc: 'Set who insures goods they own but you hold, who may enter to identify or recover stock, what must be delivered on termination, and what records each side must keep to prove the position.',
+      control: 'Insurance, access, termination recovery and record-keeping duties are explicit and tested against a scenario before signature.',
+      record: 'Stock terms schedule with insurance, access, recovery and record obligations.',
+      pitfall: 'Discovering on the day of an insolvency that nobody has a right of entry to identify their own goods.'
+    },
+    { title: 'Price the model against what it trades', role: 'Finance',
+      desc: 'Compare the consignment discount with the float cost the supplier is charging, the VMI service gain with the control given up, and the bonded cash deferral with the release-speed constraint. State the trade rather than the saving.',
+      control: 'Each ownership model is approved with its trade-off written down and reviewed at renewal.',
+      record: 'Model trade-off note per arrangement with the price, the control given up and the decision.',
+      pitfall: 'Adopting supplier-managed inventory for availability and then disputing the quantities the supplier chooses.'
+    },
+    { title: 'Check the concentration behind the cash improvement', role: 'Head of Procurement',
+      desc: 'Where supplier-owned stock sits with a sole or dominant source, name it as counterparty risk and pair it with the readiness position - a second source, a buffer, or an ownership change - rather than leaving it invisible in a working-capital gain.',
+      control: 'No consignment or supplier-held position with a sole source is approved without a named resilience mitigation.',
+      record: 'Concentration note with the ownership position, the mitigation and the review date.',
+      pitfall: 'Improving working capital and enlarging the failure at the same time, with only one of the two on the report.'
+    },
+    { title: 'Put the write-down next to the saving', role: 'Finance',
+      desc: 'Report obsolescence and write-downs against the category and the decision that created them, alongside the saving originally claimed, so the net position is visible in one place.',
+      control: 'Write-down reporting names the originating decision, and the net position is shown against the saving.',
+      record: 'Write-down report with originating decision, category, net position and date.',
+      pitfall: 'Two budgets and two reporting periods apart, so the organisation never connects the trade.'
+    },
+    { title: 'Review the position when a supplier wobbles', role: 'Board or Executive Sponsor',
+      desc: 'Treat early-warning signals from a supplier owning stock on your sites as a stock action: reconcile the ledger, verify segregation and marking, confirm access rights, and decide whether to buy the stock out before the position degrades.',
+      control: 'A distress signal on an owning supplier triggers a stock reconciliation and a documented buy-out or protection decision.',
+      record: 'Distress stock action note with reconciliation, protection steps and the decision taken.',
+      pitfall: 'Learning the ownership position from a liquidator rather than from your own review.'
+    }
+  ],
+
+  quizzes: [
+    {
+      type: 'scenario',
+      context: 'A proposal moves 400 consumable lines to consignment, improving working capital by 2.1 million. The supplier offering it is the sole approved source for 60 of those lines and has asked for a five-year commitment to usage levels.',
+      q: 'What should the board decide on?',
+      options: [
+        { text: 'Accept; the working-capital gain is immediate and measurable.', isCorrect: false, rationale: 'It is measurable, and so is the risk that has just been enlarged - the second number is missing.' },
+        { text: 'Weigh the cash gain against the counterparty concentration, price the float in the unit rate, and require a resilience mitigation for the sole-sourced lines before the commitment is signed.', isCorrect: true, rationale: 'Correct. Consignment converts a balance-sheet improvement into a larger single-failure exposure, and a usage commitment compounds it.' },
+        { text: 'Accept with a shorter three-year term.', isCorrect: false, rationale: 'That reduces the duration without addressing the concentration or the float price.' },
+        { text: 'Reject consignment entirely.', isCorrect: false, rationale: 'That may be right on some lines, but the decision is a trade-off, not a rule.' }
+      ],
+      principle: 'A working-capital improvement that concentrates counterparty risk is a trade, and both sides of it belong in the paper.',
+    },
+    {
+      type: 'scenario',
+      context: 'A supplier enters administration. Your contract has a retention-of-title clause and monthly reconciliations. On site, some of their stock is in sealed marked packs, some is opened, and some has been built into sub-assemblies.',
+      q: 'What is the realistic position?',
+      options: [
+        { text: 'All of it is recoverable, because the clause and the records are clear.', isCorrect: false, rationale: 'That is the assumption this scenario exists to break.' },
+        { text: 'The identifiable, segregated, reconciled stock is the strong claim; opened and commingled goods are usually weaker, and transformed sub-assemblies weakest - which is why marking, segregation and record quality were the real protections.', isCorrect: true, rationale: 'Correct. Retention of title is about identifiability, and identifiability is an operations discipline long before it is a legal one.' },
+        { text: 'Nothing is recoverable without a court order.', isCorrect: false, rationale: 'That overstates the opposite error.' },
+        { text: 'The reconciliations are irrelevant if the clause is well drafted.', isCorrect: false, rationale: 'Records are what make the clause usable.' }
+      ],
+      principle: 'What a liquidator can identify is what you own; the rest is a negotiation.',
+    },
+    {
+      type: 'knowledge',
+      q: 'What does a bonded stock position trade?',
+      options: [
+        { text: 'Cash timing against release speed and administrative burden.', isCorrect: true, rationale: 'Correct. Duty is deferred, so cash improves; the goods cannot be moved freely until the customs position is settled.' },
+        { text: 'Unit price against order quantity.', isCorrect: false, rationale: 'That is the order-quantity trade.' },
+        { text: 'Ownership against insurance.', isCorrect: false, rationale: 'That is the consignment trade.' },
+        { text: 'Lead time against minimum order quantity.', isCorrect: false, rationale: 'Unrelated to the duty position.' }
+      ],
+      principle: 'Bonding is a cash decision with a customs constraint attached; both belong in the approval.'
+    },
+    {
+      type: 'knowledge',
+      q: 'Why do forward buys systematically look better than they are?',
+      options: [
+        { text: 'Because suppliers overstate the discount.', isCorrect: false, rationale: 'The discount is usually real; the cost is what moves.' },
+        { text: 'Because the saving is booked now and the write-down lands later, in a different budget line, so the two numbers are never presented together and the organisation cannot learn from the pair.', isCorrect: true, rationale: 'Correct. Reporting separation is the mechanism; connecting the two is the control.' },
+        { text: 'Because forecasts are always optimistic.', isCorrect: false, rationale: 'True but partial; optimism alone does not hide the write-down.' },
+        { text: 'Because inventory accounting uses standard costs.', isCorrect: false, rationale: 'Not the reason.' }
+      ],
+      principle: 'Report the provision next to the decision, and the arithmetic becomes honest by itself.',
+    },
+    {
+      type: 'scenario',
+      context: 'Early-warning signals appear on a supplier that owns 3.4 million of consignment stock across four sites. The transition to an alternative would take five months.',
+      q: 'What is the correct first action?',
+      options: [
+        { text: 'Wait for confirmation before doing anything, to avoid damaging the relationship.', isCorrect: false, rationale: 'The stock position degrades while waiting, and the records get worse, not better.' },
+        { text: 'Reconcile the consignment ledger now, verify marking and segregation at each site, confirm the access and recovery rights, and decide whether to buy out or protect the stock - with the decision documented and dated.', isCorrect: true, rationale: 'Correct. Distress is a stock action as well as a supply action, and identifiability is the asset worth protecting early.' },
+        { text: 'Stop drawing down their stock immediately.', isCorrect: false, rationale: 'That strands the operation while doing nothing for the ownership position.' },
+        { text: 'Start the five-month transition at once.', isCorrect: false, rationale: 'Probably needed, but it is not the first action on the stock itself.' }
+      ],
+      principle: 'When an owning supplier wobbles, protect the records and the identifiability before you argue about the law.',
+    }
+  ],
+  relSop: 'sop-contract-review',
+  rel: {
+    concepts: ['stock-ownership-models', 'obsolescence-and-carrying-risk', 'working-capital', 'insolvency-claims-ranking', 'customs-and-duty', 'concentration-risk'],
+    sops: ['sop-contract-review', 'sop-freight-and-customs', 'sop-supplier-performance-management'],
+    checklists: ['cl-contract-review', 'cl-supplier-risk-review', 'cl-procurement-file-completeness'],
+    templates: ['tpl-contract-review-checklist', 'tpl-supplier-risk-assessment', 'tpl-business-case'],
+    calcs: ['calc-payment-terms', 'calc-landed-cost', 'calc-multi-year-contract-cost'],
+    decisions: ['negotiate-or-accept', 'supplier-concentration', 'dual-source'],
+    kpis: ['kpi-working-capital-impact', 'kpi-contract-compliance', 'kpi-cost-avoidance'],
+    glossary: ['gloss-working-capital', 'gloss-ddp', 'gloss-blanket-po']
+  },
+  labMission: {
+    title: 'Mission 30.2: Count What Is Not Yours',
+    desc: 'Find the stock on your sites that you do not own, and ask what your records would prove.',
+    tasks: [
+      'List the consignment, supplier-managed and bonded positions you hold, with value, owner and the date of the last reconciliation.',
+      'For the largest, answer three questions in writing: when does title pass, who insures it, and what would a liquidator be able to identify?',
+      'Find the last forward buy or last-time-buy, and locate the saving that was claimed and the write-down that followed - or state that no one tracks the second number.'
+    ],
+    ctaLabel: 'Open the Supplier Risk Review Checklist',
+    ctaHref: '#/cl/cl-supplier-risk-review',
+    secondaryLabel: 'Open the Supplier Risk Assessment template',
+    secondaryHref: '#/tpl/tpl-supplier-risk-assessment'
   }
 });
 

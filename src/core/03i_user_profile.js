@@ -105,6 +105,10 @@ PS.user = {
     }
     if (nameEl) {
       nameEl.textContent = prof.name || 'Account';
+      /* The label still truncates past 200px, so the chip has to say what
+         it is hiding rather than hide it. */
+      var btn = nameEl.closest ? nameEl.closest('.user-btn') : null;
+      if (btn) btn.setAttribute('title', (prof.name ? prof.name + ' - ' : '') + 'My Account & Role Profile');
     }
   },
 
@@ -246,7 +250,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 26: Services Should-Cost and Negotiation Analytics - Rates, Risk and the Price Arc': ['rates', 'cost', 'learn'],
   'Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing': ['regulated', 'risk', 'learn'],
   'Module 28: Supplier Innovation and Early Engagement - Shaping the Work Before It Is Priced': ['innovation', 'learn'],
-  'Module 29: Service Transition and Exit - Moving Work Without Losing It': ['transition', 'claims', 'learn']
+  'Module 29: Service Transition and Exit - Moving Work Without Losing It': ['transition', 'claims', 'learn'],
+  'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It': ['inventory', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -256,12 +261,17 @@ PS.ACADEMY_MODULE_TAGS = {
    Module 8 were too. 'portfolio', 'executive' and 'ethics' are the tags that
    give the senior and the compliance material its own slot instead of
    sharing one with a neighbouring module; beginner and buyer keep the
-   operational set. */
+   operational set.
+   Every list below is saturated, so a new tag does not add a module to a
+   role's six - it displaces one, and the displaced module has to stay
+   reachable from somewhere else. 'inventory' takes finance's sixth slot and
+   pushes 'cost' out; Module 3, which finance used to be sent to for cost, is
+   still recommended, because beginner carries 'cost' in its third slot. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'distress', 'learn'],
   buyer: ['innovation', 'operations', 'negotiation', 'services', 'specialist', 'quality', 'sourcing', 'spend', 'learn'],
   manager: ['regulated', 'tendering', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
-  finance: ['cost', 'rates', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],
+  finance: ['rates', 'analytics', 'executive', 'value', 'finance', 'inventory', 'cost', 'contract', 'governance', 'learn'],
   compliance: ['transition', 'assurance', 'risk', 'ethics', 'governance', 'claims', 'quality', 'contract', 'executive', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {

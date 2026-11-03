@@ -28,7 +28,7 @@ PS.route('academy-progress', function () {
     '<div class="stat"><span class="s-val">' + stats.badgesEarned + '/' + stats.badgesTotal + '</span><span class="s-lab">Badges Earned</span></div>' +
     '</div>' +
     '<div class="btn-row no-print"><button type="button" class="btn btn-sm btn-danger btn-ghost" data-act="academy-reset-all">Reset all progress</button></div>' +
-    '<div class="table-wrap"><table><thead><tr>' +
+    '<div class="table-wrap pin-action"><table><thead><tr>' +
     '<th>Module & Function</th><th>Lifecycle Fit</th><th>Assessment Score</th><th>Status</th><th>Action</th>' +
     '</tr></thead><tbody>' +
     funcs.map(function (f) {
@@ -359,6 +359,11 @@ PS.renderAcademyFunction = function (funcId, params) {
   if (!func) return PS.notFound('Academy Function', funcId);
 
   PS.pageTitle = func.title + ' | Academy';
+  /* Every other content type declares the item the top-bar star operates
+     on; the lesson route never did, so favouriting a lesson - the most
+     obvious action in a learning portal - answered "Open a page before
+     adding it to favorites" while the reader was standing on one. */
+  PS.currentItem = { type: 'academy', id: funcId, item: func };
   PS.academy.currentFuncQuizzesCount = (func.quizzes || []).length;
   
   // Set current function in state
@@ -385,14 +390,14 @@ PS.renderAcademyFunction = function (funcId, params) {
     '<p class="lead" style="margin-bottom:14px">' + PS.esc(func.tagline || func.desc) + '</p>' +
     '<div class="chips">' +
     '<span class="chip">🎓 Level: <strong>' + PS.esc(PS.academy.tierName(func.tier)) + '</strong></span>' +
-    '<span class="chip">📍 Lifecycle Stage: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
+    '<span class="chip">📍 Lifecycle: <strong>' + PS.esc(func.lifecycleStage || 'Core') + '</strong></span>' +
     '<span class="chip">⏱️ Duration: <strong>' + PS.esc(func.duration || '15 mins') + '</strong></span>' +
     (function () {
       var pos = PS.academy.positionIn(funcId);
       var mp = PS.academy.moduleProgress(func.module);
       if (!pos) return '';
       return '<span class="chip">\uD83D\uDCCD Lesson <strong>' + pos + ' of ' + (PS.ACADEMY_FUNCTIONS || []).length +
-        '</strong> \u00B7 ' + mp.done + '/' + mp.total + ' of this module mastered</span>';
+        '</strong> \u00B7 ' + mp.done + ' of ' + mp.total + ' in this module mastered</span>';
     }()) +
     (quizRes ? '<span class="chip">🏆 Quiz Score: <strong>' + quizRes.pct + '%</strong></span>' : '') +
     '</div>' +
@@ -766,7 +771,9 @@ PS.ACADEMY_WORKBENCH = {
   'func-innovation-deal-structure': 'budget',
   'func-rights-and-dependency-in-joint-work': 'contracts',
   'func-service-transition-planning': 'contracts',
-  'func-tail-period-and-exit-cooperation': 'budget'
+  'func-tail-period-and-exit-cooperation': 'budget',
+  'func-order-quantity-and-reorder-point': 'catalogue',
+  'func-who-owns-the-stock': 'contracts'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

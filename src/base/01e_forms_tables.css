@@ -66,3 +66,23 @@ a.flow-step:hover{border-color:var(--accent);color:var(--accent);text-decoration
 .calc-sticky{position:sticky;top:calc(var(--top) + 16px)}
 .calc-actions{position:sticky;bottom:0;background:linear-gradient(transparent,var(--panel) 30%);padding:14px 0 2px;margin-top:8px}
 @media (max-width:1020px){.calc-layout{grid-template-columns:1fr}.calc-sticky{position:static}}
+
+/* Two table defects the reachability gate named. At 1440 the settings
+   threshold table was 90px wider than its own wrapper, which is not a
+   responsive problem but an unbreakable value in a cell. And at 390 the
+   glossary table put 235 term links behind a sideways scroll, because the
+   header row refuses to wrap and the padding was sized for a desktop.
+   Anywhere-breaking plus narrower cells at phone width lets the table fit
+   the screen it is on. */
+.table-wrap td,.table-wrap th{overflow-wrap:anywhere}
+@media (max-width: 900px){
+  .table-wrap thead th{white-space:normal}
+  .table-wrap th,.table-wrap td{padding:8px 10px}
+  .table-wrap{font-size:.86rem}
+}
+
+/* The settings threshold table was 90px wider than its own wrapper at
+   1440 - not a responsive defect. A text input keeps an intrinsic width
+   based on its default size and does not compress, so the row could never
+   fit the card it sits in. Inputs in a table now take the cell and shrink. */
+.table-wrap input[type="text"],.table-wrap input[type="number"]{width:100%;max-width:170px;min-width:0}

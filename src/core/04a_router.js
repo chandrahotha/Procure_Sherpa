@@ -43,6 +43,12 @@ PS.link = function (type, id, label, cls) {
 PS.renderRoute = function () {
   var r = PS.parseHash();
   PS.routeMeta = r;
+  /* currentItem is what the star, the copy, the share and the print
+     actions act on. It was only ever assigned by a route and never
+     cleared, so on any page that does not declare one - the Academy
+     hub, a dashboard, a search result - those actions quietly used the
+     item from the page you had just left. */
+  PS.currentItem = null;
   /* An exam session takes the whole viewport. The menu, the search box and the
      breadcrumb are three ways to leave a running clock, and the timer is the
      one thing a reader should not have to look for. */
@@ -111,6 +117,13 @@ PS.updateFavBtn = function (r) {
   if (!btn) return;
   var type = (r && r.name === 'k') ? 'kb' : (r && PS.TYPE_ROUTE) ? Object.keys(PS.TYPE_ROUTE).filter(function (k) { return PS.TYPE_ROUTE[k] === r.name; })[0] : null;
   var item = (type && r.arg) ? PS.byId(type, r.arg) : null;
+  /* A route that declares its own item wins. The reverse lookup above only
+     knows the library registries in PS.TYPE_ROUTE, so an Academy lesson
+     came back with no type, no item, and a disabled star - on all 88 of
+     them, which is the single most bookmarkable thing in a learning
+     portal. The button was never broken; it was being switched off on
+     purpose for a page type the lookup did not know. */
+  if (!item && PS.currentItem && PS.currentItem.item) { type = PS.currentItem.type; item = PS.currentItem.item; }
   if (!item) { btn.disabled = true; btn.classList.remove('is-on'); btn.title = 'Open a page to add it to favorites'; return; }
   btn.disabled = false;
   btn.dataset.favType = type; btn.dataset.favId = item.id;

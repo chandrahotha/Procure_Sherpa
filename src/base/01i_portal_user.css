@@ -36,7 +36,11 @@
   flex-shrink: 0;
 }
 .user-name-label {
-  max-width: 120px;
+  /* 120px fitted a first name but not a role-as-name default: the profile
+     that ships with the app is called "Procurement Specialist", and the
+     chip rendered it as "Procurement Sp...". The label hides below the
+     small-screen breakpoint, so the room is only taken when there is room. */
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -714,3 +718,13 @@
   color: var(--text);
 }
 
+
+/* .hub-portal-card carries overflow:hidden, which is the one combination
+   that makes content genuinely unreachable: it is clipped, and nothing
+   scrolls it into view. The reachability gate measured 58px of two control
+   labels hidden that way at 1024. Below this width the card lets its chips
+   and badges wrap instead of being cut. */
+@media (max-width: 1100px){
+  .hub-portal-card .chips{flex-wrap:wrap}
+  .hub-portal-card .chip,.hub-portal-card .badge{white-space:normal}
+}

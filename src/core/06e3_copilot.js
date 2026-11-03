@@ -149,15 +149,27 @@ PS.copilot.ask = function (q) {
   if (!tokens.length) return { hits: [], confidence: 0, answer: 'Please ask a more specific procurement question. Try terms like "TCO", "landed cost", "3-way match", "DOA", or "incoterms".' };
   var scored = [];
   idx.forEach(function (rec) {
-    var score = 0, matched = 0;
+    var score = 0, matched = 0, titled = 0;
     tokens.forEach(function (t) {
       var titleHit = PS.copilot.matches(rec.title.toLowerCase(), t);
       var bodyHit = PS.copilot.matches(rec.text, t);
-      if (titleHit) score += 5;
+      /* A record whose TITLE matches is the thing the reader named; a
+         body match only means the phrase appears in someone else's
+         explanation. Body text is longer, so before this weighting an
+         exact-title calculator could lose to a concept that merely
+         mentioned it - ask "supplier concentration risk" and the
+         concentration calculator ranked below the definition. */
+      if (titleHit) { score += 8; titled++; }
       if (bodyHit) { score += 2; matched++; }
       if (PS.copilot.matches(rec.cat.toLowerCase(), t)) score += 2;
     });
-    if (matched) scored.push({ rec: rec, score: score });
+    /* A record was dropped unless some token hit its BODY. That silently
+       excluded exactly the short records a reader names: the calculator
+       titled "Supplier Concentration" never appeared for "supplier
+       concentration risk", because its description does not repeat the
+       words. A title match is the strongest signal there is, and is
+       enough on its own to be a candidate. */
+    if (matched || titled) scored.push({ rec: rec, score: score });
   });
   scored.sort(function (a, b) {
     if (b.score !== a.score) return b.score - a.score;
@@ -178,6 +190,14 @@ PS.copilot.ask = function (q) {
   var confidence = tokens.length ? Math.round((matchedTokens / tokens.length) * 100) : 0;
   var hits = scored.slice(0, 5).map(function (s) { return s.rec; });
   var answer = PS.copilot.answerFor(q, hits, tokens, confidence);
+  /* The engine found SOMETHING for "xylophone quantum flurbow" - two
+     records that share a token - and the page presented them as an
+     answer. A weak match is not a wrong question, so the hits stay; but
+     this product's own stance is that it says what it does not know, and
+     a cited answer at 33 percent confidence did not say so. */
+  if (hits.length && confidence < 40) {
+    answer = 'I am not confident this answers "' + PS.clean(q, 100) + '". The closest records are listed below - treat them as leads rather than as an answer, and rephrase with procurement terms if none of them fits.';
+  }
   return { hits: hits, confidence: confidence, answer: answer };
 };
 

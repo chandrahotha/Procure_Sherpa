@@ -7,7 +7,7 @@ PS.route('settings', function () {
     '<p class="card-sub">Configure Procure Sherpa to match your organization. These values feed calculators, approval checks, reports and formatting. They are stored locally and never transmitted.</p>' +
     '<p class="note">Procure Sherpa deliberately ships with no universal thresholds. Where your policy differs from the defaults, change it here. It will never assert that &ldquo;every purchase above X needs three quotes&rdquo;, because that rule is organizational rather than universal.</p>' +
     '</div>' +
-    '<div class="grid grid-2">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
+    '<div class="grid grid-2 settings-grid">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
     PS.settingsThresholdCard(p) + PS.settingsAssumptionCard(p) + '</div>' +
     '<div class="card"><h2>Storage usage</h2>' +
     '<div id="storageUsageBar" style="margin-bottom:8px">' +

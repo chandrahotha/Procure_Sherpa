@@ -145,6 +145,12 @@ PS.docpack.buildPackHtml = function (title, items, opts) {
     '<h1>' + PS.esc(title) + '</h1>' +
     '<p class="lead">' + PS.esc(p.orgName || 'Procurement') + (p.deptName ? ' \u00B7 ' + PS.esc(p.deptName) : '') + '</p>' +
     '<p class="note">Prepared ' + PS.esc(PS.dateTime()) + ' \u00B7 ' + items.length + ' documents \u00B7 ' + PS.esc(PS.APP) + '</p>' +
+    /* Every other artefact this product exports carries a statement of
+       what it is - the report footer, the markdown export, the help
+       page. The pack was the exception, and it is the one document
+       most likely to be handed to someone who did not build it and has
+       no way to know where the numbers came from. */
+    '<p class="note">Assembled from records held in this browser. Worked examples are constructed to show how a mechanism behaves, not reports of real organisations. Decision-support output - validate assumptions before committing funds.</p>' +
     '<div style="margin-top:18px;text-align:left"><h3>Contents</h3>' + toc + '</div>' +
     '</div>';
   items.forEach(function (c, i) {

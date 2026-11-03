@@ -63,6 +63,7 @@ PS.academy.BADGES = [
   { id: 'regulated_market_lead', name: 'Regulated Market Lead', icon: '🜲', desc: 'Mastered Regulated Supplier Qualification, Controlled Goods and Clearances, and the Continuity Obligation.', requires: ['func-regulated-supplier-qualification', 'func-controlled-goods-and-clearance-constraints', 'func-essential-service-continuity-obligation'] },
   { id: 'innovation_sourcing_lead', name: 'Innovation Sourcing Lead', icon: '💡', desc: 'Mastered Early Supplier Involvement, Innovation Deal Structure, and Rights and Dependency in Joint Work.', requires: ['func-early-supplier-involvement', 'func-innovation-deal-structure', 'func-rights-and-dependency-in-joint-work'] },
   { id: 'transition_control_lead', name: 'Transition Control Lead', icon: '🔁', desc: 'Mastered Service Transition Planning and the Economics of the Tail Period.', requires: ['func-service-transition-planning', 'func-tail-period-and-exit-cooperation'] },
+  { id: 'inventory_economics_lead', name: 'Inventory Economics Lead', icon: '📦', desc: 'Mastered Order Quantity and Reorder Point, and who owns the stock.', requires: ['func-order-quantity-and-reorder-point', 'func-who-owns-the-stock'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

@@ -57,7 +57,7 @@ PS.crumbFor = function (r) {
     scenarios: 'Scenario Library',
     maturity: 'Procurement Maturity Assessment',
     lifecycle: 'Procurement Lifecycle Map',
-    dash: 'Operations Dashboard',
+    dash: 'Dashboard',
     'dash-savings': 'Savings Dashboard'
   };
   if (opLabels[r.name]) {

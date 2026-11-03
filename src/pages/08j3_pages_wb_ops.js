@@ -166,14 +166,16 @@ PS.route('budget', function () {
 
   html += '<div class="card"><div class="card-head"><h2>Budget position</h2></div>' +
     '<p class="card-sub">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
-    (lines.length ? PS.renderSimpleTable({
-      headers: ['Line', 'Category', 'Holder', 'Budget', 'Committed', 'Spent', 'Available', 'Used'],
-      rows: lines.map(function (l) {
-        var b = PS.num(l.budget) || 0, c = PS.num(l.committed) || 0, a = PS.num(l.actual) || 0;
-        return [l.line, l.category || '', l.owner || '', PS.moneyR(b), PS.moneyR(c), PS.moneyR(a),
-          PS.moneyR(b - c - a), b > 0 ? Math.round((c + a) / b * 100) + '%' : ''];
-      })
-    }) : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
+    (lines.length ? PS.wb.tableHtml('budget', [
+      { label: 'Line', k: 'line' },
+      { label: 'Category', k: 'category' },
+      { label: 'Holder', k: 'owner' },
+      { label: 'Budget', num: true, render: function (l) { return PS.moneyR(PS.num(l.budget) || 0); } },
+      { label: 'Committed', num: true, render: function (l) { return PS.moneyR(PS.num(l.committed) || 0); } },
+      { label: 'Spent', num: true, render: function (l) { return PS.moneyR(PS.num(l.actual) || 0); } },
+      { label: 'Available', num: true, render: function (l) { return PS.moneyR((PS.num(l.budget) || 0) - (PS.num(l.committed) || 0) - (PS.num(l.actual) || 0)); } },
+      { label: 'Used', num: true, render: function (l) { var b = PS.num(l.budget) || 0; return b > 0 ? Math.round(((PS.num(l.committed) || 0) + (PS.num(l.actual) || 0)) / b * 100) + '%' : ''; } }
+    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
     '</div>';
 
   html += PS.wb.editorCard('budget', 'Add or edit a budget line');

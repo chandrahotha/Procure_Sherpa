@@ -1339,6 +1339,21 @@ html[data-theme="dark"] .quiz-tip-cta {
 .lesson-progress{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
 .lesson-progress-fill{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
 
+/* The tab rail is one nowrap flex row of five labelled buttons plus a
+   badge, and it measured 957px of content against 730px of rail at a
+   768px viewport: two of the five tabs sat off-screen behind an
+   overflow-x scrollbar whose thumb read as a rendering artefact, and the
+   progress line - absolutely positioned across the rail - was clipped with
+   them. Below this width the rail wraps instead of scrolling, so every tab
+   is reachable and the progress line keeps its full width. The breakpoint
+   is 1200 rather than 1000 because the reachability gate measured 285px of
+   overflow at 1024: the rail is beside a 280px sidebar, so the row runs
+   out of room long before the viewport does. */
+@media (max-width: 1200px){
+  .academy-tabs{flex-wrap:wrap;overflow-x:visible;row-gap:3px}
+  .academy-tab-btn{font-size:.82rem;padding:9px 11px}
+}
+
 /* ---------- v3: hub and hero typography ---------- */
 .academy-hero h1, .academy-hero .display{font-family:var(--font-read);font-weight:600;letter-spacing:-.02em;font-size:2.1rem;line-height:1.12}
 .academy-hero .lead{font-size:1.02rem;line-height:1.7;max-width:var(--measure)}

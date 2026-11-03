@@ -30,7 +30,7 @@ The QA badge reports a workflow that runs on GitHub-hosted runners: every push a
 
 **Use it** — download [`ProcureSherpa-v2.0.html`](ProcureSherpa-v2.0.html) and double-click it. That is the whole install. (The filename says v2.0 because it is the product's fixed name, not its version — the release is 3.0 and every tool reads the version from the file.)
 
-**Or open the hosted deployment** — <https://procuresherpa.vercel.app> serves the minified build of `main` (~965 KB gzipped, inside the 979 KB deployed budget) with the same hardening as the file itself: no server-side state, no accounts, no telemetry.
+**Or open the hosted deployment** — <https://procuresherpa.vercel.app> serves the minified build of `main` (~984 KB gzipped, 2.62 s to transfer at 3 Mbps) with the same hardening as the file itself: no server-side state, no accounts, no telemetry.
 
 **Change it** —
 
@@ -78,10 +78,10 @@ Procure Sherpa separates **learning** (the Academy) from **doing** (the Operatio
           ▼                                                           ▼
 ┌───────────────────────────────────────┐ ┌───────────────────────────────────────┐
 │    Procurement Academy (#/academy)    │ │      Operations Hub (#/operations)    │
-│  29 modules · 86 lessons · 5-tab      │ │  19 calculators · 21 SOPs (167 steps) │
+│  30 modules · 88 lessons · 5-tab      │ │  19 calculators · 21 SOPs (167 steps) │
 │  pedagogy · 545 SOP-step sequences    │ │  27 checklists · 33 templates         │
 │  339 questions · practice exams       │ │  17 decision guides · 18 KPIs         │
-│  23 learning paths · labs · badges    │ │  8 workbenches for your own records   │
+│  24 learning paths · labs · badges    │ │  8 workbenches for your own records   │
 └───────────────────────────────────────┘ └───────────────────────────────────────┘
           │                                                           │
           └─────────────────────────────┬─────────────────────────────┘
@@ -102,13 +102,13 @@ Every lesson follows the same five-tab pedagogy:
 4. **Practice & Test** — scenario-based quizzes where every option carries a rationale and every question names its principle; mistakes trigger tactical tips.
 5. **Apply in Lab** — an interactive sandbox with live calculation models, plus a laboratory mission you can run on your own data.
 
-The curriculum is always in module order — the role you pick in your profile recommends *which* modules matter for your job (23 learning paths, from Foundations to Fraud & Assurance, Responsible Sourcing, Category Depth, AI & Data Markets, Supplier Distress, Regulated Tendering, Services Cost Analytics, Regulated Markets, Supplier Innovation and Service Transition), it never rearranges the sequence. Lessons track their own reading progress; completion, quiz scores and exams persist locally with badges and a transcript; a **review queue** (`#/revise`) puts a dated interval on every lesson you have studied, **reflection** (`#/reflection`) reads your recorded quiz answers back as the principles you have not yet settled - separating what you got right first time, what you only got after the coaching tip, and what is still wrong - and the hub itself carries a **readiness panel** splitting mastery across the three altitudes alongside what is due and unsettled. Practice exams are timed and randomised, drawn from the 409-question bank, with answer review and retake history - and an attempt opens on its own full-screen page, with a question rail and a button to move it into a separate window.
+The curriculum is always in module order — the role you pick in your profile recommends *which* modules matter for your job (24 learning paths, from Foundations to Fraud & Assurance, Responsible Sourcing, Category Depth, AI & Data Markets, Supplier Distress, Regulated Tendering, Services Cost Analytics, Regulated Markets, Supplier Innovation, Service Transition and Inventory Economics), it never rearranges the sequence. Lessons track their own reading progress; completion, quiz scores and exams persist locally with badges and a transcript; a **review queue** (`#/revise`) puts a dated interval on every lesson you have studied, **reflection** (`#/reflection`) reads your recorded quiz answers back as the principles you have not yet settled - separating what you got right first time, what you only got after the coaching tip, and what is still wrong - and the hub itself carries a **readiness panel** splitting mastery across the three altitudes alongside what is due and unsettled. Practice exams are timed and randomised, drawn from the 419-question bank, with answer review and retake history - and an attempt opens on its own full-screen page, with a question rail and a button to move it into a separate window.
 
 Certificates are deliberately disabled: Procure Sherpa is not an accredited issuer of credentials, so `#/certificate` says so honestly instead of minting a PDF that means nothing.
 
 ### The reference library
 
-311 authored records, all cross-linked and searchable offline: **125 concepts** (each answering what / why / when / how / example / risks / mistakes), **21 controlled SOPs** (167 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
+315 authored records, all cross-linked and searchable offline: **129 concepts** (each answering what / why / when / how / example / risks / mistakes), **21 controlled SOPs** (167 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
 
 ### Calculators that show themselves working
 
@@ -153,7 +153,7 @@ The single file is a compiled artifact, and the repo treats it that way:
 - **`npm run qa` is the gate** — preflight, build & validate, lint, drift check, cross-reference integrity, the minified build, 22 unit tests, calculator correctness (1,021 assertions), 51 hand-computed expected-value fixtures, interactive click-throughs, the quiz/content gate, 88 route renders, 45 layout checks, the integrity gate (**31 gates / 149 assertions**), 46 storage checks, 32 journey steps, an AST security scan, accessibility over 66 rendered routes, the measured performance budget, i18n coverage, and the minified build re-verified end to end. Every step is a hard gate.
 - **Drift is impossible to commit silently** — the build is re-assembled from `src/` and byte-compared with the committed artifact on every CI run and pre-push; the documents are checked against the tools the same way.
 - **The build carries a stamp** — `PS.BUILD` is a hash of the source fragments; `npm run verify:deploy` fetches the live site and asserts it serves the build from your tree.
-- **Performance is budgeted, not hoped for** — 1,065.0 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), 2.79 s transfer, 48 ms V8 compile, 55 ms boot to a rendered first page, measured on every build - and the minified build actually served is 964.5 KB against its own 979 KB deployed ceiling - 14.5 KB of room, bought back by minifying the CSS and the author comments in the deploy build only.
+- **Performance is budgeted, not hoped for** — 1,089.3 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), 2.90 s transfer, 50 ms V8 compile, 54 ms boot to a rendered first page, measured on every build. The minified build actually served is 984.5 KB, 3.8 KB past the deployed warning ceiling, and that overrun is the open payload decision the ledger records.
 - **Zero runtime dependencies** — devDependencies are three (eslint, jsdom, terser) and none of it ships to a user. `npm audit` reports 0 vulnerabilities; how is documented in [SECURITY.md](SECURITY.md).
 
 Governance alignment: content and models are written against CIPS lifecycle and ethics frameworks, ISM category and sourcing methodology, SOX 404 segregation-of-duties and three-way-match controls, Incoterms 2020 and ISO 20400. Procure Sherpa is not accredited by or endorsed by any of these bodies, and it says so on the page.

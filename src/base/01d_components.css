@@ -289,8 +289,25 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 .list-group{scroll-margin-top:calc(var(--top) + 96px)}
 .list-group:focus-visible{outline:var(--focus-outline);outline-offset:6px;border-radius:var(--r)}
 @media (max-width:900px){
-  .list-jump{position:static;flex-wrap:nowrap;overflow-x:auto;padding-bottom:11px}
-  .list-jump a{flex:0 0 auto}
+  /* Was flex-wrap:nowrap with overflow-x:auto, which put 2,934px of category
+     chips into a 730px bar: 15 of the 20 links sat off the right edge with
+     nothing but an invisible scrollbar to hint at them. The bar wraps at
+     every width now, the same way it always did above this breakpoint. */
+  .list-jump{position:static;flex-wrap:wrap;overflow-x:visible;padding-bottom:9px}
+  .list-jump a{flex:0 1 auto}
+}
+
+/* Tables whose last column is the action. A wide table scrolls sideways by
+   design, but when it does the Open button leaves the screen - on the
+   Academy progress table that was 88 rows whose action none of them could
+   reach without discovering the horizontal scroll. Pinning the last column
+   keeps the way forward visible while the rest of the row scrolls under it. */
+@media (max-width:1100px){
+  .pin-action th:last-child,.pin-action td:last-child{
+    position:sticky;right:0;background:var(--panel);
+    box-shadow:-1px 0 0 var(--border);
+  }
+  .pin-action thead th:last-child{background:var(--sunken)}
 }
 
 /* Definite grids on the pages where the column count is a design decision.
@@ -307,3 +324,48 @@ kbd{font-family:var(--mono);font-size:.7rem;font-weight:600;border:1px solid var
 @media (max-width:620px){
   .stat-grid{grid-template-columns:minmax(0,1fr)}
 }
+
+/* .btn is white-space:nowrap by design, and at a phone width a long label
+   ("Open Budget vs Actual with worked example", "Execute Procurement File")
+   becomes a control wider than the screen with no scrollable ancestor, so
+   it cannot be reached at all - which is what the reachability gate reports
+   for two routes at 390px. Below this width the label is allowed to break;
+   the button stays the same size and the text takes a second line. */
+@media (max-width: 560px){
+  .btn{white-space:normal;line-height:1.35}
+  .btn-sm{white-space:normal}
+}
+
+/* Two reachability findings, both measured before being fixed rather than
+   guessed at a second time.
+
+   The settings page puts four cards, one of them a table, in the shared
+   grid-2 class - which is built on auto-fit, so at 1440 it fitted more
+   columns than its name promises and the wrapper the reachability gate
+   measured was 301px wide against a 391px table. At 1024 the same page
+   gave the table 620px and passed, which is how the defect survived a
+   narrow-viewport sweep. The page knows it wants two columns, so it now
+   says so, scoped to this page rather than by changing grid-2 for
+   everyone.
+
+   The home learning card clips (overflow:hidden, so nothing scrolls it
+   back) a 117px button whose label cannot break, inside 318px of card.
+   Inside these cards a button label is allowed to take a second line and
+   the button is allowed to shrink. */
+.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:1100px){.settings-grid{grid-template-columns:minmax(0,1fr)}}
+.hub-portal-card .btn{white-space:normal;min-width:0}
+
+/* A flex item defaults to min-width:auto, which means it refuses to become
+   narrower than its longest unbreakable word. Recent searches are stored
+   verbatim and the search box allows 120 characters, so one long token made
+   a chip 158px wider than the screen at 768px - and the chips row has no
+   scroll, so the chip was simply unreachable. The row already wrapped; what it
+   could not do was shrink one item, which is what min-width:0 fixes. */
+.chip{min-width:0;overflow-wrap:anywhere;max-width:100%}
+
+/* The library jump bar is sticky and the category tiles that follow it in
+   DOM order are position:relative, so without an explicit stack the tiles
+   paint over the bar and the top strip of every chip becomes unclickable.
+   Found by the reachability gate hit-testing at 1024 px. */
+.list-jump{z-index:3}

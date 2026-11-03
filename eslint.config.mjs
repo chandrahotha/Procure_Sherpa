@@ -159,7 +159,13 @@ export default [
         TextDecoder: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
-        fetch: 'readonly'
+        /* The two browser-driven gates - test_reachability.mjs and
+           deep_scan.mjs - talk to the machine's own Chrome over the
+           DevTools protocol. Both globals are provided by Node itself
+           from 22 onwards (package.json engines requires >=22), which is
+           why no dependency was added for them. */
+        fetch: 'readonly',
+        WebSocket: 'readonly'
       }
     },
     rules: {

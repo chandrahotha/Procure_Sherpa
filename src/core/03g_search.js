@@ -19,6 +19,25 @@ PS._flattenSearchable = function flat(v, out) {
   return out;
 };
 
+/* A record's own type name is part of what makes it findable. Searching
+   "glossary" used to return nothing at all, because no glossary entry
+   spells the word in its title or definition - the reader had to know the
+   term, not the container. Each registry therefore contributes its plain
+   English names to the searchable text of every record inside it. */
+PS.SEARCH_TYPE_WORDS = {
+  academy: 'academy lesson module learning function curriculum',
+  sop: 'sop procedure standard operating process',
+  calc: 'calculator tool calculation',
+  cl: 'checklist',
+  tpl: 'template',
+  dec: 'decision guide matrix',
+  kpi: 'kpi measure metric indicator',
+  kb: 'concept knowledge guide',
+  gloss: 'glossary term definition',
+  scen: 'scenario case walkthrough',
+  command: 'command shortcut navigation'
+};
+
 PS.buildIndex = function () {
   if (PS._index) return PS._index;
   var idx = [];
@@ -36,7 +55,7 @@ PS.buildIndex = function () {
       tags: (item.tags || []).join(' '),
       route: customRoute || PS.routeFor(type, item.id),
       desc: PS.clean(desc, 220),
-      text: (title + ' ' + (item.cat || '') + ' ' + (item.module || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
+      text: (title + ' ' + (PS.SEARCH_TYPE_WORDS[type] || '') + ' ' + (item.cat || '') + ' ' + (item.module || '') + ' ' + (item.tags || []).join(' ') + ' ' + parts.join(' ')).toLowerCase()
     });
   }
 
@@ -261,9 +280,12 @@ PS.search = function (q, opts) {
   if (!raw) return { query: '', results: [], total: 0 };
   var tokens = PS.searchTokens(q);
   if (!tokens.length) {
-    /* Everything the user typed was a stop word. Fall back to the raw
-       words rather than returning nothing. */
-    tokens = raw.split(/[\s,;]+/).filter(function (t) { return t.length > 1; });
+    /* Everything the user typed was a stop word. This used to fall back
+       to the raw words - which re-admitted the very stop words the
+       tokenizer had just removed, so "the and of a to in" matched 388 of
+       415 records. A query with no content words has no answer; the page
+       says so instead of showing the library. */
+    return { query: raw, results: [], total: 0, stopWordsOnly: true };
   }
   if (!tokens.length) return { query: '', results: [], total: 0 };
   var out = [];
@@ -320,6 +342,13 @@ PS.search = function (q, opts) {
         else if (title.indexOf(' ' + v) >= 0) hit = 75;
         else if (title.indexOf(v) > 0) hit = 55;
         else if (rec.type === v) hit = 50;
+        /* Naming the container beats mentioning the word. Searching
+           "decision" used to return lessons and concepts that happen to
+           use the word in a paragraph, while the seventeen decision
+           guides - the thing the reader asked for - ranked below them,
+           because a type word buried in the body scored the same as any
+           other body match. */
+        else if ((PS.SEARCH_TYPE_WORDS[rec.type] || '').split(' ').indexOf(v) >= 0) hit = 46;
         else if (rec.tags.indexOf(v) >= 0) hit = 42;
         else if (rec.cat.toLowerCase().indexOf(v) >= 0) hit = 32;
         else if (rec.text.indexOf(v) >= 0) hit = 18;

@@ -259,6 +259,17 @@ PS.learningPaths.PATHS = [
     skills: ['Building the exception catalogue from incident data', 'Running an exercised acceptance scenario', 'Pricing a tail rate card and its cap', 'Writing obligations that survive termination', 'Testing a data extract before you need it'],
     duration: '4-6 weeks',
     color: 'var(--sop)'
+  },
+  {
+    id: 'inventory-economics',
+    title: 'Inventory and Stock Economics',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'How much to hold and who owns it: measuring the real cost per order line instead of assuming it, reading the flat region of the cost curve rather than the optimum, setting a reorder point from lead-time dispersion instead of the average, deciding which item classes are worth a service level, and separating the stock you hold from the stock you own before a supplier fails.',
+    modules: ['func-order-quantity-and-reorder-point', 'func-who-owns-the-stock'],
+    skills: ['Measuring cost per order line from goods-in effort', 'Telling a bound answer from an optimum', 'Re-basing a buffer on the observed tail', 'Registering stock held but not owned', 'Reporting a write-down into the category that caused it'],
+    duration: '4-6 weeks',
+    color: 'var(--ops)'
   }
 ];
 
@@ -392,7 +403,7 @@ PS.route('learning-paths', function () {
 
   html += '<div class="card">' +
     '<h2>All modules</h2>' +
-    '<div class="table-wrap"><table><thead><tr><th class="num">Module</th><th>Function</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
+    '<div class="table-wrap pin-action"><table><thead><tr><th class="num">Module</th><th>Function</th><th>Path</th><th>Status</th><th></th></tr></thead><tbody>';
 
   /* One row per function per path, sorted by module number so the table
      reads in curriculum order rather than in track order. The path
