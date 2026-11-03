@@ -150,7 +150,13 @@ const btn6 = w.document.querySelector('#main [data-act="handoff"]');
 if (!btn6) bad('no handoff button to test edit survival with');
 else {
   const dest = btn6.dataset.to;
-  btn6.click(); PS.renderRoute();
+  btn6.click();
+  /* Let the queued hashchange land before touching the form. Calling
+     renderRoute() by hand on top of a navigation renders twice, the second
+     pass rebuilds the inputs from defaults, and the draft then faithfully
+     stores those defaults - which is how this check accused the app of
+     losing an entry it had in fact kept. */
+  await sleep(600);
   const field = w.document.querySelector('#calcForm input');
   if (!field) bad('the handoff target rendered no input to edit');
   else {
@@ -159,14 +165,18 @@ else {
     field.value = mine;
     field.dispatchEvent(new w.Event('input', { bubbles: true }));
     field.dispatchEvent(new w.Event('change', { bubbles: true }));
-    PS.go('calc', null, dest === 'calc-home' ? 'home' : dest); PS.renderRoute();
+    /* The draft is written by a debounced input handler, so the trip has to
+       wait for it - and that is the promise being tested: an unsaved entry
+       survives going away to read something and coming back. */
+    await sleep(900);
     PS.go('calc', null, 'search'); PS.renderRoute();
     PS.go('calc', null, dest); PS.renderRoute();
+    await sleep(120);
     const back = w.document.querySelector('#calcForm input');
     const nowVal = back ? back.value : '';
-    if (nowVal === carriedIn) bad('the carried value ' + carriedIn + ' was re-applied over the reader\'s edit on returning to ' + dest + ' - a stale prefill outlived the journey');
-    else ok('returning to ' + dest + ' did not re-apply the carried value (found ' + JSON.stringify(nowVal) + ', not ' + JSON.stringify(carriedIn) + ')');
-    if (nowVal !== mine) console.log('  note   the edit typed here was not kept on return: ' + dest + ' restored its own last saved input (' + JSON.stringify(nowVal) + '). The app saves on Calculate rather than on every keystroke, so this is its documented model, not a lost-prefill bug - but a reader who types and leaves without calculating will lose it.');
+    if (nowVal === mine) ok('the number typed after a handoff is still there on returning to ' + dest + ' - unsaved calculator input survives the trip');
+    else if (nowVal === carriedIn) bad('the carried value ' + carriedIn + ' was re-applied over the reader\'s edit on returning to ' + dest + ' - a stale prefill outlived the journey');
+    else bad('the reader\'s entry was lost: ' + dest + ' came back showing ' + JSON.stringify(nowVal) + ' instead of the typed ' + JSON.stringify(mine));
   }
 }
 

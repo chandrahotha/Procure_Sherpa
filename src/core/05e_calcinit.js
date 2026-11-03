@@ -23,8 +23,24 @@ PS.applyPendingSaved = function (calc) {
   return true;
 };
 
+/* Draft the numbers as well as the notes, keyed to the calculator they
+   belong to, so a return trip restores the right tool's work. One draft per
+   calculator at a time is the existing model (PS.K.draft held calc + notes),
+   and it is kept that way rather than widened, because Reset and Purge
+   already assume a single record. */
+PS.draftCalcInputs = function (calc) {
+  if (!calc) return;
+  var cur = PS.store.get(PS.K.draft, {}) || {};
+  var vals = PS.readCalcInputs();
+  PS.store.set(PS.K.draft, {
+    calc: calc.id,
+    notes: (PS.$('#calcNotes') ? PS.$('#calcNotes').value : (cur.notes || '')),
+    values: vals
+  });
+};
 PS.calcPageInit = function (calc, params) {
   var prefill = PS.pendingPrefill;
+  var prefillFor = prefill ? prefill.to : '';
   /* A reopened saved calculation takes priority over a cross-tool handoff:
      it carries the user's own prior work, not another tool's values. */
   var restored = PS.applyPendingSaved(calc);
@@ -80,12 +96,37 @@ PS.calcPageInit = function (calc, params) {
     form.addEventListener('input', PS.debounce(function () {
       PS.$$('#calcForm input.is-invalid').forEach(function (i) { i.classList.remove('is-invalid'); });
       PS.runCalc(true);
+      PS.draftCalcInputs(calc);
     }, 650));
   }
   var notes = PS.$('#calcNotes');
   if (notes) {
     var draft = PS.store.get(PS.K.draft, {});
     if (draft && draft.notes && draft.calc === calc.id) notes.value = draft.notes;
+  }
+  /* The draft used to keep the notes and throw away the numbers. A learner
+     who typed a price, went to read the glossary term behind it and came
+     back found the tool's shipped defaults again - in a product whose own
+     offline panel says that anything entered stays in this browser. Inputs
+     are now drafted beside the notes and put back on arrival, with a line
+     saying where they came from so restored numbers are never mistaken for
+     the reader's latest calculation. Reset clears the draft, as it already
+     did, and Purge Workspace Session Data already covered the key. */
+  if (!restored && prefillFor !== calc.id) {
+    var d2 = PS.store.get(PS.K.draft, {});
+    if (d2 && d2.calc === calc.id && d2.values && typeof d2.values === 'object') {
+      var keys = Object.keys(d2.values);
+      if (keys.length) {
+        PS.setCalcInputs(d2.values);
+        var anchor2 = PS.$('#calcForm');
+        if (anchor2 && anchor2.parentNode) {
+          var told = document.createElement('p');
+          told.className = 'note no-print';
+          told.innerHTML = 'Your unsaved entries from earlier were put back. <button type="button" class="btn btn-sm btn-ghost" data-act="clear">Clear them</button>';
+          anchor2.parentNode.insertBefore(told, anchor2.nextSibling);
+        }
+      }
+    }
   }
 
   // Mobile bottom sheet for calculator inputs
