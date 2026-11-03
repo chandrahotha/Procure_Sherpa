@@ -134,22 +134,51 @@ if (shown == null) console.log('  note   no "n of ' + st.totalCount + '" summary
 else if (Number(shown) === st.completedCount) ok('the hub summary prints ' + shown + ' of ' + st.totalCount + ', which agrees with the store');
 else bad('the hub prints ' + shown + ' of ' + st.totalCount + ' while the store holds ' + st.completedCount + ' - the learner is shown a number that is not true');
 
-/* 6. Finishing a module must unlock its badge through the page, not just
-      the API: complete every remaining function of this lesson's module. */
-const siblings = PS.ACADEMY_FUNCTIONS.filter((f) => f.module === func.module);
-siblings.forEach((f) => PS.academy.markCompleted(f.id));
-PS.academy.checkBadges();
-const awarded = (PS.academy.getAll().badges || PS.academy.getAll().awarded || []);
-const want = PS.academy.BADGES.filter((b) => {
-  const req = JSON.stringify(b);
-  return func.module && req.indexOf(String(func.module)) >= 0;
-});
-if (!want.length) console.log('  note   no badge is defined that names module ' + func.module + ' - badges key off other requirements');
-else {
-  const list = JSON.stringify(awarded);
-  const hit = want.some((b) => list.indexOf(b.id) >= 0);
-  if (hit) ok('completing module ' + func.module + ' awards its badge (' + want.map((b) => b.id).join(', ') + ')');
-  else bad('module ' + func.module + ' is fully complete but its badge is not awarded; badges held: ' + list.slice(0, 120));
+/* 6. Badges are awarded by completion and withdrawn by demotion, which is
+      what the store's own comment claims - and claiming it in a comment is
+      not evidence. The first version of this block searched each badge's
+      JSON for the module name, found nothing, and printed a note instead of
+      testing anything. Badges key off a `requires` list of function ids, so
+      pick one whose requirements are not all met yet: then the award is
+      caused by this walk rather than already sitting there. */
+const dataNow = PS.academy.getAll();
+const compNow = dataNow.completed || {};
+const cand = (PS.academy.BADGES || [])
+  .filter((b) => (b.requires || []).length && !(b.requires || []).every((f) => !!compNow[f]))
+  .sort((a, b) => (b.requires || []).filter((f) => !!compNow[f]).length - (a.requires || []).filter((f) => !!compNow[f]).length)[0];
+if (!cand) {
+  console.log('  note   every badge requirement is already satisfied in this fixture, so awarding could not be observed');
+} else {
+  if ((dataNow.badges || {})[cand.id]) bad('badge ' + cand.id + ' is already awarded while its requirements are incomplete - the store grants what it should not');
+  else {
+    (cand.requires || []).forEach((f) => PS.academy.markCompleted(f));
+    PS.academy.checkBadges();
+    if ((PS.academy.getAll().badges || {})[cand.id]) ok('completing ' + cand.requires.length + ' named lesson(s) awards ' + cand.name + ' (' + cand.id + ')');
+    else bad('all requirements of badge ' + cand.id + ' are complete but checkBadges did not award it');
+    /* Withdrawal, the other half of the same claim: demote one requirement
+       and the award must go away rather than linger on the transcript. */
+    const d2 = PS.academy.getAll();
+    delete d2.completed[cand.requires[0]];
+    PS.academy.save(d2);
+    PS.academy.checkBadges();
+    if ((PS.academy.getAll().badges || {})[cand.id]) bad('badge ' + cand.id + ' survived demoting ' + cand.requires[0] + ' - awards accumulate instead of deriving from the record');
+    else ok('demoting one required lesson withdraws ' + cand.name + ' again, so awards derive from the record rather than piling up');
+    (cand.requires || []).forEach((f) => PS.academy.markCompleted(f));
+    PS.academy.checkBadges();
+    /* The learner has to be able to see it. Badges are rendered from
+       08g1_pages_academy.js:173, so search the Academy pages the reader
+       actually has - the hub and the progress page - rather than guessing
+       one route and reporting a defect when the award lives on the other. */
+    let seenOn = '';
+    for (const route of ['academy', 'academy-progress', 'certificate']) {
+      PS.go(route); PS.renderRoute();
+      await sleep(100);
+      const t = (w.document.getElementById('main') || {}).textContent || '';
+      if (t.indexOf(cand.name) >= 0) { seenOn = '#/' + route; break; }
+    }
+    if (seenOn) ok('the award is visible to the learner: ' + cand.name + ' is printed on ' + seenOn);
+    else console.log('  note   ' + cand.name + ' is earned in the store but its name was not found on the Academy hub, progress page or certificate - worth a look at where earned badges are surfaced, though locked-vs-earned wording may mean only the icon shows');
+  }
 }
 
 /* 7. The next lesson must move on - the ring cannot stall. */
@@ -160,5 +189,5 @@ else bad('nextUncompleted() still returns ' + nextId + ' after that lesson was c
 
 console.log('\nlearning loop: pass ' + pass + ' | fail ' + fails.length);
 if (fails.length) { console.error('LEARNING LOOP GATE: FAIL'); process.exit(1); }
-console.log('LEARNING LOOP GATE: PASS - the ring closes: mistake, score, completion, counters and hub wording all agree (badge awarding and queue timing are reported as notes, not proven here)');
+console.log('LEARNING LOOP GATE: PASS - the ring closes: mistake, score, completion, counters, hub wording, badge award and badge withdrawal all agree (queue timing is reported as a note, not proven here)');
 process.exit(0);
