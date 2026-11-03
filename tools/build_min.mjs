@@ -92,7 +92,102 @@ const minJs = result.code;
    substitution patterns. Passing the code as a string silently splices
    copies of the original bundle back into the output - it inflated this
    file from 1.26 MB to 2.2 MB before this was a function. */
-const minHtml = html.replace(m[0], () => '<script>' + minJs + '</script>');
+const minHtml0 = html.replace(m[0], () => '<script>' + minJs + '</script>');
+
+/* CSS and HTML comments are minified in the deploy build too, for the same
+   reason the script is: this file is what a browser is sent, and the
+   explanatory prose that makes the committed artifact auditable is worth
+   nothing to a renderer. It is deliberately NOT applied to
+   ProcureSherpa-v2.0.html, which stays fully commented - the readable file
+   is the one a person reads to decide what to trust.
+
+   The transform is quote- and url()-aware, because CSS is not regular text:
+   collapsing whitespace inside a font-family string, a content string or a
+   data URI changes what the browser sees. And it never touches the spaces
+   around + and -, so calc(100% - 8px) stays valid. */
+function minifyCss(css) {
+  let out = '';
+  let i = 0;
+  while (i < css.length) {
+    const two = css.slice(i, i + 2);
+    if (two === '/*') {                       // comment: dropped entirely
+      const end = css.indexOf('*/', i + 2);
+      i = end < 0 ? css.length : end + 2;
+      continue;
+    }
+    if (two === '\u0022\u0022' || two === "''") { // empty string literal
+      out += two; i += 2; continue;
+    }
+    const q = css[i];
+    if (q === '"' || q === "'") {             // string: copied verbatim
+      let j = i + 1;
+      while (j < css.length) {
+        if (css[j] === '\\') { j += 2; continue; }
+        if (css[j] === q) { j++; break; }
+        j++;
+      }
+      out += css.slice(i, j); i = j; continue;
+    }
+    if (/\s/.test(q)) {                       // whitespace: collapse to one
+      let j = i;
+      while (j < css.length && /\s/.test(css[j])) j++;
+      const next = css[j], prev = out[out.length - 1] || '';
+      if (!out || next === '}' || prev === '{' || prev === ';') { i = j; continue; }
+      out += ' '; i = j; continue;
+    }
+    out += q; i++;
+  }
+  return out
+    .replace(/\s*([{};:])\s*/g, '$1')
+    .replace(/;}/g, '}')
+    .trim();
+}
+
+/* Only the CSS and the HTML comments are touched; the script block is put
+   back untouched after the pass so nothing inside a string literal in the
+   application code can be reached. */
+const styleMatches = [...minHtml0.matchAll(/<style[^>]*>[\s\S]*?<\/style>/g)];
+let minHtml = minHtml0;
+for (const st of styleMatches) {
+  const body = st[0].replace(/^<style[^>]*>/, '').replace(/<\/style>$/, '');
+  const stripped = minifyCss(body);
+  minHtml = minHtml.replace(st[0], () => st[0].slice(0, st[0].indexOf('>') + 1) + stripped + '</style>');
+}
+minHtml = minHtml.replace(/<script>[\s\S]*?<\/script>/g, () => '<script>' + minJs + '</script>');
+/* HTML comments outside the script: the shell and the head carry the same
+   kind of authorship notes as the CSS. */
+minHtml = minHtml.replace(/<!--[\s\S]*?-->/g, '');
+
+/* Equivalence guard. A minifier that silently eats a rule is worse than no
+   minifier, and the six suites that run against dist would only notice the
+   ones that change behaviour, not the one that changes a rarely-used
+   selector. So the structure is counted before and after: the number of
+   declaration blocks, the number of calc() expressions and the number of
+   url() references must be identical. */
+{
+  const count = (s2, re) => (s2.match(re) || []).length;
+  const beforeBlocks = count(html.match(/<style[^>]*>[\s\S]*?<\/style>/g).join(''), /\{/g);
+  const afterBlocks = count(styleMatches.map(() => '').join('') + minHtml.match(/<style[^>]*>[\s\S]*?<\/style>/g).join(''), /\{/g);
+  const beforeCalc = count(html, /calc\(/g), afterCalc = count(minHtml, /calc\(/g);
+  const beforeUrl = count(html, /url\(/g), afterUrl = count(minHtml, /url\(/g);
+  if (beforeBlocks !== afterBlocks) {
+    console.error('FAIL: CSS minification changed the declaration-block count (' + beforeBlocks + ' -> ' + afterBlocks + ').');
+    process.exit(1);
+  }
+  /* And the script must be exactly what terser produced. The CSS pass finds
+     <style> text inside the application own strings, so the script block is
+     restored after it - this is the assertion that proves the restore
+     happened, rather than trusting the order of three replaces. */
+  const scriptOut = minHtml.match(/<script>([\s\S]*?)<\/script>/);
+  if (!scriptOut || scriptOut[1] !== minJs) {
+    console.error('FAIL: the deployed script block is not the minified bundle (it was altered by the CSS or comment pass).');
+    process.exit(1);
+  }
+  if (beforeCalc !== afterCalc || beforeUrl !== afterUrl) {
+    console.error('FAIL: CSS minification changed the calc()/url() count (' + beforeCalc + '->' + afterCalc + ', ' + beforeUrl + '->' + afterUrl + ').');
+    process.exit(1);
+  }
+}
 
 fs.mkdirSync(DIST, { recursive: true });
 fs.writeFileSync(OUT, minHtml);
@@ -113,6 +208,8 @@ console.log('--- minified deploy build ---');
 console.log('source:     ' + path.basename(SRC) + '  ' + beforeKB.toFixed(0) + ' KB (script ' + jsBeforeKB.toFixed(0) + ' KB)');
 console.log('output:     dist/index.html  ' + afterKB.toFixed(0) + ' KB (script ' + jsAfterKB.toFixed(0) + ' KB)');
 console.log('reduction:  ' + saved.toFixed(1) + '%');
+const cssRawKB = html.match(/<style[^>]*>[\s\S]*?<\/style>/g).join('').length / 1024;
+console.log('css:        ' + cssRawKB.toFixed(0) + ' KB of comments and whitespace minified for the deploy build only');
 
 /* Report headroom against the same ceiling build.mjs enforces. The
    ceiling is a transfer time, not a byte count: 3 seconds at a

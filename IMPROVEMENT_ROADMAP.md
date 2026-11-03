@@ -209,7 +209,7 @@ nothing ran".
   ceiling derived from "3 seconds at 3 Mbps" (1152 KB), the script's full
   V8 compile against a 400 ms budget, and the application boot to a
   rendered first page against a 500 ms budget. `npm run perf` prints the
-  live figures - the size is a fact about the file (1,064.5 KB gzipped,
+  live figures - the size is a fact about the file (1,065.0 KB gzipped,
   2.22 s at 3 Mbps), the two timings are wall-clock and belong to the
   machine that took them, which is why ADR 0002 keeps its measurement
   dated instead of asserting it as a property of the build. The previous
@@ -869,7 +869,7 @@ is right and this table is the thing to fix.
 |--------|---------|--------|
 | Routes passing smoke test | 88 of 88 (`node tools/smoke.mjs` - "routes: 88 failing: 0") | 80+ - met |
 | Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 261 rel objects; broken refs: 0") | 0 broken |
-| Payload | 3,881.0 KB readable, 3,338.3 KB minified; the minified served build is 974.3 KB gzipped and the readable artifact is 1,064.5 KB gzipped. Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
+| Payload | 3,882.0 KB readable, 3,309.0 KB minified; the minified served build is 964.5 KB gzipped and the readable artifact is 1,065.0 KB gzipped. Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |
 | Accessibility (`npm run audit:a11y`) | 0 issues, across the 64 routes the audit enumerates (52 registered routes, so the sweep is wider than the registry) | 0 issues, keyboard focus visible in both themes |
 | PWA score (Lighthouse) | **not measurable as things stand** - the artifact has no web manifest and no service worker (`serviceWorker` appears nowhere in `src/` or the built file), so there is no install surface for Lighthouse to score. This is Phase 7 work, not a missing measurement | decide first whether the product wants to be installable at all |
