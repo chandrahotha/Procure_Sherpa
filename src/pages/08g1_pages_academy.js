@@ -764,7 +764,9 @@ PS.ACADEMY_WORKBENCH = {
   'func-essential-service-continuity-obligation': 'contracts',
   'func-early-supplier-involvement': 'rfx',
   'func-innovation-deal-structure': 'budget',
-  'func-rights-and-dependency-in-joint-work': 'contracts'
+  'func-rights-and-dependency-in-joint-work': 'contracts',
+  'func-service-transition-planning': 'contracts',
+  'func-tail-period-and-exit-cooperation': 'budget'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

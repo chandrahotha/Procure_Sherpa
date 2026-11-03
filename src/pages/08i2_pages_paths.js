@@ -248,6 +248,17 @@ PS.learningPaths.PATHS = [
     skills: ['Running a defensible consultation round', 'Separating outcome from mechanism in a draft', 'Pricing a pilot as an option', 'Writing kill criteria with the budget', 'Scheduling background and foreground rights'],
     duration: '5-7 weeks',
     color: 'var(--academy)'
+  },
+  {
+    id: 'service-transition',
+    title: 'Service Transition and Exit',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'What happens between the award and the stable new service: inventorying what actually moves rather than what is documented, reconciling the providers exception list against your own incident history, proving capability by exercising it at peak and at month end, pricing and bounding the tail period, and making cooperation the paid-for deliverable instead of the contractual courtesy.',
+    modules: ['func-service-transition-planning', 'func-tail-period-and-exit-cooperation'],
+    skills: ['Building the exception catalogue from incident data', 'Running an exercised acceptance scenario', 'Pricing a tail rate card and its cap', 'Writing obligations that survive termination', 'Testing a data extract before you need it'],
+    duration: '4-6 weeks',
+    color: 'var(--sop)'
   }
 ];
 
