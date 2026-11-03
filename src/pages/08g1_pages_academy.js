@@ -706,7 +706,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-fraud-response-and-disclosure': 'approvals',
   'func-scope3-buying-baseline': 'suppliers',
   'func-circular-sourcing-economics': 'catalogue',
-  'func-social-value-labour-due-diligence': 'rfx'
+  'func-social-value-labour-due-diligence': 'rfx',
+  'func-energy-utility-procurement': 'contracts',
+  'func-works-and-construction-buying': 'rfx',
+  'func-marketing-and-creative-services': 'suppliers'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

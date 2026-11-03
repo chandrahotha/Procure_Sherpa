@@ -171,6 +171,17 @@ PS.learningPaths.PATHS = [
     skills: ['Telling a measured figure from a spend proxy', 'Pricing a returnable system per cycle achieved', 'Asking who paid the recruitment fee', 'Scoring a claim on mechanism rather than intention'],
     duration: '4-6 weeks',
     color: 'var(--ok)'
+  },
+  {
+    id: 'category-depth',
+    title: 'Specialised Category Depth II',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'Three markets where the general playbook misleads: energy, where the agreed price is only part of the bill; works, where the contract form decides who owns the risk; and marketing, where the fee line hides the money.',
+    modules: ['func-energy-utility-procurement', 'func-works-and-construction-buying', 'func-marketing-and-creative-services'],
+    skills: ['Separating commodity from pass-through', 'Reading a bid as a set of assumptions', 'Keeping time, money and scope apart', 'Making the mark-up on third-party spend visible'],
+    duration: '5-7 weeks',
+    color: 'var(--kpi)'
   }
 ];
 

@@ -294,6 +294,7 @@ if (devCount > 1) {
    teach the documents to stop saying anything checkable. */
 const { PINS } = await import('./content_pins.mjs');
 const COUNT_CLAIMS = [
+  { re: /(\d{2,3}) learning paths/g, want: () => PINS.learningPaths, what: 'learning paths' },
   { re: /(\d{2,3}) Academy functions/gi, want: () => PINS.academyFunctions, what: 'academy functions' },
   { re: /(\d{2,3}) functions, (\d{2,3}) (?:SOP steps|steps)/g, want: () => PINS.academyFunctions, at: 1, what: 'academy functions' },
   { re: /(\d{2}) modules, (\d{2,3}) functions/g, want: () => PINS.academyModules, at: 1, what: 'academy modules' },

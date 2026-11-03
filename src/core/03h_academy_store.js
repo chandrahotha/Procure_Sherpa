@@ -55,6 +55,7 @@ PS.academy.BADGES = [
   { id: 'finance_fluency', name: 'Procurement Finance Fluency', icon: '💰', desc: 'Mastered Payment Terms as an Instrument, the Cash Conversion Cycle and Supply Chain Finance.', requires: ['func-payment-terms-value', 'func-cash-conversion-cycle', 'func-supply-chain-finance'] },
   { id: 'assurance_guardian', name: 'Integrity and Assurance Practitioner', icon: '\ud83d\udd0d', desc: 'Mastered Fraud Risk Patterns, Bid Rigging Detection and Case Response & Disclosure.', requires: ['func-purchasing-fraud-risk', 'func-bid-rigging-detection', 'func-fraud-response-and-disclosure'] },
   { id: 'responsible_sourcing', name: 'Responsible Sourcing Practitioner', icon: '🌱', desc: 'Mastered the Scope 3 Baseline, Circular Sourcing Economics and Social Value & Labour Due Diligence.', requires: ['func-scope3-buying-baseline', 'func-circular-sourcing-economics', 'func-social-value-labour-due-diligence'] },
+  { id: 'sector_buyer', name: 'Specialised Sector Buyer', icon: '🏗️', desc: 'Mastered Energy and Utility Procurement, Works and Construction Buying and Marketing and Creative Services.', requires: ['func-energy-utility-procurement', 'func-works-and-construction-buying', 'func-marketing-and-creative-services'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

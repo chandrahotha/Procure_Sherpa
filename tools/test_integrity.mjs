@@ -1073,6 +1073,15 @@ const g24Funcs = PS.ACADEMY_FUNCTIONS || [];
 const g24Paths = (PS.learningPaths && PS.learningPaths.PATHS) || [];
 const g24Ids = g24Funcs.map((f) => f.id);
 
+/* How many paths there are is a promise the page makes in prose, so it is
+   pinned like any other count: a track added without moving the pin fails
+   here rather than surfacing later as a document that quietly counts wrong. */
+if (g24Paths.length !== PINS.learningPaths) {
+  fail('G24', 'the learning paths hold ' + g24Paths.length + ' tracks, but the pin is ' + PINS.learningPaths);
+} else {
+  ok('G24', 'the number of learning paths matches the pin (' + PINS.learningPaths + ')');
+}
+
 if (!g24Paths.length) {
   fail('G24', 'no learning paths are registered');
 } else {
