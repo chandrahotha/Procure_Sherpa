@@ -115,12 +115,14 @@ src/content/10i_kb_risk.js
 src/content/10j_kb_savings.js
 src/content/10k_kb_markets.js
 src/content/10l_kb_fraud.js
+src/content/10m_kb_sustainability.js
 src/content/10z_kb_v1.js
 src/content/11z_sop_v1.js
 src/content/11b_sop_markets.js
 src/content/11c_sop_contract.js
 src/content/11d_sop_onboarding_savings.js
 src/content/11e_sop_fraud.js
+src/content/11f_sop_sustainability.js
 src/content/12z_cl_v1.js
 src/content/12b_cl_sourcing.js
 src/content/12c_cl_steward.js
@@ -150,6 +152,7 @@ src/content/19l_academy_functions_part12.js
 src/content/19m_academy_functions_part13.js
 src/content/19n_academy_functions_part14.js
 src/content/19o_academy_functions_part15.js
+src/content/19p_academy_functions_part16.js
 src/calcs/20a_calc_compare_quotes.js
 src/calcs/20b_calcimpl_compare_quotes.js
 src/calcs/21_calc_landed_cost.js

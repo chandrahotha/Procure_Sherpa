@@ -385,7 +385,7 @@ Two items already have partial infrastructure worth knowing about:
   the content libraries register (72 concepts, 18 SOPs, 27 checklists,
   33 templates, 17 decision guides, 18 KPIs, 45 glossary terms, 6
   scenarios, 19 calculators — `node tools/inventory.mjs` prints them),
-  plus the 60 Academy functions and their 279 quiz questions. Counting
+  plus the 63 Academy functions and their 294 quiz questions. Counting
   quoted string literals, `src/content` alone holds about 0.8 MB of
   English against the catalog's 1 KB. **The honest limit is one translated
   shell around an English product**, and the Spanish half is real but

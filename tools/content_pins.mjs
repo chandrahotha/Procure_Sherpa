@@ -41,8 +41,8 @@
    ========================================================== */
 
 export const PINS = {
-  kb: 78,
-  sop: 19,
+  kb: 84,
+  sop: 20,
   cl: 27,
   tpl: 33,
   dec: 17,
@@ -52,16 +52,16 @@ export const PINS = {
   calc: 19,
   maturityAreas: 9,
   lifecycleStages: 21,
-  academyFunctions: 60,
-  academyModules: 20,
-  academySopSteps: 363,
-  academyQuizQuestions: 279,
+  academyFunctions: 63,
+  academyModules: 21,
+  academySopSteps: 384,
+  academyQuizQuestions: 294,
   /* The three altitudes the curriculum is written at. A function cannot
      be at two levels, and a level cannot gain or lose a function without
      these numbers moving - which is the point: changing a lesson's level
      now fails G1/G16 and G23 until every document that quotes the split
      is re-read. Counts: 9 foundation, 15 practitioner, 13 executive. */
-  academyTierCounts: { core: 10, practitioner: 31, executive: 19 },
+  academyTierCounts: { core: 10, practitioner: 33, executive: 20 },
   /* G21: the SOP library's own procedure steps (master §18 part 7).
      This count was 106 before the torn steps were repaired: four of those
      were not steps at all, but halves of a step created by a ';' written
@@ -69,14 +69,14 @@ export const PINS = {
      ';'). 102 is the number of procedure steps the SOP documents actually
      hold, and G21 now refuses a step whose instruction carries step
      metadata, so the artifact cannot quietly go back to 106. */
-  sopLibrarySteps: 151,
+  sopLibrarySteps: 159,
   sopLibraryMinStepsPerSop: 6,
   /* G18: Academy functions that carry a link into a workbench. One short
      by design: func-mission-value is the orientation lesson and has no
      practice tool, and every other function must have one or the library
      stops being a system. A key dropped from PS.ACADEMY_WORKBENCH moves
      this number and fails the gate. */
-  academyWorkbenchLinked: 59,
+  academyWorkbenchLinked: 62,
   workbenches: 8,
   navLearnSections: 5,
   navLearnItems: 26,

@@ -686,7 +686,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-supply-chain-finance': 'suppliers',
   'func-purchasing-fraud-risk': 'receipts',
   'func-bid-rigging-detection': 'rfx',
-  'func-fraud-response-and-disclosure': 'approvals'
+  'func-fraud-response-and-disclosure': 'approvals',
+  'func-scope3-buying-baseline': 'suppliers',
+  'func-circular-sourcing-economics': 'catalogue',
+  'func-social-value-labour-due-diligence': 'rfx'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

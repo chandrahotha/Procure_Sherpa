@@ -160,6 +160,17 @@ PS.learningPaths.PATHS = [
     skills: ['Reading distributions rather than averages', 'Verifying a payment change out of band', 'Naming the signals collusion leaves in a tender', 'Holding the first hour of a case correctly'],
     duration: '4-6 weeks',
     color: 'var(--dec)'
+  },
+  {
+    id: 'responsible-sourcing',
+    title: 'Sustainable and Responsible Sourcing',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'The three conversations a category manager now has to hold on their own terms: where the carbon actually sits and what a figure can support, what a circular arrangement really costs per cycle, and what the labour and social value rules require as evidence.',
+    modules: ['func-scope3-buying-baseline', 'func-circular-sourcing-economics', 'func-social-value-labour-due-diligence'],
+    skills: ['Telling a measured figure from a spend proxy', 'Pricing a returnable system per cycle achieved', 'Asking who paid the recruitment fee', 'Scoring a claim on mechanism rather than intention'],
+    duration: '4-6 weeks',
+    color: 'var(--ok)'
   }
 ];
 
