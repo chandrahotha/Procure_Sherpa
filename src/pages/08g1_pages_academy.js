@@ -208,6 +208,42 @@ PS.renderAcademyHub = function (params) {
     html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
   }
 
+  /* Readiness at a glance. The hub already says how many are mastered and
+     what is due; what a learner cannot see is *where* the gaps sit -
+     whether the foundation is done and the executive half is untouched -
+     or what their own answers say is unsettled. Every figure here is read
+     from the records the other surfaces use, so one fact cannot have two
+     numbers on one page. */
+  var ready = PS.academy.readiness ? PS.academy.readiness() : null;
+  if (ready) {
+    var tierCells = ready.tiers.map(function (t) {
+      var pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
+      return '<div class="stat">' +
+        '<span class="s-val">' + t.done + '/' + t.total + '</span>' +
+        '<span class="s-lab">' + PS.esc(t.name) + ' mastered</span>' +
+        '<div class="pbar" role="img" aria-label="' + t.done + ' of ' + t.total + ' ' + PS.esc(t.name) + ' lessons mastered">' +
+        '<div class="pbar-fill" style="width:' + pct + '%"></div></div></div>';
+    }).join('');
+    var nextCell = ready.next
+      ? 'Next up: <a href="#/academy/' + encodeURIComponent(ready.next.id) + '">' + PS.esc(ready.next.title) + '</a>'
+      : 'Next up: <strong>nothing - the curriculum is complete.</strong> <a href="#/revise">Keep it sharp with the review queue</a>';
+    var weakCell;
+    if (!ready.answered) {
+      weakCell = '<a href="#/reflection">Reflection</a> has nothing to say until you answer a quiz';
+    } else if (ready.wrong) {
+      weakCell = '<a href="#/reflection">' + ready.wrong + (ready.wrong === 1 ? ' answer is' : ' answers are') + ' still wrong</a>' +
+        (ready.topPrinciple ? ' - the most pressing is &ldquo;' + PS.esc(ready.topPrinciple.length > 88 ? ready.topPrinciple.slice(0, 88) + '...' : ready.topPrinciple) + '&rdquo;' : '');
+    } else {
+      weakCell = 'no wrong answers on record - <a href="#/reflection">every question you have answered is settled or was corrected with the tip</a>';
+    }
+    html += '<div class="card mb16"><div class="card-head"><h2>Where you stand</h2><div class="spacer"></div>' +
+      '<a class="badge" href="#/academy-progress">Full transcript</a></div>' +
+      '<div class="grid grid-3">' + tierCells + '</div>' +
+      '<p class="note">' + nextCell + ' &middot; ' +
+      (ready.due ? '<a href="#/revise">' + ready.due + (ready.due === 1 ? ' lesson is due' : ' lessons are due') + ' for review</a>' : '<a href="#/revise">nothing is due for review today</a>') +
+      ' &middot; ' + weakCell + '.</p></div>';
+  }
+
   /* A jump strip, because seventeen modules of three lessons is a page more
      than one screen long per module, and "go to the contracts one" should not
      require scrolling to find it. Each chip carries its own mastered count, so

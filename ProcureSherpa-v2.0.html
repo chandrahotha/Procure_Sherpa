@@ -3745,7 +3745,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'd7155b76f1e5';
+PS.BUILD = 'a61eb946e10b';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -6103,6 +6103,30 @@ PS.academy.getStats = function () {
   };
 };
 
+/* The data behind the hub readiness panel: mastery split by altitude, what
+   the review queue holds, and what the recorded answers say is unsettled.
+   It reads the same records the rails, the queue and the reflection read, so
+   the hub cannot present a second number for one fact. */
+PS.academy.readiness = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var tiers = (PS.academy.TIERS || []).map(function (t) {
+    var inTier = funcs.filter(function (f) { return f.tier === t.id; });
+    var done = inTier.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+    return { id: t.id, name: t.name, done: done, total: inTier.length };
+  });
+  var nextFn = PS.academy.nextUncompleted();
+  var q = PS.revise ? PS.revise.queue() : null;
+  var r = PS.reflection ? PS.reflection.summary() : null;
+  return {
+    tiers: tiers,
+    next: nextFn ? { id: nextFn.id, title: nextFn.title, module: nextFn.module } : null,
+    due: q ? q.due.length : 0,
+    answered: r ? r.totals.answered : 0,
+    wrong: r ? r.totals.wrong : 0,
+    topPrinciple: r && r.principles.length ? r.principles[0].principle : ''
+  };
+};
+
 /* ---------- curriculum progress helpers (used by the Academy hub and the lesson page) ----------
    The hub lists 15 modules and 40 lessons and tells the reader nothing about
    where they are in it: the only progress view was a separate page, and a
@@ -6130,8 +6154,7 @@ PS.academy.positionIn = function (funcId) {
   return 0;
 };
 
-PS.academy.moduleProgress = function (moduleName) {
-  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
+PS.academy.moduleProgress = function (moduleName) {  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
   var done = funcs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
   return { done: done, total: funcs.length, pct: funcs.length ? Math.round((done / funcs.length) * 100) : 0 };
 };
@@ -14964,6 +14987,42 @@ PS.renderAcademyHub = function (params) {
     html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
   }
 
+  /* Readiness at a glance. The hub already says how many are mastered and
+     what is due; what a learner cannot see is *where* the gaps sit -
+     whether the foundation is done and the executive half is untouched -
+     or what their own answers say is unsettled. Every figure here is read
+     from the records the other surfaces use, so one fact cannot have two
+     numbers on one page. */
+  var ready = PS.academy.readiness ? PS.academy.readiness() : null;
+  if (ready) {
+    var tierCells = ready.tiers.map(function (t) {
+      var pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
+      return '<div class="stat">' +
+        '<span class="s-val">' + t.done + '/' + t.total + '</span>' +
+        '<span class="s-lab">' + PS.esc(t.name) + ' mastered</span>' +
+        '<div class="pbar" role="img" aria-label="' + t.done + ' of ' + t.total + ' ' + PS.esc(t.name) + ' lessons mastered">' +
+        '<div class="pbar-fill" style="width:' + pct + '%"></div></div></div>';
+    }).join('');
+    var nextCell = ready.next
+      ? 'Next up: <a href="#/academy/' + encodeURIComponent(ready.next.id) + '">' + PS.esc(ready.next.title) + '</a>'
+      : 'Next up: <strong>nothing - the curriculum is complete.</strong> <a href="#/revise">Keep it sharp with the review queue</a>';
+    var weakCell;
+    if (!ready.answered) {
+      weakCell = '<a href="#/reflection">Reflection</a> has nothing to say until you answer a quiz';
+    } else if (ready.wrong) {
+      weakCell = '<a href="#/reflection">' + ready.wrong + (ready.wrong === 1 ? ' answer is' : ' answers are') + ' still wrong</a>' +
+        (ready.topPrinciple ? ' - the most pressing is &ldquo;' + PS.esc(ready.topPrinciple.length > 88 ? ready.topPrinciple.slice(0, 88) + '...' : ready.topPrinciple) + '&rdquo;' : '');
+    } else {
+      weakCell = 'no wrong answers on record - <a href="#/reflection">every question you have answered is settled or was corrected with the tip</a>';
+    }
+    html += '<div class="card mb16"><div class="card-head"><h2>Where you stand</h2><div class="spacer"></div>' +
+      '<a class="badge" href="#/academy-progress">Full transcript</a></div>' +
+      '<div class="grid grid-3">' + tierCells + '</div>' +
+      '<p class="note">' + nextCell + ' &middot; ' +
+      (ready.due ? '<a href="#/revise">' + ready.due + (ready.due === 1 ? ' lesson is due' : ' lessons are due') + ' for review</a>' : '<a href="#/revise">nothing is due for review today</a>') +
+      ' &middot; ' + weakCell + '.</p></div>';
+  }
+
   /* A jump strip, because seventeen modules of three lessons is a page more
      than one screen long per module, and "go to the contracts one" should not
      require scrolling to find it. Each chip carries its own mastered count, so
@@ -18216,6 +18275,7 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'The Academy hub now answers where you stand, not just how much you have read. A readiness panel splits mastery across the three altitudes - Foundation, Practitioner, Executive - with a bar for each, and carries alongside it the next lesson to read, how many are due for review today, and how many quiz answers are still unsettled, with the most pressing principle named. Every figure is read from the same records the rails, the review queue and the reflection use, so the hub cannot show a second number for one fact - and on a fresh install it says zero out loud rather than hiding the row',
       'New Module 23: Artificial Intelligence, Model Services and Data Licensing - three lessons on how these products are actually sold. Model services, because total cost is a rate multiplied by tokens per completed task and the second factor is your architecture, not their price list; because a leaderboard score is not a measurement on your work; and because the switching cost usually sits in the vector index rather than in the contract. Data licensing, because you receive records but buy permissions, so analysis, publication, embedding and model training are four different grants, and because provenance is what lets you prove entitlement years later when the supplier and the project owner have both moved on. Supplier assurance, because a probabilistic service cannot be specified into compliance - so the governance object becomes the evidence you require, the baseline you keep, the named human who would still sign the decision, and the fallback that exists before the outage rather than during it. Six new concepts in a new AI and Data Markets category, a learning path and an award. The curriculum is 69 functions across 23 modules, 426 step sequences and 324 quiz questions',
       'Reflection (#/reflection) reads your quiz answers back as judgement gaps, not as a score. The Academy already stored which option you chose on every question and whether you needed the tactical tip before getting it right, so this page separates four states - right first time, got there with coaching, still wrong, and simply not attempted - ranks the principles you have not settled, and lists the lessons to revisit with a link into the practice tab of each. A recovered answer is counted as progress rather than failure, and an unanswered question is never counted as a weakness',
       'New Module 22: Category Depth II - Energy, Works and Creative Markets - three markets where the general playbook actively misleads. Energy, because the delivered bill is commodity plus network plus policy plus metering and only one line is negotiable, and because a fixed price is an option you pay for rather than a safe harbour. Works, because the form of contract decides who carries quantity, design and ground risk before a single bid arrives, and because a tender well under the cost plan is a set of assumptions rather than a saving. Marketing, because the mark-up on third-party spend can exceed the fee being negotiated, and because attribution measures activity while only a test measures effect. Six new concepts in the Markets and Categories domain, a new learning path and a new award. The curriculum is 66 functions across 22 modules, 405 step sequences and 309 quiz questions',

@@ -1685,6 +1685,74 @@ try {
   } else {
     ok('G27', 'the review queue page states the same counts the scheduler computes and explains the ladder');
   }
+  /* ---- The hub readiness panel: one fact, one number ---- */
+  const rd = PS.academy.readiness();
+  const tierTotal = rd.tiers.reduce((x, y) => x + y.done, 0);
+  const expectedCompleted = PS.ACADEMY_FUNCTIONS.filter((f) => PS.academy.isCompleted(f.id)).length;
+  const tierBad = rd.tiers.filter((y) => y.total !== PS.ACADEMY_FUNCTIONS.filter((f) => f.tier === y.id).length).map((y) => y.id);
+  if (tierTotal !== expectedCompleted || tierBad.length) {
+    fail('G27', 'the readiness panel tier counts do not agree with the record (' + tierTotal + ' vs ' + expectedCompleted + (tierBad.length ? '; wrong totals for ' + tierBad.join(',') : '') + ')');
+  } else {
+    ok('G27', 'the readiness panel splits mastery by altitude and the tier totals sum to the completion record (' + tierTotal + ' of ' + rd.tiers.reduce((x, y) => x + y.total, 0) + ')');
+  }
+  if (rd.due !== PS.revise.queue().due.length || !rd.next || !rd.next.id) {
+    fail('G27', 'the readiness panel disagrees with the review queue or names no next lesson');
+  } else {
+    ok('G27', 'the readiness panel quotes the same due count the queue computes and names a next lesson (' + rd.due + ' due)');
+  }
+  w.location.hash = '#/academy';
+  PS.renderRoute();
+  const hubText = w.document.querySelector('#main').textContent;
+  if (!/Where you stand/.test(hubText)) {
+    fail('G27', 'the Academy hub renders no readiness panel');
+  } else if (!new RegExp(rd.due + '\\s+(?:lesson|lessons)\\s+(?:is|are)\\s+due|nothing is due').test(hubText)) {
+    fail('G27', 'the readiness panel states a due figure other than the queue\u2019s ' + rd.due);
+  } else if (
+    (rd.answered === 0 && !/nothing to say until you answer a quiz/.test(hubText)) ||
+    (rd.answered > 0 && rd.wrong > 0 && !hubText.includes(String(rd.wrong) + ' answer')) ||
+    (rd.answered > 0 && rd.wrong === 0 && !/no wrong answers on record/.test(hubText))
+  ) {
+    fail('G27', 'the readiness panel does not carry the reflection state the record supports (answered ' + rd.answered + ', wrong ' + rd.wrong + ')');
+  } else {
+    ok('G27', 'the hub readiness panel states the queue figure and the reflection figure as the records hold them');
+  }
+
+  setAcademy({ completed: {}, scores: {}, badges: {}, current: 'func-mission-value' });
+  w.location.hash = '#/academy';
+  PS.renderRoute();
+  const freshText = w.document.querySelector('#main').textContent;
+  const freshRd = PS.academy.readiness();
+  if (freshRd.due !== 0 || !/nothing is due/.test(freshText)) {
+    fail('G27', 'a fresh record shows a non-zero due figure or hides the row instead of stating zero');
+  } else if (!/nothing to say until you answer a quiz/.test(freshText)) {
+    fail('G27', 'a fresh record is told its reflection is empty in words that overstate what has been measured');
+  } else if (!/func-mission-value|The Value of Procurement/.test(w.document.querySelector('#main').innerHTML + freshText)) {
+    fail('G27', 'the readiness panel names no next lesson for a learner who has read nothing');
+  } else {
+    ok('G27', 'a fresh record reads zero and says so: nothing due, no reflection yet, a named first lesson');
+  }
+
+  /* The third state, so the assertion is not only proven on an empty record. */
+  setAcademy({
+    completed: { [rB]: true },
+    scores: { [rB]: { score: 2, total: 5, pct: 40, date: new Date().toISOString(), answers: { 0: 0, 1: 1 }, recovered: {} } },
+    badges: {}, current: rB
+  });
+  w.location.hash = '#/academy';
+  PS.renderRoute();
+  const rdWrong = PS.academy.readiness();
+  const hubWrong = w.document.querySelector('#main').textContent;
+  const trueWrong = (PS.ACADEMY_FUNCTIONS.filter((f) => {
+    const rep = PS.reflection.forLesson(f);
+    return rep.wrong > 0;
+  }).length, PS.reflection.summary().totals.wrong);
+  if (rdWrong.wrong !== trueWrong || !hubWrong.includes(String(trueWrong) + ' answer')) {
+    fail('G27', 'with answers on record the panel reports ' + rdWrong.wrong + ' wrong where the record holds ' + trueWrong);
+  } else if (!/still wrong/.test(hubWrong)) {
+    fail('G27', 'the panel states a wrong-answer count without saying what it means');
+  } else {
+    ok('G27', 'with answers on record the panel carries the reflection\u2019s wrong-answer count verbatim (' + trueWrong + ')');
+  }
   setAcademy(g27Keep);
 } finally {
   PS.academy._cache = null;

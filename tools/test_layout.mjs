@@ -159,6 +159,14 @@ await new Promise((r) => setTimeout(r, 150));
 check('The progress transcript carries entry points to the review queue and the reflection',
   !!d.querySelector('#main a[href="#/revise"]') && !!d.querySelector('#main a[href="#/reflection"]'));
 
+// 4f. The hub readiness panel renders with one rail per altitude
+window.location.hash = '#/academy';
+await new Promise((r) => setTimeout(r, 200));
+const readyCard = Array.from(d.querySelectorAll('#main h2')).find((h) => /Where you stand/i.test(h.textContent));
+const readyBars = readyCard ? readyCard.closest('.card').querySelectorAll('.pbar').length : 0;
+check('The Academy hub readiness panel renders three altitude rails with aria labels',
+  !!readyCard && readyBars === 3 && Array.from(readyCard.closest('.card').querySelectorAll('.pbar[aria-label]')).length === 3);
+
 // 5. Theme token consistency
 const styleText = Array.from(d.querySelectorAll('style')).map((s) => s.textContent).join('\n');
 check('CSS defines :root color variables (--bg, --panel, --text, --accent)',

@@ -247,6 +247,30 @@ PS.academy.getStats = function () {
   };
 };
 
+/* The data behind the hub readiness panel: mastery split by altitude, what
+   the review queue holds, and what the recorded answers say is unsettled.
+   It reads the same records the rails, the queue and the reflection read, so
+   the hub cannot present a second number for one fact. */
+PS.academy.readiness = function () {
+  var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var tiers = (PS.academy.TIERS || []).map(function (t) {
+    var inTier = funcs.filter(function (f) { return f.tier === t.id; });
+    var done = inTier.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+    return { id: t.id, name: t.name, done: done, total: inTier.length };
+  });
+  var nextFn = PS.academy.nextUncompleted();
+  var q = PS.revise ? PS.revise.queue() : null;
+  var r = PS.reflection ? PS.reflection.summary() : null;
+  return {
+    tiers: tiers,
+    next: nextFn ? { id: nextFn.id, title: nextFn.title, module: nextFn.module } : null,
+    due: q ? q.due.length : 0,
+    answered: r ? r.totals.answered : 0,
+    wrong: r ? r.totals.wrong : 0,
+    topPrinciple: r && r.principles.length ? r.principles[0].principle : ''
+  };
+};
+
 /* ---------- curriculum progress helpers (used by the Academy hub and the lesson page) ----------
    The hub lists 15 modules and 40 lessons and tells the reader nothing about
    where they are in it: the only progress view was a separate page, and a
@@ -274,8 +298,7 @@ PS.academy.positionIn = function (funcId) {
   return 0;
 };
 
-PS.academy.moduleProgress = function (moduleName) {
-  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
+PS.academy.moduleProgress = function (moduleName) {  var funcs = (PS.ACADEMY_FUNCTIONS || []).filter(function (f) { return f.module === moduleName; });
   var done = funcs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
   return { done: done, total: funcs.length, pct: funcs.length ? Math.round((done / funcs.length) * 100) : 0 };
 };
