@@ -867,7 +867,7 @@ is right and this table is the thing to fix.
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Routes passing smoke test | 86 of 86 (`node tools/smoke.mjs` - "routes: 86 failing: 0") | 80+ - met |
+| Routes passing smoke test | 87 of 87 (`node tools/smoke.mjs` - "routes: 87 failing: 0") | 80+ - met |
 | Cross-ref integrity | 0 broken (`node tools/check_rels.mjs` - "checked 261 rel objects; broken refs: 0") | 0 broken |
 | Payload | 2,149 KB readable, 1,768 KB minified, 528 KB gzipped as deployed (594 KB gzipped as the readable file). Re-measure with `npm run perf` - these move with every content commit, which is why the gate below is a time and not a byte count | the gate is a transfer time, not a byte count: under 1,152 KB compressed (3 s at 3 Mbps), warning at 85% of it |
 | Boot and compile | gated, not asserted: `npm run perf` holds app boot to a rendered first page under 500 ms and full V8 script compile under 400 ms, and prints the live figures. They are wall-clock, so they belong to the machine that took them | under budget on every build |

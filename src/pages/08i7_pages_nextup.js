@@ -97,6 +97,18 @@ PS.nextUp.getRecommendation = function () {
     });
   }
 
+  /* A wrong answer is the most specific thing the record can point at. */
+  var refl = PS.reflection ? PS.reflection.summary() : null;
+  if (refl && refl.totals.wrong) {
+    recs.push({
+      kind: 'reflection',
+      title: 'Settle ' + refl.totals.wrong + (refl.totals.wrong === 1 ? ' answer that is still wrong' : ' answers that are still wrong'),
+      why: 'These are quiz questions where your recorded choice is not the correct option. Reflection lists the principles they test, in order, and links back to the lesson behind each one.',
+      href: '#/reflection',
+      cta: 'Reflection'
+    });
+  }
+
   if (labsDone < labsTotal) {
     recs.push({
       kind: 'lab',

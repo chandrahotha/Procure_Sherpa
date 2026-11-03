@@ -88,7 +88,7 @@ src/
 5. **Validation Protocol**: After editing source fragments, run:
    * `node build.mjs` to assemble and perform AST syntax validation.
    * `npm run qa` for the full gate: rels, calculators, interactive checks,
-      content QA, smoke (86 route renders across both views), the 22-gate integrity suite,
+      content QA, smoke (87 route renders across both views), the 22-gate integrity suite,
       security, a11y, and
      the measured performance budget.
    * `node tools/check_rels.mjs` on its own to verify cross-reference relational integrity quickly.

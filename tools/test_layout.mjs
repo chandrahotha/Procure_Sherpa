@@ -146,6 +146,19 @@ await new Promise((r) => setTimeout(r, 150));
 check('The Academy hub carries an entry point to the review queue',
   !!d.querySelector('#main a[href="#/revise"]'));
 
+// 4e. The reflection surface renders, and the transcript reaches it
+window.location.hash = '#/reflection';
+await new Promise((r) => setTimeout(r, 150));
+const reflH1 = d.querySelector('#main h1');
+const reflLinks = Array.from(d.querySelectorAll('#main a[href^="#/"]'));
+check('The reflection page renders a heading and a way forward on an empty record',
+  !!reflH1 && /Reflection/i.test(reflH1.textContent) && reflLinks.length > 0);
+
+window.location.hash = '#/academy-progress';
+await new Promise((r) => setTimeout(r, 150));
+check('The progress transcript carries entry points to the review queue and the reflection',
+  !!d.querySelector('#main a[href="#/revise"]') && !!d.querySelector('#main a[href="#/reflection"]'));
+
 // 5. Theme token consistency
 const styleText = Array.from(d.querySelectorAll('style')).map((s) => s.textContent).join('\n');
 check('CSS defines :root color variables (--bg, --panel, --text, --accent)',

@@ -1912,6 +1912,91 @@ console.log('\nG30  the lesson page works as a lesson');
   }
 }
 
+/* ------------------------------------------------------------------
+   G31 - the reflection reads the answer record, and nothing more.
+   A weakness surface is the easiest place in a learning product to
+   over-claim: it can count an unanswered question as a failure, treat
+   a recovery-after-coaching as a wrong answer, or state a number the
+   record does not support. Each assertion recomputes the expectation
+   from the quiz content rather than from a typed figure.
+   ------------------------------------------------------------------ */
+console.log('\nG31  the reflection report reads the answer record');
+{
+  const savedRecord = PS.academy.getAll();
+  const put = (obj) => { PS.academy._cache = null; PS.academy.save(obj); PS.academy._cache = null; };
+
+  put({ completed: {}, scores: {}, badges: {}, current: 'func-mission-value' });
+  const cleanSummary = PS.reflection.summary();
+  w.location.hash = '#/reflection';
+  PS.renderRoute();
+  const cleanText = w.document.querySelector('#main').textContent;
+  if (cleanSummary.totals.answered !== 0 || cleanSummary.principles.length !== 0) {
+    fail('G31', 'a learner with no quiz answers is reported ' + cleanSummary.totals.answered + ' answered and ' + cleanSummary.principles.length + ' weak principles');
+  } else if (!/Nothing to reflect on yet/.test(cleanText) || !w.document.querySelector('#main a[href^="#/academy"]')) {
+    fail('G31', 'the reflection page states weaknesses before any answer exists, or offers no way to start');
+  } else {
+    ok('G31', 'with no quiz answers the reflection claims no weakness and points to the Academy');
+  }
+
+  const gf = PS.ACADEMY_FUNCTIONS.map((f, i) => ({ f, i })).filter((x) => (x.f.quizzes || []).length >= 4)[0].f;
+  const correctIdx = (q) => q.options.findIndex((o) => o.isCorrect);
+  const wrongIdx = (q) => q.options.findIndex((o, oi) => oi !== correctIdx(q));
+  const qs = gf.quizzes;
+  const answers = {};
+  const recovered = {};
+  answers[0] = correctIdx(qs[0]);                                   // clean
+  answers[1] = correctIdx(qs[1]);  recovered[1] = true;             // coached, then correct
+  answers[2] = wrongIdx(qs[2]);                                     // still wrong
+  put({ completed: { [gf.id]: true }, scores: { [gf.id]: { score: 1, total: qs.length, pct: Math.round(100 / qs.length), date: new Date().toISOString(), answers, recovered } }, badges: {}, current: gf.id });
+
+  const s = PS.reflection.summary();
+  if (s.totals.clean !== 1 || s.totals.coached !== 1 || s.totals.wrong !== 1 || s.totals.answered !== 3) {
+    fail('G31', 'the record says clean 1 / coached 1 / wrong 1 and the summary reports ' + s.totals.clean + ' / ' + s.totals.coached + ' / ' + s.totals.wrong + ' over ' + s.totals.answered + ' answered');
+  } else {
+    ok('G31', 'clean, coached and wrong are separated exactly as the answer record supports (1 / 1 / 1 of ' + s.totals.answered + ' answered)');
+  }
+
+  const expectedOpen = qs.length - 3;
+  const lessonRow = s.lessons.filter((l) => l.id === gf.id)[0];
+  if (!lessonRow) {
+    fail('G31', 'the lesson with a wrong answer is not listed for revisit');
+  } else if (lessonRow.report.open !== expectedOpen) {
+    fail('G31', 'the lesson reports ' + lessonRow.report.open + ' unanswered where the quiz holds ' + expectedOpen);
+  } else if (s.lessons.some((l) => l.id !== gf.id)) {
+    fail('G31', 'a lesson with no answers at all is listed as a weakness');
+  } else {
+    ok('G31', 'unanswered questions are counted as open, not as weaknesses, and untouched lessons are not listed (' + expectedOpen + ' open)');
+  }
+
+  const wrongPrinciple = qs[2].principle;
+  const coachedPrinciple = qs[1].principle;
+  const foundWrong = s.principles.filter((x) => x.principle === wrongPrinciple)[0];
+  const foundCoached = s.principles.filter((x) => x.principle === coachedPrinciple)[0];
+  if (!foundWrong || foundWrong.wrong < 1) {
+    fail('G31', 'the principle behind the wrong answer does not appear in the weak-principle list');
+  } else if (foundCoached && foundCoached.wrong > 0 && coachedPrinciple !== wrongPrinciple) {
+    fail('G31', 'a question answered wrongly but recovered is counted as still wrong');
+  } else if (foundWrong.weight !== foundWrong.wrong * 2 + foundWrong.coached) {
+    fail('G31', 'the ranking weight is not 2 per wrong plus 1 per coached (' + foundWrong.weight + ')');
+  } else {
+    ok('G31', 'the weak-principle ranking is derived from the record (wrong counts twice, coaching once) and lists the missed principle');
+  }
+
+  w.location.hash = '#/reflection';
+  PS.renderRoute();
+  const pageText = w.document.querySelector('#main').textContent;
+  const statedWrong = (pageText.match(/(\d+) answers? still wrong/) || [])[1];
+  if (Number(statedWrong) !== s.totals.wrong) {
+    fail('G31', 'the reflection page states ' + statedWrong + ' still wrong while the record holds ' + s.totals.wrong);
+  } else if (!/How this is worked out/.test(pageText)) {
+    fail('G31', 'the reflection page shows numbers without saying how they were derived');
+  } else {
+    ok('G31', 'the reflection page states the same wrong count the record supports and explains the derivation');
+  }
+
+  put(savedRecord);
+}
+
 w.close();
 console.log('\n--- summary ---');
 const byGate = (a, b) => Number(a.slice(1)) - Number(b.slice(1));

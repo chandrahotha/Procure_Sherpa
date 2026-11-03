@@ -25,6 +25,7 @@ src/core/03h_academy_store.js
 src/core/03i_user_profile.js
 src/core/03j_charts.js
 src/core/03k_revision.js
+src/core/03l_reflection.js
 src/core/04a_router.js
 src/core/04b1_navdata.js
 src/core/04b2_navbuild.js
@@ -98,6 +99,7 @@ src/pages/08i5_pages_tips.js
 src/pages/08i6_pages_whatsnew.js
 src/pages/08i7_pages_nextup.js
 src/pages/08i8_pages_revise.js
+src/pages/08ia_pages_reflection.js
 src/pages/08j1_pages_wb_registry.js
 src/pages/08j2_pages_wb_rfx.js
 src/pages/08j3_pages_wb_ops.js

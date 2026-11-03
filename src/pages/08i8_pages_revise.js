@@ -93,6 +93,7 @@ PS.route('revise', function () {
       '</ul>' +
       '<div class="btn-row" style="margin-top:12px"><a class="btn btn-sm" href="#/academy-progress">Progress transcript</a>' +
       '<a class="btn btn-sm" href="#/exams">Practice exams</a>' +
+      '<a class="btn btn-sm" href="#/reflection">Reflection on your answers</a>' +
       '<a class="btn btn-sm" href="#/next-up">What to learn next</a></div></div>';
   }
 

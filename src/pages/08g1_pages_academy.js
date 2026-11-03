@@ -19,6 +19,7 @@ PS.route('academy-progress', function () {
     '<div class="card-head"><h1>Academy Mastery Transcript</h1><div class="spacer"></div>' +
     '<a class="btn btn-sm" href="#/certificate">🎓 Credential Transcript (Future)</a> ' +
     '<a class="btn btn-sm" href="#/revise">📆 Review queue</a> ' +
+    '<a class="btn btn-sm" href="#/reflection">🪞 Reflection</a> ' +
     '<button type="button" class="btn btn-sm" data-act="print">Print / PDF Transcript</button></div>' +
     '<p class="lead">Complete record of your procurement competency progression, assessment scores, and practical laboratory completion.</p>' +
     '<div class="grid grid-3 mb16">' +
