@@ -283,6 +283,25 @@ if (devCount > 1) {
   }));
 }
 
+/* A pass record is a record of a pass. The completion ledger writes one per
+   cycle under a dated heading ("### Cycle 8 addendum 21 - ...", "## Cycle 6 —
+   2026-11-02"), and every figure inside it was measured then. The heading is
+   the label, so the exemption follows the heading rather than the digit, and
+   the live rows elsewhere in the same file stay checked. Shared by the byte
+   rule and the count rules below, because a pass record is exempt from both -
+   otherwise every new tranche would force the previous one to be rewritten. */
+const DATED_SECTION = /^#{2,4}\s.*(addendum|Cycle \d+ — 20\d\d)/i;
+/** @param {string} text @returns {string[]} the lines that are not pass records */
+function liveLines(text) {
+  let inPassRecord = false;
+  return text.split(/\r?\n/).filter((line) => {
+    const t = line.trim();
+    if (DATED_SECTION.test(t)) inPassRecord = true;
+    else if (/^#{2,4}\s/.test(t)) inPassRecord = false;
+    return !inPassRecord && !HISTORICAL.test(line);
+  });
+}
+
 /* ---------- the two compressed sizes, and which ceiling they belong to ----------
    There are two gzip figures and they are not interchangeable: the readable
    artifact a user downloads is budgeted against the 1,152 KB transfer
@@ -304,18 +323,8 @@ if (devCount > 1) {
   /* Documents round to whole KB and the gzip figure moves between builds;
      2 KB is the difference between "quoted from the tool" and "remembered". */
   const near = (n, kb) => kb !== null && Math.abs(n - kb) <= 2;
-  /* A pass record is a record of a pass. The completion ledger writes one
-     per cycle under a dated heading, and every byte figure inside it is a
-     measurement taken then - not a claim about now. The heading is the
-     label, so the exemption follows the heading rather than the digit, and
-     the live rows elsewhere in the same file stay checked. */
-  const DATED_SECTION = /^#{2,4}\s.*(addendum|Cycle \d+ — 20\d\d)/i;
   for (const d of docs) {
-    let inPassRecord = false;
-    for (const line of d.text.split(/\r?\n/)) {
-      if (DATED_SECTION.test(line.trim())) inPassRecord = true;
-      if (/^#{2,4}\s/.test(line.trim()) && !DATED_SECTION.test(line.trim())) inPassRecord = false;
-      if (inPassRecord || HISTORICAL.test(line)) continue;
+    for (const line of liveLines(d.text)) {
       /* One line can carry both figures, each with its own ceiling, so the
          pairing is read from the clause around the number rather than from
          anywhere in the row - a table row that ends by naming the transfer
@@ -394,8 +403,7 @@ const COUNT_CLAIMS = [
   { re: /(\d{2,3}) procedure steps/g, want: () => PINS.sopLibrarySteps, what: 'SOP library procedure steps' }
 ];
 for (const d of docs) {
-  for (const line of d.text.split(/\r?\n/)) {
-    if (HISTORICAL.test(line)) continue;
+  for (const line of liveLines(d.text)) {
     for (const claim of COUNT_CLAIMS) {
       claim.re.lastIndex = 0;
       let m;
