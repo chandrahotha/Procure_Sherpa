@@ -592,7 +592,7 @@ PS.academyWorkedExample = function (f) {
   return '<div class="card academy-worked-example">' +
     '<div class="card-head"><h2>Worked example</h2><div class="spacer"></div>' +
     '<span class="eyebrow">See it happen</span></div>' +
-    body + calcLink +
+    body + PS.illustrativeNote('lesson') + calcLink +
     '</div>';
 };
 

@@ -3745,7 +3745,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '287e7c50b652';
+PS.BUILD = '0e3fbcffc566';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -4553,6 +4553,21 @@ PS.withDisclaimer = function (kind) {
     credential: 'Exam results, badges and progress are recorded in this browser only. Procure Sherpa is not an authorized issuer of procurement credentials, so nothing here is a certification, an accredited qualification, or verifiable by a third party.'
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';
+};
+
+/* The local provenance line for a constructed example. The page-level
+   'origin' disclaimer says where the teaching material comes from; this
+   sits directly on the example itself, because a reader who scans to the
+   example and back out again never meets the footer. G25 asserts the
+   label is present on the worked-example card, calculator pages and
+   scenario pages. */
+PS.illustrativeNote = function (kind) {
+  var N = {
+    lesson: 'Constructed for this lesson to show the mechanism at work: the company, the figures and the outcome are illustrative, not a report of a real organisation or a verified result.',
+    calc: 'Example and random values are illustrative figures constructed for this tool, so you can see the shape of a correct answer before using your own; they are not market data or a benchmark.',
+    scen: 'This scenario is constructed for training: the organisation, the figures and the events are illustrative, not a case report of a real procurement.'
+  };
+  return '<p class="note">' + PS.esc(N[kind] || N.calc) + '</p>';
 };
 /* ==========================================================
    Section B: local storage, schema versioning, audit, saved work
@@ -8291,6 +8306,8 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Example</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear" data-i18n="calc.reset">Reset</button>' +
+    '</div>' +
+    PS.illustrativeNote('calc') +
     '</div></div>' +
     '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
     '<div class="calc-panel-results"><div id="calcResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +
@@ -12944,7 +12961,7 @@ PS.route('kpi', function (id, params) {
     '</div>' +
     '<div class="grid grid-2">' +
     '<div class="card"><h2>Required inputs</h2>' + PS.ul(it.inputs) + '</div>' +
-    '<div class="card"><h2>Worked example</h2><div class="alert">' + PS.esc(it.example) + '</div></div>' +
+    '<div class="card"><h2>Worked example</h2><div class="alert">' + PS.esc(it.example) + '</div>' + PS.illustrativeNote('calc') + '</div>' +
     '<div class="card"><h2>Interpretation</h2>' + PS.ul(it.interp) + '</div>' +
     '<div class="card"><h2>Limitations</h2>' + PS.ul(it.limits) + '</div>' +
     '</div>' +
@@ -13034,7 +13051,7 @@ PS.route('scenarios', function () {
   var list = PS.data.scen || [];
   return PS.reportHead('Procurement scenario library', list.length + ' scenarios') +
     '<div class="card"><h1>Scenario library</h1>' +
-    '<p class="lead">Realistic procurement situations with the full chain of work attached: process, SOP, checklist, calculator, template and report. Use these as worked examples of how Procure Sherpa connects together.</p></div>' +
+    '<p class="lead">Realistic procurement situations with the full chain of work attached: process, SOP, checklist, calculator, template and report. Use these as worked examples of how Procure Sherpa connects together. Each one is constructed for training, so the organisations and figures are illustrative rather than case reports.</p></div>' +
     (list.length ? '<div class="grid grid-2">' + list.map(function (s) {
       return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
         { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
@@ -13052,6 +13069,7 @@ PS.route('scen', function (id, params) {
     '<div class="card"><div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' + PS.badge('scen') + '</div>' +
     '<div class="alert alert-info"><strong>Typical situation</strong>' + PS.esc(it.problem) + '</div>' +
     (it.summary ? '<p>' + PS.esc(it.summary) + '</p>' : '') +
+    PS.illustrativeNote('scen') +
     '<div class="btn-row no-print"><button type="button" class="btn" data-act="scenario-jump" data-q="' + PS.esc(it.problem) + '">Run this through &ldquo;What should I do?&rdquo;</button></div>' +
     '</div>' +
     '<div class="card"><h2>The route through Procure Sherpa</h2>' +
@@ -15048,7 +15066,7 @@ PS.academyWorkedExample = function (f) {
   return '<div class="card academy-worked-example">' +
     '<div class="card-head"><h2>Worked example</h2><div class="spacer"></div>' +
     '<span class="eyebrow">See it happen</span></div>' +
-    body + calcLink +
+    body + PS.illustrativeNote('lesson') + calcLink +
     '</div>';
 };
 
@@ -17856,6 +17874,7 @@ PS.whatsNew.CHANGES = [
     title: 'The reading edition',
     tag: 'Major',
     items: [
+      'Every worked example now says what it is, where it lives: the lesson example card, the calculator example panel, the KPI worked example and every scenario page carry a line stating that the company, figures and outcome are constructed for teaching - illustrative, not reports of real organisations. A gate now fails the build if any of those surfaces loses the label',
       'The front door is authored now: the home and dashboard headline uses the reading face, learning-path and lesson cards are set the same way, and empty states say more kindly what to do next',
       'Every lesson now states where its material comes from: examples are labelled Illustrative rather than real-world, and a provenance note says the lessons are written for this product and the figures are constructed to show how a mechanism behaves - not reports of real organisations or verified benchmarks',
       'A new controlled procedure where the curriculum had been pointing at a checklist: the Contract Change Control SOP, seven steps each with an owner, an output and a control. The SOP library is now 16 documents holding 125 procedure steps',
@@ -17863,7 +17882,7 @@ PS.whatsNew.CHANGES = [
       'Inside a lesson: a section jump bar on the mission tab, a closing block that lists what is still to do in this lesson and holds the mark-as-studied control on every tab (it used to exist only inside the laboratory tab), and previous and next lesson as cards naming the title and the function number rather than three arrows in a row. A new gate owns all three',
       'Browsing a library is navigable now: a live result count that moves with the filter, a sticky category jump bar on any library with more than three categories, and group headers that read as sections rather than small headings. In-page jumps go through a scroll action, because this app routes on the hash and a plain anchor link would be read as a route change',
       'The Academy hub got a way in: a sticky module index listing all seventeen modules with each module\'s mastered count, a status filter (Not started / Quiz taken / Mastered) that composes with the level filter instead of resetting it, and a per-module line saying how many lessons and how many minutes each module holds. Four new assertions check the filters against the completion record, so a strip that counts something the cards do not show now fails the build',
-      'The lesson reads like a long-form article now: a reading progress bar rides the sticky tab rail so you always know how much of a lesson is behind you, and the home page featured thinking point rotates daily through the more than one hundred and twenty authored thinking points in the curriculum - each one linking straight to the lesson it came from - instead of showing every visitor the same quote',
+      'The lesson reads like a long-form article now: a reading progress bar rides the sticky tab rail so you always know how much of a lesson is behind you, and the home page featured thinking point rotates daily through the curriculum\'s authored thinking points - each one linking straight to the lesson it came from - instead of showing every visitor the same quote',
       'New Module 20: Procurement Fraud, Collusion and the Controls That Catch It - the fraud triangle applied to buying, the vendor-master and payment-diversion controls that catch it, bid rigging patterns and the twin-bid test, and what to do in the first week after a finding. Comes with six new concepts in a Fraud and Assurance category, a Vendor Master Integrity SOP, a matching assurance track and an award. The curriculum is 60 functions across 20 modules, 363 step sequences and 279 quiz questions',
       'New users start at zero. The spend model used to open on a four-category demo portfolio that read as your own numbers; it now opens empty, and the worked example is one explicit click away when you want it',
       'New Module 19: The Finance of Procurement - Cash, Terms and Value - payment terms read as a financial instrument instead of a concession, the cash conversion cycle and the part of it procurement actually controls, and supply chain finance with the ethics of pushing your own balance sheet onto a smaller supplier. The curriculum is 57 functions across 19 modules, 342 step sequences and 264 quiz questions, with a matching finance track and award',

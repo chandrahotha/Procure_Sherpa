@@ -1306,6 +1306,33 @@ if (missingDisclaimer.length) {
   } else {
     ok('G25', 'lesson pages state that the material is written for this product and the examples are constructed');
   }
+  /* The page-level disclaimer is not enough: a reader who jumps straight to
+     the worked example never reaches the footer. The example itself carries
+     the provenance line, on every surface that renders one. */
+  const workedHash = '#/academy/func-obligation-register?tab=learn';
+  w.location.hash = workedHash;
+  PS.renderRoute();
+  const card = w.document.querySelector('.academy-worked-example');
+  if (!card) {
+    fail('G25', 'the worked example on ' + workedHash + ' does not render a .academy-worked-example card, so there is nothing for the provenance label to sit on');
+  } else if (!/illustrative/i.test(card.textContent) || !/constructed/i.test(card.textContent)) {
+    fail('G25', 'the worked example card carries no constructed/illustrative provenance label');
+  } else {
+    ok('G25', 'the lesson worked example is labelled as constructed on the card itself');
+  }
+  const exampleHashes = ['#/calc/calc-tco', '#/scen/scn-new-purchase'];
+  const noExampleLabel = [];
+  for (const h of exampleHashes) {
+    w.location.hash = h;
+    PS.renderRoute();
+    const txt = w.document.querySelector('#main').textContent;
+    if (!/illustrative/i.test(txt) || !/constructed/i.test(txt)) noExampleLabel.push(h);
+  }
+  if (noExampleLabel.length) {
+    fail('G25', 'pages that render example or scenario data with no illustrative provenance label: ' + noExampleLabel.join(', '));
+  } else {
+    ok('G25', 'calculator and scenario pages label their example data as illustrative');
+  }
   const allSrc = ['src/pages/08g1_pages_academy.js', 'src/pages/08g2_pages_quiz_engine.js']
     .map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
   if (/Real-?World (Enterprise|Situation|Rationale)/i.test(allSrc)) {

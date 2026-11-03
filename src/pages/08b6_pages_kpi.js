@@ -17,7 +17,7 @@ PS.route('kpi', function (id, params) {
     '</div>' +
     '<div class="grid grid-2">' +
     '<div class="card"><h2>Required inputs</h2>' + PS.ul(it.inputs) + '</div>' +
-    '<div class="card"><h2>Worked example</h2><div class="alert">' + PS.esc(it.example) + '</div></div>' +
+    '<div class="card"><h2>Worked example</h2><div class="alert">' + PS.esc(it.example) + '</div>' + PS.illustrativeNote('calc') + '</div>' +
     '<div class="card"><h2>Interpretation</h2>' + PS.ul(it.interp) + '</div>' +
     '<div class="card"><h2>Limitations</h2>' + PS.ul(it.limits) + '</div>' +
     '</div>' +

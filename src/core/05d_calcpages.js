@@ -42,6 +42,8 @@ var html = PS.reportHead(calc.title, calc.cat + ' calculator') +
     '<button type="button" class="btn btn-sm" data-act="example" data-i18n="calc.example">Example</button>' +
     '<button type="button" class="btn btn-sm" data-act="calc-random" data-i18n="calc.random">Random values</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-act="clear" data-i18n="calc.reset">Reset</button>' +
+    '</div>' +
+    PS.illustrativeNote('calc') +
     '</div></div>' +
     '<div class="calc-sheet-handle no-print" aria-hidden="true"></div></div>' +
     '<div class="calc-panel-results"><div id="calcResult" class="results" aria-live="polite" aria-atomic="true"><div class="results-empty">Enter values and choose <strong>Calculate</strong> to view results, interpretation, formula and assumptions.</div></div>' +

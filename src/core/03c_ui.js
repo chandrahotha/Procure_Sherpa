@@ -359,3 +359,18 @@ PS.withDisclaimer = function (kind) {
   };
   return '<p class="disclaimer">' + PS.esc(D[kind] || D.data) + '</p>';
 };
+
+/* The local provenance line for a constructed example. The page-level
+   'origin' disclaimer says where the teaching material comes from; this
+   sits directly on the example itself, because a reader who scans to the
+   example and back out again never meets the footer. G25 asserts the
+   label is present on the worked-example card, calculator pages and
+   scenario pages. */
+PS.illustrativeNote = function (kind) {
+  var N = {
+    lesson: 'Constructed for this lesson to show the mechanism at work: the company, the figures and the outcome are illustrative, not a report of a real organisation or a verified result.',
+    calc: 'Example and random values are illustrative figures constructed for this tool, so you can see the shape of a correct answer before using your own; they are not market data or a benchmark.',
+    scen: 'This scenario is constructed for training: the organisation, the figures and the events are illustrative, not a case report of a real procurement.'
+  };
+  return '<p class="note">' + PS.esc(N[kind] || N.calc) + '</p>';
+};

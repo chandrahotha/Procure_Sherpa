@@ -4,7 +4,7 @@ PS.route('scenarios', function () {
   var list = PS.data.scen || [];
   return PS.reportHead('Procurement scenario library', list.length + ' scenarios') +
     '<div class="card"><h1>Scenario library</h1>' +
-    '<p class="lead">Realistic procurement situations with the full chain of work attached: process, SOP, checklist, calculator, template and report. Use these as worked examples of how Procure Sherpa connects together.</p></div>' +
+    '<p class="lead">Realistic procurement situations with the full chain of work attached: process, SOP, checklist, calculator, template and report. Use these as worked examples of how Procure Sherpa connects together. Each one is constructed for training, so the organisations and figures are illustrative rather than case reports.</p></div>' +
     (list.length ? '<div class="grid grid-2">' + list.map(function (s) {
       return PS.tile('#/scen/' + encodeURIComponent(s.id), 'Scenario', s.title, s.problem || s.desc,
         { icon: PS.TYPE_META.scen.icon, acc: PS.TYPE_META.scen.acc, meta: (s.steps || []).length + ' steps', cta: 'Open the route' });
@@ -22,6 +22,7 @@ PS.route('scen', function (id, params) {
     '<div class="card"><div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' + PS.badge('scen') + '</div>' +
     '<div class="alert alert-info"><strong>Typical situation</strong>' + PS.esc(it.problem) + '</div>' +
     (it.summary ? '<p>' + PS.esc(it.summary) + '</p>' : '') +
+    PS.illustrativeNote('scen') +
     '<div class="btn-row no-print"><button type="button" class="btn" data-act="scenario-jump" data-q="' + PS.esc(it.problem) + '">Run this through &ldquo;What should I do?&rdquo;</button></div>' +
     '</div>' +
     '<div class="card"><h2>The route through Procure Sherpa</h2>' +
