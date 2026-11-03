@@ -70,7 +70,7 @@ export const FLOOR = { LIBRARY: 600, WORKSPACE: 250 };
    records, so they take the strict floor. */
 export const WORKSPACE_ROUTES = new Set([
   'saved', 'fav', 'recent', 'backup', 'settings', 'audit', 'dash', 'dash-savings',
-  'copilot', 'exams', 'spend-model', 'docpack', 'assessment', 'labs', 'portfolio',
+  'copilot', 'exams', 'exam', 'spend-model', 'docpack', 'assessment', 'labs', 'portfolio',
   'community', 'certificate', 'daily-tip', 'next-up', 'revise', 'reflection',
   'rfx', 'suppliers', 'contracts', 'catalogue', 'receipts', 'budget', 'approvals', 'analytics'
 ]);

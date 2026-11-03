@@ -43,6 +43,11 @@ PS.link = function (type, id, label, cls) {
 PS.renderRoute = function () {
   var r = PS.parseHash();
   PS.routeMeta = r;
+  /* An exam session takes the whole viewport. The menu, the search box and the
+     breadcrumb are three ways to leave a running clock, and the timer is the
+     one thing a reader should not have to look for. */
+  var appEl = PS.$('#app');
+  if (appEl) appEl.classList.toggle('is-exam-focus', r.name === 'exam');
   if (PS.syncNavForRoute) PS.syncNavForRoute(r);
   var fn = PS.routes[r.name] || PS.routes.notfound;
   var html = '';

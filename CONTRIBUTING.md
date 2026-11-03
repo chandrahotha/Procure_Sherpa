@@ -95,7 +95,7 @@ and layout suites.
 The counts are printed by the tools that produce them, and `npm run qa`
 is the only trustworthy source for them: 1,021 calculator assertions over
 19 calculators, 51 expected-value fixtures, 22 utility unit tests, 18
-content/quiz assertions, 87 route renders, 29 layout checks and the
+content/quiz assertions, 88 route renders, 40 layout checks and the
 integrity gate's own `gates exercised / assertions` summary line. They move
 when the suite grows, which is why documents here quote them as of the
 date they were written and the gate prints them live.

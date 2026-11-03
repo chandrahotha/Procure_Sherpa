@@ -70,21 +70,73 @@ PS.exams.sample = function (pool, n) {
 /* ---------- running session state (kept on the page) ---------- */
 PS.exams.session = null;
 
-PS.acts['exam-start'] = function (el) {
-  var bankId = el.dataset.bank;
+/* A session is built here and nowhere else, because two entries now exist:
+   the Start button on the exams page and a direct link to #/exam?bank=...&n=...
+   which is also what a popped-out window loads. */
+PS.exams.start = function (bankId, count) {
   var bank = PS.exams.banks().filter(function (b) { return b.id === bankId; })[0];
-  if (!bank || !bank.pool.length) { PS.toast('This exam has no questions yet.', 'warn'); return; }
-  var count = PS.num(PS.$('#examCount') ? PS.$('#examCount').value : '') || PS.exams.DEFAULT_COUNT;
-  var questions = PS.exams.sample(bank.pool, count);
+  if (!bank || !bank.pool.length) { PS.toast('This exam has no questions yet.', 'warn'); return false; }
+  var n = Math.min(Math.max(PS.num(count) || PS.exams.DEFAULT_COUNT, 1), bank.pool.length);
   PS.exams.session = {
-    bank: bank, questions: questions,
+    bank: bank, questions: PS.exams.sample(bank.pool, n),
     answers: {}, current: 0,
     start: Date.now(),
-    timeLimit: questions.length * PS.exams.SECONDS_PER_QUESTION,
+    timeLimit: n * PS.exams.SECONDS_PER_QUESTION,
     done: false
   };
-  PS.exams.renderExamRunner();
+  return true;
 };
+
+PS.acts['exam-start'] = function (el) {
+  PS.exams.stopTimer();
+  PS.exams.session = null;
+  var count = PS.num(PS.$('#examCount') ? PS.$('#examCount').value : '') || PS.exams.DEFAULT_COUNT;
+  PS.go('exam', { bank: el.dataset.bank, n: count });
+};
+
+/* The clock should not be the reason a reader has to keep this tab open.
+   The same session route opens in its own window, and the attempt is written
+   to the same local store either way. */
+PS.acts['exam-popout'] = function () {
+  var s = PS.exams.session;
+  if (!s) return;
+  var url = String(location.href).split('#')[0] +
+    '#/exam?bank=' + encodeURIComponent(s.bank.id) + '&n=' + s.questions.length;
+  var win = null;
+  try { win = window.open(url, 'ps-exam', 'width=980,height=860,noopener'); } catch (e) { win = null; }
+  if (!win) {
+    PS.toast('The browser blocked the pop-out window. The exam is already on its own full-screen page - or allow pop-ups for this site to move it to a separate window.', 'warn');
+    return;
+  }
+  PS.toast('Opened in a separate window. This page stays available; the attempt is saved in this browser either way.', 'ok');
+};
+
+PS.acts['exam-exit'] = function () {
+  var s = PS.exams.session;
+  var answered = s ? Object.keys(s.answers).length : 0;
+  PS.confirm({
+    title: 'Leave this exam?',
+    body: '<p>' + (answered ? answered + ' of ' + s.questions.length + ' questions are answered. ' : 'Nothing is answered yet. ') +
+      'Leaving abandons the attempt - it is not graded and not recorded.</p>',
+    okLabel: 'Leave exam',
+    onOk: function () { PS.exams.stopTimer(); PS.exams.session = null; PS.go('exams'); }
+  });
+};
+
+PS.acts['exam-jump'] = function (el) {
+  var s = PS.exams.session;
+  if (!s) return;
+  var i = PS.num(el.dataset.i);
+  if (i >= 0 && i < s.questions.length) { s.current = i; PS.exams.renderExamRunner(); }
+};
+
+/* An attempt recorded in the popped-out window lands in the same store, so the
+   page that lists history has to notice. */
+if (window.addEventListener) {
+  window.addEventListener('storage', function (e) {
+    if (e && e.key === PS.exams.KEY && PS.routeMeta && PS.routeMeta.name === 'exams') PS.renderRoute();
+  });
+}
 
 PS.exams.renderExamRunner = function () {
   var box = PS.$('#examRunner');
@@ -92,12 +144,27 @@ PS.exams.renderExamRunner = function () {
   var s = PS.exams.session;
   var q = s.questions[s.current];
   var answeredCount = Object.keys(s.answers).length;
-  var html = '<div class="exam-runner">' +
-    '<div class="card"><div class="card-head"><div><h2>' + PS.esc(s.bank.title) + '</h2>' +
-    '<p class="card-sub">Question ' + (s.current + 1) + ' of ' + s.questions.length + ' \u00B7 ' + answeredCount + ' answered \u00B7 <strong>Pass mark ' + PS.exams.PASS_PCT + '%</strong></p></div>' +
-    '<div class="spacer"></div><span class="badge exam-timer" id="examTimer">' + PS.exams.fmtTime(s.timeLimit) + '</span></div>' +
-    '<div class="exam-progress-track"><div class="exam-progress-fill" style="width:' + Math.round(((s.current + 1) / s.questions.length) * 100) + '%"></div></div></div>' +
-    '<div class="card"><h3>' + PS.esc(q.q) + '</h3>' +
+  var rail = s.questions.map(function (qq, i) {
+    var cls = 'exam-dot' + (s.answers[i] !== undefined ? ' is-answered' : '') + (i === s.current ? ' is-current' : '');
+    return '<button type="button" class="' + cls + '" data-act="exam-jump" data-i="' + i + '" ' +
+      'aria-label="Question ' + (i + 1) + ' of ' + s.questions.length + (s.answers[i] !== undefined ? ', answered' : ', unanswered') + '"' +
+      (i === s.current ? ' aria-current="true"' : '') + '>' + (i + 1) + '</button>';
+  }).join('');
+  var focus = PS.routeMeta && PS.routeMeta.name === 'exam';
+  var html = '<div class="exam-runner' + (focus ? ' exam-shell' : '') + '">' +
+    (focus ? '<div class="exam-head"><div><h1>' + PS.esc(s.bank.title) + '</h1>' +
+      '<p class="exam-aside">' + answeredCount + ' of ' + s.questions.length + ' answered \u00B7 pass mark ' + PS.exams.PASS_PCT + '%</p></div>' +
+      '<div class="spacer"></div>' +
+      '<span class="badge exam-timer" id="examTimer" role="timer">' + PS.exams.fmtTime(s.timeLimit) + '</span>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="exam-popout">Open in new window</button>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-act="exam-exit">Leave exam</button></div>' +
+      '<div class="exam-rail" role="group" aria-label="Questions in this exam">' + rail + '</div>'
+      : '<div class="card"><div class="card-head"><div><h2>' + PS.esc(s.bank.title) + '</h2>' +
+        '<p class="card-sub">Question ' + (s.current + 1) + ' of ' + s.questions.length + ' \u00B7 ' + answeredCount + ' answered \u00B7 <strong>Pass mark ' + PS.exams.PASS_PCT + '%</strong></p></div>' +
+        '<div class="spacer"></div><span class="badge exam-timer" id="examTimer" role="timer">' + PS.exams.fmtTime(s.timeLimit) + '</span></div>' +
+        '<div class="exam-progress-track"><div class="exam-progress-fill" style="width:' + Math.round(((s.current + 1) / s.questions.length) * 100) + '%"></div></div></div>') +
+    '<div class="card"><p class="card-sub">Question ' + (s.current + 1) + ' of ' + s.questions.length + '</p>' +
+    '<h3>' + PS.esc(q.q) + '</h3>' +
     '<div class="field"><span class="badge">' + PS.esc(q.funcTitle) + '</span> <span class="badge">' + PS.esc(PS.academyQuiz.diffMeta[q.diff] ? PS.academyQuiz.diffMeta[q.diff].label : '') + '</span></div>' +
     '<div class="exam-options">' +
     q.options.map(function (o, i) {

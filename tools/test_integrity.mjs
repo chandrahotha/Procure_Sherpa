@@ -1387,11 +1387,15 @@ if (/certification/i.test(examsH1)) {
 } else {
   ok('G26', 'the exams page calls itself practice, not certification ("' + examsH1.trim() + '")');
 }
-const startBtn = [...w.document.querySelectorAll('#main [data-act="exam-start"]')][0];
+const startBtn = [...w.document.querySelectorAll('#main a.exam-start-link')][0];
 if (!startBtn) {
-  fail('G26', 'no exam bank card offers a start button');
+  fail('G26', 'no exam bank card offers a start link');
+} else if (!/^#\/exam\?bank=/.test(startBtn.getAttribute('href') || '')) {
+  fail('G26', 'the exam start control is not a real link into the exam route: ' + startBtn.getAttribute('href'));
 } else {
-  startBtn.click();
+  /* Follow the link the way a reader does, then check the session exists. */
+  w.location.hash = startBtn.getAttribute('href');
+  PS.renderRoute();
   const sess = PS.exams.session;
   if (!sess || !sess.questions.length) {
     fail('G26', 'starting an exam did not create a session');

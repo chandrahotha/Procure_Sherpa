@@ -149,6 +149,25 @@ const read = (rel) => {
 };
 const docs = DOCFILES.map((f) => ({ file: f, text: read(f) })).filter((d) => d.text);
 
+/* A pass record is a record of a pass. The completion ledger writes one per
+   cycle under a dated heading ("### Cycle 8 addendum 21 - ...", "## Cycle 6 —
+   2026-11-02"), and every figure inside it was measured then. The heading is
+   the label, so the exemption follows the heading rather than the digit, and
+   the live rows elsewhere in the same file stay checked. Shared by the byte
+   rule and the count rules below, because a pass record is exempt from both -
+   otherwise every new tranche would force the previous one to be rewritten. */
+const DATED_SECTION = /^#{2,4}\s.*(addendum|Cycle \d+ — 20\d\d)/i;
+/** @param {string} text @returns {string[]} the lines that are not pass records */
+function liveLines(text) {
+  let inPassRecord = false;
+  return text.split(/\r?\n/).filter((line) => {
+    const t = line.trim();
+    if (DATED_SECTION.test(t)) inPassRecord = true;
+    else if (/^#{2,4}\s/.test(t)) inPassRecord = false;
+    return !inPassRecord && !HISTORICAL.test(line);
+  });
+}
+
 /* A line that describes a previous state is allowed to name the previous
    number: "the pool went 106 -> 102" is evidence, not a live claim. */
 /* A line that labels itself as a dated record is not making a current
@@ -261,14 +280,17 @@ if (devCount > 1) {
    around it claims to be counting the smoke table; a correct 72 is not a
    finding, an 63 left over from before the workbenches arrived is. */
 {
+  /* Line-wise, and through the same pass-record exemption the other rules
+     use: a delivery report that quotes the route count of the release it
+     describes is not making a claim about the current table. */
   const claimed = docs
-    /* The lookbehind is not decoration: "§78 paths" is a section number
-       followed by a noun, and without it the rule read it as a claim that
-       the smoke table has 78 routes. */
-   /* "18 paths" and "18 learning paths" are different claims; the route-count rule
-      must not read the second as the first. Hit twice in one cycle, once in a
-      ledger line and once in the paragraph describing the hazard. */
-    .map((d) => ({ file: d.file, m: d.text.match(/(?<![§\d])(\d{2,3})(?:-route smoke| route renders|(?<!learning ) paths)/g) }))
+    .map((d) => ({ file: d.file, m: liveLines(d.text).reduce((a, line) => a.concat(
+      /* The lookbehind is not decoration: "§78 paths" is a section number
+         followed by a noun, and without it the rule read it as a claim that
+         the smoke table has 78 routes. "18 paths" and "18 learning paths" are
+         different claims too - the lookbehind on `learning ` keeps them apart. */
+      line.match(/(?<![§\d])(\d{2,3})(?:-route smoke| route renders| route smoke of|(?<!learning ) paths)/g) || [])
+      , []) }))
     .filter((x) => x.m);
   claimed.forEach((c) => c.m.forEach((phrase) => {
     const n = Number(phrase.match(/\d{2,3}/)[0]);
@@ -283,24 +305,6 @@ if (devCount > 1) {
   }));
 }
 
-/* A pass record is a record of a pass. The completion ledger writes one per
-   cycle under a dated heading ("### Cycle 8 addendum 21 - ...", "## Cycle 6 —
-   2026-11-02"), and every figure inside it was measured then. The heading is
-   the label, so the exemption follows the heading rather than the digit, and
-   the live rows elsewhere in the same file stay checked. Shared by the byte
-   rule and the count rules below, because a pass record is exempt from both -
-   otherwise every new tranche would force the previous one to be rewritten. */
-const DATED_SECTION = /^#{2,4}\s.*(addendum|Cycle \d+ — 20\d\d)/i;
-/** @param {string} text @returns {string[]} the lines that are not pass records */
-function liveLines(text) {
-  let inPassRecord = false;
-  return text.split(/\r?\n/).filter((line) => {
-    const t = line.trim();
-    if (DATED_SECTION.test(t)) inPassRecord = true;
-    else if (/^#{2,4}\s/.test(t)) inPassRecord = false;
-    return !inPassRecord && !HISTORICAL.test(line);
-  });
-}
 
 /* ---------- the two compressed sizes, and which ceiling they belong to ----------
    There are two gzip figures and they are not interchangeable: the readable

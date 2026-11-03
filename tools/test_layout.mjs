@@ -123,6 +123,23 @@ if (progFill) {
     tf.indexOf('scaleX(') === 0 && tf.indexOf('NaN') < 0 && tf.indexOf('Infinity') < 0, tf);
 }
 
+// 4b2. An exam opens on its own full-viewport page, not inside the menu
+window.location.hash = '#/exam?bank=cert-full&n=3';
+await new Promise((r) => setTimeout(r, 220));
+const appEl = d.querySelector('#app');
+const examMain = d.querySelector('#main');
+const examText = examMain ? examMain.textContent : '';
+check('the exam route renders a session with a question rail',
+  /Question 1 of 3/.test(examText) && d.querySelectorAll('#main .exam-dot').length === 3,
+  d.querySelectorAll('#main .exam-dot').length + ' rail dots');
+check('exam focus mode hides the shell chrome rather than dimming it',
+  !!appEl && appEl.className.indexOf('is-exam-focus') >= 0,
+  appEl ? appEl.className : 'no #app');
+check('the exam header carries the clock, a pop-out and a way out',
+  !!d.querySelector('#main .exam-head #examTimer') &&
+  !!d.querySelector('#main [data-act="exam-popout"]') &&
+  !!d.querySelector('#main [data-act="exam-exit"]'));
+
 // 4c. The home thinking point is drawn from the curriculum, not hard-coded
 window.location.hash = '#/home';
 await new Promise((r) => setTimeout(r, 150));

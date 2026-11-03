@@ -51,6 +51,8 @@ const PS = window.PS;
 const ROUTES = [
   /* one visit per registered route */
   '#/home', '#/academy', '#/academy-progress', '#/certificate', '#/quickstart',
+  /* an exam session is a route of its own, and the popped-out window loads it */
+  '#/exam?bank=cert-full&n=3',
   '#/what', '#/search', '#/glossary', '#/scenarios', '#/operations',
   '#/list/calc', '#/list/sop', '#/list/cl', '#/list/tpl', '#/list/kpi', '#/list/kb', '#/list/dec',
   '#/k', '#/sop', '#/cl', '#/tpl', '#/dec', '#/kpi', '#/scen', '#/calc',

@@ -98,3 +98,20 @@
 .phase11-card .p11-ico { font-size: 1.5rem; }
 .phase11-card .p11-title { font-weight: 700; font-size: 1rem; }
 .phase11-card .p11-desc { font-size: .85rem; color: var(--dim); line-height: 1.45; }
+/* Exam focus mode: one route, one job. The shell chrome is removed rather
+   than dimmed, because a dimmed sidebar is still a list of ways to leave. */
+.app.is-exam-focus{grid-template-columns:1fr}
+.app.is-exam-focus .sidebar,.app.is-exam-focus #scrim{display:none!important}
+.app.is-exam-focus .topbar,.app.is-exam-focus .crumb,.app.is-exam-focus .footer{display:none!important}
+.exam-shell{max-width:900px;margin:0 auto;padding:6px 16px 48px}
+.exam-head{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:10px 0 12px;background:var(--bg);border-bottom:1px solid var(--border)}
+.exam-head h1{margin:0;font-size:1.05rem}
+.exam-head .spacer{flex:1 1 auto}
+.exam-rail{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 2px}
+.exam-dot{min-width:34px;height:34px;padding:0 8px;border-radius:8px;border:1px solid var(--border);
+  background:var(--sunken);color:var(--text);font:inherit;font-size:.82rem;cursor:pointer}
+.exam-dot.is-answered{background:var(--ok-soft);border-color:var(--ok)}
+.exam-dot.is-current{outline:2px solid var(--accent);outline-offset:1px;font-weight:700}
+.exam-dot:focus-visible{outline:var(--focus-outline,2px) solid var(--accent);outline-offset:var(--focus-offset,2px)}
+.exam-aside{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.86rem;color:var(--mute)}
