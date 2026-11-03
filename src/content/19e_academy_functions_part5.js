@@ -236,7 +236,7 @@ PS.ACADEMY_FUNCTIONS.push({
   rel: {
     sops: ['sop-procurement-intake', 'sop-procurement-audit', 'sop-supplier-evaluation'],
     checklists: ['cl-procurement-audit', 'cl-exception-approval', 'cl-procurement-file-completeness'],
-    templates: ['tpl-exception-request', 'tpl-procurement-exception'],
+    templates: ['tpl-exception-request', 'tpl-exception-request'],
     calcs: ['calc-po-value-check', 'calc-supplier-concentration'],
     decisions: ['approve-exception', 'sourcing-method'],
     kpis: ['kpi-maverick-spend', 'kpi-cycle-time', 'kpi-sum'],
@@ -471,7 +471,7 @@ PS.ACADEMY_FUNCTIONS.push({
     calcs: ['calc-supplier-concentration', 'calc-budget-vs-actual', 'calc-savings-analysis'],
     decisions: ['consolidate-suppliers', 'supplier-concentration'],
     kpis: ['kpi-sum', 'kpi-maverick-spend', 'kpi-savings', 'kpi-ppv'],
-    concepts: ['spend-analysis', 'c-spend-management', 'direct-indirect-spend', 'maverick-spend', 'savings-baseline']
+    concepts: ['spend-analysis', 'c-spend-management', 'direct-indirect-spend', 'c-maverick-spend', 'savings-baseline']
   },
   labMission: {
     title: 'Mission 11.2: Slice a Category Three Ways and Turn the Findings into Actions',

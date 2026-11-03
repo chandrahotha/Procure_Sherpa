@@ -656,7 +656,7 @@ PS.ACADEMY_FUNCTIONS.push({
 
   relSop: 'sop-requirement-definition',
   rel: {
-    concepts: ['agency-fee-models', 'marketing-performance-measurement', 'agency-scope-brief', 'statement-of-work', 'service-level-agreement', 'supplier-qualification', 'maverick-spend'],
+    concepts: ['agency-fee-models', 'marketing-performance-measurement', 'agency-scope-brief', 'statement-of-work', 'service-level-agreement', 'supplier-qualification', 'c-maverick-spend'],
     sops: ['sop-requirement-definition', 'sop-rfp', 'sop-commercial-evaluation'],
     checklists: ['cl-rfp-preparation', 'cl-requirement-definition', 'cl-commercial-evaluation'],
     templates: ['tpl-rfp', 'tpl-commercial-evaluation', 'tpl-negotiation-planner'],

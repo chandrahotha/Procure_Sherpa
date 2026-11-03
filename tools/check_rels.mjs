@@ -74,6 +74,55 @@ for (const r of rels) {
     }
   }
 }
+/* Academy lessons are relations too, and until now they were not read.
+   registryFromSource collects the PS.S*( {…} ) registry pushes; a lesson is
+   pushed with PS.ACADEMY_FUNCTIONS.push({…}) and carries its own rel block
+   plus a relSop, and the renderer turns every one of those strings into a
+   link a learner can press. Measured on the current tree: 58 references in
+   16 lessons pointed at ids that had never existed - eight invented SOP
+   names, nine decision guides written with a dec- prefix the registry does
+   not use, a template and a KPI name that were guesses - and the checker
+   reported "broken refs: 0" because it had never looked. Every rel block and
+   every relSop in every lesson is now resolved like a registry relation. */
+{
+  const lessonHits = [];
+  for (const f of files) {
+    const body = readSrc(f);
+    if (body.indexOf('PS.ACADEMY_FUNCTIONS.push(') < 0) continue;
+    const chunks = body.split('PS.ACADEMY_FUNCTIONS.push(').slice(1);
+    chunks.forEach((chunk, i) => {
+      const relBlock = chunk.match(/\n {2}rel: \{([\s\S]*?)\n {2}\},/);
+      const seen = {};
+      if (relBlock) {
+        for (const km of relBlock[1].matchAll(/(\w+):\s*\[([^\]]*)\]/g)) {
+          const ty = KEY[canon(km[1])];
+          if (!ty) { lessonHits.push('unknown rel key ' + km[1] + ' in lesson ' + (i + 1) + ' of ' + f); continue; }
+          const list = (km[2].match(/['"]([^'"]+)['"]/g) || []).map((q) => q.slice(1, -1));
+          seen[ty] = list;
+        }
+      }
+      const rs = chunk.match(/\n {2}relSop: '([^']+)'/);
+      if (rs) seen.sop = (seen.sop || []).concat([rs[1]]);
+      const idm = chunk.match(/id: '([^']+)'/);
+      const label = (idm ? idm[1] : 'lesson ' + (i + 1)) + ' (' + baseName(f) + ')';
+      for (const [ty, list] of Object.entries(seen)) {
+        for (const raw of list) {
+          const rid = norm(ty, raw);
+          if (!ids[ty] || !ids[ty].has(rid)) {
+            lessonHits.push(label + ' -> ' + ty + ': ' + raw + (rid !== raw ? ' (maps to ' + rid + ')' : ''));
+          }
+        }
+      }
+    });
+  }
+  if (lessonHits.length) {
+    lessonHits.forEach((h) => console.log('BROKEN lesson reference', h));
+    bad += lessonHits.length;
+  } else {
+    console.log('lesson relations: every rel and relSop resolves');
+  }
+}
+
 /* Hard-coded links in copy are relations too.
    PS.ACADEMY_FUNCTIONS[].labMission.ctaHref, the "Apply in Laboratory"
    button on every lesson, is written as a literal '#/calc/calc-scorecard'
