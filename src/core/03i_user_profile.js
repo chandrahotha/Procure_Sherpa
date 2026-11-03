@@ -239,7 +239,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 19: The Finance of Procurement - Cash, Terms and Value': ['finance', 'value', 'learn'],
   'Module 20: Procurement Fraud, Collusion and the Controls That Catch It': ['assurance', 'risk', 'learn'],
   'Module 21: Sustainable and Responsible Sourcing - Carbon, Circularity and Social Value': ['responsible', 'sustainability', 'learn'],
-  'Module 22: Category Depth II - Energy, Works and Creative Markets': ['markets', 'specialist', 'learn']
+  'Module 22: Category Depth II - Energy, Works and Creative Markets': ['markets', 'specialist', 'learn'],
+  'Module 23: Artificial Intelligence, Model Services and Data Licensing': ['ai', 'digital', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -251,7 +252,7 @@ PS.ACADEMY_MODULE_TAGS = {
    sharing one with a neighbouring module; beginner and buyer keep the
    operational set. */
 PS.user.ROLE_PRIORITY = {
-  beginner: ['spend', 'sourcing', 'cost', 'markets', 'learn'],
+  beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'learn'],
   buyer: ['operations', 'quality', 'sourcing', 'negotiation', 'services', 'specialist', 'spend', 'learn'],
   manager: ['strategy', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
   finance: ['cost', 'analytics', 'executive', 'value', 'finance', 'contract', 'governance', 'learn'],

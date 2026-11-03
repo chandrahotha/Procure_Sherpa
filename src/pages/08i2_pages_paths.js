@@ -182,6 +182,17 @@ PS.learningPaths.PATHS = [
     skills: ['Separating commodity from pass-through', 'Reading a bid as a set of assumptions', 'Keeping time, money and scope apart', 'Making the mark-up on third-party spend visible'],
     duration: '5-7 weeks',
     color: 'var(--kpi)'
+  },
+  {
+    id: 'ai-and-data',
+    title: 'AI, Models and Data Markets',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'How these products are actually sold: token unit economics the buyer design controls, evaluation on your own task rather than a leaderboard, licence purpose axes, provenance evidence and assurance for a supplier whose behaviour is probabilistic.',
+    modules: ['func-model-service-procurement', 'func-data-licensing-and-provenance', 'func-ai-supplier-assurance'],
+    skills: ['Costing per completed task, not per token', 'Building an evaluation set with a definition of correct', 'Pricing the re-index before signing', 'Reading a licence as granted purposes', 'Classifying assurance by consequence'],
+    duration: '5-7 weeks',
+    color: 'var(--dec)'
   }
 ];
 

@@ -1,0 +1,111 @@
+/* ==========================================================
+   Procure Sherpa v3.0 - Knowledge additions: AI and Data Markets.
+   The library covered software licensing (Module 9) and internal
+   analytics (Module 11) but nothing covered how model services and
+   data licences are actually sold: token unit economics, an
+   evaluation on your own task, embeddings lock-in, licence purpose
+   axes, provenance evidence and supplier assurance for a
+   probabilistic service. Added with Academy Module 23.
+   ========================================================== */
+
+PS.SKB({ i: "model-service-pricing", t: "Model service unit economics", c: "AI and Data Markets",
+  d: "How AI and model services are priced - per token in and out, per request, per seat, reserved capacity against serverless inference, batch and cached rates - and how the buyer design decides total cost once the rate is fixed.",
+  w: "Moves the cost conversation from the rate card to the tokens per completed task, which is the term the buyer controls;Makes a routing or retrieval decision visible as a commercial decision before it is locked into architecture",
+  n: "Sizing an AI business case;Comparing two providers on the same process;Scaling a pilot into production volumes;Reviewing a committed-spend discount against forecast usage",
+  h: "Estimate tokens per completed task with the assumptions written down;Model caching, routing and retry behaviour separately from the rate;Convert to cost per correct answer on your own evaluation;Read batch, cached and online rates against the actual workload",
+  e: "Two teams on the same price list differed eightfold per completed task: one pasted whole documents into every call and retried failures in full, the other retrieved only relevant passages and routed exceptions upward.",
+  r: "A rate card comparison assumes identical behaviour across suppliers, which is never true;Committed-spend discounts can go unspent when the vendor rate-limits or retires a version",
+  m: "Approving on unit price while leaving tokens per task unexamined;Reading a benchmark score as a cost figure;Signing a commitment sized on pilot volume that the roll-out never reached",
+  rel: { concepts: ["total-cost-of-ownership", "should-cost", "cost-breakdown", "ai-evaluation-and-benchmarks", "demand-management"],
+         sops: ["sop-sourcing-strategy", "sop-commercial-evaluation"],
+         checklists: ["cl-commercial-evaluation", "cl-sourcing-strategy"],
+         templates: ["tpl-business-case", "tpl-cost-avoidance"],
+         calcs: ["calc-multi-year-contract-cost", "calc-tco"],
+         decisions: ["dec-unit-or-tco", "dec-framework-agreement"],
+         kpis: ["kpi-savings", "kpi-contract-compliance"],
+         glossary: ["gloss-tco", "gloss-run-rate", "gloss-opex"] } });
+
+PS.SKB({ i: "ai-evaluation-and-benchmarks", t: "Evaluating AI on your own task", c: "AI and Data Markets",
+  d: "The difference between a published benchmark score and a measurement of the service against the buyer own examples, with the buyer definition of correct, under the conditions production will run.",
+  w: "Turns an uncheckable capability claim into a number two suppliers can be compared on;Produces the baseline that makes later drift a contractual finding rather than an argument",
+  n: "Any selection between model or AI-enabled services;Reviewing a supplier performance disagreement;Approving a scale-up from pilot;Renewing a service where nobody remembers what was measured",
+  h: "Build an evaluation set from real work and write what correct means;Fix context, latency budget, refusal handling and retry rule before running;Record accuracy, variance across runs and cost per correct answer;Keep the set and results as the awarded baseline",
+  e: "A candidate that led the public leaderboard by four points fell below the incumbent on the buyer set, because the test cases were dominated by the document formats the buyer actually processes.",
+  r: "Benchmarks are often prompt-engineered to the test rather than to your conditions;A single run measures luck as much as capability, so variance has to be recorded",
+  m: "Awarding on a vendor demonstration chosen by the vendor;Running the evaluation once and never against the service delivered;Accepting the supplier current score as the arbiter of a quality dispute",
+  rel: { concepts: ["evaluation-criteria", "supplier-qualification", "supplier-performance", "model-service-pricing", "audit-trail"],
+         sops: ["sop-commercial-evaluation", "sop-supplier-evaluation", "sop-supplier-performance-management"],
+         checklists: ["cl-technical-evaluation", "cl-commercial-evaluation", "cl-supplier-performance-review"],
+         templates: ["tpl-technical-evaluation", "tpl-commercial-evaluation", "tpl-weighted-scoring"],
+         calcs: ["calc-supplier-scorecard", "calc-kpi-calculator"],
+         decisions: ["dec-competitive-or-single", "dec-rfq-or-rfp"],
+         kpis: ["kpi-supplier-performance", "kpi-defect-rate"],
+         glossary: ["gloss-rfq", "gloss-kpi", "gloss-sla"] } });
+
+PS.SKB({ i: "vendor-lockin-and-portability", t: "Switching cost in model and data services", c: "AI and Data Markets",
+  d: "The cost of moving away from an AI or data supplier, which is usually architectural rather than contractual: proprietary interfaces, model-specific vector indexes, hosted fine-tuned weights, and prompts and evaluation assets held informally.",
+  w: "Makes the real barrier to a future price negotiation visible before signing, when it can still be priced and contracted;Turns exit from a notice period into an engineering estimate with a cost and a duration",
+  n: "Before any long-term AI, data or analytics award;At renewal after a price increase;When a supplier is acquired or announces version retirement;Designing a multi-provider architecture",
+  h: "Cost the re-index, the export, the re-validation cycle and the service gap;Establish ownership and exportability of weights, prompts and evaluation sets;Keep prompt and evaluation assets in a supplier-neutral form;Record the switching cost alongside the awarded price",
+  e: "A buyer accepted an 11 percent increase because re-embedding three years of documents, re-tuning retrieval and re-validating results was estimated at several months of engineering, while the saving over the term was smaller than the rebuild.",
+  r: "A corpus embedded under one model family is geometry that another cannot search;Weights fine-tuned on vendor infrastructure may be neither exportable nor documented",
+  m: "Assuming data ownership implies service portability;Leaving the prompts and evaluation sets inside the vendor console;Pricing switching as a contract notice rather than as a rebuild",
+  rel: { concepts: ["framework-agreement", "supplier-relationship-management", "supplier-qualification", "model-service-pricing", "dataset-provenance-and-rights"],
+         sops: ["sop-sourcing-strategy", "sop-contract-review", "sop-supplier-exit"],
+         checklists: ["cl-contract-review", "cl-sourcing-strategy", "cl-supplier-risk-review"],
+         templates: ["tpl-contract-review-checklist", "tpl-business-case"],
+         calcs: ["calc-make-vs-buy", "calc-multi-year-contract-cost"],
+         decisions: ["dec-dual-source", "dec-re-source"],
+         kpis: ["kpi-contract-compliance", "kpi-supplier-concentration"],
+         glossary: ["gloss-single-source", "gloss-sole-source", "gloss-tco"] } });
+
+PS.SKB({ i: "dataset-provenance-and-rights", t: "Data provenance and the right to resell it", c: "AI and Data Markets",
+  d: "The documented line from original collection to the seller: who gathered the records, under what consent or licence, whether third-party content inside the dataset carries its own rights, and what evidence exists for any of it.",
+  w: "Turns can you license this from an assurance into a file that survives the supplier leaving;Buys the ability to prove entitlement years later, when the people and the relationship are gone",
+  n: "Buying any dataset;Before training a model on purchased content;When a supplier cannot name its source;On renewal after a supplier is acquired",
+  h: "Ask origin, collection basis and the onward-sale right;Require chain of title for embedded third-party content;Check dates covered and known limitations;Keep the provenance file for the life of derived artefacts",
+  e: "A claim over third-party content inside a purchased dataset arrived two years after the purchase; the supplier could name neither the original collection nor a licence permitting resale, and the buyer had no record of having asked.",
+  r: "Aggregated from public sources describes a method, not a right;A warranty and indemnity are worth the substance of the entity that grants them",
+  m: "Treating a plausible-looking file as evidence of entitlement;Accepting a certification in place of a chain of title;Archiving the licence with the purchase order and losing the provenance file",
+  rel: { concepts: ["data-licence-scope", "supplier-qualification", "audit-trail", "conflict-of-interest", "esg-data-quality"],
+         sops: ["sop-supplier-due-diligence", "sop-sustainable-sourcing-verification", "sop-documentation"],
+         checklists: ["cl-supplier-due-diligence", "cl-procurement-file-completeness"],
+         templates: ["tpl-supplier-due-diligence", "tpl-contract-review-checklist"],
+         calcs: [],
+         decisions: ["dec-competitive-or-single", "dec-supplier-financial-risk"],
+         kpis: ["kpi-contract-compliance"],
+         glossary: ["gloss-procure-to-pay", "gloss-kpi"] } });
+
+PS.SKB({ i: "data-licence-scope", t: "What a data licence actually grants", c: "AI and Data Markets",
+  d: "The separate axes of a data licence - permitted purposes, users, territory, term, modification, derivation, publication and exclusivity - and the fact that analysis, publication, embedding and model training are different permissions.",
+  w: "Prevents the most common dispute in this category, which is a use nobody granted rather than a quality failure;Makes purpose drift visible at design time rather than at audit time",
+  n: "Before any dataset reaches a product, model or interface;At renewal, where permitted purposes may have changed;When exposing values through a dashboard to a wider audience;Whenever derived artefacts outlive the term",
+  h: "Write the intended-use statement first;Score each licence axis against it with clause references;Settle what happens to features, indexes and models at expiry;Record the aggregation limit where sensitivity applies",
+  e: "A dashboard built on a dataset licensed for internal benchmarking exposed per-supplier values to the sales organisation and then to a customer report - two purposes the licence had never granted, discovered a year after go-live.",
+  r: "Silence on derived artefacts is not permission; a feed creates correction and restatement duties a static file does not",
+  m: "Reading internal as covering any use inside the company;Assuming deletion of the file discharges obligations on what was built from it;Accepting anonymised as a supplier adjective rather than a tested position",
+  rel: { concepts: ["dataset-provenance-and-rights", "contract-structure", "specification", "liability-indemnity", "model-service-pricing"],
+         sops: ["sop-contract-review", "sop-requirement-definition", "sop-contract-award"],
+         checklists: ["cl-contract-review", "cl-requirement-definition", "cl-commercial-evaluation"],
+         templates: ["tpl-contract-review-checklist", "tpl-commercial-evaluation"],
+         calcs: ["calc-compare-quotes"],
+         decisions: ["dec-framework-agreement", "dec-make-or-buy"],
+         kpis: ["kpi-contract-compliance", "kpi-cost-avoidance"],
+         glossary: ["gloss-change-order", "gloss-sla", "gloss-tco"] } });
+
+PS.SKB({ i: "ai-supplier-assurance", t: "Assuring a supplier whose behaviour is probabilistic", c: "AI and Data Markets",
+  d: "Governance for services that cannot be specified into compliance: consequence classification, an awarded baseline kept on the buyer own task, evidence classes that distinguish information from appearance, change notice, and a named human fallback.",
+  w: "Moves the control from a specification the supplier cannot meet to evidence the buyer can check;Keeps accountability with a person rather than allowing a score to become the reason",
+  n: "When a model output carries a decision;At approval above a consequence threshold;On supplier change of control or behaviour change;In any board or audit report that presents coverage as control",
+  h: "Classify by consequence rather than spend;Retain the evaluation set and baseline in the contract;Require evaluations, change logs, adversarial findings and drift reports;Name the person who would sign without the tool",
+  e: "An assurance report listed 31 services with policy acknowledgements. Sampling found no buyer-task evaluations, two unnotified default changes, and one service with no named fallback - full coverage, minimal control.",
+  r: "A certification without a scope statement answers a question nobody asked;The only party measuring a service should not be the party providing it",
+  m: "Reporting signature counts as evidence of control;Applying the same assurance pack to a translation utility and a decision-grade model;Discovering the fallback is nobody being authorised to proceed",
+  rel: { concepts: ["supplier-performance", "supply-chain-risk", "segregation-of-duties", "audit-trail", "ai-evaluation-and-benchmarks", "vendor-lockin-and-portability"],
+         sops: ["sop-supplier-performance-management", "sop-procurement-audit", "sop-supplier-corrective-action"],
+         checklists: ["cl-supplier-performance-review", "cl-procurement-audit", "cl-supplier-risk-review"],
+         templates: ["tpl-supplier-business-review", "tpl-supplier-scorecard", "tpl-exception-request"],
+         calcs: ["calc-supplier-scorecard"],
+         decisions: ["dec-supplier-financial-risk", "dec-re-source"],
+         kpis: ["kpi-supplier-performance", "kpi-contract-compliance"],
+         glossary: ["gloss-sla", "gloss-segregation-of-duties", "gloss-kpi"] } });

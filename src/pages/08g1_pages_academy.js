@@ -710,7 +710,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-social-value-labour-due-diligence': 'rfx',
   'func-energy-utility-procurement': 'contracts',
   'func-works-and-construction-buying': 'rfx',
-  'func-marketing-and-creative-services': 'suppliers'
+  'func-marketing-and-creative-services': 'suppliers',
+  'func-model-service-procurement': 'budget',
+  'func-data-licensing-and-provenance': 'contracts',
+  'func-ai-supplier-assurance': 'suppliers'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',

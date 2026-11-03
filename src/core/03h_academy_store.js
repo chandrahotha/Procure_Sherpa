@@ -56,6 +56,7 @@ PS.academy.BADGES = [
   { id: 'assurance_guardian', name: 'Integrity and Assurance Practitioner', icon: '\ud83d\udd0d', desc: 'Mastered Fraud Risk Patterns, Bid Rigging Detection and Case Response & Disclosure.', requires: ['func-purchasing-fraud-risk', 'func-bid-rigging-detection', 'func-fraud-response-and-disclosure'] },
   { id: 'responsible_sourcing', name: 'Responsible Sourcing Practitioner', icon: '🌱', desc: 'Mastered the Scope 3 Baseline, Circular Sourcing Economics and Social Value & Labour Due Diligence.', requires: ['func-scope3-buying-baseline', 'func-circular-sourcing-economics', 'func-social-value-labour-due-diligence'] },
   { id: 'sector_buyer', name: 'Specialised Sector Buyer', icon: '🏗️', desc: 'Mastered Energy and Utility Procurement, Works and Construction Buying and Marketing and Creative Services.', requires: ['func-energy-utility-procurement', 'func-works-and-construction-buying', 'func-marketing-and-creative-services'] },
+  { id: 'ai_data_steward', name: 'AI and Data Steward', icon: '🧠', desc: 'Mastered Model Service Economics, Data Licensing and Provenance, and AI Supplier Assurance.', requires: ['func-model-service-procurement', 'func-data-licensing-and-provenance', 'func-ai-supplier-assurance'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 
