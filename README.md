@@ -4,7 +4,7 @@
 
 **A complete procurement learning platform and operations toolkit, compiled into one HTML file that runs offline.**
 
-[23 Academy modules](#procurement-academy) · [69 lessons](#procurement-academy) · [281 library records](#the-reference-library) · [19 calculators](#calculators-that-show-themselves-working) · [8 workbenches](#workbenches-your-own-records-held-locally) · **no server, no accounts, no telemetry**
+[24 Academy modules](#procurement-academy) · [72 lessons](#procurement-academy) · [286 library records](#the-reference-library) · [19 calculators](#calculators-that-show-themselves-working) · [8 workbenches](#workbenches-your-own-records-held-locally) · **no server, no accounts, no telemetry**
 
 [**Open the live site**](https://procuresherpa.vercel.app) · [**Download the file**](ProcureSherpa-v2.0.html) · [Documentation](#documentation) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -78,10 +78,10 @@ Procure Sherpa separates **learning** (the Academy) from **doing** (the Operatio
           ▼                                                           ▼
 ┌───────────────────────────────────────┐ ┌───────────────────────────────────────┐
 │    Procurement Academy (#/academy)    │ │      Operations Hub (#/operations)    │
-│  23 modules · 69 lessons · 5-tab      │ │  19 calculators · 20 SOPs (159 steps) │
-│  pedagogy · 426 SOP-step sequences    │ │  27 checklists · 33 templates         │
-│  324 questions · practice exams       │ │  17 decision guides · 18 KPIs         │
-│  17 learning paths · labs · badges    │ │  8 workbenches for your own records   │
+│  24 modules · 72 lessons · 5-tab      │ │  19 calculators · 20 SOPs (159 steps) │
+│  pedagogy · 447 SOP-step sequences    │ │  27 checklists · 33 templates         │
+│  339 questions · practice exams       │ │  17 decision guides · 18 KPIs         │
+│  18 learning paths · labs · badges    │ │  8 workbenches for your own records   │
 └───────────────────────────────────────┘ └───────────────────────────────────────┘
           │                                                           │
           └─────────────────────────────┬─────────────────────────────┘
@@ -92,7 +92,7 @@ Procure Sherpa separates **learning** (the Academy) from **doing** (the Operatio
 
 ### Procurement Academy
 
-Twenty-three modules take you from first principles to board level: Foundations & Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing (P2P), Supplier Management & Value Realization, Services/Software/Indirect, Risk & Compliance & Ethics & Sustainability, Digital Procurement & Analytics, Advanced Category & Portfolio Strategy, Executive & Board-Level Procurement, Stakeholder Influence & Change, Specialised Markets, Contract Risk & Claims & Disputes, Global Sourcing Operations, Disruption & Emergency Buying, The Finance of Procurement, Procurement Fraud & Collusion & the Controls That Catch It, Sustainable & Responsible Sourcing — Carbon, Circularity and Social Value, Category Depth II — Energy, Works and Creative Markets, and Artificial Intelligence, Model Services and Data Licensing.
+Twenty-four modules take you from first principles to board level: Foundations & Spend Intelligence, Requirement Definition & Market Engagement, Commercial Analysis & Cost Engineering, Supplier Evaluation & Risk, Negotiation Strategy & Commercial Terms, Contracting & Governance, Operational Purchasing (P2P), Supplier Management & Value Realization, Services/Software/Indirect, Risk & Compliance & Ethics & Sustainability, Digital Procurement & Analytics, Advanced Category & Portfolio Strategy, Executive & Board-Level Procurement, Stakeholder Influence & Change, Specialised Markets, Contract Risk & Claims & Disputes, Global Sourcing Operations, Disruption & Emergency Buying, The Finance of Procurement, Procurement Fraud & Collusion & the Controls That Catch It, Sustainable & Responsible Sourcing — Carbon, Circularity and Social Value, Category Depth II — Energy, Works and Creative Markets, Artificial Intelligence, Model Services and Data Licensing, and Supplier Financial Distress, Turnaround and Exit.
 
 Every lesson follows the same five-tab pedagogy:
 
@@ -102,13 +102,13 @@ Every lesson follows the same five-tab pedagogy:
 4. **Practice & Test** — scenario-based quizzes where every option carries a rationale and every question names its principle; mistakes trigger tactical tips.
 5. **Apply in Lab** — an interactive sandbox with live calculation models, plus a laboratory mission you can run on your own data.
 
-The curriculum is always in module order — the role you pick in your profile recommends *which* modules matter for your job (17 learning paths, from Foundations to Fraud & Assurance, Responsible Sourcing, Specialised Category Depth and AI & Data Markets), it never rearranges the sequence. Lessons track their own reading progress; completion, quiz scores and exams persist locally with badges and a transcript; a **review queue** (`#/revise`) puts a dated interval on every lesson you have studied, **reflection** (`#/reflection`) reads your recorded quiz answers back as the principles you have not yet settled - separating what you got right first time, what you only got after the coaching tip, and what is still wrong - and the hub itself carries a **readiness panel** splitting mastery across the three altitudes alongside what is due and unsettled. Practice exams are timed and randomised, drawn from the 324-question bank, with answer review and retake history.
+The curriculum is always in module order — the role you pick in your profile recommends *which* modules matter for your job (18 learning paths, from Foundations to Fraud & Assurance, Responsible Sourcing, Category Depth, AI & Data Markets and Supplier Distress), it never rearranges the sequence. Lessons track their own reading progress; completion, quiz scores and exams persist locally with badges and a transcript; a **review queue** (`#/revise`) puts a dated interval on every lesson you have studied, **reflection** (`#/reflection`) reads your recorded quiz answers back as the principles you have not yet settled - separating what you got right first time, what you only got after the coaching tip, and what is still wrong - and the hub itself carries a **readiness panel** splitting mastery across the three altitudes alongside what is due and unsettled. Practice exams are timed and randomised, drawn from the 339-question bank, with answer review and retake history.
 
 Certificates are deliberately disabled: Procure Sherpa is not an accredited issuer of credentials, so `#/certificate` says so honestly instead of minting a PDF that means nothing.
 
 ### The reference library
 
-281 authored records, all cross-linked and searchable offline: **96 concepts** (each answering what / why / when / how / example / risks / mistakes), **20 controlled SOPs** (159 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
+286 authored records, all cross-linked and searchable offline: **101 concepts** (each answering what / why / when / how / example / risks / mistakes), **20 controlled SOPs** (159 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
 
 ### Calculators that show themselves working
 
@@ -153,7 +153,7 @@ The single file is a compiled artifact, and the repo treats it that way:
 - **`npm run qa` is the gate** — preflight, build & validate, lint, drift check, cross-reference integrity, the minified build, 22 unit tests, calculator correctness (1,021 assertions), 51 hand-computed expected-value fixtures, interactive click-throughs, the quiz/content gate, 87 route renders, 37 layout checks, the integrity gate (**31 gates / 149 assertions**), 46 storage checks, 32 journey steps, an AST security scan, accessibility over 66 rendered routes, the measured performance budget, i18n coverage, and the minified build re-verified end to end. Every step is a hard gate.
 - **Drift is impossible to commit silently** — the build is re-assembled from `src/` and byte-compared with the committed artifact on every CI run and pre-push; the documents are checked against the tools the same way.
 - **The build carries a stamp** — `PS.BUILD` is a hash of the source fragments; `npm run verify:deploy` fetches the live site and asserts it serves the build from your tree.
-- **Performance is budgeted, not hoped for** — 903 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), ~2.4 s transfer, 39 ms V8 compile, 51 ms boot to a rendered first page, measured on every build.
+- **Performance is budgeted, not hoped for** — 961 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), ~2.5 s transfer, 39 ms V8 compile, 51 ms boot to a rendered first page, measured on every build.
 - **Zero runtime dependencies** — devDependencies are three (eslint, jsdom, terser) and none of it ships to a user. `npm audit` reports 0 vulnerabilities; how is documented in [SECURITY.md](SECURITY.md).
 
 Governance alignment: content and models are written against CIPS lifecycle and ethics frameworks, ISM category and sourcing methodology, SOX 404 segregation-of-duties and three-way-match controls, Incoterms 2020 and ISO 20400. Procure Sherpa is not accredited by or endorsed by any of these bodies, and it says so on the page.
@@ -180,7 +180,7 @@ Documented on purpose rather than left for discovery — full detail in the [com
 
 - **Not an ERP.** Thresholds, tax and compliance vary by organisation and jurisdiction; configure `#/settings` and verify locally before relying on anything operationally.
 - **No accounts, no sync.** One browser profile per person; storage clearing loses your work; the backup file is the migration path.
-- **English content, translated shell.** The en/es i18n covers the application chrome (43 keys, 100% wired); all 281 content records and 69 lessons are English-only.
+- **English content, translated shell.** The en/es i18n covers the application chrome (43 keys, 100% wired); all 286 content records and 72 lessons are English-only.
 - **Not SEO-indexable.** Pages render client-side behind hash routes; the served markup is an ~8 KB shell. Search-engine visibility would mean a different, prerendered product.
 - **Single-file ceiling.** Everything parses before first paint and there is no code-splitting escape hatch — that constraint is the product. [ADR 0001](docs/adr/0001-single-file-architecture.md) records the decision and its revisit triggers; [ADR 0002](docs/adr/0002-measured-performance-budget.md) records the measured budgets.
 - **No certificate issuance**, by policy — see above.

@@ -264,7 +264,10 @@ if (devCount > 1) {
     /* The lookbehind is not decoration: "§78 paths" is a section number
        followed by a noun, and without it the rule read it as a claim that
        the smoke table has 78 routes. */
-    .map((d) => ({ file: d.file, m: d.text.match(/(?<![§\d])(\d{2,3})(?:-route smoke| route renders| paths)/g) }))
+   /* "18 paths" and "18 learning paths" are different claims; the route-count rule
+      must not read the second as the first. Hit twice in one cycle, once in a
+      ledger line and once in the paragraph describing the hazard. */
+    .map((d) => ({ file: d.file, m: d.text.match(/(?<![§\d])(\d{2,3})(?:-route smoke| route renders|(?<!learning ) paths)/g) }))
     .filter((x) => x.m);
   claimed.forEach((c) => c.m.forEach((phrase) => {
     const n = Number(phrase.match(/\d{2,3}/)[0]);

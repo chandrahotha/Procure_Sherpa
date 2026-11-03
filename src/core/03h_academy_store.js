@@ -57,6 +57,7 @@ PS.academy.BADGES = [
   { id: 'responsible_sourcing', name: 'Responsible Sourcing Practitioner', icon: '🌱', desc: 'Mastered the Scope 3 Baseline, Circular Sourcing Economics and Social Value & Labour Due Diligence.', requires: ['func-scope3-buying-baseline', 'func-circular-sourcing-economics', 'func-social-value-labour-due-diligence'] },
   { id: 'sector_buyer', name: 'Specialised Sector Buyer', icon: '🏗️', desc: 'Mastered Energy and Utility Procurement, Works and Construction Buying and Marketing and Creative Services.', requires: ['func-energy-utility-procurement', 'func-works-and-construction-buying', 'func-marketing-and-creative-services'] },
   { id: 'ai_data_steward', name: 'AI and Data Steward', icon: '🧠', desc: 'Mastered Model Service Economics, Data Licensing and Provenance, and AI Supplier Assurance.', requires: ['func-model-service-procurement', 'func-data-licensing-and-provenance', 'func-ai-supplier-assurance'] },
+  { id: 'distress_response_lead', name: 'Distress Response Lead', icon: '🛡', desc: 'Mastered Supplier Financial Health, Early Warning and Contingency, and Distress, Insolvency and Exit.', requires: ['func-supplier-financial-health', 'func-supplier-early-warning-response', 'func-distress-exit-and-recovery'] },
   { id: 'grandmaster', name: 'Sherpa Scholar', icon: '🏆', desc: 'Completed every core function in the Procurement Academy.', all: true }
 ];
 

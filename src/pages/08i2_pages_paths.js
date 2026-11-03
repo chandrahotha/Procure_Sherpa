@@ -193,6 +193,17 @@ PS.learningPaths.PATHS = [
     skills: ['Costing per completed task, not per token', 'Building an evaluation set with a definition of correct', 'Pricing the re-index before signing', 'Reading a licence as granted purposes', 'Classifying assurance by consequence'],
     duration: '5-7 weeks',
     color: 'var(--dec)'
+  },
+  {
+    id: 'supplier-distress',
+    title: 'Supplier Distress, Turnaround and Exit',
+    tier: 'practitioner',
+    level: 4,
+    desc: 'What happens to a supplier while the contract is still live: reading its financial position as timing rather than as a grade, escalating a signal cluster into funded readiness, and making the rescue or replace decision deliberately rather than by default.',
+    modules: ['func-supplier-financial-health', 'func-supplier-early-warning-response', 'func-distress-exit-and-recovery'],
+    skills: ['Reading the operating cycle, not the current ratio', 'Turning signals into dated actions', 'Proving what your assets are while it is cheap', 'Ranking a claim realistically', 'Minuting a rescue or replace decision'],
+    duration: '5-7 weeks',
+    color: 'var(--ops)'
   }
 ];
 

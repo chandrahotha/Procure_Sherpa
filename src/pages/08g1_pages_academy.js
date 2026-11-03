@@ -749,7 +749,10 @@ PS.ACADEMY_WORKBENCH = {
   'func-marketing-and-creative-services': 'suppliers',
   'func-model-service-procurement': 'budget',
   'func-data-licensing-and-provenance': 'contracts',
-  'func-ai-supplier-assurance': 'suppliers'
+  'func-ai-supplier-assurance': 'suppliers',
+  'func-supplier-financial-health': 'suppliers',
+  'func-supplier-early-warning-response': 'contracts',
+  'func-distress-exit-and-recovery': 'analytics'
 };
 PS.WORKBENCH_TITLES = {
   rfx: 'RFx & Evaluation',
