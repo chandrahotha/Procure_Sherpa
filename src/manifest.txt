@@ -131,6 +131,7 @@ src/content/11c_sop_contract.js
 src/content/11d_sop_onboarding_savings.js
 src/content/11e_sop_fraud.js
 src/content/11f_sop_sustainability.js
+src/content/11g_sop_tendering.js
 src/content/12z_cl_v1.js
 src/content/12b_cl_sourcing.js
 src/content/12c_cl_steward.js

@@ -42,7 +42,7 @@
 
 export const PINS = {
   kb: 106,
-  sop: 20,
+  sop: 21,
   cl: 27,
   tpl: 33,
   dec: 17,
@@ -69,7 +69,7 @@ export const PINS = {
      ';'). 102 is the number of procedure steps the SOP documents actually
      hold, and G21 now refuses a step whose instruction carries step
      metadata, so the artifact cannot quietly go back to 106. */
-  sopLibrarySteps: 159,
+  sopLibrarySteps: 167,
   sopLibraryMinStepsPerSop: 6,
   /* G18: Academy functions that carry a link into a workbench. One short
      by design: func-mission-value is the orientation lesson and has no

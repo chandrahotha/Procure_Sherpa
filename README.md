@@ -4,7 +4,7 @@
 
 **A complete procurement learning platform and operations toolkit, compiled into one HTML file that runs offline.**
 
-[25 Academy modules](#procurement-academy) · [75 lessons](#procurement-academy) · [291 library records](#the-reference-library) · [19 calculators](#calculators-that-show-themselves-working) · [8 workbenches](#workbenches-your-own-records-held-locally) · **no server, no accounts, no telemetry**
+[25 Academy modules](#procurement-academy) · [75 lessons](#procurement-academy) · [292 library records](#the-reference-library) · [19 calculators](#calculators-that-show-themselves-working) · [8 workbenches](#workbenches-your-own-records-held-locally) · **no server, no accounts, no telemetry**
 
 [**Open the live site**](https://procuresherpa.vercel.app) · [**Download the file**](ProcureSherpa-v2.0.html) · [Documentation](#documentation) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -30,7 +30,7 @@ The QA badge reports a workflow that runs on GitHub-hosted runners: every push a
 
 **Use it** — download [`ProcureSherpa-v2.0.html`](ProcureSherpa-v2.0.html) and double-click it. That is the whole install. (The filename says v2.0 because it is the product's fixed name, not its version — the release is 3.0 and every tool reads the version from the file.)
 
-**Or open the hosted deployment** — <https://procuresherpa.vercel.app> serves the minified build of `main` (~899 KB gzipped, inside the 979 KB deployed budget) with the same hardening as the file itself: no server-side state, no accounts, no telemetry.
+**Or open the hosted deployment** — <https://procuresherpa.vercel.app> serves the minified build of `main` (~903 KB gzipped, inside the 979 KB deployed budget) with the same hardening as the file itself: no server-side state, no accounts, no telemetry.
 
 **Change it** —
 
@@ -78,7 +78,7 @@ Procure Sherpa separates **learning** (the Academy) from **doing** (the Operatio
           ▼                                                           ▼
 ┌───────────────────────────────────────┐ ┌───────────────────────────────────────┐
 │    Procurement Academy (#/academy)    │ │      Operations Hub (#/operations)    │
-│  25 modules · 75 lessons · 5-tab      │ │  19 calculators · 20 SOPs (159 steps) │
+│  25 modules · 75 lessons · 5-tab      │ │  19 calculators · 21 SOPs (167 steps) │
 │  pedagogy · 468 SOP-step sequences    │ │  27 checklists · 33 templates         │
 │  339 questions · practice exams       │ │  17 decision guides · 18 KPIs         │
 │  19 learning paths · labs · badges    │ │  8 workbenches for your own records   │
@@ -108,7 +108,7 @@ Certificates are deliberately disabled: Procure Sherpa is not an accredited issu
 
 ### The reference library
 
-291 authored records, all cross-linked and searchable offline: **106 concepts** (each answering what / why / when / how / example / risks / mistakes), **20 controlled SOPs** (159 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
+292 authored records, all cross-linked and searchable offline: **106 concepts** (each answering what / why / when / how / example / risks / mistakes), **21 controlled SOPs** (167 procedure steps with RACI, controls, outputs and KPIs), **27 checklists**, **33 templates**, **17 interactive decision guides**, **18 KPI definitions with formulas**, **45 glossary terms**, **6 guided scenarios**, and **19 calculators**.
 
 ### Calculators that show themselves working
 
@@ -153,7 +153,7 @@ The single file is a compiled artifact, and the repo treats it that way:
 - **`npm run qa` is the gate** — preflight, build & validate, lint, drift check, cross-reference integrity, the minified build, 22 unit tests, calculator correctness (1,021 assertions), 51 hand-computed expected-value fixtures, interactive click-throughs, the quiz/content gate, 87 route renders, 37 layout checks, the integrity gate (**31 gates / 149 assertions**), 46 storage checks, 32 journey steps, an AST security scan, accessibility over 66 rendered routes, the measured performance budget, i18n coverage, and the minified build re-verified end to end. Every step is a hard gate.
 - **Drift is impossible to commit silently** — the build is re-assembled from `src/` and byte-compared with the committed artifact on every CI run and pre-push; the documents are checked against the tools the same way.
 - **The build carries a stamp** — `PS.BUILD` is a hash of the source fragments; `npm run verify:deploy` fetches the live site and asserts it serves the build from your tree.
-- **Performance is budgeted, not hoped for** — 984.5 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), 2.63 s transfer, 78.6 ms V8 compile, 99.0 ms boot to a rendered first page, measured on every build - and the minified build actually served is 899.4 KB against its own 979 KB deployed ceiling.
+- **Performance is budgeted, not hoped for** — 988.4 KB gzipped against a 1,152 KB transfer ceiling (3 s at 3 Mbps 4G), 2.64 s transfer, 81 ms V8 compile, 111 ms boot to a rendered first page, measured on every build - and the minified build actually served is 903.3 KB against its own 979 KB deployed ceiling.
 - **Zero runtime dependencies** — devDependencies are three (eslint, jsdom, terser) and none of it ships to a user. `npm audit` reports 0 vulnerabilities; how is documented in [SECURITY.md](SECURITY.md).
 
 Governance alignment: content and models are written against CIPS lifecycle and ethics frameworks, ISM category and sourcing methodology, SOX 404 segregation-of-duties and three-way-match controls, Incoterms 2020 and ISO 20400. Procure Sherpa is not accredited by or endorsed by any of these bodies, and it says so on the page.
@@ -180,7 +180,7 @@ Documented on purpose rather than left for discovery — full detail in the [com
 
 - **Not an ERP.** Thresholds, tax and compliance vary by organisation and jurisdiction; configure `#/settings` and verify locally before relying on anything operationally.
 - **No accounts, no sync.** One browser profile per person; storage clearing loses your work; the backup file is the migration path.
-- **English content, translated shell.** The en/es i18n covers the application chrome (43 keys, 100% wired); all 291 content records and 75 lessons are English-only.
+- **English content, translated shell.** The en/es i18n covers the application chrome (43 keys, 100% wired); all 292 content records and 75 lessons are English-only.
 - **Not SEO-indexable.** Pages render client-side behind hash routes; the served markup is an ~8 KB shell. Search-engine visibility would mean a different, prerendered product.
 - **Single-file ceiling.** Everything parses before first paint and there is no code-splitting escape hatch — that constraint is the product. [ADR 0001](docs/adr/0001-single-file-architecture.md) records the decision and its revisit triggers; [ADR 0002](docs/adr/0002-measured-performance-budget.md) records the measured budgets.
 - **No certificate issuance**, by policy — see above.

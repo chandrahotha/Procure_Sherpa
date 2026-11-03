@@ -204,10 +204,10 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Competition is measured in awarded share and group structure, not in the number of bids received.',
     }
   ],
-  relSop: 'sop-rfp',
+  relSop: 'sop-tender-design-and-defence',
   rel: {
     concepts: ['lotting-and-lot-design', 'call-off-architecture', 'framework-agreement', 'public-procurement-rules', 'supplier-market-analysis', 'concentration-risk'],
-    sops: ['sop-rfp', 'sop-rfq', 'sop-procurement-intake'],
+    sops: ['sop-tender-design-and-defence', 'sop-rfp', 'sop-rfq', 'sop-procurement-intake'],
     checklists: ['cl-rfp-preparation', 'cl-sourcing-strategy', 'cl-supplier-identification'],
     templates: ['tpl-rfp', 'tpl-bid-instructions', 'tpl-supplier-invitation'],
     calcs: ['calc-supplier-concentration', 'calc-compare-quotes'],
@@ -427,7 +427,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['award-criteria-weighting', 'abnormally-low-tender', 'evaluation-criteria', 'should-cost', 'total-cost-of-ownership', 'audit-trail'],
-    sops: ['sop-supplier-evaluation', 'sop-rfp', 'sop-savings-validation'],
+    sops: ['sop-tender-design-and-defence', 'sop-supplier-evaluation', 'sop-rfp', 'sop-savings-validation'],
     checklists: ['cl-technical-evaluation', 'cl-commercial-evaluation', 'cl-award-recommendation'],
     templates: ['tpl-weighted-scoring', 'tpl-technical-evaluation', 'tpl-award-recommendation', 'tpl-commercial-evaluation'],
     calcs: ['calc-supplier-scorecard', 'calc-should-cost', 'calc-compare-quotes'],
@@ -643,10 +643,10 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Executive approval of an award is a test of the file, not a second reading of the price.',
     }
   ],
-  relSop: 'sop-procurement-audit',
+  relSop: 'sop-tender-design-and-defence',
   rel: {
     concepts: ['standstill-and-challenge', 'audit-trail', 'award-criteria-weighting', 'conflict-of-interest', 'delegation-of-authority', 'public-procurement-rules'],
-    sops: ['sop-procurement-audit', 'sop-supplier-evaluation', 'sop-rfp'],
+    sops: ['sop-tender-design-and-defence', 'sop-procurement-audit', 'sop-supplier-evaluation', 'sop-rfp'],
     checklists: ['cl-procurement-file-completeness', 'cl-award-recommendation', 'cl-procurement-audit'],
     templates: ['tpl-award-recommendation', 'tpl-exception-request', 'tpl-bid-waiver'],
     calcs: ['calc-compare-quotes'],

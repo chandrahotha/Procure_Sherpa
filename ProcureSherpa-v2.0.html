@@ -3745,7 +3745,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'd3ca5e34d37d';
+PS.BUILD = '12cd14133e0b';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -18308,6 +18308,7 @@ PS.whatsNew.CHANGES = [
     tag: 'Major',
     items: [
       'New Module 25: Public and Regulated Tendering - Lots, Criteria, Low Bids and Challenges - the mechanics that decide an award before anyone reads a bid. Lotting and call-off architecture, because the size and number of prizes choose the competing population ahead of any qualification criterion, because bid-by-lot, combined award and a cap on lots won are behavioural rules that must exist before effort is spent, and because a framework that stops competing its call-offs has become a subscription. Award criteria and weightings, because selection, award and exclusion are three different tests and scoring a capability requirement is a defect with a name, because a sub-weight that would change a response should have been published, and because a bid materially below your own estimate is a question about assumptions rather than a saving. Standstill, debrief and challenge at executive level, because the mandatory pause is the moment an error is still cheaper to fix than to undo, because a score is a result while the duty is the reasoning, and because signing inside the window is what puts a contract at risk of being treated as ineffective. Five new concepts in a Public and Regulated Tendering category, a nineteenth learning path and an award. The curriculum is 75 functions across 25 modules, 468 step sequences and 354 quiz questions',
+      'A controlled procedure where Module 25 pointed: the Regulated Tender Design and Award Defence SOP, eight steps each with an owner, an output and a control - testing the requirement for division and recording why each lot exists, fixing the bid and award rules before effort is spent, setting weights and the disclosure line together, anchoring the scale before bids arrive, enquiring into an implausible price, writing the rationale and the notice as one act, holding the signature through the mandatory period, and retaining the file so a sample can be tested. The SOP library is now 21 documents holding 167 procedure steps',
       'Payload claims are now measured rather than remembered, and the difference matters: the readable file a user downloads is budgeted against the 1,152 KB transfer ceiling while the minified build the deployment serves is budgeted against 979 KB, and the documents had been pairing one number with the other ceiling - which made the remaining headroom look like a third of what it is. The drift gate now measures both sizes and refuses a sentence that quotes a figure against the wrong ceiling',
       'New Module 24: Supplier Financial Distress, Turnaround and Exit - what happens to a supplier while the contract is still live, which no earlier module covered. Reading financial health as timing rather than as a grade (the operating cycle, interest cover, what a credit agency grade and a bank reference actually measure, the honest limits of a scoring model); the ladder of contingency response that turns a signal cluster into dated, funded actions, including the assets on someone else\u2019s site that nobody documented while there was time; and the rescue or replace decision, with what an insolvency returns, why a change of control is a change of counterparty, and how to report a failure so the next one is priced rather than absorbed. Five new concepts in a Supplier Distress and Recovery category, an eighteenth learning path and an award. The curriculum is 72 functions across 24 modules, 447 step sequences and 339 quiz questions',
       'The Academy hub now answers where you stand, not just how much you have read. A readiness panel splits mastery across the three altitudes - Foundation, Practitioner, Executive - with a bar for each, and carries alongside it the next lesson to read, how many are due for review today, and how many quiz answers are still unsettled, with the most pressing principle named. Every figure is read from the same records the rails, the review queue and the reflection use, so the hub cannot show a second number for one fact - and on a fresh install it says zero out loud rather than hiding the row',
@@ -22150,6 +22151,59 @@ PS.SSOP({
     decisions: ["dec-rfq-or-rfp", "dec-unit-or-tco", "dec-competitive-or-single"],
     kpis: ["kpi-contract-compliance", "kpi-supplier-performance"],
     glossary: ["gloss-sla", "gloss-tco", "gloss-kpi"]
+  }
+});
+
+/* ==========================================================
+   Procure Sherpa v3.0 - SOP addition: Regulated Tender Design
+   and Award Defence. Academy Module 25 teaches lotting, criteria
+   disclosure, the low-bid enquiry and the standstill window; the
+   library held a general RFP procedure and an audit procedure, but
+   nothing that governs the moment a tender is structured or an award
+   is defended. Step format: Title|instruction|role=,out=,ctrl=
+   separated by ';', so no semicolon, no pipe and no apostrophe may
+   appear inside a step.
+   ========================================================== */
+
+PS.SSOP({
+  i: "sop-tender-design-and-defence",
+  t: "Regulated Tender Design and Award Defence SOP",
+  c: "Sourcing and competitive process",
+  v: "1.0",
+  ow: "Head of Procurement, jointly with the Legal Advisor on regulated awards",
+  rv: "Annual, and immediately after any award that is corrected, challenged or re-run",
+  p: "Structure a regulated tender so the competition is real, decide it against what was published, and hold the award so the decision can be explained from documents written before it was made.",
+  s: "Any competed award above the regime threshold, including re-tenders of an existing contract, lots within one tender, and call-offs that reopen competition inside a framework.",
+  os: "Below threshold direct award. Requirements bought under an existing framework without reopening competition. Emergency or single-source routes, which have their own justification procedure, and which this document exists to keep narrow.",
+  g: "A business case approved for a competed requirement, or a framework whose call-off rules are due to be set or changed.",
+  ro: "Category Manager, Sourcing Lead, Requesting Business Owner, Evaluation Panel, Legal Advisor, Finance or Cost Engineer, Internal Audit",
+  ra: "Category Manager: owns the lot plan, the architecture and the award file;Sourcing Lead: tests the market on the divided shape and runs the clarification route;Requesting Business Owner: accepts the service consequence of dividing the scope and the weights chosen;Evaluation Panel: scores independently against anchored bands and writes a reason per line;Legal Advisor: sets the disclosure line, the permitted grounds for change and the correction route;Finance or Cost Engineer: maintains the estimate that sets the low-bid trigger;Internal Audit: file-tests a sample of closed awards each period",
+  fq: "Every award above threshold, which in a normal year means a steady stream rather than an exception.",
+  du: "Set at the start of the process and held, because the mandatory period is a control and not a schedule item.",
+  fl: "Test the requirement for division|Fix the rules that decide who can compete|Set weights and disclosure together|Anchor the scale before bids arrive|Enquire into an implausible price|Write the award rationale and notice|Hold the signature through the mandatory period|Retain the file and test the sample",
+  st: "Test the requirement for division and record why|Take the requirement apart along seams a supplier could genuinely serve on its own - area, discipline, package, service dependency - and write the reason each lot exists. A lot that only works if the same bidder also takes another lot is a discount rather than competition, and a lot sized from internal budget lines is a lot nobody can bid.|role=Category Manager,out=Lot plan with a recorded reason per lot and a standalone viability test naming who could serve it alone,ctrl=No lot is issued without a stated reason and a named set of suppliers able to serve it alone, and a division copied from the organisation chart is rejected;Fix the rules that decide who may compete and publish them|State whether bidders may bid on all, some or one lot, whether lots may be awarded together and what a combined submission must contain, and whether a bidder may win more than a stated number. All of it is in the issued pack, unchanged after issue, because bidders spend scarce effort against the rules they were told.|role=Legal Advisor,out=Published rule set covering bidding across lots, combined award and the cap, with the resilience reason for any cap,ctrl=No award rule is introduced, changed or interpreted for the first time after bids are received;Set the weights and the disclosure line together|Derive every weight from the business case, then test each criterion by asking whether a losing bidder would have proposed it. For each sub-criterion answer the honest question: would knowing it change a response. If yes it is published, and if it is withheld the reason is recorded.|role=Category Manager,out=Weight rationale with a bias test per criterion and a disclosure register for every sub-criterion,ctrl=A criterion that unusually favours one supplier is either justified on the service or removed, and no withheld sub-weight is ever applied without a recorded reason for withholding it;Anchor the scale before bids arrive|Convert adjectives into evidence thresholds so a score means the same thing in two hands, and issue the bands with the pack. Assessors score separately without sight of price, and the panel moderates only the gaps between independent scores, discussing evidence rather than averaging numbers.|role=Evaluation Panel,out=Anchored scorecard, independent scores retained alongside moderated scores, and a moderation note naming what moved and why,ctrl=A weighted criterion is not issued without anchored bands, and no score is recorded without a written reason attached to that line;Enquire into any price that fails plausibility|Set the trigger before bids open as a distance below the estimate or the median. When it fires, ask for the assumptions producing the number - labour rates against statutory minima, agreed subcontractor terms, margins and finance cost, overhead allocation, and any scope the specification requires that the price appears not to cover - then assess the answer against the estimate.|role=Finance or Cost Engineer,out=Low-bid enquiry file with the question asked, the assumptions supplied and the assessment against the estimate,ctrl=No implausible price is accepted or rejected without a documented enquiry, and a rejection names the ground and is approved outside the panel, and where the enquiry shows the estimate was stale the model is revised before the next tender;Write the rationale and the notice as one act|Turn the scores into a written recommendation naming the winner, the reasons, the risks accepted and the characteristics that decided it, then send a notice carrying that reasoning rather than the totals alone, with the date the mandatory period ends.|role=Category Manager,out=Award recommendation and issued notice with reasons, decided characteristics and the period end date,ctrl=A notice that gives only scores or only the placing is treated as incomplete and is re-issued before the period starts to run;Hold the signature until the period has run|Do not sign inside the window. Where the service start genuinely cannot wait, use a documented bridge on the existing contract approved above the requester rather than shortening the period, and record the residual risk before signature instead of after a challenge.|role=Legal Advisor,out=Signature gate log with period dates, any approved exception, its approver and its reason, plus a correction note where a defect was found before signature,ctrl=No signature before the recorded period end without approval one level above the requester, and every correction is written against an identified defect and notified to all bidders;Retain the file and test the sample|Keep the pack, clarification log, declarations, scoring sheets with reasons, moderation note, enquiry file, recommendation, notice and debrief notes as one retrievable set for the retention period. Audit samples a number of closed awards each period for notice quality, rationale and retrievability, and reports the pattern including shortened periods and use of the emergency route.|role=Internal Audit,out=File test result with exceptions, plus a period report counting shortened periods, corrections and single-source or emergency use with their reasons,ctrl=A missing rationale or an unrecorded exception is a control failure even where the award was commercially sound, because the file is the only proof the process ran",
+  ip: "Approved business case, Market map and candidate suppliers per lot, Draft criteria weights and bands, Buyer estimate or should-cost model, Bid submissions with price breakdowns, Assessor conflict declarations",
+  ot: "Published lot plan and award rules, Disclosed criteria set with anchored bands, Documented low-bid enquiry, Written award rationale and index of the file, Issued notice with the period end date, Signature gate record, Retained award file and audit sample result",
+  dc: "Standalone viability|A lot must be servable alone, Published before effort|Award rules exist in the issued pack, Reason not result|Disclosure explains the reasoning, Measured pause|The mandatory period is a control not a schedule item",
+  ct: "Lot plan with recorded reasons, Published bid and award rules, Bias-tested weights and a disclosure register, Anchored bands with per-line rationale, Low-bid enquiry file, Notice carrying reasons and period end date, Signature gate log with approved exceptions, Indexed retrievable award file",
+  kp: ["kpi-bid-rate", "kpi-contract-compliance", "kpi-cycle-time"],
+  rc: "Lot plan, Issued tender pack with rules, Criteria and weighting schedule, Scoring sheets with rationale, Moderation note, Low-bid enquiry, Award recommendation, Standstill notice, Debrief notes, Correction note where applicable",
+  rt: "Retained for the same period as the contracts it governs, commonly seven years, so a later review, audit or dispute can reconstruct who decided what and on what published basis.",
+  rk: "Award rules first applied after bids are received, A criterion that only the incumbent can satisfy left in the weighted set, Scores recorded with no written reason, An implausible price accepted because it beats the savings target, Signature inside the mandatory period to protect a start date, Debrief that gives totals but not reasoning, A correction made verbally and never minuted",
+  exc: "Where a service start cannot move, the route is a documented bridge on the existing contract approved above the requester, not a shortened period. A period is never waived to recover time lost by a late specification, because that converts a planning failure into an unenforceable contract.",
+  mt: ["Reading eleven bids as competition while one group wins five of six lots", "Treating a published criterion as a disclosed one when the sub-weight was withheld", "Counting the award as defensible because the outcome felt fair in the room"],
+  rf: ["Procurement Policy", "Delegation of Authority Policy", "Records Retention Policy", "Conflicts of Interest Policy"],
+  rh: ["1.0: First controlled procedure for regulated tender structure and award defence, written with Academy Module 25"],
+  cl: "cl-procurement-file-completeness",
+  rel: {
+    concepts: ["lotting-and-lot-design", "call-off-architecture", "award-criteria-weighting", "abnormally-low-tender", "standstill-and-challenge", "public-procurement-rules", "evaluation-criteria", "should-cost", "audit-trail"],
+    sops: ["sop-rfp", "sop-rfq", "sop-supplier-evaluation", "sop-procurement-audit"],
+    checklists: ["cl-rfp-preparation", "cl-award-recommendation", "cl-procurement-file-completeness", "cl-technical-evaluation"],
+    templates: ["tpl-rfp", "tpl-weighted-scoring", "tpl-award-recommendation", "tpl-bid-instructions"],
+    calcs: ["calc-supplier-scorecard", "calc-should-cost", "calc-compare-quotes"],
+    decisions: ["rfq-or-rfp", "unit-or-tco", "approve-exception"],
+    kpis: ["kpi-bid-rate", "kpi-contract-compliance", "kpi-cycle-time"],
+    glossary: ["gloss-rfp", "gloss-bid", "gloss-rft", "gloss-should-cost"]
   }
 });
 
@@ -39708,10 +39762,10 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Competition is measured in awarded share and group structure, not in the number of bids received.',
     }
   ],
-  relSop: 'sop-rfp',
+  relSop: 'sop-tender-design-and-defence',
   rel: {
     concepts: ['lotting-and-lot-design', 'call-off-architecture', 'framework-agreement', 'public-procurement-rules', 'supplier-market-analysis', 'concentration-risk'],
-    sops: ['sop-rfp', 'sop-rfq', 'sop-procurement-intake'],
+    sops: ['sop-tender-design-and-defence', 'sop-rfp', 'sop-rfq', 'sop-procurement-intake'],
     checklists: ['cl-rfp-preparation', 'cl-sourcing-strategy', 'cl-supplier-identification'],
     templates: ['tpl-rfp', 'tpl-bid-instructions', 'tpl-supplier-invitation'],
     calcs: ['calc-supplier-concentration', 'calc-compare-quotes'],
@@ -39931,7 +39985,7 @@ PS.ACADEMY_FUNCTIONS.push({
   relSop: 'sop-supplier-evaluation',
   rel: {
     concepts: ['award-criteria-weighting', 'abnormally-low-tender', 'evaluation-criteria', 'should-cost', 'total-cost-of-ownership', 'audit-trail'],
-    sops: ['sop-supplier-evaluation', 'sop-rfp', 'sop-savings-validation'],
+    sops: ['sop-tender-design-and-defence', 'sop-supplier-evaluation', 'sop-rfp', 'sop-savings-validation'],
     checklists: ['cl-technical-evaluation', 'cl-commercial-evaluation', 'cl-award-recommendation'],
     templates: ['tpl-weighted-scoring', 'tpl-technical-evaluation', 'tpl-award-recommendation', 'tpl-commercial-evaluation'],
     calcs: ['calc-supplier-scorecard', 'calc-should-cost', 'calc-compare-quotes'],
@@ -40147,10 +40201,10 @@ PS.ACADEMY_FUNCTIONS.push({
       principle: 'Executive approval of an award is a test of the file, not a second reading of the price.',
     }
   ],
-  relSop: 'sop-procurement-audit',
+  relSop: 'sop-tender-design-and-defence',
   rel: {
     concepts: ['standstill-and-challenge', 'audit-trail', 'award-criteria-weighting', 'conflict-of-interest', 'delegation-of-authority', 'public-procurement-rules'],
-    sops: ['sop-procurement-audit', 'sop-supplier-evaluation', 'sop-rfp'],
+    sops: ['sop-tender-design-and-defence', 'sop-procurement-audit', 'sop-supplier-evaluation', 'sop-rfp'],
     checklists: ['cl-procurement-file-completeness', 'cl-award-recommendation', 'cl-procurement-audit'],
     templates: ['tpl-award-recommendation', 'tpl-exception-request', 'tpl-bid-waiver'],
     calcs: ['calc-compare-quotes'],
