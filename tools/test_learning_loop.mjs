@@ -115,12 +115,47 @@ else {
   else bad('completion counter moved by ' + grew + ' for one lesson (' + statsBefore.completedCount + ' -> ' + statsAfter.completedCount + ')');
 }
 
-/* 4. The review queue must feed from the lesson just studied. */
-const qraw = (PS.revise.queue && PS.revise.queue()) || [];
-const q = Array.isArray(qraw) ? qraw : Object.keys(qraw).map((k) => qraw[k]);
-const inQueue = q.some((x) => (x && (x.id || x.funcId || x.func)) === funcId);
-if (inQueue) ok('the lesson now sits in the spaced-review queue (' + q.length + ' items)');
-else console.log('  note   the finished lesson is not in the review queue yet (' + q.length + ' items) - the queue schedules by interval, so a lesson studied seconds ago may legitimately be due later; checked, not assumed broken');
+/* 4. The review queue must follow its own published ladder, not merely
+      exist. The first version of this block printed a note because the
+      lesson was not in the queue seconds after being studied - which is the
+      schedule working, not failing. So test the rule instead: a passed quiz
+      (>= 70%) schedules the first strong interval, the lesson belongs in the
+      coming-up set while that interval is unpaid, and moving its own
+      timestamps past the due point must flip it into due. Two date sources
+      feed nextDue, which takes max(lastTouch(log), scoreDate): academy.log
+      and academy.scores[funcId].date. Shifting only the first is why an
+      earlier attempt accused the queue of ignoring dates it read correctly. */
+const qraw = (PS.revise.queue && PS.revise.queue()) || {};
+const dueSet = qraw.due || [];
+const soonSet = qraw.soon || [];
+const item = [].concat(dueSet, soonSet).filter((x) => x && x.id === funcId)[0];
+const passed = res && res.pct >= PS.revise.PASS;
+const wantDays = passed ? PS.revise.STRONG[0] : PS.revise.SHAKY[0];
+if (!item) console.log('  note   the finished lesson is listed in neither the due nor the coming-up set; keys seen: ' + JSON.stringify(Object.keys(qraw)));
+else {
+  const gap = Math.round((item.due - Date.now()) / PS.revise.DAY);
+  if (gap === wantDays) ok('a ' + (passed ? 'passed' : 'shaky') + ' quiz schedules review at ' + wantDays + ' days, matching the published ladder (' + PS.revise.STRONG.join('/') + ' strong, ' + PS.revise.SHAKY.join('/') + ' shaky)');
+  else bad('review is scheduled ' + gap + ' days out; the ladder says ' + wantDays + ' for a ' + (passed ? 'passed' : 'shaky') + ' quiz');
+  const inDue = dueSet.some((x) => x.id === funcId);
+  if (gap > 0 && !inDue) ok('it sits in the coming-up set, where a lesson scheduled ' + gap + ' day(s) ahead belongs');
+  else if (gap <= 0 && inDue) ok('it is already due and is listed in the due set');
+  else bad('a lesson scheduled ' + gap + ' day(s) out is in the ' + (inDue ? 'due' : 'coming-up') + ' set - the two sets disagree with the schedule');
+  const d3 = PS.academy.getAll();
+  const entry = (d3.log || {})[funcId] || {};
+  const shiftMs = (item.due - Date.now()) + PS.revise.DAY;
+  ['reviewed', 'quiz', 'completed', 'studied'].forEach((k) => { if (entry[k]) entry[k] = entry[k] - shiftMs; });
+  d3.log = d3.log || {}; d3.log[funcId] = entry;
+  if (d3.scores && d3.scores[funcId] && d3.scores[funcId].date) {
+    const shifted = new Date(Date.parse(d3.scores[funcId].date) - shiftMs);
+    if (!isNaN(shifted.getTime())) d3.scores[funcId].date = shifted.toISOString();
+  }
+  PS.academy.save(d3);
+  const q4 = PS.revise.queue() || {};
+  const nowDue = (q4.due || []).filter((x) => x.id === funcId)[0];
+  const still = (q4.soon || []).filter((x) => x.id === funcId)[0];
+  if (nowDue) ok('moving both date sources back ' + Math.round(shiftMs / PS.revise.DAY) + ' days puts it in the due set (overdue by ' + nowDue.overdueDays + '), so the queue schedules from the record rather than inventing a date');
+  else bad('moving both date sources back ' + Math.round(shiftMs / PS.revise.DAY) + ' days left ' + funcId + (still ? ' still ' + Math.round((still.due - Date.now()) / PS.revise.DAY) + ' days out' : ' out of both sets') + ' - either a third date source feeds nextDue or the record is ignored');
+}
 
 /* 5. The hub must show the same number the store holds. */
 PS.go('academy'); PS.renderRoute();
@@ -189,5 +224,5 @@ else bad('nextUncompleted() still returns ' + nextId + ' after that lesson was c
 
 console.log('\nlearning loop: pass ' + pass + ' | fail ' + fails.length);
 if (fails.length) { console.error('LEARNING LOOP GATE: FAIL'); process.exit(1); }
-console.log('LEARNING LOOP GATE: PASS - the ring closes: mistake, score, completion, counters, hub wording, badge award and badge withdrawal all agree (queue timing is reported as a note, not proven here)');
+console.log('LEARNING LOOP GATE: PASS - the ring closes: mistake, score, completion, counters, hub wording, badge award and badge withdrawal and the review ladder all agree');
 process.exit(0);
