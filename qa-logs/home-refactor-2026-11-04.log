@@ -1,0 +1,347 @@
+
+> procure-sherpa@3.0.0 test
+> node tools/preflight.mjs && node build.mjs && node tools/check_workflows.mjs && node tools/test_unit.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs
+
+--- preflight ---
+  ok  node 22.23.4 (declared minimum major: 22)
+  ok  eslint 9.39.5 and 3 declared dev packages resolved
+  ok  minimatch 11.0.3 (pinned by overrides: ^11.0.1)
+  ok  pre-push hook wired and executable
+PREFLIGHT: PASS
+assembled 227 fragments -> ProcureSherpa-v2.0.html (build fba7c34025d4)
+OK   JS syntax compiles (3964686 chars)
+OK   document skeleton present (4061.6 KB)
+INFO content registrations: {"PS_KB":1,"PS_SOPS":1,"PS_CL":1,"PS_TPL":1,"PS_DEC":1,"PS_KPI":1,"PS_GLOSS":1,"PS_SCEN":1,"PS_CALC":19,"PS_HELP":11}
+INFO routes defined: academy, academy-progress, analytics, approvals, assessment, audit, backup, budget, calc, career-paths, catalogue, certificate, cl, community, contracts, copilot, daily-tip, dash, dash-savings, dec, docpack, exam, exams, fav, glossary, help, home, k, kpi, labs, learning-paths, lifecycle, list, maturity, next-up, notfound, operations, portfolio, quickstart, receipts, recent, reflection, revise, rfx, saved, scen, scenarios, search, settings, sop, spend-model, suppliers, tpl, what, whats-new
+INFO action handlers: 151
+
+VALIDATION PASSED
+WARN: compressed bundle 1114 KB is past the 979 KB soft threshold (85% of the 1152 KB ceiling). Still passing, but worth planning ahead for what happens when this hits the hard limit.
+perf budget: 1114 KB compressed (ceiling 1152 KB, 3 s at 3 Mbps 4G); 4062 KB uncompressed - ok
+--- workflow file gate ---
+workflows: 2
+
+  PASS  deploy.yml (Deploy) has no forbidden contexts in its conditions
+  PASS  qa.yml (QA) has no forbidden contexts in its conditions
+  PASS  every workflow_run trigger names a workflow that exists (QA)
+
+WORKFLOW GATE: PASS
+TAP version 13
+# Subtest: the artifact defines every function under test
+ok 1 - the artifact defines every function under test
+  ---
+  duration_ms: 1.509772
+  type: 'test'
+  ...
+# Subtest: esc: escapes HTML entities
+ok 2 - esc: escapes HTML entities
+  ---
+  duration_ms: 0.164555
+  type: 'test'
+  ...
+# Subtest: escAttr cannot escape differently from esc
+ok 3 - escAttr cannot escape differently from esc
+  ---
+  duration_ms: 0.208723
+  type: 'test'
+  ...
+# Subtest: clean: strips control characters and trims
+ok 4 - clean: strips control characters and trims
+  ---
+  duration_ms: 0.123363
+  type: 'test'
+  ...
+# Subtest: clean: respects max length
+ok 5 - clean: respects max length
+  ---
+  duration_ms: 0.183675
+  type: 'test'
+  ...
+# Subtest: num: parses the formats a procurement user actually types
+ok 6 - num: parses the formats a procurement user actually types
+  ---
+  duration_ms: 0.183732
+  type: 'test'
+  ...
+# Subtest: num: returns NaN rather than a plausible 0 for input it cannot trust
+ok 7 - num: returns NaN rather than a plausible 0 for input it cannot trust
+  ---
+  duration_ms: 0.522022
+  type: 'test'
+  ...
+# Subtest: clamp: constrains values
+ok 8 - clamp: constrains values
+  ---
+  duration_ms: 0.274304
+  type: 'test'
+  ...
+# Subtest: round: rounds to the requested decimals
+ok 9 - round: rounds to the requested decimals
+  ---
+  duration_ms: 0.621434
+  type: 'test'
+  ...
+# Subtest: round: refuses to invent a number out of a non-finite one
+ok 10 - round: refuses to invent a number out of a non-finite one
+  ---
+  duration_ms: 0.849331
+  type: 'test'
+  ...
+# Subtest: group: formats with thousands separators
+ok 11 - group: formats with thousands separators
+  ---
+  duration_ms: 0.372645
+  type: 'test'
+  ...
+# Subtest: group: shows an em dash, not a fake zero, for a value that does not exist
+ok 12 - group: shows an em dash, not a fake zero, for a value that does not exist
+  ---
+  duration_ms: 0.1122
+  type: 'test'
+  ...
+# Subtest: group: respects decimal places
+ok 13 - group: respects decimal places
+  ---
+  duration_ms: 0.109867
+  type: 'test'
+  ...
+# Subtest: csvCell: prevents spreadsheet formula injection
+ok 14 - csvCell: prevents spreadsheet formula injection
+  ---
+  duration_ms: 0.209452
+  type: 'test'
+  ...
+# Subtest: csvCell: escapes quotes and commas so a cell cannot split into two
+ok 15 - csvCell: escapes quotes and commas so a cell cannot split into two
+  ---
+  duration_ms: 0.122388
+  type: 'test'
+  ...
+# Subtest: toCSV: builds valid CSV with CRLF line endings
+ok 16 - toCSV: builds valid CSV with CRLF line endings
+  ---
+  duration_ms: 0.141925
+  type: 'test'
+  ...
+# Subtest: toCSV: keeps an injected cell neutralised once it reaches a row
+ok 17 - toCSV: keeps an injected cell neutralised once it reaches a row
+  ---
+  duration_ms: 0.114942
+  type: 'test'
+  ...
+# Subtest: safeJSON: parses a valid object
+ok 18 - safeJSON: parses a valid object
+  ---
+  duration_ms: 0.144163
+  type: 'test'
+  ...
+# Subtest: safeJSON: rejects anything it should not write to storage, without throwing
+ok 19 - safeJSON: rejects anything it should not write to storage, without throwing
+  ---
+  duration_ms: 0.126091
+  type: 'test'
+  ...
+# Subtest: safeJSON: every rejection carries a sentence the user can act on
+ok 20 - safeJSON: every rejection carries a sentence the user can act on
+  ---
+  duration_ms: 0.115229
+  type: 'test'
+  ...
+# Subtest: safeJSON: enforces the size limit
+ok 21 - safeJSON: enforces the size limit
+  ---
+  duration_ms: 0.162446
+  type: 'test'
+  ...
+# Subtest: levenshtein: computes edit distance
+ok 22 - levenshtein: computes edit distance
+  ---
+  duration_ms: 0.224795
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22.235498
+testing 19 calculators
+
+== calc-compare-quotes :: Compare Quotes
+== calc-landed-cost :: Landed Cost
+== calc-should-cost :: Should Cost
+== calc-tco :: TCO - Total Cost of Ownership
+== calc-negotiation-savings :: Negotiation Savings
+== calc-price-increase :: Price Increase
+== calc-price-escalation :: Price Escalation
+== calc-payment-terms :: Payment Terms
+== calc-po-value-check :: PO Value Check
+== calc-moq :: MOQ / Order Quantity
+== calc-make-vs-buy :: Make vs Buy
+== calc-supplier-scorecard :: Supplier Scorecard
+== calc-supplier-concentration :: Supplier Concentration
+== calc-budget-vs-actual :: Budget vs Actual
+== calc-savings-analysis :: Savings Analysis
+== calc-multi-year-contract-cost :: Multi-Year Contract Cost
+== calc-gst-tax :: GST / Tax
+== calc-fx-currency :: Currency / FX
+== calc-kpi-calculator :: KPI Quick Calculator
+
+--- summary ---
+calculators tested: 19
+assertions passed: 1021
+assertions failed: 0
+runtime errors: 0
+--- calculator expected-value fixtures ---
+--- summary ---
+assertions passed: 51
+assertions failed: 0
+runtime errors: 0
+--- route smoke (page contract: LIBRARY >= 600 chars, WORKSPACE >= 250 chars with a way forward, STATE exempt) ---
+ok   #/home                                           3014 chars LIBRARY      28/2/1 
+ok   #/academy                                       30888 chars LIBRARY    105/31/1 
+ok   #/academy-progress                              16684 chars LIBRARY      93/2/1 
+ok   #/certificate                                     414 chars WORKSPACE     3/0/1 
+ok   #/quickstart                                     2270 chars LIBRARY      8/14/1 
+ok   #/exam?bank=cert-full&n=3                        1099 chars WORKSPACE     0/7/1 
+ok   #/what                                            986 chars LIBRARY      0/15/1 
+ok   #/search                                         1051 chars LIBRARY      0/17/1 
+ok   #/glossary                                      14054 chars LIBRARY     235/0/1 
+ok   #/scenarios                                      1133 chars LIBRARY       6/0/1 
+ok   #/operations                                     9371 chars LIBRARY     248/0/1 
+ok   #/list/calc                                      3315 chars LIBRARY     29/11/1 
+ok   #/list/sop                                       6112 chars LIBRARY     34/14/1 
+ok   #/list/cl                                        4923 chars LIBRARY     36/10/1 
+ok   #/list/tpl                                       1992 chars LIBRARY      41/9/1 
+ok   #/list/kpi                                       1189 chars LIBRARY     28/11/1 
+ok   #/list/kb                                        9798 chars LIBRARY    155/23/1 
+ok   #/list/dec                                       1448 chars LIBRARY      24/8/1 
+ok   #/k                                              9798 chars LIBRARY    155/23/1 
+ok   #/sop                                            6112 chars LIBRARY     34/14/1 
+ok   #/cl                                             4923 chars LIBRARY     36/10/1 
+ok   #/tpl                                            1992 chars LIBRARY      41/9/1 
+ok   #/dec                                            1448 chars LIBRARY      24/8/1 
+ok   #/kpi                                            1189 chars LIBRARY     28/11/1 
+ok   #/scen                                           1133 chars LIBRARY       6/0/1 
+ok   #/calc                                           3315 chars LIBRARY     29/11/1 
+ok   #/lifecycle                                      6151 chars LIBRARY      62/0/1 
+ok   #/maturity                                       4482 chars LIBRARY       0/3/1 
+ok   #/help                                          13179 chars LIBRARY      18/0/1 
+ok   #/dash                                           1146 chars WORKSPACE     3/2/1 
+ok   #/dash-savings                                    893 chars WORKSPACE     1/0/1 
+ok   #/saved                                           583 chars WORKSPACE     0/5/1 
+ok   #/fav                                             333 chars WORKSPACE     6/0/1 
+ok   #/recent                                          301 chars WORKSPACE     5/0/1 
+ok   #/backup                                         1853 chars WORKSPACE     0/4/1 
+ok   #/settings                                       2979 chars WORKSPACE     0/9/1 
+ok   #/audit                                          1148 chars WORKSPACE     0/3/1 
+ok   #/copilot                                         875 chars WORKSPACE     0/6/1 
+ok   #/exams                                          5656 chars WORKSPACE    32/1/1 
+ok   #/spend-model                                     921 chars WORKSPACE     0/5/1 
+ok   #/docpack                                       10637 chars WORKSPACE    0/86/1 
+ok   #/assessment                                      302 chars WORKSPACE     0/1/1 
+ok   #/learning-paths                                28908 chars LIBRARY     116/0/1 
+ok   #/labs                                           1015 chars WORKSPACE     0/4/1 
+ok   #/portfolio                                      2464 chars WORKSPACE     0/1/1 
+ok   #/daily-tip                                       318 chars WORKSPACE     1/2/1 
+ok   #/career-paths                                   1215 chars LIBRARY       3/0/1 
+ok   #/community                                       677 chars WORKSPACE     6/1/1 
+ok   #/next-up                                         807 chars WORKSPACE     7/0/1 
+ok   #/revise                                          751 chars WORKSPACE     2/0/1 
+ok   #/reflection                                      880 chars WORKSPACE     2/0/1 
+ok   #/whats-new                                     44012 chars LIBRARY       0/0/1 
+ok   #/rfx                                            1329 chars WORKSPACE    14/2/1 
+ok   #/suppliers                                      1352 chars WORKSPACE     8/2/1 
+ok   #/contracts                                      1369 chars WORKSPACE     8/2/1 
+ok   #/catalogue                                      1285 chars WORKSPACE     7/2/1 
+ok   #/receipts                                       1097 chars WORKSPACE     5/2/1 
+ok   #/budget                                         1355 chars WORKSPACE     9/2/1 
+ok   #/approvals                                      1641 chars WORKSPACE     8/2/1 
+ok   #/analytics                                       958 chars WORKSPACE     7/0/1 
+ok   #/notfound                                        120 chars STATE         1/0/1 
+ok   #/k/c-procurement                                2499 chars LIBRARY      19/1/1 
+ok   #/sop/sop-procurement-lifecycle                 10581 chars LIBRARY      46/2/1 
+ok   #/cl/cl-procurement-intake                       2716 chars LIBRARY      2/20/1 
+ok   #/tpl/tpl-rfq                                    1504 chars LIBRARY      13/5/1 
+ok   #/calc/calc-tco                                  2805 chars LIBRARY     40/17/1 
+ok   #/calc/calc-compare-quotes                       2794 chars LIBRARY     40/16/1 
+ok   #/calc/calc-payment-terms                        2065 chars LIBRARY     24/15/1 
+ok   #/dec/rfq-or-rfp                                 2284 chars LIBRARY      23/3/1 
+ok   #/kpi/kpi-savings                                2346 chars LIBRARY      30/0/1 
+ok   #/scen/scn-new-purchase                          1856 chars LIBRARY      20/9/1 
+ok   #/academy/func-mission-value                     6474 chars LIBRARY      22/6/1 
+ok   #/academy/func-supplier-risk                     7037 chars LIBRARY      27/6/1 
+ok   #/sop/sop-procurement-intake                     8553 chars LIBRARY      49/2/1 
+ok   #/sop/sop-rfq                                    9650 chars LIBRARY      53/2/1 
+ok   #/sop/sop-rfp                                    9767 chars LIBRARY      45/2/1 
+ok   #/sop/sop-supplier-evaluation                    9743 chars LIBRARY      47/2/1 
+ok   #/sop/sop-contract-review                        9211 chars LIBRARY      39/2/1 
+ok   #/sop/sop-negotiation-preparation                8818 chars LIBRARY      47/2/1 
+ok   #/sop/sop-savings-calculation                    9093 chars LIBRARY      43/2/1 
+ok   #/sop/sop-supplier-price-increase-review         9012 chars LIBRARY      23/2/1 
+ok   #/sop/sop-contract-renewal                       9376 chars LIBRARY      39/2/1 
+ok   #/sop/sop-supplier-performance-management        9871 chars LIBRARY      41/2/1 
+ok   #/sop/sop-procurement-audit                      9062 chars LIBRARY      35/2/1 
+ok   #/sop/sop-emergency-procurement                  8942 chars LIBRARY      23/2/1 
+ok   #/search?q=TCO                                  16316 chars LIBRARY     62/17/1 
+ok   #/what?q=supplier%20increased%20price%20by%2012%20percent   8545 chars LIBRARY     36/15/1 
+ok   #/help/getting-started                          13179 chars LIBRARY      18/0/1 
+--- coverage ---
+ok   all 54 registered routes are visited
+--- summary ---
+routes: 88 failing: 0
+total runtime errors captured: 0
+
+SMOKE TESTS PASSED
+--- layout & dynamic UI structure verification ---
+ok   Document skeleton has #app container
+ok   Document has #sidebar and #main content containers
+ok   Document has #toastContainer with aria-live="polite"
+ok   Document has #modalRoot dialog mount point
+ok   Sidebar has brand mark and title
+ok   Sidebar has search filter input
+ok   The learn view shows five nav sections
+ok   The learn view sections are Start, Learn, Library, Look It Up and My Work
+ok   The learn view shows 26 navigation items
+ok   The learn view hides the working sections
+ok   The learn view keeps the shared library
+ok   The work view shows six nav sections
+ok   The work view sections are Start, Workbench, Toolkit, Library, Look It Up and My Work
+ok   The work view shows 30 navigation items
+ok   The work view hides the learning section
+ok   The work view keeps the shared library
+ok   The sidebar carries a Learn / Work switch
+ok   The switch marks the current view with aria-pressed
+ok   The switch is labelled
+ok   Every nav section has items
+ok   The system links live in a labelled footer strip
+ok   Calculator renders two-pane .calc-layout container
+ok   Calculator has live results container (#calcResult)
+ok   Calculator results container has aria-live="polite"
+ok   Calculator has mobile sheet trigger button
+ok   What-should-I-do page has live results container with aria-live
+ok   Maturity check page has live results container with aria-live
+ok   Lesson tab rail carries the reading progress bar
+ok   Reading progress responds to scroll with a finite transform
+ok   the exam route renders a session with a question rail
+ok   exam focus mode hides the shell chrome rather than dimming it
+ok   the exam header carries the clock, a pop-out and a way out
+FAIL: The featured thinking point quotes the Academy curriculum and links to its lesson
+ok   The review queue renders a heading and a way forward on an empty record
+ok   The Academy hub carries an entry point to the review queue
+ok   The reflection page renders a heading and a way forward on an empty record
+ok   The progress transcript carries entry points to the review queue and the reflection
+ok   The Academy hub readiness panel renders three altitude rails with aria labels
+ok   the dashboard stats use a definite four-column grid, not auto-fit
+ok   the dashboard panels use a definite two-column grid
+ok   the route is published so layout can be scoped per page
+ok   repeated identical events collapse into one row with a count
+ok   the feed shows the lesson title rather than an internal id
+ok   CSS defines :root color variables (--bg, --panel, --text, --accent)
+ok   CSS defines [data-theme="dark"] dark mode tokens
+--- summary ---
+checks passed: 44 / 45
+LAYOUT AUDIT FAILED

@@ -1,10 +1,15 @@
 /* ==========================================================
-   Procure Sherpa v2.1 - Home Page Components
-   Clean, segregated Dual-Hub Command Center
-   1. Personalized Welcome Card with Local User Account
-   2. Segregated Dual-Hub Gateway (Academy vs Operations)
-   3. Smart Resume & Workspace Status
-   4. Featured Procurement Thinking Point
+   Procure Sherpa v3.1 - Home Page Components
+   Command Center, rebuilt on the institutional design system.
+
+   Every surface here builds through src/ui/ (PS.ui.card, cardHead,
+   stat, statGrid, note, btnRow, empty) and the inst-* classes in
+   01n_design_system.css, so one design change lands on the whole
+   page. Inline styles and emoji decoration are removed: colour marks
+   meaning (the jade accent and the altitude colours), never decoration.
+
+   Behaviour is unchanged: same links, same data, same i18n attributes,
+   same problem-form action, same daily tip and weekly challenge.
    ========================================================== */
 
 PS.homeStartHere = function () {
@@ -19,10 +24,6 @@ PS.homeStartHere = function () {
   var primary, secondary;
   var prof = PS.user ? PS.user.getProfile() : { role: 'beginner', track: 'academy' };
   var operational = prof.track === 'operations';
-  /* The curriculum counts are read, never typed. This sentence was
-     "Twenty-eight functions across eleven modules" for a release and then
-     two more modules arrived in src/content/ and the Command Center went
-     on describing a smaller product than the one it links to. */
   var moduleCount = new Set(funcs.map(function (f) { return f.module; })).size;
   var curriculumNote = funcs.length + ' functions across ' + moduleCount + ' modules, beginner to advanced';
   if (isNew) {
@@ -41,29 +42,35 @@ PS.homeStartHere = function () {
     secondary = { href: '#/next-up', label: 'What to learn next', note: 'A recommendation based on your quiz scores and open modules.' };
   }
 
-  return '<section class="home-start no-print">' +
-    '<div class="home-start-main">' +
-    '<span class="home-start-kicker">' + (isNew ? 'Start here' : 'Pick up where you left off') + '</span>' +
-    '<a class="home-start-primary" href="' + primary.href + '">' + PS.esc(primary.label) + ' &rarr;</a>' +
-    '<p class="home-start-note">' + PS.esc(primary.note) + '</p>' +
-    '<a class="home-start-secondary" href="' + secondary.href + '">' + PS.esc(secondary.label) + '</a>' +
-    '<p class="home-start-note">' + PS.esc(secondary.note) + '</p>' +
-    '<form class="home-start-problem" id="homeProblemForm">' +
+  var start = PS.ui.card(
+    PS.ui.cardHead(PS.esc(isNew ? 'Start here' : 'Pick up where you left off')) +
+    '<p class="inst-home-lead">' + PS.esc(primary.note) + '</p>' +
+    PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="' + PS.esc(primary.href) + '">' + PS.esc(primary.label) + ' <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="' + PS.esc(secondary.href) + '">' + PS.esc(secondary.label) + '</a>'),
+    { class: 'inst-home-start inst-home-card--primary' }
+  );
+
+  var problem = '<form class="inst-home-problem" id="homeProblemForm">' +
     '<label class="sr-only" for="homeWhat">Describe the procurement problem you are working on</label>' +
     '<input type="text" id="homeWhat" maxlength="200" placeholder="Describe a procurement problem in your own words">' +
-    '<button type="button" class="btn btn-primary" data-act="home-what-run">Find the tools</button>' +
+    '<button type="button" class="inst-home-btn inst-home-btn--primary" data-act="home-what-run">Find the tools</button>' +
     '</form>' +
-    '<p class="note home-start-hint">Or <a href="#/search">search everything</a>, or press <kbd>Ctrl</kbd>+<kbd>K</kbd>.</p>' +
-    '</div>' +
-    (tip ? '<div class="home-start-today">' +
-      '<span class="home-start-kicker">Today</span>' +
-      '<div class="home-tip"><span class="badge">' + PS.esc(tip.category) + '</span>' +
+    '<p class="note inst-home-hint">Or <a href="#/search">search everything</a>, or press <kbd>Ctrl</kbd>+<kbd>K</kbd>.</p>';
+
+  var today = '';
+  if (tip) {
+    today = PS.ui.card(
+      '<p class="inst-home-kicker inst-home-today-kicker">Today</p>' +
+      '<div class="inst-home-tip"><span class="inst-home-chip">' + PS.esc(tip.category) + '</span>' +
       '<p>' + PS.esc(tip.tip) + '</p>' +
-      '<p class="note">Source: ' + PS.esc(tip.source) + ' &middot; <a href="#/daily-tip">more tips</a></p></div>' +
-      (challenge ? '<div class="home-challenge"><strong>This week</strong> ' + PS.esc(challenge.title) +
-        ' &middot; ' + PS.esc(challenge.desc) + ' <a href="#/labs">Open the labs</a></div>' : '') +
-      '</div>' : '') +
-    '</section>';
+      '<p class="note inst-home-tip-source">Source: ' + PS.esc(tip.source) + ' &middot; <a href="#/daily-tip">more tips</a></p></div>' +
+      (challenge ? '<div class="inst-home-challenge"><strong>This week</strong> ' + PS.esc(challenge.title) +
+        ' &middot; ' + PS.esc(challenge.desc) + ' <a href="#/labs">Open the labs</a></div>' : ''),
+      { class: 'inst-home-today' }
+    );
+  }
+
+  return '<section class="inst-home-section no-print">' + start + problem + today + '</section>';
 };
 
 PS.homeWelcomeCard = function () {
@@ -72,20 +79,19 @@ PS.homeWelcomeCard = function () {
   var trackMeta = PS.user ? PS.user.getTrackMeta(prof.track) : { label: 'Academy Learner' };
   var initials = PS.user ? PS.user.getInitials(prof.name) : 'PS';
 
-  return '<section class="home-welcome-card no-print">' +
-    '<div class="home-user-badge-row">' +
-    '<div class="home-user-avatar" style="background:' + PS.esc(prof.avatarBg || 'var(--accent)') + '">' + PS.esc(initials) + '</div>' +
-    '<div class="home-user-meta">' +
-    '<h1>Welcome back, ' + PS.esc(prof.name) + '</h1>' +
-    '<div class="flex items-center gap8 flex-wrap">' +
-    '<span class="home-role-pill">' + PS.esc(roleMeta.title) + '</span>' +
-    (prof.company ? '<span class="home-track-pill">&bull; ' + PS.esc(prof.company) + '</span>' : '') +
-    '<span class="home-track-pill">' + PS.esc(trackMeta.label) + '</span>' +
+  return PS.ui.card(
+    '<div class="inst-home-user-row">' +
+    '<div class="inst-home-avatar">' + PS.esc(initials) + '</div>' +
+    '<div class="inst-home-user-meta">' +
+    '<h1 class="inst-home-welcome-title">Welcome back, ' + PS.esc(prof.name) + '</h1>' +
+    '<div class="inst-home-user-meta-row">' +
+    '<span class="inst-home-chip inst-home-chip--role">' + PS.esc(roleMeta.title) + '</span>' +
+    (prof.company ? '<span class="inst-home-chip inst-home-chip--company">&bull; ' + PS.esc(prof.company) + '</span>' : '') +
+    '<span class="inst-home-chip inst-home-chip--track">' + PS.esc(trackMeta.label) + '</span>' +
     '</div></div></div>' +
-    '<div class="btn-row" style="margin:0;">' +
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="user-profile-open" data-i18n="common.edit">&#9881; ' + (PS.i18n ? PS.i18n.t('common.edit') : 'Edit') + ' Profile & Role</button>' +
-    '</div>' +
-    '</section>';
+    PS.ui.btnRow('<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="user-profile-open" data-i18n="common.edit"><span class="inst-home-icon" aria-hidden="true">&#9881;</span> ' + (PS.i18n ? PS.i18n.t('common.edit') : 'Edit') + ' Profile & Role</button>'),
+    { class: 'inst-home-welcome' }
+  );
 };
 
 PS.homeDualHub = function () {
@@ -100,62 +106,50 @@ PS.homeDualHub = function () {
   var nModules = 0, seen = {};
   (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) { if (!seen[f.module]) { seen[f.module] = 1; nModules++; } });
 
-  return '<section class="dual-hub-grid no-print">' +
-    /* Card 1: Procurement Academy (The Learning Hub) */
-    '<div class="hub-portal-card is-learning">' +
-    '<div class="hub-card-header">' +
-    '<span class="hub-badge learning">Learning Hub &middot; Beginner to Advanced</span>' +
-    '<span class="t-xs t-dim font-bold">' + stats.completedCount + ' of ' + stats.totalCount + ' Mastered</span>' +
+  var academyCard = PS.ui.card(
+    '<div class="inst-home-hub-head">' +
+    '<span class="inst-home-hub-badge inst-home-hub-badge--learning">Learning Hub</span>' +
+    '<span class="inst-home-hub-progress">' + stats.completedCount + ' of ' + stats.totalCount + ' mastered</span>' +
     '</div>' +
-    '<div class="hub-card-title">Procurement Academy</div>' +
-    '<p class="hub-card-desc">Interactive digital learning journeys for newcomers, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
-    '<div class="hub-progress">' +
-    '<div class="hub-progress-meta"><span>Academy completion</span><span>' + stats.pct + '%</span></div>' +
-    '<div class="academy-progress-track"><div class="academy-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
+    '<h2 class="inst-home-hub-title">Procurement Academy</h2>' +
+    '<p class="inst-home-hub-desc">Interactive digital learning journeys for newcomers, enthusiasts and practitioners. Core commercial functions, step by step, with worked examples and knowledge checks.</p>' +
+    '<div class="inst-home-hub-meta">' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nModules + '</span><span class="inst-home-hub-stat-lab">core learning modules</span></div>' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + allFuncs.length + '</span><span class="inst-home-hub-stat-lab">practical functions</span></div>' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + stats.badgesEarned + '</span><span class="inst-home-hub-stat-lab">badges earned</span></div>' +
     '</div>' +
-    '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📚</span><span>' + nModules + ' Core Learning Modules</span></div>' +
-    '<div class="hub-feature-item"><span>🎯</span><span>' + allFuncs.length + ' Practical Functions</span></div>' +
-    '<div class="hub-feature-item"><span>💡</span><span>Real-Time Thinking Points</span></div>' +
-    '<div class="hub-feature-item"><span>🏆</span><span>' + stats.badgesEarned + ' Badges Earned</span></div>' +
+    '<div class="inst-home-progress">' +
+    '<div class="inst-home-progress-meta"><span>Academy completion</span><span>' + stats.pct + '%</span></div>' +
+    '<div class="inst-home-progress-track"><div class="inst-home-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
     '</div>' +
-    '<div class="hub-card-footer">' +
-    '<a class="btn btn-primary" href="#/academy/' + (curFunc ? curFunc.id : 'func-mission-value') + '">' +
-    (stats.completedCount > 0 ? 'Resume: ' + PS.esc(curFunc ? curFunc.title : '') : 'Start Academy Curriculum') + ' &rarr;</a>' +
-    '<a class="btn btn-ghost" href="#/academy">All Modules</a>' +
-    '</div>' +
-    '</div>' +
+    PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="#/academy/' + (curFunc ? curFunc.id : 'func-mission-value') + '">' + (stats.completedCount > 0 ? 'Resume: ' + PS.esc(curFunc ? curFunc.title : '') : 'Start Academy Curriculum') + ' <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/academy">All modules</a>'),
+    { class: 'inst-home-hub-card inst-home-hub-card--learning' }
+  );
 
-    /* Card 2: Operations Hub (Execution Hub) */
-    '<div class="hub-portal-card is-operations">' +
-    '<div class="hub-card-header">' +
-    '<span class="hub-badge operations">Operations Hub &middot; Practitioner Tools</span>' +
-    '<span class="t-xs t-dim font-bold">' + nSop + ' SOPs &middot; ' + nCl + ' checklists &middot; ' + nTpl + ' templates</span>' +
+  var operationsCard = PS.ui.card(
+    '<div class="inst-home-hub-head">' +
+    '<span class="inst-home-hub-badge inst-home-hub-badge--operations">Operations Hub</span>' +
+    '<span class="inst-home-hub-progress">' + nSop + ' SOPs &middot; ' + nCl + ' checklists &middot; ' + nTpl + ' templates</span>' +
     '</div>' +
-    '<div class="hub-card-title">Operations Hub</div>' +
-    '<p class="hub-card-desc">The complete operational reference for active procurement execution. Controlled standard operating procedures, financial calculators, contract review checklists, and production RFP templates arranged by lifecycle phase.</p>' +
-    '<div class="hub-progress">' +
-    '<div class="hub-progress-meta"><span>Work phases</span><span>' + (PS.LIFECYCLE_PHASES ? PS.LIFECYCLE_PHASES.length : 6) + '</span></div>' +
-    '<div class="hub-phase-strip">' +
-    (PS.LIFECYCLE_PHASES || []).map(function (ph, i) {
-      return '<span class="hub-phase-chip" title="' + PS.esc(ph.title) + '">' + (i + 1) + '</span>';
-    }).join('') +
-    '</div></div>' +
-    '<div class="hub-quick-features">' +
-    '<div class="hub-feature-item"><span>📋</span><span>' + nSop + ' Controlled SOPs</span></div>' +
-    '<div class="hub-feature-item"><span>🧮</span><span>' + nCalc + ' Financial Calculators</span></div>' +
-    '<div class="hub-feature-item"><span>☑️</span><span>' + nCl + ' Operational Checklists</span></div>' +
-    '<div class="hub-feature-item"><span>📝</span><span>' + nTpl + ' Production Templates</span></div>' +
+    '<h2 class="inst-home-hub-title">Operations Hub</h2>' +
+    '<p class="inst-home-hub-desc">The operational reference for active procurement execution: controlled SOPs, financial calculators, compliance checklists and production templates, arranged by lifecycle phase.</p>' +
+    '<div class="inst-home-hub-meta">' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nSop + '</span><span class="inst-home-hub-stat-lab">controlled SOPs</span></div>' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nCalc + '</span><span class="inst-home-hub-stat-lab">financial calculators</span></div>' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nCl + '</span><span class="inst-home-hub-stat-lab">operational checklists</span></div>' +
+    '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nTpl + '</span><span class="inst-home-hub-stat-lab">production templates</span></div>' +
     '</div>' +
-    '<div class="hub-card-footer">' +
-    '<a class="btn btn-ops" href="#/operations">Open Operations Hub &rarr;</a>' +
-    '<div class="flex gap8">' +
-    '<a class="btn btn-sm" href="#/list/sop">SOPs</a>' +
-    '<a class="btn btn-sm" href="#/list/calc">Calculators</a>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '</section>';
+    PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="#/operations">Open Operations Hub <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/list/sop">SOPs</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/list/calc">Calculators</a>'),
+    { class: 'inst-home-hub-card inst-home-hub-card--operations' }
+  );
+
+  return PS.ui.card(
+    academyCard + operationsCard,
+    { class: 'inst-home-dual-hub no-print' }
+  );
 };
 
 PS.homeSmartResume = function () {
@@ -163,34 +157,35 @@ PS.homeSmartResume = function () {
 
   if (savedList.length > 0) {
     var latest = savedList[0];
-    return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
-      '<div class="flex items-center gap12">' +
-      '<span class="badge badge-type">Active Workspace</span>' +
-      '<span><strong>' + PS.esc(latest.title || latest.id) + '</strong> <span class="t-dim t-xs">(' + PS.esc(PS.dateTime(latest.savedAt)) + ')</span></span>' +
+    return PS.ui.card(
+      '<div class="inst-home-resume-row">' +
+      '<div class="inst-home-resume-left">' +
+      '<span class="inst-home-chip inst-home-chip--state inst-home-chip--active">Active workspace</span>' +
+      '<span><strong>' + PS.esc(latest.title || latest.id) + '</strong> <span class="inst-home-mono">(' + PS.esc(PS.dateTime(latest.savedAt)) + ')</span></span>' +
       '</div>' +
-      '<div class="btn-row" style="margin:0;">' +
-      '<a class="btn btn-sm btn-primary" href="#/' + PS.esc(latest.type) + '/' + PS.esc(latest.id) + '">Reopen Draft &rarr;</a>' +
-      '<a class="btn btn-sm btn-ghost" href="#/saved">View All (' + savedList.length + ')</a>' +
-      '</div></div>';
+      '<div class="inst-home-resume-right">' +
+      '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/' + PS.esc(latest.type) + '/' + PS.esc(latest.id) + '">Reopen draft <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/saved">View all (' + savedList.length + ')</a>' +
+      '</div></div>',
+      { class: 'inst-home-smart-resume no-print' }
+    );
   }
 
-  return '<div class="card card-tight flex items-center justify-between no-print" style="margin-bottom:20px;">' +
-    '<div class="flex items-center gap12">' +
-    '<span class="badge badge-ok">Getting Started</span>' +
-    '<span>New to Procure Sherpa? Follow the guided curriculum in Academy or explore the Operations Hub.</span>' +
+  return PS.ui.card(
+    '<div class="inst-home-resume-row inst-home-resume-row--empty">' +
+    '<div class="inst-home-resume-left">' +
+    '<span class="inst-home-chip inst-home-chip--state inst-home-chip--ok">Getting started</span>' +
+    '<span>New to Procure Sherpa? Follow the guided curriculum in the Academy or explore the Operations Hub.</span>' +
     '</div>' +
-    '<div class="btn-row" style="margin:0;">' +
-    '<a class="btn btn-sm btn-primary" href="#/academy">Start Learning &rarr;</a>' +
-    '<a class="btn btn-sm btn-ghost" href="#/what">What should I do?</a>' +
-    '</div></div>';
+    '<div class="inst-home-resume-right">' +
+    '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/academy">Start learning <span aria-hidden="true">&rarr;</span></a>' +
+    '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/what">What should I do?</a>' +
+    '</div></div>',
+    { class: 'inst-home-smart-resume no-print' }
+  );
 };
 
 PS.homeThinkingPoint = function () {
-  /* Every lesson carries authored thinking points, and the home page used
-     to hard-code one of them - the same quote greeted every visitor every
-     day while well over a hundred sat unread inside the curriculum. The
-     pick is deterministic per day, so everyone sees the same one on a
-     given day and it rotates through the whole pool. */
   var pool = [];
   (PS.ACADEMY_FUNCTIONS || []).forEach(function (f) {
     (f.thinkingPoints || []).forEach(function (tp) {
@@ -202,33 +197,85 @@ PS.homeThinkingPoint = function () {
   var pick = pool[day % pool.length];
   var explain = String(pick.tp.explanation || '');
   if (explain.length > 320) explain = explain.slice(0, 317).replace(/\s+\S*$/, '') + '\u2026';
-  return '<div class="thinking-point-card no-print" style="margin-bottom:24px;">' +
-    '<div class="thinking-point-eyebrow">&#128161; Today&#39;s thinking point &middot; from the Academy curriculum</div>' +
-    '<blockquote class="thinking-point-quote">&ldquo;' + PS.esc(pick.tp.quote) + '&rdquo;</blockquote>' +
-    '<div class="thinking-point-explain">' + PS.esc(explain) + '</div>' +
-    (pick.tp.reflectionPrompt ? '<p class="note" style="margin-top:10px"><strong>Reflect:</strong> ' + PS.esc(pick.tp.reflectionPrompt) + '</p>' : '') +
-    '<div class="flex items-center flex-wrap" style="gap:12px; margin-top:14px;">' +
-    '<a class="btn btn-sm btn-primary" href="#/academy/' + encodeURIComponent(pick.f.id) + '">Study &ldquo;' + PS.esc(pick.f.title) + '&rdquo; &rarr;</a>' +
-    '<a class="btn btn-sm btn-ghost" href="#/academy/' + encodeURIComponent(pick.f.id) + '?tab=think">Open the Think tab</a>' +
+  return PS.ui.card(
+    '<p class="inst-home-kicker inst-home-thinking-kicker">Today&rsquo;s thinking point &middot; from the Academy curriculum</p>' +
+    '<blockquote class="inst-home-thinking-quote">&ldquo;' + PS.esc(pick.tp.quote) + '&rdquo;</blockquote>' +
+    '<div class="inst-home-thinking-explain">' + PS.esc(explain) + '</div>' +
+    (pick.tp.reflectionPrompt ? '<p class="note inst-home-thinking-reflect"><strong>Reflect:</strong> ' + PS.esc(pick.tp.reflectionPrompt) + '</p>' : '') +
+    PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/academy/' + encodeURIComponent(pick.f.id) + '">Study &ldquo;' + PS.esc(pick.f.title) + '&rdquo; <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/academy/' + encodeURIComponent(pick.f.id) + '?tab=think">Open the Think tab</a>') +
+    '<p class="note inst-home-thinking-source">' + PS.esc(pick.f.module) + ' &middot; an authored teaching point from the lesson, not a sourced statistic</p>',
+    { class: 'inst-home-thinking-point thinking-point-card no-print' }
+  );
+};
+
+PS.homeQuickCalc = function () {
+  var recent = PS.recent.list().filter(function (r) { return r.type === 'calc'; }).slice(0, 3);
+  var popular = [
+    { id: 'calc-tco', title: 'TCO' },
+    { id: 'calc-compare-quotes', title: 'Compare Quotes' },
+    { id: 'calc-landed-cost', title: 'Landed Cost' },
+    { id: 'calc-negotiation-savings', title: 'Negotiation Savings' }
+  ];
+  var seen = {};
+  recent.forEach(function (r) { seen[r.id] = 1; });
+  var chips = popular.filter(function (c) { return !seen[c.id]; }).map(function (c) {
+    return '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/calc/' + PS.esc(c.id) + '">' + PS.esc(c.title) + '</a>';
+  }).join('');
+  var recentChips = recent.map(function (r) {
+    return '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/calc/' + PS.esc(r.id) + '">' + PS.esc(r.title || r.id) + '</a>';
+  }).join('');
+  if (!chips && !recentChips) return '';
+  return PS.ui.card(
+    '<div class="inst-home-hub-head">' +
+    '<span class="inst-home-hub-badge">Quick calculator</span>' +
+    '<span class="inst-home-hub-progress">Recent &middot; popular</span>' +
     '</div>' +
-    '<p class="note" style="margin-top:10px">' + PS.esc(pick.f.module) + ' &middot; an authored teaching point from the lesson, not a sourced statistic</p>' +
-    '</div>';
+    PS.ui.btnRow(recentChips + chips) +
+    '<p class="note inst-home-note">Jump straight into the tools you use most. Results stay local.</p>',
+    { class: 'inst-home-quick-calc no-print' }
+  );
+};
+
+PS.homePhase11 = function () {
+  var cards = [
+    { href: '#/copilot', title: 'Procurement Copilot', desc: 'Ask the offline assistant about concepts, processes and calculators - answers with citations.' },
+    { href: '#/exams', title: 'Practice Exams', desc: 'Timed, randomised practice exams from the Academy question bank, scored against a pass mark. Recorded in this browser only.' },
+    { href: '#/spend-model', title: 'Spend Data Model', desc: 'One category-supplier hierarchy feeding the Pareto and Kraljic charts.' },
+    { href: '#/docpack', title: 'Document Pack Builder', desc: 'Assemble RFI / RFP / contract packs with a cover sheet and contents.' }
+  ];
+  return PS.ui.card(
+    '<div class="inst-home-hub-head">' +
+    '<span class="inst-home-hub-badge">Intelligence &amp; automation</span>' +
+    '<span class="inst-home-hub-progress inst-home-badge--phase">Phase 11</span>' +
+    '</div>' +
+    '<div class="inst-home-phase-grid">' +
+    cards.map(function (c) {
+      return '<a class="inst-home-phase-card" href="' + c.href + '">' +
+        '<h3 class="inst-home-phase-title">' + PS.esc(c.title) + '</h3>' +
+        '<p class="inst-home-phase-desc">' + PS.esc(c.desc) + '</p>' +
+        '</a>';
+    }).join('') +
+    '</div>',
+    { class: 'inst-home-phase11 no-print' }
+  );
 };
 
 PS.homeQuickActions = function () {
   var actions = [
-    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
-    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
-    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', icon: '☑️', desc: 'Verify compliance at every step' },
-    { id: 'new-template', label: 'Templates', href: '#/list/tpl', icon: '📝', desc: 'RFQ, RFP, contracts, justifications' },
-    { id: 'what-do', label: 'What should I do?', href: '#/what', icon: '🧭', desc: 'Guided routing from your problem' },
-    { id: 'academy', label: 'Academy', href: '#/academy', icon: '🎓', desc: 'Structured learning paths' }
+    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', desc: 'Compare quotes, TCO, landed cost, savings' },
+    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', desc: 'Controlled procedures for every phase' },
+    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', desc: 'Verify compliance at every step' },
+    { id: 'new-template', label: 'Templates', href: '#/list/tpl', desc: 'RFQ, RFP, contracts, justifications' },
+    { id: 'what-do', label: 'What should I do?', href: '#/what', desc: 'Guided routing from your problem' },
+    { id: 'academy', label: 'Academy', href: '#/academy', desc: 'Structured learning paths' }
   ];
 
-  var html = '<div class="quick-actions no-print">';
+  var html = '<div class="inst-home-quick-actions">';
   actions.forEach(function (a) {
-    html += '<a class="quick-action-btn" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
-      '<span class="qa-icon">' + a.icon + '</span>' + PS.esc(a.label) + '</a>';
+    html += '<a class="inst-home-quick-action" href="' + a.href + '" title="' + PS.esc(a.desc) + '">' +
+      '<span class="inst-home-quick-action-label">' + PS.esc(a.label) + '</span>' +
+      '</a>';
   });
   html += '</div>';
   return html;
