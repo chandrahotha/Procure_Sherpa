@@ -10,18 +10,18 @@ PS.route('sop', function (id, params) {
   PS.pageTitle = it.title;
   PS.recent.add('sop', id, it.title);
   var html = PS.reportHead(it.title, 'SOP \u00B7 ' + (it.cat || '')) +
-    '<div class="card">' +
-    '<div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
-    PS.badge('sop') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
-    (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
+    '<div class="inst-card">' +
+    '<div class="inst-card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
+    PS.badge('sop') + '<span class="inst-badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
+    (it.desc ? '<p class="inst-read">' + PS.esc(it.desc) + '</p>' : '') +
     PS.sopDocControl(it) +
-    PS.actionsBar(['<button type="button" class="btn" data-act="print">Print or Export SOP to PDF</button>',
-      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>']) +
+    PS.ui.btnRow(['<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="print">Print or Export SOP to PDF</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="content-markdown">Copy as Markdown</button>']) +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
-    '<div class="grid grid-2">' +
+    '<div class="inst-grid inst-grid-2">' +
     PS.sopFacts(it) +
-    '<div class="card"><h2>Purpose and scope</h2>' +
+    '<div class="inst-card"><h2>Purpose and scope</h2>' +
     '<p><strong>Purpose:</strong> ' + PS.esc(it.purpose) + '</p>' +
     '<p><strong>Scope:</strong> ' + PS.esc(it.scope) + '</p>' +
     (it.outScope ? '<p><strong>Out of scope:</strong> ' + PS.esc(it.outScope) + '</p>' : '') +
@@ -29,18 +29,18 @@ PS.route('sop', function (id, params) {
     (it.frequency ? '<p><strong>Typical frequency:</strong> ' + PS.esc(it.frequency) + '</p>' : '') +
     '</div></div>' +
     PS.sopRaci(it) +
-    '<div class="card"><h2>Procedure</h2>' +
-    (it.flow ? '<div class="flow">' + it.flow.map(function (s) {
-      return '<span class="flow-step">' + PS.esc(s) + '</span>';
-    }).join('<span class="flow-arrow">&#8594;</span>') + '</div>' : '') +
-    '<ol class="timeline">' + (it.steps || []).map(function (s) {
+    '<div class="inst-card"><h2>Procedure</h2>' +
+    (it.flow ? '<div class="inst-flow">' + it.flow.map(function (s) {
+      return '<span class="inst-flow-step">' + PS.esc(s) + '</span>';
+    }).join('<span class="inst-flow-arrow">&#8594;</span>') + '</div>' : '') +
+    '<ol class="inst-timeline">' + (it.steps || []).map(function (s) {
       var meta = [];
       if (s.role) meta.push('Owner: ' + PS.esc(s.role));
       if (s.ctrl) meta.push('Control: ' + PS.esc(s.ctrl));
       if (s.out) meta.push('Record: ' + PS.esc(s.out));
-      return '<li><div class="tl-title">' + PS.esc(s.s) + '</div>' +
-        '<div class="tl-body">' + PS.esc(s.d) + '</div>' +
-        (meta.length ? '<p class="note">' + meta.join('. ') + '.</p>' : '') + '</li>';
+      return '<li><div class="inst-tl-title">' + PS.esc(s.s) + '</div>' +
+        '<div class="inst-tl-body">' + PS.esc(s.d) + '</div>' +
+        (meta.length ? '<p class="inst-note">' + meta.join('. ') + '.</p>' : '') + '</li>';
     }).join('') + '</ol></div>' +
     PS.sopDetails(it) +
     PS.sopChecklistLink(it) +
@@ -57,7 +57,7 @@ PS.sopDocControl = function (it) {
   ]);
 };
 PS.sopFacts = function (it) {
-  return '<div class="card"><h2>At a glance</h2>' +
+  return '<div class="inst-card"><h2>At a glance</h2>' +
     PS.kv([
       ['Process group', it.cat],
       ['Typical duration', it.duration || 'Varies with value and complexity'],
@@ -73,10 +73,10 @@ PS.sopFacts = function (it) {
 };
 PS.sopRaci = function (it) {
   if (!it.raci || !it.raci.length) {
-    return it.roles ? '<div class="card"><h2>Responsibilities</h2><p>' + PS.esc(it.roles) + '</p></div>' : '';
+    return it.roles ? '<div class="inst-card"><h2>Responsibilities</h2><p>' + PS.esc(it.roles) + '</p></div>' : '';
   }
-  return '<div class="card"><h2>Responsibilities (RACI summary)</h2>' +
-    '<p class="card-sub">Accountability for each duty. The process owner is accountable for the procedure as a whole.</p>' +
+  return '<div class="inst-card"><h2>Responsibilities (RACI summary)</h2>' +
+    '<p class="inst-read">Accountability for each duty. The process owner is accountable for the procedure as a whole.</p>' +
     '<div class="table-wrap"><table><thead><tr><th>Role</th><th>Responsibility under this SOP</th></tr></thead><tbody>' +
     it.raci.map(function (r) {
       return '<tr><td><strong>' + PS.esc(r.role || 'Unassigned') + '</strong></td><td>' + PS.esc(r.resp) + '</td></tr>';
@@ -93,7 +93,7 @@ PS.sopDetails = function (it) {
   if (it.mistakes) blocks += PS.section('Common mistakes', PS.ul(it.mistakes));
   if (it.refs) blocks += PS.section('References', PS.ul(it.refs));
   if (it.revisions) blocks += PS.section('Revision history', PS.ul(it.revisions), { open: false });
-  return blocks ? '<div class="card"><h2>Controls, records and measurement</h2>' + blocks + '</div>' : '';
+  return blocks ? '<div class="inst-card"><h2>Controls, records and measurement</h2>' + blocks + '</div>' : '';
 };
 PS.decisionList = function (list) {
   return '<dl class="kv">' + list.map(function (d) {
@@ -103,7 +103,7 @@ PS.decisionList = function (list) {
 PS.kpiLinks = function (ids) {
   var items = (ids || []).map(function (k) {
     var o = PS.byId('kpi', k);
-    return o ? '<li><a href="#/kpi/' + encodeURIComponent(o.id) + '">' + PS.esc(o.title) + '</a> : <span class="muted">' + PS.esc(o.def) + '</span></li>' : '';
+    return o ? '<li><a href="#/kpi/' + encodeURIComponent(o.id) + '">' + PS.esc(o.title) + '</a> : <span class="inst-home-mono">' + PS.esc(o.def) + '</span></li>' : '';
   }).join('');
   return items ? '<ul>' + items + '</ul>' : '';
 };
@@ -112,11 +112,11 @@ PS.kpiLinks = function (ids) {
 PS.sopChecklistLink = function (it) {
   var cl = it.checklist ? PS.byId('cl', it.checklist) : null;
   if (!cl) return '';
-  return '<div class="card card-tight">' +
-    '<div class="card-head"><h2>Operational execution checklist</h2></div>' +
-    '<p class="card-sub">Worried about audit compliance or missing mandatory stage gates? ' +
+  return '<div class="inst-card">' +
+    '<div class="inst-card-head"><h2>Operational execution checklist</h2></div>' +
+    '<p class="inst-read">Worried about audit compliance or missing mandatory stage gates? ' +
     'The companion checklist tracks every required deliverable, sign-off, and control step in real time.</p>' +
-    '<div class="actions-row">' +
-    '<a class="btn btn-primary" href="#/cl/' + PS.esc(cl.id) + '">Execute ' + PS.esc(cl.title) + '</a>' +
+    '<div class="inst-btn-row">' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/cl/' + PS.esc(cl.id) + '">Execute ' + PS.esc(cl.title) + '</a>' +
     '</div></div>';
 };
