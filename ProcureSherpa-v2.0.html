@@ -4605,7 +4605,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '57791c3055cd';
+PS.BUILD = '10be5b5f1ed1';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -16733,7 +16733,7 @@ PS.academyRoleRecommendation = function (funcs) {
     '</div>' +
     '<p class="inst-home-lead">These are the modules that carry the work in your role, listed in curriculum order. The curriculum below runs Module 1 to Module ' +
     (allModules.length || '') + ' in sequence, whatever your role.</p>' +
-    '<div class="inst-home-module-chips-body"><span class="inst-home-chip inst-home-chip--role">Modules</span>' +
+    '<div class="inst-home-module-chips-body"><span class="inst-home-chip inst-home-chip--role">Recommended modules</span>' +
     mods.map(function (name) {
       var n = PS.academyModuleNumber(name);
       return '<a class="inst-home-quick-action" href="#module-' + n + '" data-act="scroll-to" data-target="module-' + n + '">Module ' + n + '</a>';

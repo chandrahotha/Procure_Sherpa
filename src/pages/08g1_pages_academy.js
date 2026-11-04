@@ -681,7 +681,7 @@ PS.academyRoleRecommendation = function (funcs) {
     '</div>' +
     '<p class="inst-home-lead">These are the modules that carry the work in your role, listed in curriculum order. The curriculum below runs Module 1 to Module ' +
     (allModules.length || '') + ' in sequence, whatever your role.</p>' +
-    '<div class="inst-home-module-chips-body"><span class="inst-home-chip inst-home-chip--role">Modules</span>' +
+    '<div class="inst-home-module-chips-body"><span class="inst-home-chip inst-home-chip--role">Recommended modules</span>' +
     mods.map(function (name) {
       var n = PS.academyModuleNumber(name);
       return '<a class="inst-home-quick-action" href="#module-' + n + '" data-act="scroll-to" data-target="module-' + n + '">Module ' + n + '</a>';
