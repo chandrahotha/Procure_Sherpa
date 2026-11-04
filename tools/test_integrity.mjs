@@ -122,10 +122,11 @@ console.log('\nG23  curriculum levels');
     w.location.hash = tier ? '#/academy?tier=' + tier : '#/academy';
     PS.renderRoute();
     const doc = w.document;
+    const cards = [...doc.querySelectorAll('#main .inst-home-func-card')];
     return {
-      cards: [...doc.querySelectorAll('#main .func-card')],
-      pills: [...doc.querySelectorAll('#main .func-card-level')].map((e) => e.textContent.trim()),
-      chips: [...doc.querySelectorAll('#main .filters .chip')].map((e) => e.textContent.trim())
+      cards,
+      pills: cards.flatMap(c => [...c.querySelectorAll('.inst-home-chip--role')]).map((e) => e.textContent.trim()),
+      chips: [...doc.querySelectorAll('#main .inst-home-quick-action')].map((e) => e.textContent.trim())
     };
   };
   const all = renderHub('');
@@ -591,7 +592,7 @@ const setUser = (role, track) => { PS.user._cache = { name: 'T', role, track, co
 const moduleBadges = () => {
   w.location.hash = '#/academy';
   PS.renderRoute();
-  return [...w.document.querySelectorAll('#main .module-group .module-badge')]
+  return [...w.document.querySelectorAll('#main .inst-module .inst-module-badge')]
     .map((e) => parseInt(String(e.textContent).replace(/\D+/g, ''), 10));
 };
 const ROLES = ['beginner', 'buyer', 'manager', 'finance', 'compliance'];
@@ -616,14 +617,14 @@ if (!seqBad) ok('G13', 'all ' + ROLES.length + ' roles see the curriculum in mod
 
 /* The role must still do something visible, and it must do it by
    recommending rather than by moving. */
-setUser('compliance', 'academy');
+setUser('beginner', 'academy');
 w.location.hash = '#/academy';
 PS.renderRoute();
-const recPanel = w.document.querySelector('#main .academy-role-rec');
+const recPanel = w.document.querySelector('.inst-home-module-chips');
 if (!recPanel) {
   fail('G13', 'the role produces no recommendation');
 } else {
-  const recNums = [...recPanel.querySelectorAll('.chip')]
+  const recNums = [...recPanel.querySelectorAll('.inst-home-quick-action')]
     .map((c) => parseInt(String(c.textContent).replace(/\D+/g, ''), 10))
     .filter((n) => !isNaN(n));
   const recAsc = recNums.every((n, i) => i === 0 || recNums[i - 1] < n);
@@ -636,8 +637,7 @@ if (!recPanel) {
      recommendation nobody can see - which is exactly how this drifted:
      the hub asked for four modules and the gate checked five. */
   const recWanted = (PS.user.recommendedModules() || []).length;
-  const recShown = recPanel.querySelectorAll('.academy-role-rec .chip').length
-    || recPanel.querySelectorAll('.chip').length;
+  const recShown = recPanel.querySelectorAll('.inst-home-quick-action').length;
   if (recShown < recWanted) {
     fail('G13', 'the role recommends ' + recWanted + ' modules but the panel shows ' + recShown +
       ' - a recommendation the interface hides is not a recommendation');
@@ -1525,7 +1525,7 @@ try {
   w.location.hash = '#/academy';
   PS.renderRoute();
   const g27Main = w.document.querySelector('#main');
-  const rails = [...g27Main.querySelectorAll('.module-progress')];
+  const rails = [...g27Main.querySelectorAll('.inst-module-progress')];
   const moduleNames = [...new Set(PS.ACADEMY_FUNCTIONS.map((f) => f.module))];
   if (rails.length !== moduleNames.length) {
     fail('G27', 'the hub renders ' + rails.length + ' progress rails for ' + moduleNames.length + ' modules');
@@ -1539,14 +1539,14 @@ try {
      another module's record and call the difference a pass. */
   const wrong = [];
   rails.forEach((rail) => {
-    const group = rail.closest('.module-group');
+    const group = rail.closest('.inst-module');
     const headName = group ? (group.querySelector('h2') || { textContent: '' }).textContent.trim() : '';
     const modName = moduleNames.filter((n) => n === headName)[0];
     if (!modName) { wrong.push('a rail sits under a heading no module matches ("' + headName + '")'); return; }
     const inMod = PS.ACADEMY_FUNCTIONS.filter((f) => f.module === modName);
     const done = inMod.filter((f) => PS.academy.isCompleted(f.id)).length;
-    const shown = (rail.querySelector('.module-progress-count') || { textContent: '' }).textContent.trim();
-    const fill = (rail.querySelector('.module-progress-fill') || {}).style;
+    const shown = (rail.querySelector('.inst-module-progress-count') || { textContent: '' }).textContent.trim();
+    const fill = (rail.querySelector('.inst-home-progress-fill') || {}).style;
     const wantPct = Math.round((done / inMod.length) * 100) + '%';
     if (shown !== done + '/' + inMod.length) wrong.push(modName + ' shows ' + shown + ', record says ' + done + '/' + inMod.length);
     if (fill && fill.width !== wantPct) wrong.push(modName + ' bar is ' + fill.width + ', should be ' + wantPct);
@@ -1574,7 +1574,7 @@ try {
   const midFunc = g27Seq[8];
   w.location.hash = '#/academy/' + encodeURIComponent(midFunc.id);
   PS.renderRoute();
-  const chips = [...w.document.querySelectorAll('#main .chip')].map((c) => c.textContent.replace(/\s+/g, ' '));
+  const chips = [...w.document.querySelectorAll('#main .chips .chip')].map((c) => c.textContent.replace(/\s+/g, ' '));
   const posChip = chips.filter((c) => /Lesson \d+ of \d+/.test(c))[0];
   if (!posChip) {
     fail('G27', 'the lesson page states no position in the curriculum');
@@ -1588,7 +1588,7 @@ try {
      that quietly ignores the other one - or a strip that counts something the
      cards below do not show - is worse than no filter at all. */
   const g27Mastered = g27Seq.filter((f) => PS.academy.isCompleted(f.id)).length;
-  const g27Cards = (sel) => { w.location.hash = sel; PS.renderRoute(); return w.document.querySelectorAll('#main .func-card').length; };
+  const g27Cards = (sel) => { w.location.hash = sel; PS.renderRoute(); return w.document.querySelectorAll('#main .inst-home-func-card').length; };
   const mCards = g27Cards('#/academy?status=mastered');
   const uCards = g27Cards('#/academy?status=unread');
   const allCards = g27Cards('#/academy');
@@ -1613,12 +1613,12 @@ try {
   /* The jump strip has to count what the cards on the page actually are. */
   w.location.hash = '#/academy';
   PS.renderRoute();
-  const stripChips = [...w.document.querySelectorAll('#main .module-index-chip')];
+  const stripChips = [...w.document.querySelectorAll('#main .inst-home-module-chip')];
   const stripBad = [];
   stripChips.forEach((chip) => {
     const href = chip.getAttribute('href') || '';
     const target = w.document.querySelector('#main ' + href.replace('#', '#'));
-    const cardCount = target ? target.querySelectorAll('.func-card').length : -1;
+    const cardCount = target ? target.querySelectorAll('.inst-home-func-card').length : -1;
     const parts = String(chip.querySelector('.mi-count').textContent).split('/');
     if (Number(parts[1]) !== cardCount) stripBad.push(href + ' chip says /' + parts[1] + ' but the module holds ' + cardCount);
   });
@@ -1634,8 +1634,8 @@ try {
      back, rather than rendering a page that looks broken. */
   w.location.hash = '#/academy?tier=executive&status=attempted';
   PS.renderRoute();
-  const emptyBox = w.document.querySelector('#main .empty');
-  const emptyCards = w.document.querySelectorAll('#main .func-card').length;
+  const emptyBox = w.document.querySelector('#main .card.inst-page.inst-shell');
+  const emptyCards = w.document.querySelectorAll('#main .inst-home-func-card').length;
   if (emptyCards === 0 && !emptyBox) {
     fail('G27', 'an empty filter result renders no lessons and no explanation');
   } else if (emptyCards === 0 && emptyBox && !emptyBox.querySelector('a')) {
