@@ -27,9 +27,11 @@ PS.ui = (function () {
     },
 
     /* The head of a card: a title, and whatever sits on the other end of
-       the rule - a badge, a spacer, a count. */
-    cardHead: function (title, right) {
-      return '<div class="card-head"><h2>' + title + '</h2>' + (right || '') + '</div>';
+       the rule - a badge, a spacer, a count. `level` defaults to h2; use h1
+       for the primary heading of a page so the document outline is valid. */
+    cardHead: function (title, right, level) {
+      var tag = level || 'h2';
+      return '<div class="card-head"><' + tag + '>' + title + '</' + tag + '>' + (right || '') + '</div>';
     },
     cardSub: function (text) {
       return '<p class="card-sub">' + text + '</p>';

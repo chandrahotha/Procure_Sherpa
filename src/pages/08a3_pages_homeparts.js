@@ -24,6 +24,10 @@ PS.homeStartHere = function () {
   var primary, secondary;
   var prof = PS.user ? PS.user.getProfile() : { role: 'beginner', track: 'academy' };
   var operational = prof.track === 'operations';
+  /* The curriculum counts are read, never typed. This sentence was
+     "Twenty-eight functions across eleven modules" for a release and then
+     two more modules arrived in src/content/ and the Command Center went
+     on describing a smaller product than the one it links to. */
   var moduleCount = new Set(funcs.map(function (f) { return f.module; })).size;
   var curriculumNote = funcs.length + ' functions across ' + moduleCount + ' modules, beginner to advanced';
   if (isNew) {
@@ -43,7 +47,7 @@ PS.homeStartHere = function () {
   }
 
   var start = PS.ui.card(
-    PS.ui.cardHead(PS.esc(isNew ? 'Start here' : 'Pick up where you left off')) +
+    PS.ui.cardHead(PS.esc(isNew ? 'Start here' : 'Pick up where you left off'), '', 'h1') +
     '<p class="inst-home-lead">' + PS.esc(primary.note) + '</p>' +
     PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="' + PS.esc(primary.href) + '">' + PS.esc(primary.label) + ' <span aria-hidden="true">&rarr;</span></a>' +
       '<a class="inst-home-btn inst-home-btn--ghost" href="' + PS.esc(secondary.href) + '">' + PS.esc(secondary.label) + '</a>'),
@@ -83,7 +87,7 @@ PS.homeWelcomeCard = function () {
     '<div class="inst-home-user-row">' +
     '<div class="inst-home-avatar">' + PS.esc(initials) + '</div>' +
     '<div class="inst-home-user-meta">' +
-    '<h1 class="inst-home-welcome-title">Welcome back, ' + PS.esc(prof.name) + '</h1>' +
+    '<h2 class="inst-home-welcome-title">Welcome back, ' + PS.esc(prof.name) + '</h2>' +
     '<div class="inst-home-user-meta-row">' +
     '<span class="inst-home-chip inst-home-chip--role">' + PS.esc(roleMeta.title) + '</span>' +
     (prof.company ? '<span class="inst-home-chip inst-home-chip--company">&bull; ' + PS.esc(prof.company) + '</span>' : '') +
@@ -108,11 +112,11 @@ PS.homeDualHub = function () {
 
   var academyCard = PS.ui.card(
     '<div class="inst-home-hub-head">' +
-    '<span class="inst-home-hub-badge inst-home-hub-badge--learning">Learning Hub</span>' +
-    '<span class="inst-home-hub-progress">' + stats.completedCount + ' of ' + stats.totalCount + ' mastered</span>' +
+    '<span class="inst-home-hub-badge inst-home-hub-badge--learning">Learning Hub &middot; Beginner to Advanced</span>' +
+    '<span class="inst-home-hub-progress">' + stats.completedCount + ' of ' + stats.totalCount + ' Mastered</span>' +
     '</div>' +
     '<h2 class="inst-home-hub-title">Procurement Academy</h2>' +
-    '<p class="inst-home-hub-desc">Interactive digital learning journeys for newcomers, enthusiasts and practitioners. Core commercial functions, step by step, with worked examples and knowledge checks.</p>' +
+    '<p class="inst-home-hub-desc">Interactive digital learning journeys for newcomers, enthusiasts, and practitioners. Learn core commercial functions step by step with thought-provoking explanations, realistic examples, and knowledge checks.</p>' +
     '<div class="inst-home-hub-meta">' +
     '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nModules + '</span><span class="inst-home-hub-stat-lab">core learning modules</span></div>' +
     '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + allFuncs.length + '</span><span class="inst-home-hub-stat-lab">practical functions</span></div>' +
@@ -123,17 +127,17 @@ PS.homeDualHub = function () {
     '<div class="inst-home-progress-track"><div class="inst-home-progress-fill" style="width:' + stats.pct + '%;"></div></div>' +
     '</div>' +
     PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="#/academy/' + (curFunc ? curFunc.id : 'func-mission-value') + '">' + (stats.completedCount > 0 ? 'Resume: ' + PS.esc(curFunc ? curFunc.title : '') : 'Start Academy Curriculum') + ' <span aria-hidden="true">&rarr;</span></a>' +
-      '<a class="inst-home-btn inst-home-btn--ghost" href="#/academy">All modules</a>'),
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/academy">All Modules</a>'),
     { class: 'inst-home-hub-card inst-home-hub-card--learning' }
   );
 
   var operationsCard = PS.ui.card(
     '<div class="inst-home-hub-head">' +
-    '<span class="inst-home-hub-badge inst-home-hub-badge--operations">Operations Hub</span>' +
+    '<span class="inst-home-hub-badge inst-home-hub-badge--operations">Operations Hub &middot; Practitioner Tools</span>' +
     '<span class="inst-home-hub-progress">' + nSop + ' SOPs &middot; ' + nCl + ' checklists &middot; ' + nTpl + ' templates</span>' +
     '</div>' +
     '<h2 class="inst-home-hub-title">Operations Hub</h2>' +
-    '<p class="inst-home-hub-desc">The operational reference for active procurement execution: controlled SOPs, financial calculators, compliance checklists and production templates, arranged by lifecycle phase.</p>' +
+    '<p class="inst-home-hub-desc">The complete operational reference for active procurement execution. Controlled standard operating procedures, financial calculators, contract review checklists, and production RFP templates arranged by lifecycle phase.</p>' +
     '<div class="inst-home-hub-meta">' +
     '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nSop + '</span><span class="inst-home-hub-stat-lab">controlled SOPs</span></div>' +
     '<div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + nCalc + '</span><span class="inst-home-hub-stat-lab">financial calculators</span></div>' +
@@ -164,8 +168,8 @@ PS.homeSmartResume = function () {
       '<span><strong>' + PS.esc(latest.title || latest.id) + '</strong> <span class="inst-home-mono">(' + PS.esc(PS.dateTime(latest.savedAt)) + ')</span></span>' +
       '</div>' +
       '<div class="inst-home-resume-right">' +
-      '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/' + PS.esc(latest.type) + '/' + PS.esc(latest.id) + '">Reopen draft <span aria-hidden="true">&rarr;</span></a>' +
-      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/saved">View all (' + savedList.length + ')</a>' +
+      '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/' + PS.esc(latest.type) + '/' + PS.esc(latest.id) + '">Reopen Draft <span aria-hidden="true">&rarr;</span></a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/saved">View All (' + savedList.length + ')</a>' +
       '</div></div>',
       { class: 'inst-home-smart-resume no-print' }
     );
@@ -174,11 +178,11 @@ PS.homeSmartResume = function () {
   return PS.ui.card(
     '<div class="inst-home-resume-row inst-home-resume-row--empty">' +
     '<div class="inst-home-resume-left">' +
-    '<span class="inst-home-chip inst-home-chip--state inst-home-chip--ok">Getting started</span>' +
-    '<span>New to Procure Sherpa? Follow the guided curriculum in the Academy or explore the Operations Hub.</span>' +
+    '<span class="inst-home-chip inst-home-chip--state inst-home-chip--ok">Getting Started</span>' +
+    '<span>New to Procure Sherpa? Follow the guided curriculum in Academy or explore the Operations Hub.</span>' +
     '</div>' +
     '<div class="inst-home-resume-right">' +
-    '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/academy">Start learning <span aria-hidden="true">&rarr;</span></a>' +
+    '<a class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" href="#/academy">Start Learning <span aria-hidden="true">&rarr;</span></a>' +
     '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/what">What should I do?</a>' +
     '</div></div>',
     { class: 'inst-home-smart-resume no-print' }
@@ -263,12 +267,12 @@ PS.homePhase11 = function () {
 
 PS.homeQuickActions = function () {
   var actions = [
-    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', desc: 'Compare quotes, TCO, landed cost, savings' },
-    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', desc: 'Controlled procedures for every phase' },
-    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', desc: 'Verify compliance at every step' },
-    { id: 'new-template', label: 'Templates', href: '#/list/tpl', desc: 'RFQ, RFP, contracts, justifications' },
-    { id: 'what-do', label: 'What should I do?', href: '#/what', desc: 'Guided routing from your problem' },
-    { id: 'academy', label: 'Academy', href: '#/academy', desc: 'Structured learning paths' }
+    { id: 'new-calc', label: 'New Calculation', href: '#/list/calc', icon: '🧮', desc: 'Compare quotes, TCO, landed cost, savings' },
+    { id: 'new-sop', label: 'Browse SOPs', href: '#/list/sop', icon: '📋', desc: 'Controlled procedures for every phase' },
+    { id: 'new-checklist', label: 'Checklists', href: '#/list/cl', icon: '☑️', desc: 'Verify compliance at every step' },
+    { id: 'new-template', label: 'Templates', href: '#/list/tpl', icon: '📝', desc: 'RFQ, RFP, contracts, justifications' },
+    { id: 'what-do', label: 'What should I do?', href: '#/what', icon: '🧭', desc: 'Guided routing from your problem' },
+    { id: 'academy', label: 'Academy', href: '#/academy', icon: '🎓', desc: 'Structured learning paths' }
   ];
 
   var html = '<div class="inst-home-quick-actions">';
