@@ -347,7 +347,9 @@ button{font-family:inherit}
 .brand-text strong{display:block;font-size:1rem;line-height:1.2;letter-spacing:-.022em;color:var(--rail-text);font-weight:750}
 .brand-text span{display:block;font-size:.67rem;color:var(--rail-mute);margin-top:3px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
 .sidebar-close{display:none!important;margin-left:auto}
-.nav-filter{padding:2px 12px 12px;display:flex;gap:6px;align-items:center}
+
+/* Filter section */
+.nav-filter{padding:12px 12px 8px;display:flex;gap:6px;align-items:center}
 .nav-toggle-all{
   flex:0 0 auto;background:var(--rail-hover);border:1px solid var(--rail-line);border-radius:var(--inst-r-menu);cursor:pointer;
   font:inherit;font-size:.66rem;font-weight:700;letter-spacing:.02em;color:var(--rail-mute);
@@ -356,59 +358,81 @@ button{font-family:inherit}
 .nav-toggle-all:hover{color:var(--rail-text);border-color:var(--rail-dim);background:rgba(255,255,255,.08)}
 .nav-toggle-all:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-filter input{
-  flex:1 1 auto;min-width:0;padding:9px 12px 9px 34px;border:1px solid var(--rail-line);border-radius:var(--r-sm);
+  flex:1 1 auto;min-width:0;padding:10px 12px 10px 36px;border:1px solid var(--rail-line);border-radius:var(--inst-r-menu);
   background:var(--rail-hover) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236d7c8f" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>') no-repeat 12px center;
-  color:var(--rail-text);font:inherit;font-size:.84rem;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur);
+  color:var(--rail-text);font:inherit;font-size:.82rem;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur);
 }
 .nav-filter input:hover{border-color:var(--rail-dim)}
 .nav-filter input:focus{outline:var(--focus-outline);outline-offset:var(--focus-offset);border-color:var(--accent-3);background:rgba(255,255,255,.075)}
 .nav-filter input::placeholder{color:var(--rail-mute)}
+
+/* Navigation tree */
 .nav{
-  flex:1;overflow-y:auto;padding:2px 12px 20px;scrollbar-width:thin;
+  flex:1;overflow-y:auto;padding:8px 12px 16px;scrollbar-width:thin;
   scrollbar-color:var(--rail-line) transparent;
 }
 .nav::-webkit-scrollbar{width:9px}
 .nav::-webkit-scrollbar-track{background:transparent}
 .nav::-webkit-scrollbar-thumb{background:var(--rail-line);border-radius:9px;border:3px solid transparent}
 .nav::-webkit-scrollbar-thumb:hover{background:var(--rail-mute)}
-.nav-sec{margin:1px 0 2px}
-.nav-sec+.nav-sec{margin-top:6px;padding-top:4px;border-top:1px solid var(--rail-line)}
+
+/* Section header */
+.nav-sec{margin:2px 0 4px}
+.nav-sec+.nav-sec{margin-top:10px;padding-top:8px;border-top:1px solid var(--rail-line)}
 .nav-sec-head{
   width:100%;display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
-  padding:9px 10px 7px;border-radius:var(--inst-r-menu);color:var(--rail-mute);font:inherit;font-size:.68rem;
-  font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-align:left;
+  padding:10px 12px 8px;border-radius:var(--inst-r-menu);color:var(--rail-mute);font:inherit;font-size:.66rem;
+  font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-align:left;
   transition:color var(--dur),background var(--dur);
 }
 .nav-sec-head:hover{background:var(--rail-hover);color:var(--rail-text)}
 .nav-sec-head:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring)}
 .nav-sec-head .sec-ico{
-  width:20px;height:20px;flex:0 0 20px;border-radius:var(--inst-r-menu);display:grid;place-items:center;
-  background:rgba(255,255,255,.07);font-size:.74rem;font-style:normal;color:var(--rail-dim);
+  width:18px;height:18px;flex:0 0 18px;border-radius:var(--inst-r-menu);display:grid;place-items:center;
+  background:rgba(255,255,255,.07);font-size:.7rem;font-style:normal;color:var(--rail-dim);
 }
 .nav-sec-head .sec-count{
-  font-size:.64rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);
-  border-radius:var(--inst-r-menu);padding:0 6px;line-height:1.7;color:var(--rail-mute);
+  font-size:.6rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);
+  border-radius:var(--inst-r-menu);padding:0 6px;line-height:1.6;color:var(--rail-mute);
 }
 .nav-sec-head .chev{
   margin-left:auto;transition:transform .16s var(--ease);flex:0 0 auto;
-  font-size:.86rem;line-height:1;color:var(--rail-mute);opacity:.8;
+  font-size:.8rem;line-height:1;color:var(--rail-mute);opacity:.8;
 }
 .nav-sec[data-open="false"] .nav-list{display:none}
 .nav-sec[data-open="false"] .chev{transform:rotate(-90deg)}
+
+/* Navigation items */
+.nav-list{list-style:none;margin:0;padding:2px 0 6px}
+.nav-list a{
+  position:relative;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 14px;border-radius:var(--inst-r-menu);color:var(--rail-dim);
+  font-size:.82rem;font-weight:550;line-height:1.5;text-decoration:none;
+  transition:background var(--dur),color var(--dur),transform .1s var(--ease);
+}
+.nav-list a:hover{background:var(--rail-hover);color:var(--rail-text);text-decoration:none;transform:translateX(2px)}
+.nav-list a:focus-visible{outline:var(--focus-outline);outline-offset:-1px;box-shadow:var(--ring)}
+.nav-list a.is-current{background:var(--rail-active);color:var(--rail-hi);font-weight:700}
+.nav-list a.is-current::before{
+  content:"";position:absolute;left:-6px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--accent-3);
+}
+.nav-badge{margin-left:auto;font-size:.6rem;color:var(--rail-mute);font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);border-radius:var(--inst-r-menu);padding:0 6px;line-height:1.6;min-width:20px;text-align:center}
+.nav-badge:empty{display:none}
+a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);border-color:transparent}
+.nav-empty{padding:16px 12px;text-align:center;color:var(--rail-mute);font-size:.78rem}
 
 /* ---------- The Learn / Work switch ----------
    The menu follows the profile's track, and this is the control that
    changes it. It sits between the tree and the system footer, where
    it is visible without competing with the navigation itself. */
-.nav-view-switch{padding:10px 14px 12px;border-top:1px solid var(--rail-line)}
+.nav-view-switch{padding:12px 14px 10px;border-top:1px solid var(--rail-line)}
 .nav-view-label{
-  display:block;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  display:block;font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
   color:var(--rail-mute);margin-bottom:6px;
 }
 .nav-view-group{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .nav-view-btn{
   appearance:none;border:1px solid var(--rail-line);background:var(--rail-hover);color:var(--rail-dim);
-  font:inherit;font-size:.76rem;font-weight:700;padding:7px 6px;border-radius:var(--inst-r-menu);cursor:pointer;
+  font:inherit;font-size:.72rem;font-weight:700;padding:8px 6px;border-radius:var(--inst-r-menu);cursor:pointer;
   transition:background var(--dur),color var(--dur),border-color var(--dur);
 }
 .nav-view-btn:hover{border-color:var(--rail-dim);color:var(--rail-text);background:rgba(255,255,255,.08)}
@@ -418,24 +442,28 @@ button{font-family:inherit}
   box-shadow:0 4px 14px rgba(0,0,0,.32);
 }
 .nav-view-btn[aria-pressed="true"]{font-weight:800}
-.nav-empty-hint{font-size:.72rem;color:var(--rail-mute);margin:6px 0 10px;line-height:1.45}
-.nav-list{list-style:none;margin:0;padding:1px 0 7px}
+.nav-empty-hint{font-size:.68rem;color:var(--rail-mute);margin:6px 0 10px;line-height:1.45}
+
+/* Navigation list items */
+.nav-list{list-style:none;margin:0;padding:2px 0 6px}
 .nav-list a{
-  position:relative;display:flex;align-items:center;gap:9px;padding:7px 10px 7px 12px;border-radius:var(--inst-r-menu);color:var(--rail-dim);
-  font-size:.87rem;font-weight:520;line-height:1.45;text-decoration:none;
+  position:relative;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 14px;border-radius:var(--inst-r-menu);color:var(--rail-dim);
+  font-size:.82rem;font-weight:550;line-height:1.5;text-decoration:none;
   transition:background var(--dur),color var(--dur),transform .1s var(--ease);
 }
 .nav-list a:hover{background:var(--rail-hover);color:var(--rail-text);text-decoration:none;transform:translateX(2px)}
 .nav-list a:focus-visible{outline:var(--focus-outline);outline-offset:-1px;box-shadow:var(--ring)}
 .nav-list a.is-current{background:var(--rail-active);color:var(--rail-hi);font-weight:700}
 .nav-list a.is-current::before{
-  content:"";position:absolute;left:-6px;top:7px;bottom:7px;width:3px;border-radius:3px;background:var(--accent-3);
+  content:"";position:absolute;left:-6px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--accent-3);
 }
-.nav-badge{margin-left:auto;font-size:.64rem;color:var(--rail-mute);font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);border-radius:var(--inst-r-menu);padding:0 7px;line-height:1.7;min-width:20px;text-align:center}
+.nav-badge{margin-left:auto;font-size:.6rem;color:var(--rail-mute);font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--rail-line);border-radius:var(--inst-r-menu);padding:0 6px;line-height:1.6;min-width:20px;text-align:center}
 .nav-badge:empty{display:none}
 a.is-current .nav-badge{background:rgba(255,255,255,.14);color:var(--rail-hi);border-color:transparent}
-.nav-empty{padding:18px 12px;text-align:center;color:var(--rail-mute);font-size:.82rem}
-.sidebar-foot{padding:10px 12px 14px}
+.nav-empty{padding:16px 12px;text-align:center;color:var(--rail-mute);font-size:.78rem}
+
+/* Sidebar footer */
+.sidebar-foot{padding:12px 12px 14px}
 /* Two tidy columns instead of a wrapping row of pills: four system links
    used to break unpredictably as the sidebar narrowed, and the strip read as
    three stacked blocks of small text. */
@@ -4657,7 +4685,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'f3800ec30404';
+PS.BUILD = '512ac7b07dd2';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -14351,34 +14379,34 @@ PS.route('cl', function (id, params) {
   var done = Object.keys(st.checked).filter(function (k) { return st.checked[k]; }).length;
   var pctv = total ? Math.round(done / total * 100) : 0;
   var html = PS.reportHead(it.title, 'Operational checklist \u00B7 ' + (it.cat || '')) +
-    '<div class="card">' +
-    '<div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
-    PS.badge('cl') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
-    (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
-    PS.actionsBar([
-      '<button type="button" class="btn btn-primary" data-act="cl-save">Save to workspace</button>',
-      '<button type="button" class="btn" data-act="cl-print">Print / PDF</button>',
-      '<button type="button" class="btn" data-act="cl-export">Export CSV</button>',
-      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>',
-      '<button type="button" class="btn btn-ghost" data-act="cl-complete-all">Mark all complete</button>',
-      '<button type="button" class="btn btn-danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
+    '<div class="inst-card">' +
+    '<div class="inst-card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
+    PS.badge('cl') + '<span class="inst-badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
+    (it.desc ? '<p class="inst-read">' + PS.esc(it.desc) + '</p>' : '') +
+    PS.ui.btnRow([
+      '<button type="button" class="inst-home-btn inst-home-btn--primary" data-act="cl-save">Save to workspace</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-print">Print / PDF</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-export">Export CSV</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="content-markdown">Copy as Markdown</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-complete-all">Mark all complete</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
     ]) +
-    '<div class="progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
-    '<div class="progress"><span id="clBar" style="width:' + pctv + '%"></span></div>' +
-    (it.tags ? '<div class="mt8">' + PS.tagsRow(it) + '</div>' : '') +
+    '<div class="inst-progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
+    '<div class="inst-home-progress-track"><span id="clBar" style="width:' + pctv + '%"></span></div>' +
+    (it.tags ? '<div style="margin-top:var(--space-3)">' + PS.tagsRow(it) + '</div>' : '') +
     '</div>' +
-    '<div class="card no-print">' +
+    '<div class="inst-card no-print">' +
     (it.sections || []).map(function (s) {
       return '<h3>' + PS.esc(s.g) + '</h3><div>' + (s.items || []).map(function (x, i) {
         var key = s.g + '|' + i;
-        return '<label class="check"><input type="checkbox" data-act="cl-toggle" data-cl="' + PS.esc(id) +
+        return '<label class="inst-check"><input type="checkbox" data-act="cl-toggle" data-cl="' + PS.esc(id) +
           '" data-item="' + PS.esc(key) + '"' + (st.checked[key] ? ' checked' : '') + '><span>' + PS.esc(x) + '</span></label>';
       }).join('') + '</div>';
     }).join('') + '</div>' +
-    '<div class="card"><div class="field"><label for="clNotes">Notes (evidence, exceptions, follow-ups)</label>' +
+    '<div class="inst-card"><div class="inst-field"><label for="clNotes">Notes (evidence, exceptions, follow-ups)</label>' +
     '<textarea id="clNotes" rows="4" maxlength="6000" placeholder="Record what you verified, where the evidence is held and any exception that needs approval.">' + PS.esc(st.notes || '') + '</textarea>' +
-    '<span class="hint">Notes are saved with the checklist and included when you print or save it.</span></div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn" data-act="cl-save">Save notes</button></div></div>' +
+    '<span class="inst-hint">Notes are saved with the checklist and included when you print or save it.</span></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-save">Save notes</button></div></div>' +
     '<div class="print-only"><h3>Checklist status</h3><div class="table-wrap"><table><thead><tr><th>Section</th><th>Item</th><th>Status</th></tr></thead><tbody>' +
     (it.sections || []).map(function (s) {
       return (s.items || []).map(function (x, i) {
