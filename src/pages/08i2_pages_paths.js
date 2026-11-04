@@ -270,6 +270,17 @@ PS.learningPaths.PATHS = [
     skills: ['Measuring cost per order line from goods-in effort', 'Telling a bound answer from an optimum', 'Re-basing a buffer on the observed tail', 'Registering stock held but not owned', 'Reporting a write-down into the category that caused it'],
     duration: '4-6 weeks',
     color: 'var(--ops)'
+  },
+  {
+    id: 'demand-forecasting',
+    title: 'Demand Forecasting and Purchase Planning',
+    tier: 'practitioner',
+    level: 5,
+    desc: 'The number that decides the quantity you buy: classifying the demand pattern before choosing a method, back-testing candidates against history instead of preferring the sophisticated name, splitting dispersion from bias before calling a forecast accurate, and matching commitments, buffers and ahead-of-plan buys to the horizon the forecast can honestly defend.',
+    modules: ['func-forecast-method-and-error', 'func-owning-the-forecast-number'],
+    skills: ['Classifying demand from history, not opinion', 'Back-testing two methods and keeping the smaller error', 'Reporting signed error, mean and spread separately', 'Deriving buffers from measured dispersion', 'Naming an owner and a review date for every ahead-of-plan buy'],
+    duration: '4-6 weeks',
+    color: 'var(--accent)'
   }
 ];
 

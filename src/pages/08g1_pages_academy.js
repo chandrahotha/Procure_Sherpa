@@ -571,7 +571,7 @@ PS.academyRoleRecommendation = function (funcs) {
   if (!PS.user || typeof PS.user.recommendedModules !== 'function') return '';
   var prof = PS.user.getProfile();
   var roleMeta = PS.user.getRoleMeta(prof.role);
-  var mods = PS.user.recommendedModules(6);
+  var mods = PS.user.recommendedModules(PS.user.RECOMMENDATION_COUNT);
   if (!mods.length) return '';
   /* The first recommended module that still has work in it is the one
      to open: a recommendation to a module you have already finished

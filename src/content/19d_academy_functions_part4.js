@@ -825,8 +825,8 @@ PS.ACADEMY_FUNCTIONS.push({
       'Convert a quoted fee to a day-rate equivalent and compare it with an internal hours estimate and a market benchmark.',
       'Write the change-control clause: what a change is, what it costs per day, and who may approve it.'
     ],
-    ctaLabel: 'Open the SOW template',
-    ctaHref: '#/tpl/tpl-statement-of-work',
+    ctaLabel: 'Open the Contract Review checklist',
+    ctaHref: '#/tpl/tpl-contract-review-checklist',
     secondaryLabel: 'Review the Contract Review checklist',
     secondaryHref: '#/cl/cl-contract-review'
   },

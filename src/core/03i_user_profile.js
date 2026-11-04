@@ -251,7 +251,8 @@ PS.ACADEMY_MODULE_TAGS = {
   'Module 27: Regulated and Constrained Markets - Where a Third Authority Has Standing': ['regulated', 'risk', 'learn'],
   'Module 28: Supplier Innovation and Early Engagement - Shaping the Work Before It Is Priced': ['innovation', 'learn'],
   'Module 29: Service Transition and Exit - Moving Work Without Losing It': ['transition', 'claims', 'learn'],
-  'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It': ['inventory', 'learn']
+  'Module 30: Inventory and Stock Economics - How Much to Hold and Who Owns It': ['inventory', 'learn'],
+  'Module 31: Demand Forecasting and Purchase Planning - Predicting the Quantity You Buy': ['demand', 'learn']
 };
 
 /* The kind of work each role leans on, most important first.
@@ -266,18 +267,30 @@ PS.ACADEMY_MODULE_TAGS = {
    role's six - it displaces one, and the displaced module has to stay
    reachable from somewhere else. 'inventory' takes finance's sixth slot and
    pushes 'cost' out; Module 3, which finance used to be sent to for cost, is
-   still recommended, because beginner carries 'cost' in its third slot. */
+   still recommended, because beginner carries 'cost' in its third slot.
+   'demand' takes finance's seventh slot and pushes 'cost' out of the six
+   entirely - the same rule: Module 3 is still recommended, because beginner
+   carries 'cost' in its third slot. */
 PS.user.ROLE_PRIORITY = {
   beginner: ['spend', 'sourcing', 'cost', 'markets', 'ai', 'distress', 'learn'],
   buyer: ['innovation', 'operations', 'negotiation', 'services', 'specialist', 'quality', 'sourcing', 'spend', 'learn'],
   manager: ['regulated', 'tendering', 'influence', 'portfolio', 'disruption', 'responsible', 'assurance', 'strategy', 'sourcing', 'negotiation', 'supplier', 'cost', 'executive', 'learn'],
-  finance: ['rates', 'analytics', 'executive', 'value', 'finance', 'inventory', 'cost', 'contract', 'governance', 'learn'],
+  finance: ['rates', 'analytics', 'executive', 'value', 'finance', 'inventory', 'demand', 'cost', 'contract', 'governance', 'learn'],
   compliance: ['transition', 'assurance', 'risk', 'ethics', 'governance', 'claims', 'quality', 'contract', 'executive', 'supplier', 'learn']
 };
 PS.user.rolePriority = function () {
   var p = this.getProfile();
   return PS.user.ROLE_PRIORITY[p.role] || PS.user.ROLE_PRIORITY.beginner;
 };
+/* How many modules a role is pointed at. It was six until Module 31
+   arrived: five roles at six is thirty slots, and the curriculum is now
+   thirty-one modules, so the newest module had no reachable slot in any
+   role's list - the panel simply never showed it. Seven per role covers
+   the curriculum with room to spare, and it revives three tags that were
+   authored but unreachable in every role's list ('sourcing' for buyer,
+   'assurance' for manager, 'quality' for compliance - each sat past the
+   sixth match), which is what the priority lists always intended. */
+PS.user.RECOMMENDATION_COUNT = 7;
 PS.academyModuleNumber = function (moduleName) {
   var m = /Module\s+(\d+)/.exec(moduleName || '');
   return m ? parseInt(m[1], 10) : 0;
@@ -286,7 +299,7 @@ PS.academyModuleNumber = function (moduleName) {
    number order. The role decides WHICH modules, never the order they
    appear in. */
 PS.user.recommendedModules = function (limit) {
-  var max = limit || 6;
+  var max = limit || PS.user.RECOMMENDATION_COUNT;
   var pri = this.rolePriority();
   var names = Object.keys(PS.ACADEMY_MODULE_TAGS);
   var picked = [];

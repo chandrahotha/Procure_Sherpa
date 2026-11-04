@@ -226,7 +226,7 @@ PS.ACADEMY_FUNCTIONS.push({
     ctaLabel: 'Open PO Value Check',
     ctaHref: '#/calc/calc-po-value-check',
     secondaryLabel: 'Open the Procurement Audit Checklist',
-    secondaryHref: '#/checklist/cl-procurement-audit'
+    secondaryHref: '#/cl/cl-procurement-audit'
   }
 });
 
@@ -669,7 +669,7 @@ PS.ACADEMY_FUNCTIONS.push({
       'Find two open control recommendations from previous reviews in your organisation and name the owner and re-test date for each.'
     ],
     ctaLabel: 'Open the Procurement Audit Checklist',
-    ctaHref: '#/checklist/cl-procurement-audit',
+    ctaHref: '#/cl/cl-procurement-audit',
     secondaryLabel: 'Open the KPI Calculator',
     secondaryHref: '#/calc/calc-kpi-calculator'
   }

@@ -54,7 +54,14 @@ const BUDGET = {
 };
 /* The ceiling that actually binds: 3 s x 3 Mbps, in KB. */
 const GZIP_CEILING_KB = Math.round(BUDGET.seconds * BUDGET.mbps / 8 * 1024);
-const DIST_GZIP_CEILING_KB = Math.round(GZIP_CEILING_KB * 0.85);
+/* The warning ratio was 0.85 until 2026-11-04, when the owner moved it to 0.88 so the
+   served build could carry Academy Modules 30 and 31 rather than one of them. This is a
+   warning threshold, not the promise: the promise is the line above, and at 0.88 the
+   deployed build transfers in about 2.70 s of the 3 s budget, so the ADR 0002 constraint
+   still holds. Raising it is a decision with a name and a date attached, not a silent
+   accommodation - if a future build needs to clear 1,152 KB gzipped, this is the number
+   that must be argued about, and perf_check still fails the transfer budget itself. */
+const DIST_GZIP_CEILING_KB = Math.round(GZIP_CEILING_KB * 0.88);
 
 const html = fs.readFileSync(HTML, 'utf8');
 

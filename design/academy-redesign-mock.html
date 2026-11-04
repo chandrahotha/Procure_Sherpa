@@ -1,0 +1,841 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Procure Sherpa — Academy, redesigned (mock)</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--text:#15181d;--mute:#5b6572;--line:#e3e7ec;--accent:#2f7d6b;--accent-soft:#e8f4f0;--ops:#2b6cb0;--amber:#b7791f;--r:14px;--sh:0 1px 2px rgba(16,24,40,.05),0 8px 24px -12px rgba(16,24,40,.14)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;line-height:1.6}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 22px 80px}
+.top{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+.eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 6px}
+h1{font-size:clamp(1.9rem,3.4vw,2.7rem);line-height:1.1;margin:0;letter-spacing:-.02em;font-weight:800}
+.sub{margin:8px 0 0;color:var(--mute);max-width:62ch}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;min-width:112px;box-shadow:var(--sh)}
+.stat b{display:block;font-size:1.5rem;letter-spacing:-.02em}
+.stat span{font-size:.76rem;color:var(--mute);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.next{display:flex;gap:18px;align-items:center;background:linear-gradient(180deg,var(--accent-soft),#fff);border:1px solid #cfe6df;border-radius:var(--r);padding:18px 20px;margin:0 0 26px;box-shadow:var(--sh)}
+.next .k{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800}
+.next h3{margin:4px 0 4px;font-size:1.14rem;letter-spacing:-.01em}
+.next p{margin:0;color:var(--mute);font-size:.92rem}
+.btn{margin-left:auto;white-space:nowrap;background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:700;font-size:.95rem;box-shadow:0 6px 16px -8px rgba(47,125,107,.9)}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid #cfe6df}
+.layout{display:grid;grid-template-columns:268px minmax(0,1fr);gap:26px;align-items:start}
+.rail{position:sticky;top:18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:var(--sh)}
+.rail-item{display:flex;gap:11px;align-items:center;padding:11px 12px;border-radius:10px;text-decoration:none;color:inherit}
+.rail-item:hover{background:#f2f4f7}
+.rail-item.is-active{background:var(--accent-soft)}
+.rail-bar{flex:0 0 4px;height:34px;border-radius:3px;background:var(--line);overflow:hidden;display:block}
+.rail-bar span{display:block;background:var(--accent);height:100%}
+.rail-txt b{display:block;font-size:.9rem;letter-spacing:-.01em}
+.rail-txt em{display:block;font-style:normal;font-size:.76rem;color:var(--mute)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:.84rem;color:var(--mute);font-weight:650}
+.chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+.path{margin:0 0 30px}
+.path-h{border-bottom:2px solid var(--text);padding-bottom:9px;margin:0 0 16px}
+.path-h h2{margin:0;font-size:1.3rem;letter-spacing:-.02em}
+.path-h p{margin:4px 0 0;color:var(--mute);font-size:.86rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.mod{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.mod-num{flex:0 0 auto;font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:var(--accent);opacity:.85;font-variant-numeric:tabular-nums}
+.mod-body{min-width:0;flex:1}
+.mod-head{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.mod-head h3{margin:0;font-size:1.01rem;line-height:1.28;letter-spacing:-.01em}
+.pill{flex:0 0 auto;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:#eef1f5;color:var(--mute)}
+.pill-mastered{background:var(--accent-soft);color:var(--accent)}
+.pill-in-progress{background:#fdf3e3;color:var(--amber)}
+.pill-not-started{background:#eef1f5;color:var(--mute)}
+.mod-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--mute);font-size:.79rem;margin:7px 0 10px}
+.dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5}
+.tier{font-weight:700}.tier-core{color:var(--ops)}.tier-executive{color:#7c3aed}
+.prog{height:5px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:11px}
+.prog span{display:block;height:100%;background:var(--accent)}
+.les{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.les li{display:flex;gap:9px;align-items:baseline;padding:6px 8px;border-radius:8px;font-size:.87rem}
+.les li:hover{background:#f4f6f8}
+.les-mark{flex:0 0 14px;color:var(--mute);font-size:.78rem}
+.is-done .les-mark{color:var(--accent)}.is-part .les-mark{color:var(--amber)}
+.is-done .les-t{color:var(--mute)}
+.les-t{min-width:0;flex:1;overflow-wrap:anywhere}
+.les-m{color:var(--mute);font-variant-numeric:tabular-nums;font-size:.79rem}
+.foot{margin-top:26px;color:var(--mute);font-size:.8rem;border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:900px){.layout{grid-template-columns:1fr}.rail{position:static;display:flex;overflow:auto;gap:6px}.rail-item{flex:0 0 auto;min-width:190px}.grid{grid-template-columns:1fr}.next{flex-wrap:wrap}.btn{margin-left:0;width:100%;text-align:center}}
+</style></head><body><div class="wrap">
+<div class="top"><div>
+  <p class="eyebrow">Procure Sherpa · Academy</p>
+  <h1>The procurement curriculum, in the order the work happens</h1>
+  <p class="sub">Thirty-one modules, ninety lessons, and the tools to use each idea the day you learn it. Worked from intake to supplier exit — pick up where you stopped, or start from the module your current problem sits in.</p>
+</div><div class="stats">
+  <div class="stat"><b>12</b><span>Mastered</span></div>
+  <div class="stat"><b>3</b><span>In progress</span></div>
+  <div class="stat"><b>75</b><span>Remaining</span></div>
+  <div class="stat"><b>32h</b><span>Of lessons</span></div>
+</div></div>
+<div class="next"><div><div class="k">Continue where you left off</div>
+  <h3>Negotiation Planning &amp; Strategy (BATNA &amp; ZOPA)</h3>
+  <p>Securing superior commercial agreements through disciplined preparation, not theatrical bluffing. · 22 mins · practitioner</p>
+</div><button class="btn">Resume lesson</button><button class="btn ghost">What should I learn next?</button></div>
+<div class="layout">
+  <nav class="rail"><a class="rail-item is-active" href="#path-0">
+    <span class="rail-bar"><span style="width:100%"></span></span>
+    <span class="rail-txt"><b>Foundations &amp; Demand</b><em>12/12 mastered · What to buy, and how you know</em></span></a><a class="rail-item" href="#path-1">
+    <span class="rail-bar"><span style="width:0%"></span></span>
+    <span class="rail-txt"><b>Sourcing &amp; Commercial</b><em>0/21 mastered · 3 started · Choosing who, and on what terms</em></span></a><a class="rail-item" href="#path-2">
+    <span class="rail-bar"><span style="width:0%"></span></span>
+    <span class="rail-txt"><b>Delivery &amp; Governance</b><em>0/27 mastered · Making it happen, and proving it</em></span></a><a class="rail-item" href="#path-3">
+    <span class="rail-bar"><span style="width:0%"></span></span>
+    <span class="rail-txt"><b>Strategy &amp; Leadership</b><em>0/30 mastered · Running procurement as a function</em></span></a></nav>
+  <div>
+    <div class="filters"><span class="chip on">All 31 modules</span><span class="chip">Not started</span><span class="chip">In progress</span><span class="chip">Mastered</span><span class="chip">Core</span><span class="chip">Practitioner</span><span class="chip">Executive</span></div>
+    <section class="path" id="path-0">
+    <header class="path-h"><h2>Foundations &amp; Demand</h2><p>What to buy, and how you know · 4 modules · 12 lessons</p></header>
+    <div class="grid"><article class="mod" id="m-1">
+    <div class="mod-num">01</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Foundations, Strategy &amp; Spend Intelligence</h3>
+        <span class="pill pill-mastered">Mastered</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>53 min</span>
+        <span class="dot"></span><span class="tier tier-core">2 core</span><span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:100%"></span></div>
+      <ul class="les">
+        <li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">The Procurement Mission &amp; Value Creation</span>
+          <span class="les-m">15 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Spend Analysis &amp; Demand Profiling</span>
+          <span class="les-m">18 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Category Management &amp; Portfolio Strategy</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-2">
+    <div class="mod-num">02</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Requirement Definition &amp; Market Engagement</h3>
+        <span class="pill pill-mastered">Mastered</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>52 min</span>
+        <span class="dot"></span><span class="tier tier-core">3 core</span>
+      </div>
+      <div class="prog"><span style="width:100%"></span></div>
+      <ul class="les">
+        <li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Requirement Definition &amp; Scope Formulation (SOW)</span>
+          <span class="les-m">18 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Sourcing Channels &amp; RFx Selection (RFI vs RFP vs RFQ)</span>
+          <span class="les-m">16 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Tender / RFQ Preparation &amp; Market Issuance</span>
+          <span class="les-m">18 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-3">
+    <div class="mod-num">03</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Commercial Analysis &amp; Cost Engineering</h3>
+        <span class="pill pill-mastered">Mastered</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>60 min</span>
+        <span class="dot"></span><span class="tier tier-core">1 core</span><span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:100%"></span></div>
+      <ul class="les">
+        <li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Quotation Comparison &amp; Price Normalization</span>
+          <span class="les-m">20 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Landed Cost &amp; Total Cost of Ownership (TCO)</span>
+          <span class="les-m">22 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Should-Cost Modeling &amp; Cost Breakdowns</span>
+          <span class="les-m">18 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-4">
+    <div class="mod-num">04</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Supplier Evaluation &amp; Risk Management</h3>
+        <span class="pill pill-mastered">Mastered</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>56 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">3 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:100%"></span></div>
+      <ul class="les">
+        <li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Multi-Criteria Supplier Evaluation &amp; Scoring</span>
+          <span class="les-m">18 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Supplier Due Diligence &amp; Risk Mitigation</span>
+          <span class="les-m">18 mins</span></li><li class="is-done">
+          <span class="les-mark">✓</span>
+          <span class="les-t">Supplier Onboarding and Segmentation: Putting a New Source on Rails</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article></div>
+  </section><section class="path" id="path-1">
+    <header class="path-h"><h2>Sourcing &amp; Commercial</h2><p>Choosing who, and on what terms · 7 modules · 21 lessons</p></header>
+    <div class="grid"><article class="mod" id="m-5">
+    <div class="mod-num">05</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Negotiation Strategy &amp; Commercial Terms</h3>
+        <span class="pill pill-in-progress">In progress</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>62 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">3 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="is-part">
+          <span class="les-mark">▶</span>
+          <span class="les-t">Negotiation Planning &amp; Strategy (BATNA &amp; ZOPA)</span>
+          <span class="les-m">22 mins</span></li><li class="is-part">
+          <span class="les-mark">▶</span>
+          <span class="les-t">Commercial Terms Optimization (Payment Terms &amp; MOQs)</span>
+          <span class="les-m">18 mins</span></li><li class="is-part">
+          <span class="les-mark">▶</span>
+          <span class="les-t">Concessions, Authority and the Negotiation Record</span>
+          <span class="les-m">22 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-6">
+    <div class="mod-num">06</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Contracting &amp; Governance</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>63 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">3 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Contract Structuring &amp; Critical Legal Clauses</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Delegation of Authority (DOA) &amp; PO Value Controls</span>
+          <span class="les-m">16 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Contract Types, Indexation and the Renewal Window</span>
+          <span class="les-m">25 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-7">
+    <div class="mod-num">07</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Operational Purchasing &amp; Order Execution (P2P)</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>52 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-core">1 core</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Purchase Order Execution &amp; Expediting</span>
+          <span class="les-m">16 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">3-Way Matching &amp; Discrepancy Resolution</span>
+          <span class="les-m">18 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Requisition Intake and the Approval Matrix</span>
+          <span class="les-m">18 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-8">
+    <div class="mod-num">08</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Supplier Management &amp; Value Realization</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>59 min</span>
+        <span class="dot"></span><span class="tier tier-executive">2 executive</span><span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Supplier Relationship Management (SRM) &amp; Scorecards</span>
+          <span class="les-m">18 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Savings Measurement &amp; Value Reporting</span>
+          <span class="les-m">20 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Corrective Action and the Business Review That Changes Behaviour</span>
+          <span class="les-m">21 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-9">
+    <div class="mod-num">09</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Services, Software and Indirect Procurement</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>42 min</span>
+        <span class="dot"></span><span class="tier tier-core">2 core</span><span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Indirect, MRO and Facilities Procurement</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Software, SaaS and Technology Licensing</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Professional Services and Consultancy Procurement</span>
+          <span class="les-m">12 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-10">
+    <div class="mod-num">10</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Risk, Compliance, Ethics and Sustainability</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>42 min</span>
+        <span class="dot"></span><span class="tier tier-executive">3 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Sustainable and Responsible Procurement</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Ethics, Anti-Bribery and Third-Party Due Diligence</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Supplier Resilience and Business Continuity</span>
+          <span class="les-m">12 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-11">
+    <div class="mod-num">11</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Digital Procurement, Analytics and Category Strategy</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>45 min</span>
+        <span class="dot"></span><span class="tier tier-core">1 core</span><span class="dot"></span><span class="tier tier-executive">2 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Digital and e-Procurement</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Spend Analytics and the Spend Cube</span>
+          <span class="les-m">15 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Category Strategy and Sourcing Plan</span>
+          <span class="les-m">15 mins</span></li>
+      </ul>
+    </div></article></div>
+  </section><section class="path" id="path-2">
+    <header class="path-h"><h2>Delivery &amp; Governance</h2><p>Making it happen, and proving it · 9 modules · 27 lessons</p></header>
+    <div class="grid"><article class="mod" id="m-12">
+    <div class="mod-num">12</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Advanced Category &amp; Portfolio Strategy</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>72 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span><span class="dot"></span><span class="tier tier-executive">2 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Tail Spend Programmes &amp; Consumption Control</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Supply Market Structure &amp; Competitive Tension</span>
+          <span class="les-m">26 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Demand Management &amp; Specification Leverage</span>
+          <span class="les-m">24 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-13">
+    <div class="mod-num">13</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Executive &amp; Board-Level Procurement</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>84 min</span>
+        <span class="dot"></span><span class="tier tier-executive">3 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Procurement Operating Model &amp; Cost-to-Serve</span>
+          <span class="les-m">28 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">The Executive Value Narrative &amp; Benefit Assurance</span>
+          <span class="les-m">30 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Transformation Sequencing &amp; the 18-Month Arc</span>
+          <span class="les-m">26 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-14">
+    <div class="mod-num">14</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Stakeholder Influence, Internal Consulting &amp; Change Adoption</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>68 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Stakeholder Mapping &amp; Internal Consulting</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">The Executive Ask: Business Cases Without Authority</span>
+          <span class="les-m">25 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Adoption, Behaviour Change &amp; Holding the Gain</span>
+          <span class="les-m">22 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-15">
+    <div class="mod-num">15</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Specialised Markets and Category Depth</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>72 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">3 practitioner</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Freight, Duty and the True Landed Cost</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Regulated and Public Procurement</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Contingent Workforce, Agencies and Professional Services</span>
+          <span class="les-m">25 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-16">
+    <div class="mod-num">16</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Contract Risk, Claims and Disputes</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>72 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">The Obligation Register: Turning a Signed Contract into Work</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Change Control and the Variation Nobody Priced</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Claims, Service Credits and the Decision to Fight</span>
+          <span class="les-m">26 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-17">
+    <div class="mod-num">17</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Global Sourcing Operations - Development, Quality and Continuity</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>71 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Supplier Development: Improving a Source You Cannot Replace</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Conformity, Inspection and the Supplier Audit That Finds Something</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Dual Sourcing, Nearshoring and Inventory as Protection</span>
+          <span class="les-m">26 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-18">
+    <div class="mod-num">18</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Disruption, Emergency Buying and Allocation</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>66 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Emergency Buying: Moving Fast Without Losing Control</span>
+          <span class="les-m">20 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Allocation, Shortage and the Market That No Longer Serves You</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">After the Disruption: Re-baselining, Claims and the Honest Debrief</span>
+          <span class="les-m">24 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-19">
+    <div class="mod-num">19</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>The Finance of Procurement - Cash, Terms and Value</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>67 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Payment Terms as a Financial Instrument</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">The Cash Conversion Cycle and What Procurement Actually Controls</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Supply Chain Finance, Early Payment and the Ethics of the Balance Sheet</span>
+          <span class="les-m">22 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-20">
+    <div class="mod-num">20</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Procurement Fraud, Collusion and the Controls That Catch It</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>73 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span><span class="dot"></span><span class="tier tier-executive">2 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Fraud Risk in Purchasing: The Patterns Behind the Numbers</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Bid Rigging and the Tender That Was Never Contested</span>
+          <span class="les-m">26 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Response, Evidence and the Ethics of Accusing</span>
+          <span class="les-m">23 mins</span></li>
+      </ul>
+    </div></article></div>
+  </section><section class="path" id="path-3">
+    <header class="path-h"><h2>Strategy &amp; Leadership</h2><p>Running procurement as a function · 11 modules · 30 lessons</p></header>
+    <div class="grid"><article class="mod" id="m-21">
+    <div class="mod-num">21</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Sustainable and Responsible Sourcing - Carbon, Circularity and Social Value</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>80 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Carbon in the Buying Decision: Scope 3, Data Bases and Where Reduction Actually Happens</span>
+          <span class="les-m">26 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Circular Sourcing: Reuse, Remanufacture and the Economics of a Second Life</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Social Value, Labour Rights and the Due Diligence Laws Now in Force</span>
+          <span class="les-m">30 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-22">
+    <div class="mod-num">22</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Category Depth II - Energy, Works and Creative Markets</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>84 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Energy and Utilities: Why the Price You Agree Is Not the Price You Pay</span>
+          <span class="les-m">28 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Works Packages and Construction: Who Owns the Risk Before Anything Is Built</span>
+          <span class="les-m">30 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Marketing, Agencies and Creative Services: Buying an Outcome You Cannot Inspect</span>
+          <span class="les-m">26 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-23">
+    <div class="mod-num">23</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Artificial Intelligence, Model Services and Data Licensing</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>80 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Model Services and the Unit Economics of Doing Work Per Token</span>
+          <span class="les-m">26 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Data Licensing: What You Are Actually Allowed to Do With It</span>
+          <span class="les-m">26 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Assuring a Supplier Whose Behaviour Is Probabilistic</span>
+          <span class="les-m">28 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-24">
+    <div class="mod-num">24</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Supplier Financial Distress, Turnaround and Exit</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>72 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Reading Supplier Financial Health as a Buyer, Not an Analyst</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Early Warning and the Ladder of Contingency Action</span>
+          <span class="les-m">24 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Distress, Insolvency and the Honest Exit Decision</span>
+          <span class="les-m">26 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-25">
+    <div class="mod-num">25</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Public and Regulated Tendering - Lots, Criteria, Low Bids and Challenges</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>64 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Lotting and Call-Off Architecture: Who Is Allowed to Compete</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Award Criteria, Weightings and the Bid That Is Too Cheap</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Standstill, Debrief and a File That Survives Being Read</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-26">
+    <div class="mod-num">26</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Services Should-Cost and Negotiation Analytics - Rates, Risk and the Price Arc</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>63 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Building a Should-Cost for a Service from the Rate Pyramid Up</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Fixed Price, Time and Materials, Retainer and Gainshare: Who Carries Effort Risk</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Negotiation Analytics for Services: Concession Value, Leverage on the Mix, and the Price Arc</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-27">
+    <div class="mod-num">27</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Regulated and Constrained Markets - Where a Third Authority Has Standing</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>65 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Qualifying a Supplier When a Regulator Has Standing</span>
+          <span class="les-m">22 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Controlled Goods, Clearances and Sovereign Requirements</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Continuity as an Obligation: Buying for a Licensed Operation</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-28">
+    <div class="mod-num">28</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Supplier Innovation and Early Engagement - Shaping the Work Before It Is Priced</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>3 lessons</span><span class="dot"></span><span>64 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">2 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Early Supplier Involvement: Letting the Market Shape the Requirement</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Buying an Innovation Without Buying a Prototype</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Who Owns What Came Out of It: Rights, Data and Dependency</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-29">
+    <div class="mod-num">29</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Service Transition and Exit - Moving Work Without Losing It</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>2 lessons</span><span class="dot"></span><span>38 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Service Transition: What Must Be Proven Before the Old Provider Stops</span>
+          <span class="les-m">20 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">The Tail Period: Buying Cooperation Before You Need It</span>
+          <span class="les-m">18 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-30">
+    <div class="mod-num">30</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Inventory and Stock Economics - How Much to Hold and Who Owns It</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>2 lessons</span><span class="dot"></span><span>40 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Order Quantity and Reorder Point: How Much to Buy, and When to Ask</span>
+          <span class="les-m">21 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Who Owns the Stock, and Who Carries the Loss</span>
+          <span class="les-m">19 mins</span></li>
+      </ul>
+    </div></article><article class="mod" id="m-31">
+    <div class="mod-num">31</div>
+    <div class="mod-body">
+      <div class="mod-head">
+        <h3>Demand Forecasting and Purchase Planning - Predicting the Quantity You Buy</h3>
+        <span class="pill pill-not-started">Not started</span>
+      </div>
+      <div class="mod-meta">
+        <span>2 lessons</span><span class="dot"></span><span>43 min</span>
+        <span class="dot"></span><span class="tier tier-practitioner">1 practitioner</span><span class="dot"></span><span class="tier tier-executive">1 executive</span>
+      </div>
+      <div class="prog"><span style="width:0%"></span></div>
+      <ul class="les">
+        <li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Forecast Method and Error: Predicting the Quantity You Buy</span>
+          <span class="les-m">23 mins</span></li><li class="">
+          <span class="les-mark">○</span>
+          <span class="les-t">Who Owns the Forecast, and What It Is Used to Defend</span>
+          <span class="les-m">20 mins</span></li>
+      </ul>
+    </div></article></div>
+  </section>
+  </div>
+</div>
+<p class="foot"><b>Mock, not shipped.</b> Module names, lesson titles, tiers, durations and counts are read verbatim from the current build (31 modules, 90 lessons, 1924 minutes). The learner state above is illustrative sample data. The four pathway headings are a <i>proposal</i> — nothing in the product groups modules that way today. Colours reuse Procure Sherpa's own tokens, so this is your product restructured, not a foreign skin.</p>
+</div></body></html>
