@@ -113,7 +113,7 @@ Gates after revamp (all on `dist/index.html`, minified build):
 - Integrity: 31 gates / 149 assertions / 0 failed
 - Smoke: all 54 routes visited, 0 runtime errors
 - Reachability: 0 findings across 1440/1024/768/390 px
-- a11y: 0 findings across 67 route renders
+- a11y: 0 findings across all registered routes
 - Perf: gzip 1004.7 KB vs 1014 KB ceiling; boot 48 ms vs 500 ms budget
 - Lint: clean
 
@@ -245,7 +245,7 @@ Measured on this build with `node tools/perf_check.mjs` ("PERF BUDGET: PASS"):
 
 | Quantity | Value | Source |
 | --- | --- | --- |
-| Compressed download, committed artifact | **1,111 KB gzipped - 96.4% of the 1,152 KB ceiling, 41 KB of margin, 2.96 s at 3 Mbps; the same build served minified is 1,004 KB gzipped against the 1,014 KB deployed ceiling (0.88 ratio, owner-set 2026-11-04)** | `perf_check.mjs`, ADR 0002 |
+| Compressed download, committed artifact | **1,113.9 KB gzipped - 96.7% of the 1,152 KB ceiling, ~38 KB of margin; the same build served minified is 1,004.7 KB gzipped against the 1,014 KB deployed ceiling** | `perf_check.mjs`, ADR 0002 |
 | Transfer ceiling | **1,152 KB gzipped**, derived as 3 s at 3 Mbps effective 4G (not a chosen number) | `docs/adr/0002-measured-performance-budget.md` |
 | Soft warning | 979 KB (85% of the 1,152 KB ceiling) applies to **both** measurements in its own way: the readable artifact crossed it at Module 25 and the build now warns, while the deployed build is budgeted against 1,014 KB as the hard ceiling (the 0.88 ratio the owner set on 2026-11-04) and sits at 1,004 KB with 10 KB of margin | `perf_check.mjs`, `build.mjs` |
 | Readable artifact | **4,061.9 KB** (script 3,866.5 KB, CSS 167.9 KB of a 300 KB budget, markup 11.4 KB, 226 fragments), 1,114 KB gzipped against the 1,152 KB download ceiling (1,004 KB deployed against the 1,014 KB warning ceiling) | `validate.mjs`, `perf_check.mjs` |
