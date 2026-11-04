@@ -47,7 +47,7 @@ PS.homeStartHere = function () {
   }
 
   var start = PS.ui.card(
-    PS.ui.cardHead(PS.esc(isNew ? 'Start here' : 'Pick up where you left off'), '', 'h1') +
+    '<p class="inst-home-kicker">' + PS.esc(isNew ? 'Start here' : 'Pick up where you left off') + '</p>' +
     '<p class="inst-home-lead">' + PS.esc(primary.note) + '</p>' +
     PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="' + PS.esc(primary.href) + '">' + PS.esc(primary.label) + ' <span aria-hidden="true">&rarr;</span></a>' +
       '<a class="inst-home-btn inst-home-btn--ghost" href="' + PS.esc(secondary.href) + '">' + PS.esc(secondary.label) + '</a>'),
@@ -87,7 +87,7 @@ PS.homeWelcomeCard = function () {
     '<div class="inst-home-user-row">' +
     '<div class="inst-home-avatar">' + PS.esc(initials) + '</div>' +
     '<div class="inst-home-user-meta">' +
-    '<h2 class="inst-home-welcome-title">Welcome back, ' + PS.esc(prof.name) + '</h2>' +
+    '<h1 class="inst-home-welcome-title">Welcome back, ' + PS.esc(prof.name) + '</h1>' +
     '<div class="inst-home-user-meta-row">' +
     '<span class="inst-home-chip inst-home-chip--role">' + PS.esc(roleMeta.title) + '</span>' +
     (prof.company ? '<span class="inst-home-chip inst-home-chip--company">&bull; ' + PS.esc(prof.company) + '</span>' : '') +

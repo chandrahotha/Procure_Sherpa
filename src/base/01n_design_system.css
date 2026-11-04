@@ -193,9 +193,9 @@ html[data-theme="dark"]{
 
 /* ---------- institutional home: Command Center ---------- */
 .inst-home-section{display:grid;gap:var(--space-6)}
-.inst-home-card{border:1px solid var(--border);border-radius:var(--inst-r-card);background:var(--panel);padding:var(--space-4)}
-.inst-home-card--primary{border-color:var(--border)}
-.inst-home-card:hover{border-color:var(--border-2)}
+.inst-home-card{border:1px solid var(--border);border-radius:var(--inst-r-card);background:var(--panel);padding:var(--space-4);box-shadow:var(--sh)}
+.inst-home-card--primary{border-color:var(--accent);box-shadow:var(--sh-glow)}
+.inst-home-card:hover{border-color:var(--border-2);box-shadow:var(--sh-1)}
 .inst-home-card > :first-child{margin-top:0}
 .inst-home-card > :last-child{margin-bottom:0}
 
@@ -216,8 +216,8 @@ html[data-theme="dark"]{
 .inst-home-hub-title{font-family:var(--font-read);font-weight:600;font-size:1.35rem;letter-spacing:-.015em;color:var(--ink);margin:0 0 var(--space-2);line-height:1.25}
 .inst-home-hub-desc{font-size:.92rem;color:var(--dim);line-height:1.6;margin:0 0 var(--space-4);max-width:62ch}
 .inst-home-hub-meta{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-4)}
-.inst-home-hub-stat{display:flex;flex-direction:column;gap:2px}
-.inst-home-hub-stat-val{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums}
+.inst-home-hub-stat{display:flex;flex-direction:column;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--inst-r-menu);padding:var(--space-2) var(--space-3)}
+.inst-home-hub-stat-val{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--accent-2);font-variant-numeric:tabular-nums}
 .inst-home-hub-stat-lab{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
 
 /* Progress */
@@ -225,18 +225,19 @@ html[data-theme="dark"]{
 .inst-home-progress-meta{display:flex;justify-content:space-between;font-size:.79rem;font-weight:700;color:var(--mute);margin:0 0 var(--space-1)}
 .inst-home-progress-track{background:var(--sunken);border:1px solid var(--border);border-radius:var(--inst-r-progress);height:9px;overflow:hidden}
 .inst-home-progress-fill{height:100%;background:var(--accent);border-radius:var(--inst-r-progress)}
-.inst-home-btn{font:inherit;font-weight:700;font-size:.86rem;letter-spacing:.02em;min-height:44px;padding:0 20px;border-radius:var(--inst-r-menu);border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;text-decoration:none;transition:background var(--dur),border-color var(--dur),color var(--dur);display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.inst-home-btn{font:inherit;font-weight:700;font-size:.86rem;letter-spacing:.02em;min-height:44px;padding:0 20px;border-radius:var(--inst-r-menu);border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;text-decoration:none;transition:background var(--dur),border-color var(--dur),color var(--dur),box-shadow var(--dur);display:inline-flex;align-items:center;gap:7px;justify-content:center}
 .inst-home-btn:hover{background:var(--surface);border-color:var(--dim);color:var(--text)}
 .inst-home-btn:active{transform:scale(0.97)}
 .inst-home-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset)}
-.inst-home-btn--primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.inst-home-btn--primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink)}
+.inst-home-btn--primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 2px 6px color-mix(in srgb,var(--accent) 25%,transparent)}
+.inst-home-btn--primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--accent-ink);box-shadow:0 4px 10px color-mix(in srgb,var(--accent) 30%,transparent)}
+.inst-home-btn--primary:active{transform:scale(0.97);box-shadow:0 1px 3px color-mix(in srgb,var(--accent) 25%,transparent)}
 .inst-home-btn.ghost,.inst-home-btn--ghost{background:transparent;border-color:var(--border);color:var(--text)}
 .inst-home-btn.ghost:hover,.inst-home-btn--ghost:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .inst-home-btn--sm{min-height:36px;padding:0 14px;font-size:.78rem}
 .inst-home-btn .inst-home-icon{font-size:1rem}
 
-.inst-home-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--inst-r-menu);font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--border);color:var(--dim);background:transparent;white-space:nowrap}
+.inst-home-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--inst-r-menu);font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--border);color:var(--dim);background:var(--surface);white-space:nowrap}
 .inst-home-chip--role{background:var(--tier-core-soft);color:var(--tier-core);border-color:transparent}
 .inst-home-chip--track{background:var(--tier-practitioner-soft);color:var(--tier-practitioner);border-color:transparent}
 .inst-home-chip--company{background:var(--surface);color:var(--dim);border-color:var(--border)}
@@ -300,8 +301,8 @@ html[data-theme="dark"]{
 
 /* Quick actions */
 .inst-home-quick-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.inst-home-quick-action{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--inst-r-menu);font-size:.78rem;font-weight:600;color:var(--dim);text-decoration:none;transition:background var(--dur),border-color var(--dur),color var(--dur)}
-.inst-home-quick-action:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.inst-home-quick-action{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--inst-r-menu);font-size:.78rem;font-weight:600;color:var(--text);text-decoration:none;transition:background var(--dur),border-color var(--dur),color var(--dur)}
+.inst-home-quick-action:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-2)}
 .inst-home-quick-action-label{font-weight:700}
 
 @media (max-width:900px){
