@@ -55,16 +55,17 @@ PS.route('academy-progress', function () {
 /* ---------- Curriculum Hub View ---------- */
 PS.renderAcademyHub = function (params) {
   PS.pageTitle = 'Procurement Academy';
-  var stats = PS.academy.getStats();
-  var data = PS.academy.getAll();
+  var stats = (PS.academy && PS.academy.getStats) ? PS.academy.getStats() : { completedCount: 0, totalCount: 0, pct: 0, currentFunc: 'func-mission-value', badgesEarned: 0, badgesTotal: 0 };
+  var data = (PS.academy && PS.academy.getAll) ? PS.academy.getAll() : { completed: {}, scores: {}, badges: {} };
   var funcs = PS.ACADEMY_FUNCTIONS || [];
+  var tiers = PS.academy && PS.academy.TIERS ? PS.academy.TIERS : [{id:'core',name:'Foundation',desc:'Fundamentals'},{id:'practitioner',name:'Practitioner',desc:'Category/Event Owner'},{id:'executive',name:'Executive',desc:'Portfolio Owner'}];
 
   /* The level filter is a link, not client state: #/academy?tier=executive
      is an address a reader can bookmark or be sent, and it survives a
      reload. A value that is not one of the three named levels falls back
      to "all", so a stale link cannot empty the curriculum. */
   var tier = (params && params.tier) || '';
-  if (!PS.academy.TIERS.some(function (t) { return t.id === tier; })) tier = '';
+  if (!tiers.some(function (t) { return t.id === tier; })) tier = '';
   var shown = tier ? funcs.filter(function (f) { return f.tier === tier; }) : funcs;
 
   /* Status is a second, independent filter and works the same way: a link,
@@ -79,8 +80,8 @@ PS.renderAcademyHub = function (params) {
   if (['unread', 'attempted', 'mastered'].indexOf(status) < 0) status = '';
   if (status) {
     shown = shown.filter(function (f) {
-      var done = PS.academy.isCompleted(f.id);
-      var scored = !!PS.academy.getQuizResult(f.id);
+      var done = (PS.academy && PS.academy.isCompleted) ? PS.academy.isCompleted(f.id) : false;
+      var scored = (PS.academy && PS.academy.getQuizResult) ? !!PS.academy.getQuizResult(f.id) : false;
       if (status === 'mastered') return done;
       if (status === 'attempted') return !done && scored;
       return !done && !scored;
@@ -103,84 +104,105 @@ PS.renderAcademyHub = function (params) {
 
   var curFunc = funcs.filter(function (f) { return f.id === stats.currentFunc; })[0] || funcs[0];
 
-  var html = '<div class="academy-hero">' +
-    '<div class="academy-title-row">' +
-    '<div class="ps-logo-chip" style="width:76px;height:76px;flex:0 0 76px;padding:6px" aria-hidden="true"><img src="' + PS.LOGO_DATA + '" alt="" loading="lazy"></div>' +
-    '<div><span class="academy-badge-tag">Procure Sherpa Academy</span>' +
-    '<h1 style="margin:6px 0 2px">The Digital Procurement Academy</h1>' +
-    '<p class="lead mb0">Master end-to-end procurement from first principles to executive decision-making. Learn, reflect, practice with scenarios, and execute in the laboratory.</p>' +
+  /* ============================================================
+     HERO SECTION
+     ============================================================ */
+  var heroHtml = PS.ui.card(
+    '<div class="inst-home-user-row">' +
+    '<div class="inst-home-avatar" style="width:76px;height:76px;border-radius:var(--inst-r-card);">' +
+    (PS.LOGO_DATA ? '<img src="' + PS.LOGO_DATA + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:var(--inst-r-card);">' : 'PS') +
     '</div>' +
-    '<div><a class="btn btn-primary" href="#/academy/' + (curFunc ? curFunc.id : 'func-mission-value') + '">' +
-    (stats.completedCount > 0 ? 'Resume Learning: ' + (curFunc ? curFunc.title : '') : 'Start Journey from Zero') + ' &rarr;</a></div>' +
-    '</div>' +
-    '<div class="academy-progress-wrap">' +
-    '<div class="academy-progress-label-row">' +
+    '<div class="inst-home-user-meta">' +
+    '<h1 class="inst-home-welcome-title">Procurement Academy</h1>' +
+    '<p class="inst-home-lead" style="margin-top:var(--space-2);max-width:none">Master end-to-end procurement from first principles to executive decision-making. Learn, reflect, practice with scenarios, and execute in the laboratory.</p>' +
+    '<div class="inst-home-user-meta-row">' +
+    '<span class="inst-home-chip inst-home-chip--role">' + stats.completedCount + ' of ' + stats.totalCount + ' mastered</span>' +
+    '<span class="inst-home-chip inst-home-chip--track">' + stats.pct + '% complete</span>' +
+    '</div></div></div>' +
+    PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="#/academy/' + (curFunc ? curFunc.id : 'func-mission-value') + '">' +
+      (stats.completedCount > 0 ? 'Resume Learning: ' + PS.esc(curFunc ? curFunc.title : '') : 'Start Journey from Zero') + ' <span aria-hidden="true">&rarr;</span></a>'),
+    { class: 'inst-home-card--primary mb24' }
+  );
+
+  /* ============================================================
+     PROGRESS BAR
+     ============================================================ */
+  var progressHtml = PS.ui.card(
+    '<div class="inst-home-progress">' +
+    '<div class="inst-home-progress-meta">' +
     '<span>Curriculum Progress: <strong>' + stats.completedCount + ' of ' + stats.totalCount + ' Functions Mastered</strong></span>' +
     '<span><strong>' + stats.pct + '%</strong> Complete</span>' +
     '</div>' +
-    '<div class="academy-progress-track"><div class="academy-progress-fill" style="width:' + stats.pct + '%"></div></div>' +
-    '</div>' +
-    '</div>';
+    '<div class="inst-home-progress-track"><div class="inst-home-progress-fill" style="width:' + stats.pct + '%"></div></div>' +
+    '</div>',
+    { class: 'mb24' }
+  );
 
-  // Badges strip
-  /* The recommendation sits directly under the hero, not at the end
-     of the page. The badge wall below is a grid of locked cards, and the
-     most useful thing on the page was underneath all of it. */
-  html += PS.academyRoleRecommendation(funcs);
+  /* ============================================================
+     ROLE RECOMMENDATION
+     ============================================================ */
+  var roleRecHtml = PS.academyRoleRecommendation(funcs);
 
-  /* Three levels, stated up front, because the honest answer to "is this
-     for me" is a label on the card rather than a guess after reading.
-     Both chip rows carry the other filter through: choosing a level and
-     then choosing "unread" should narrow, not silently reset. */
+  /* ============================================================
+     LEVEL & STATUS FILTERS
+     ============================================================ */
   var filterHref = function (t, s) {
     var q = [];
     if (t) q.push('tier=' + encodeURIComponent(t));
     if (s) q.push('status=' + encodeURIComponent(s));
     return '#/academy' + (q.length ? '?' + q.join('&') : '');
   };
-  var lvlChips = '<a class="chip ' + (tier ? '' : 'is-on') + '" href="' + filterHref('', status) + '">All levels <strong>' + funcs.length + '</strong></a>';
-  PS.academy.TIERS.forEach(function (t) {
+
+  var lvlChips = '<a class="inst-home-chip inst-home-quick-action' + (tier ? '' : ' is-on') + '" href="' + filterHref('', status) + '">All levels <strong>' + funcs.length + '</strong></a>';
+  tiers.forEach(function (t) {
     var n = funcs.filter(function (f) { return f.tier === t.id; }).length;
-    lvlChips += '<a class="chip ' + (tier === t.id ? 'is-on' : '') + '" href="' + filterHref(t.id, status) + '">' + PS.esc(t.name) + ' <strong>' + n + '</strong></a>';
+    lvlChips += '<a class="inst-home-chip inst-home-quick-action' + (tier === t.id ? ' is-on' : '') + '" href="' + filterHref(t.id, status) + '">' + PS.esc(t.name) + ' <strong>' + n + '</strong></a>';
   });
+
   var STATUS_LABELS = [['unread', 'Not started'], ['attempted', 'Quiz taken'], ['mastered', 'Mastered']];
-  var statusChips = '<a class="chip ' + (status ? '' : 'is-on') + '" href="' + filterHref(tier, '') + '">Any status <strong>' +
-    (tier ? shown.length : funcs.length) + '</strong></a>';
+  var statusChips = '<a class="inst-home-chip inst-home-quick-action' + (status ? '' : ' is-on') + '" href="' + filterHref(tier, '') + '">Any status <strong>' + (tier ? shown.length : funcs.length) + '</strong></a>';
   STATUS_LABELS.forEach(function (s) {
     var n = funcs.filter(function (f) {
-      var done = PS.academy.isCompleted(f.id);
-      var scored = !!PS.academy.getQuizResult(f.id);
+      var done = (PS.academy && PS.academy.isCompleted) ? PS.academy.isCompleted(f.id) : false;
+      var scored = (PS.academy && PS.academy.getQuizResult) ? !!PS.academy.getQuizResult(f.id) : false;
       if (s[0] === 'mastered') return done;
       if (s[0] === 'attempted') return !done && scored;
       return !done && !scored;
     }).length;
-    statusChips += '<a class="chip ' + (status === s[0] ? 'is-on' : '') + '" href="' + filterHref(tier, s[0]) + '">' +
-      s[1] + ' <strong>' + n + '</strong></a>';
+    statusChips += '<a class="inst-home-chip inst-home-quick-action' + (status === s[0] ? ' is-on' : '') + '" href="' + filterHref(tier, s[0]) + '">' + s[1] + ' <strong>' + n + '</strong></a>';
   });
-  var activeTier = PS.academy.TIERS.filter(function (t) { return t.id === tier; })[0];
-  html += PS.ui.card(
-    PS.ui.cardHead('Choose your level', '<span class="badge">' + (activeTier ? PS.esc(activeTier.name) + ' track' : 'Full curriculum') + '</span>') +
-    '<div class="filters">' + lvlChips + '</div>' +
-    '<div class="filters">' + statusChips + '</div>' +
+
+  var activeTier = tiers.filter(function (t) { return t.id === tier; })[0];
+  var filterHtml = PS.ui.card(
+    PS.ui.cardHead('Choose your level', '<span class="inst-home-chip inst-home-hub-badge">' + (activeTier ? activeTier.name + ' track' : 'Full curriculum') + '</span>') +
+    '<div class="inst-home-quick-actions" style="margin-bottom:var(--space-3)">' + lvlChips + '</div>' +
+    '<div class="inst-home-quick-actions">' + statusChips + '</div>' +
     (activeTier
       ? PS.ui.note(PS.esc(activeTier.desc) + ' <a href="' + filterHref('', status) + '">Show all ' + funcs.length + ' functions</a>.')
       : PS.ui.note('The curriculum is written at three altitudes: <strong>Foundation</strong> for the fundamentals, <strong>Practitioner</strong> for the person running a category or an event, and <strong>Executive</strong> for the owner of the portfolio. Filter to the one that matches the decisions you make.')),
-    { class: 'mb16' });
+    { class: 'mb24' }
+  );
 
-  html += PS.ui.card(
-    PS.ui.cardHead('Achievement Badges', '<div class="spacer"></div>' +
-      '<span class="badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span>') +
-    '<div class="badge-grid">' +
-    PS.academy.BADGES.map(function (b) {
+  /* ============================================================
+     ACHIEVEMENT BADGES - COLLAPSIBLE ACCORDION
+     ============================================================ */
+  var badgesHtml = '<details class="inst-acc" open>' +
+    '<summary class="inst-acc-summary">' +
+    '<h2>Achievement Badges</h2>' +
+    '<span class="inst-badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span>' +
+    '</summary>' +
+    '<div class="inst-acc-body" style="padding-top:var(--space-4)">' +
+    '<div class="inst-grid inst-grid-4" style="margin-top:var(--space-3)">' +
+    (PS.academy.BADGES || []).map(function (b) {
       var un = !!(data.badges && data.badges[b.id]);
-      return '<div class="badge-card ' + (un ? 'is-unlocked' : 'is-locked') + '">' +
-        '<div class="badge-icon">' + b.icon + '</div>' +
-        '<div class="badge-name">' + PS.esc(b.name) + '</div>' +
-        '<div class="badge-desc">' + PS.esc(b.desc) + '</div>' +
-        (un ? '<div class="state-ok" style="margin-top:6px;font-size:0.7rem">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
+      return '<div class="inst-card inst-badge-card' + (un ? ' is-unlocked' : ' is-locked') + '">' +
+        '<div class="inst-badge-icon" aria-hidden="true">' + (b.icon || '🏆') + '</div>' +
+        '<div class="inst-badge-name">' + PS.esc(b.name) + '</div>' +
+        '<div class="inst-badge-desc">' + PS.esc(b.desc) + '</div>' +
+        (un ? '<div class="inst-badge-state ok">✓ Unlocked</div>' : '<div class="inst-badge-state locked">Locked</div>') +
         '</div>';
     }).join('') +
-    '</div>', { class: 'mb16' });
+    '</div></div></details>';
 
   // Curriculum modules
   /* Where the reader actually is in the curriculum, stated above the list
@@ -209,116 +231,177 @@ PS.renderAcademyHub = function (params) {
     html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
   }
 
-  /* Readiness at a glance. The hub already says how many are mastered and
-     what is due; what a learner cannot see is *where* the gaps sit -
-     whether the foundation is done and the executive half is untouched -
-     or what their own answers say is unsettled. Every figure here is read
-     from the records the other surfaces use, so one fact cannot have two
-     numbers on one page. */
+  /* ============================================================
+     WHERE YOU STAND - READINESS PANEL
+     ============================================================ */
   var ready = PS.academy.readiness ? PS.academy.readiness() : null;
+  var readinessHtml = '';
   if (ready) {
     var tierCells = ready.tiers.map(function (t) {
       var pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
-      return '<div class="stat">' +
-        '<span class="s-val">' + t.done + '/' + t.total + '</span>' +
-        '<span class="s-lab">' + PS.esc(t.name) + ' mastered</span>' +
-        '<div class="pbar" role="img" aria-label="' + t.done + ' of ' + t.total + ' ' + PS.esc(t.name) + ' lessons mastered">' +
-        '<div class="pbar-fill" style="width:' + pct + '%"></div></div></div>';
+      return PS.ui.card(
+        '<div class="inst-home-hub-stat">' +
+        '<span class="inst-home-hub-stat-val">' + t.done + '/' + t.total + '</span>' +
+        '<span class="inst-home-hub-stat-lab">' + PS.esc(t.name) + ' mastered</span>' +
+        '</div>' +
+        '<div class="inst-home-progress" style="margin-top:var(--space-3)">' +
+        '<div class="inst-home-progress-track"><div class="inst-home-progress-fill" style="width:' + pct + '%"></div></div>' +
+        '</div>',
+        { class: 'inst-readiness-tier' }
+      );
     }).join('');
+
     var nextCell = ready.next
-      ? 'Next up: <a href="#/academy/' + encodeURIComponent(ready.next.id) + '">' + PS.esc(ready.next.title) + '</a>'
-      : 'Next up: <strong>nothing - the curriculum is complete.</strong> <a href="#/revise">Keep it sharp with the review queue</a>';
+      ? 'Next up: <a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/academy/' + encodeURIComponent(ready.next.id) + '">' + PS.esc(ready.next.title) + '</a>'
+      : 'Next up: <strong>curriculum complete.</strong> <a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">Keep it sharp with the review queue</a>';
+
     var weakCell;
     if (!ready.answered) {
-      weakCell = '<a href="#/reflection">Reflection</a> has nothing to say until you answer a quiz';
+      weakCell = '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/reflection">Reflection</a> has nothing to say until you answer a quiz';
     } else if (ready.wrong) {
-      weakCell = '<a href="#/reflection">' + ready.wrong + (ready.wrong === 1 ? ' answer is' : ' answers are') + ' still wrong</a>' +
-        (ready.topPrinciple ? ' - the most pressing is &ldquo;' + PS.esc(ready.topPrinciple.length > 88 ? ready.topPrinciple.slice(0, 88) + '...' : ready.topPrinciple) + '&rdquo;' : '');
+      weakCell = '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/reflection">' + ready.wrong + (ready.wrong === 1 ? ' answer is' : ' answers are') + ' still wrong</a>' +
+        (ready.topPrinciple ? ' - most pressing: &ldquo;' + PS.esc(ready.topPrinciple.length > 88 ? ready.topPrinciple.slice(0, 88) + '...' : ready.topPrinciple) + '&rdquo;' : '');
     } else {
-      weakCell = 'no wrong answers on record - <a href="#/reflection">every question you have answered is settled or was corrected with the tip</a>';
+      weakCell = 'no wrong answers on record - <a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/reflection">every question answered is settled or corrected with the tip</a>';
     }
-    html += PS.ui.card(
-      PS.ui.cardHead('Where you stand', '<div class="spacer"></div>' +
-        '<a class="badge" href="#/academy-progress">Full transcript</a>') +
-      '<div class="grid grid-3">' + tierCells + '</div>' +
+
+    readinessHtml = PS.ui.card(
+      PS.ui.cardHead('Where you stand', PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/academy-progress">Full transcript</a>')) +
+      '<div class="inst-grid inst-grid-3 mb16">' + tierCells + '</div>' +
       PS.ui.note(nextCell + ' &middot; ' +
-      (ready.due ? '<a href="#/revise">' + ready.due + (ready.due === 1 ? ' lesson is due' : ' lessons are due') + ' for review</a>' : '<a href="#/revise">nothing is due for review today</a>') +
-      ' &middot; ' + weakCell + '.'),
-      { class: 'mb16' });
+        (ready.due ? '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">' + ready.due + (ready.due === 1 ? ' lesson is due' : ' lessons are due') + ' for review</a>' : '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">nothing is due for review today</a>') +
+        ' &middot; ' + weakCell + '.'),
+      { class: 'mb24' }
+    );
   }
 
-  /* A jump strip, because seventeen modules of three lessons is a page more
-     than one screen long per module, and "go to the contracts one" should not
-     require scrolling to find it. Each chip carries its own mastered count, so
-     the strip doubles as a map of where the gaps are. It is built from the
-     modules actually shown, so a filtered page never offers a jump to a module
-     it has just hidden. */
+  /* ============================================================
+     MODULE INDEX JUMP STRIP
+     ============================================================ */
+  var moduleIndexHtml = '';
   if (modNames.length > 1) {
-    html += '<nav class="module-index" aria-label="Jump to a module">' + modNames.map(function (modName) {
+    moduleIndexHtml = '<nav class="inst-home-module-index" aria-label="Jump to a module">' + modNames.map(function (modName) {
       var mp = PS.academy.moduleProgress(modName);
       var no = PS.academyModuleNumber(modName);
-      return '<a class="module-index-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '" data-act="scroll-to" data-target="module-' + no + '">' +
+      return '<a class="inst-home-module-chip' + (mp.done === mp.total ? ' is-complete' : '') + '" href="#module-' + no + '" data-act="scroll-to" data-target="module-' + no + '">' +
         '<span class="mi-no">' + no + '</span>' +
         '<span class="mi-name">' + PS.esc(String(modName).replace(/^Module\s+\d+:\s*/, '')) + '</span>' +
         '<span class="mi-count">' + mp.done + '/' + mp.total + '</span></a>';
     }).join('') + '</nav>';
   }
+
   if (!shown.length) {
-    html += PS.empty('No lesson matches this combination of level and status.',
-      '<a href="' + filterHref('', '') + '">Show the whole curriculum</a>.');
+    html = PS.ui.card(
+      PS.ui.cardHead('No results') +
+      PS.ui.note('No lesson matches this combination of level and status.') +
+      PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--ghost" href="' + filterHref('', '') + '">Show the whole curriculum</a>'),
+      { class: 'inst-page inst-shell' }
+    );
     return html;
   }
 
+  /* ============================================================
+     CURRICULUM MODULES - COLLAPSIBLE
+     ============================================================ */
+  var curriculumHead = PS.ui.sectionHead('End-to-End Procurement Curriculum',
+    'You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
+    '</strong> functions across ' + modNames.length + ' modules' +
+    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.');
+
+  /* Review queue line */
+  var hubQueue = PS.revise ? PS.revise.queue() : null;
+  var queueHtml = '';
+  if (hubQueue) {
+    var qLine;
+    if (hubQueue.due.length) {
+      qLine = '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">' + hubQueue.due.length + (hubQueue.due.length === 1 ? ' lesson is' : ' lessons are') + ' due for review &rarr; open the review queue</a>';
+    } else if (hubQueue.tracked) {
+      qLine = 'Nothing is due for review today. <a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">The review queue</a> has ' + hubQueue.soon.length + ' coming up within a fortnight.';
+    } else {
+      qLine = 'Once you study a lesson it gets a review date. <a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/revise">How the review queue works</a>.';
+    }
+    queueHtml = '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
+  }
+
+  /* Build curriculum modules - collapsible */
+  var curriculumHtml = '';
   Object.keys(modules).forEach(function (modName, modIdx) {
     var modFuncs = modules[modName];
     var modNo = PS.academyModuleNumber(modName) || (modIdx + 1);
-    html += '<div class="module-group" id="module-' + modNo + '">' +
-      '<div class="module-head">' +
-      /* The badge is the module's own number. Position and module number
-         are the same thing now that the list is never reordered, but the
-         number is read from the data so that they cannot drift apart
-         again. */
-      '<span class="module-badge">Module ' + (PS.academyModuleNumber(modName) || (modIdx + 1)) + '</span>' +
+    var mins = modFuncs.reduce(function (a, f) { return a + (parseInt(String(f.duration || '15 mins'), 10) || 15); }, 0);
+    var done = modFuncs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
+    var mp = PS.academy.moduleProgress(modName);
+    var pct = mp.total ? Math.round((mp.done / mp.total) * 100) : 0;
+
+    /* Determine if this module should be open by default:
+       - First module with incomplete functions
+       - Or first module if all complete
+    */
+    var hasIncomplete = modFuncs.some(function (f) { return !PS.academy.isCompleted(f.id); });
+    var isFirstIncomplete = hasIncomplete && !curriculumHtml.includes('open'); // first incomplete module
+    var isOpen = isFirstIncomplete || (modIdx === 0 && !curriculumHtml.includes('open'));
+
+    var funcCards = modFuncs.map(function (f) {
+      var isComp = PS.academy.isCompleted(f.id);
+      var qRes = PS.academy.getQuizResult(f.id);
+      var lv = tiers.filter(function (t) { return t.id === f.tier; })[0];
+      return '<a class="inst-home-func-card' + (isComp ? ' is-mastered' : '') + '" href="#/academy/' + encodeURIComponent(f.id) + '">' +
+        '<div class="inst-home-func-kicker">' + PS.esc(f.kicker || 'Procurement Function') + '</div>' +
+        '<div class="inst-home-func-title">' + PS.esc(f.title) + '</div>' +
+        '<div class="inst-home-func-desc">' + PS.esc(f.tagline || f.desc) + '</div>' +
+        '<div class="inst-home-func-meta">' +
+        (lv ? '<span class="inst-home-chip inst-home-chip--role lv-' + PS.esc(f.tier) + '">' + PS.esc(lv.name) + '</span>' : '') +
+        '<span class="inst-home-chip"><span class="inst-home-icon" aria-hidden="true">⏱️</span> ' + PS.esc(f.duration || '15 mins') + '</span>' +
+        '<span class="inst-home-chip"><span class="inst-home-icon" aria-hidden="true">🎯</span> ' + (f.quizzes ? f.quizzes.length : 3) + ' Scenarios</span>' +
+        (qRes ? '<span class="inst-home-chip inst-home-chip--ok"><span class="inst-home-icon" aria-hidden="true">📊</span> ' + qRes.pct + '% Score</span>' : '') +
+        '</div></a>';
+    }).join('');
+
+    var moduleHtml = '<details class="inst-acc inst-module' + (isOpen ? ' open' : '') + '" id="module-' + modNo + '">' +
+      '<summary class="inst-acc-summary inst-module-head">' +
+      '<span class="inst-module-badge">Module ' + modNo + '</span>' +
       '<h2>' + PS.esc(modName) + '</h2>' +
-      /* Lessons, minutes and what is already done, stated once per module so
-         the reader can choose where to spend the next half hour. */
-      (function () {
-        var mins = modFuncs.reduce(function (a, f) {
-          return a + (parseInt(String(f.duration || '15 mins'), 10) || 15);
-        }, 0);
-        var done = modFuncs.filter(function (f) { return PS.academy.isCompleted(f.id); }).length;
-        return '<span class="module-meta">' + modFuncs.length + ' lessons \u00B7 ' + mins + ' min \u00B7 ' +
-          (done ? done + ' mastered' : 'not started yet') + '</span>';
-      }()) +
-      /* The rail is built from the module's own functions, so a module can
-         not claim a percentage the cards below it do not support. */
-      (function () {
-        var mp = PS.academy.moduleProgress(modName);
-        return '<div class="module-progress">' +
-          '<span class="module-progress-count">' + mp.done + '/' + mp.total + '</span>' +
-          '<span class="module-progress-track" role="img" aria-label="' + mp.done + ' of ' + mp.total + ' functions in this module mastered">' +
-          '<span class="module-progress-fill" style="width:' + mp.pct + '%"></span></span>' +
-          '</div>';
-      }()) +
+      '<div class="inst-module-meta">' +
+      '<span class="inst-home-chip">' + modFuncs.length + ' lessons</span>' +
+      '<span class="inst-home-chip">' + mins + ' min</span>' +
+      '<span class="inst-home-chip' + (done ? ' inst-home-chip--ok' : '') + '">' + (done ? done + ' mastered' : 'not started yet') + '</span>' +
       '</div>' +
-      '<div class="grid grid-3">' +
-      modFuncs.map(function (f) {
-        var isComp = PS.academy.isCompleted(f.id);
-        var qRes = PS.academy.getQuizResult(f.id);
-        var lv = PS.academy.TIERS.filter(function (t) { return t.id === f.tier; })[0];
-        return '<a class="func-card ' + (isComp ? 'is-mastered' : '') + '" href="#/academy/' + encodeURIComponent(f.id) + '">' +
-          '<div class="func-card-kicker">' + PS.esc(f.kicker || 'Procurement Function') + '</div>' +
-          '<div class="func-card-title">' + PS.esc(f.title) + '</div>' +
-          '<div class="func-card-desc">' + PS.esc(f.tagline || f.desc) + '</div>' +
-          '<div class="func-card-meta">' +
-          (lv ? '<span class="func-card-level lv-' + PS.esc(f.tier) + '">' + PS.esc(lv.name) + '</span>' : '') +
-          '<span>⏱️ ' + PS.esc(f.duration || '15 mins') + '</span>' +
-          '<span>🎯 ' + (f.quizzes ? f.quizzes.length : 3) + ' Scenarios</span>' +
-          (qRes ? '<span>📊 ' + qRes.pct + '% Score</span>' : '') +
-          '</div></a>';
-      }).join('') +
-      '</div></div>';
+      '<div class="inst-module-progress">' +
+      '<span class="inst-module-progress-count">' + mp.done + '/' + mp.total + '</span>' +
+      '<div class="inst-home-progress-track" style="flex:1;margin-left:var(--space-3)"><div class="inst-home-progress-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>' +
+      '</summary>' +
+      '<div class="inst-acc-body">' +
+      '<div class="inst-grid inst-grid-3">' + funcCards + '</div>' +
+      '</div>' +
+      '</details>';
+    curriculumHtml += moduleHtml;
   });
+
+  /* ============================================================
+     ASSEMBLE PAGE
+     ============================================================ */
+  var html = '<div class="inst-page inst-shell">' +
+    heroHtml +
+    progressHtml +
+    roleRecHtml +
+    filterHtml +
+    badgesHtml +
+    readinessHtml +
+    moduleIndexHtml +
+    curriculumHead +
+    queueHtml +
+    curriculumHtml +
+    '</div>';
+
+  if (!shown.length) {
+    html = PS.ui.card(
+      PS.ui.cardHead('No results') +
+      PS.ui.note('No lesson matches this combination of level and status.') +
+      PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--ghost" href="' + filterHref('', '') + '">Show the whole curriculum</a>'),
+      { class: 'inst-page inst-shell' }
+    );
+  }
 
   return html;
 };
@@ -599,7 +682,7 @@ PS.academyRoleRecommendation = function (funcs) {
     '<div class="hub-linked-row"><span class="hub-linked-label">Modules</span>' +
     mods.map(function (name) {
       var n = PS.academyModuleNumber(name);
-      return '<a class="chip" href="#module-' + n + '" data-act="scroll-to" data-target="module-' + n + '">Module ' + n + '</a>';
+      return '<a class="chip" href="#module-' + n + '">Module ' + n + '</a>';
     }).join('') + '</div>' +
     '<div class="btn-row" style="margin-top:12px">' +
     '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(target.func.id) + '">Start with ' +
