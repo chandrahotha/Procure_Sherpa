@@ -11,34 +11,34 @@ PS.route('cl', function (id, params) {
   var done = Object.keys(st.checked).filter(function (k) { return st.checked[k]; }).length;
   var pctv = total ? Math.round(done / total * 100) : 0;
   var html = PS.reportHead(it.title, 'Operational checklist \u00B7 ' + (it.cat || '')) +
-    '<div class="card">' +
-    '<div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
-    PS.badge('cl') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
-    (it.desc ? '<p class="lead">' + PS.esc(it.desc) + '</p>' : '') +
-    PS.actionsBar([
-      '<button type="button" class="btn btn-primary" data-act="cl-save">Save to workspace</button>',
-      '<button type="button" class="btn" data-act="cl-print">Print / PDF</button>',
-      '<button type="button" class="btn" data-act="cl-export">Export CSV</button>',
-      '<button type="button" class="btn btn-ghost" data-act="content-markdown">Copy as Markdown</button>',
-      '<button type="button" class="btn btn-ghost" data-act="cl-complete-all">Mark all complete</button>',
-      '<button type="button" class="btn btn-danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
+    '<div class="inst-card">' +
+    '<div class="inst-card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
+    PS.badge('cl') + '<span class="inst-badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
+    (it.desc ? '<p class="inst-read">' + PS.esc(it.desc) + '</p>' : '') +
+    PS.ui.btnRow([
+      '<button type="button" class="inst-home-btn inst-home-btn--primary" data-act="cl-save">Save to workspace</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-print">Print / PDF</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-export">Export CSV</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="content-markdown">Copy as Markdown</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-complete-all">Mark all complete</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--danger" data-act="cl-reset" data-i18n="common.reset">' + (PS.i18n ? PS.i18n.t('common.reset') : 'Reset') + '</button>'
     ]) +
-    '<div class="progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
-    '<div class="progress"><span id="clBar" style="width:' + pctv + '%"></span></div>' +
-    (it.tags ? '<div class="mt8">' + PS.tagsRow(it) + '</div>' : '') +
+    '<div class="inst-progress-meta"><span id="clCount">' + done + ' of ' + total + ' items complete</span><span id="clPct">' + pctv + '%</span></div>' +
+    '<div class="inst-home-progress-track"><span id="clBar" style="width:' + pctv + '%"></span></div>' +
+    (it.tags ? '<div style="margin-top:var(--space-3)">' + PS.tagsRow(it) + '</div>' : '') +
     '</div>' +
-    '<div class="card no-print">' +
+    '<div class="inst-card no-print">' +
     (it.sections || []).map(function (s) {
       return '<h3>' + PS.esc(s.g) + '</h3><div>' + (s.items || []).map(function (x, i) {
         var key = s.g + '|' + i;
-        return '<label class="check"><input type="checkbox" data-act="cl-toggle" data-cl="' + PS.esc(id) +
+        return '<label class="inst-check"><input type="checkbox" data-act="cl-toggle" data-cl="' + PS.esc(id) +
           '" data-item="' + PS.esc(key) + '"' + (st.checked[key] ? ' checked' : '') + '><span>' + PS.esc(x) + '</span></label>';
       }).join('') + '</div>';
     }).join('') + '</div>' +
-    '<div class="card"><div class="field"><label for="clNotes">Notes (evidence, exceptions, follow-ups)</label>' +
+    '<div class="inst-card"><div class="inst-field"><label for="clNotes">Notes (evidence, exceptions, follow-ups)</label>' +
     '<textarea id="clNotes" rows="4" maxlength="6000" placeholder="Record what you verified, where the evidence is held and any exception that needs approval.">' + PS.esc(st.notes || '') + '</textarea>' +
-    '<span class="hint">Notes are saved with the checklist and included when you print or save it.</span></div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn" data-act="cl-save">Save notes</button></div></div>' +
+    '<span class="inst-hint">Notes are saved with the checklist and included when you print or save it.</span></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="cl-save">Save notes</button></div></div>' +
     '<div class="print-only"><h3>Checklist status</h3><div class="table-wrap"><table><thead><tr><th>Section</th><th>Item</th><th>Status</th></tr></thead><tbody>' +
     (it.sections || []).map(function (s) {
       return (s.items || []).map(function (x, i) {
