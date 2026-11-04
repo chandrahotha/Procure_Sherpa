@@ -16,9 +16,10 @@ PS.templateFieldHtml = function (f, value) {
   } else {
     control = '<input type="text" id="' + id + '" data-tkey="' + PS.esc(f.k) + '" value="' + PS.esc(v) + '" maxlength="300" placeholder="' + PS.esc(f.ph || '') + '">';
   }
-  return '<div class="field' + (f.type === 'textarea' ? '' : '') + '"><label for="' + id + '">' + PS.esc(f.label) + '</label>' +
-    control + (f.hint ? '<span class="hint">' + PS.esc(f.hint) + '</span>' : '') + '</div>';
+  return '<div class="inst-field' + (f.type === 'textarea' ? ' inst-field-wide' : '') + '"><label for="' + id + '">' + PS.esc(f.label) + '</label>' +
+    control + (f.hint ? '<span class="inst-hint">' + PS.esc(f.hint) + '</span>' : '') + '</div>';
 };
+
 PS.route('tpl', function (id, params) {
   if (!id) return PS.sectionIndex('tpl', params);
   var it = PS.byId('tpl', id);
@@ -29,35 +30,35 @@ PS.route('tpl', function (id, params) {
   var st = PS.tplState.get(id);
   var values = st.values || {};
   var html = PS.reportHead(it.title, 'Working template \u00B7 ' + (it.cat || '')) +
-    '<div class="card">' +
-    '<div class="card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
-    PS.badge('tpl') + '<span class="badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
-    (it.purpose ? '<p class="lead">' + PS.esc(it.purpose) + '</p>' : '') +
-    PS.actionsBar([
-      '<button type="button" class="btn btn-primary" data-act="tpl-save">Save to workspace</button>',
-      '<button type="button" class="btn" data-act="tpl-print">Print / PDF</button>',
-      '<button type="button" class="btn" data-act="tpl-copy">Copy as text</button>',
-      '<button type="button" class="btn" data-act="tpl-download">Download .txt</button>',
-      '<button type="button" class="btn btn-danger" data-act="tpl-reset">Clear</button>'
+    '<div class="inst-card">' +
+    '<div class="inst-card-head"><h1>' + PS.esc(it.title) + '</h1><div class="spacer"></div>' +
+    PS.badge('tpl') + '<span class="inst-badge">' + PS.esc(it.cat || 'General') + '</span></div>' +
+    (it.purpose ? '<p class="inst-read">' + PS.esc(it.purpose) + '</p>' : '') +
+    PS.ui.btnRow([
+      '<button type="button" class="inst-home-btn inst-home-btn--primary" data-act="tpl-save">Save to workspace</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="tpl-print">Print / PDF</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="tpl-copy">Copy as text</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="tpl-download">Download .txt</button>',
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--danger" data-act="tpl-reset">Clear</button>'
     ]) +
-    (st.modified ? '<p class="note">Last saved locally ' + PS.esc(PS.dateTime(st.modified)) + '</p>' : '') +
+    (st.modified ? '<p class="inst-note">Last saved locally ' + PS.esc(PS.dateTime(st.modified)) + '</p>' : '') +
     (it.tags ? PS.tagsRow(it) : '') +
     '</div>' +
     '<form id="tplForm" autocomplete="off">' +
     (it.sections || []).map(function (s) {
-      return '<div class="card"><h3>' + PS.esc(s.g) + '</h3>' +
-        (s.note ? '<p class="card-sub">' + PS.esc(s.note) + '</p>' : '') +
+      return '<div class="inst-card"><h3>' + PS.esc(s.g) + '</h3>' +
+        (s.note ? '<p class="inst-card-sub">' + PS.esc(s.note) + '</p>' : '') +
         (s.fields || []).map(function (f) { return PS.templateFieldHtml(f, values[f.k]); }).join('') + '</div>';
     }).join('') +
-    (it.checklist ? '<div class="card"><h3>Confirmations</h3>' + it.checklist.map(function (c) {
-      return '<label class="check"><input type="checkbox" data-tcheck="' + PS.esc(c.k) + '"' + (values['chk_' + c.k] ? ' checked' : '') + '>' +
+    (it.checklist ? '<div class="inst-card"><h3>Confirmations</h3>' + it.checklist.map(function (c) {
+      return '<label class="inst-check"><input type="checkbox" data-tcheck="' + PS.esc(c.k) + '"' + (values['chk_' + c.k] ? ' checked' : '') + '>' +
         '<span>' + PS.esc(c.label) + '</span></label>';
     }).join('') + '</div>' : '') +
-    '<div class="card"><div class="field"><label for="tplNotes">Notes, assumptions and attachments reference</label>' +
+    '<div class="inst-card"><div class="inst-field"><label for="tplNotes">Notes, assumptions and attachments reference</label>' +
     '<textarea id="tplNotes" rows="4" maxlength="6000" placeholder="Record assumptions, attachments and any clarification received.">' + PS.esc(st.notes || '') + '</textarea></div></div>' +
     '</form>' +
     '<div class="print-only"><h3>' + PS.esc(it.title) + '</h3><pre id="tplPrintText"></pre>' + PS.reportFooter() + '</div>' +
-    (it.prompts ? '<div class="card no-print"><h3>Prompts to consider</h3>' + PS.ul(it.prompts) + '</div>' : '') +
+    (it.prompts ? '<div class="inst-card no-print"><h3>Prompts to consider</h3>' + PS.ul(it.prompts) + '</div>' : '') +
     PS.relatedCard('tpl', it) +
     PS.disclaimer(it.disclaimerKind || 'legal');
   PS.pageInit = function () {
