@@ -106,6 +106,10 @@
   --warn:#a45a06; --warn-2:#c97d18; --warn-soft:#fbf0dd;
   --danger:#c02626; --danger-2:#e04545; --danger-soft:#fcecec;
   --info:#0a6ea8; --info-2:#1e9ad6; --info-soft:#e3f1fa;
+  /* Ink for text that sits ON a filled colour. The dark theme's filled
+     colours are light pastels, so white on them fails contrast; each state
+     names the ink that reads on it rather than assuming white. */
+  --on-ok:#ffffff; --on-warn:#ffffff; --on-danger:#ffffff; --on-info:#ffffff;
 
   /* Semantic content type colors */
   --kb:#6d4aff; --kb-soft:#efeaff; --kb-gradient:linear-gradient(135deg,#6d4aff 0%,#a855f7 100%);
@@ -150,6 +154,8 @@ html[data-theme="dark"]{
   --warn:#e6b45c; --warn-2:#f2cd8a; --warn-soft:#2b2113;
   --danger:#f2838b; --danger-2:#f8b0b5; --danger-soft:#2d1618;
   --info:#6cc8f0; --info-2:#9cdbf6; --info-soft:#0f2634;
+  /* The filled states are light in this theme, so their ink is dark. */
+  --on-ok:#06231c; --on-warn:#241806; --on-danger:#2b0808; --on-info:#04222f;
 
   --kb:#b9a8ff; --kb-soft:#2a2350; --kb-gradient:linear-gradient(135deg,#b9a8ff 0%,#c4b5fd 100%);
   --sop:#9ec1ff; --sop-soft:#1a2a48; --sop-gradient:linear-gradient(135deg,#9ec1ff 0%,#bfdbfe 100%);

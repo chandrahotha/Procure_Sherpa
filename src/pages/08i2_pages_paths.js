@@ -389,7 +389,7 @@ PS.route('learning-paths', function () {
     html += '<div class="card path-card" style="border-top:3px solid ' + path.color + '">' +
       '<div class="path-card-head">' +
       '<span class="level-pill">Level ' + path.level + '</span>' +
-      (path.tier ? '<span class="level-pill" style="background:' + (PS.academy && PS.academy.TIERS ? 'var(--accent-soft)' : 'var(--accent-soft)') + ';color:var(--accent)">' + PS.esc(PS.academy && PS.academy.tierName ? PS.academy.tierName(path.tier) : path.tier) + '</span>' : '') +
+      (path.tier ? '<span class="level-pill lv-' + path.tier + '">' + PS.esc(PS.academy && PS.academy.tierName ? PS.academy.tierName(path.tier) : path.tier) + '</span>' : '') +
       (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
       '</div>' +
       '<h2 class="path-card-title">' + PS.esc(path.title) + '</h2>' +
@@ -440,7 +440,7 @@ PS.route('learning-paths', function () {
     html += '<tr>' +
       '<td class="num"><span class="level-pill">' + r.modNo + '</span></td>' +
       '<td><strong>' + PS.esc(r.func.title) + '</strong>' +
-      (r.idx === 0 ? ' <span class="level-pill" style="background:' + r.path.color + ';color:#fff">Start</span>' : '') +
+      (r.idx === 0 ? ' <span class="level-pill is-start">Start</span>' : '') +
       '<br><small class="muted">' + PS.esc(r.func.module || '') + '</small></td>' +
       '<td>' + PS.esc(r.path.title) + '</td>' +
       '<td>' + (isComp ? '<span style="color:var(--ok);font-weight:600">Complete</span>' : '<span class="muted">Not started</span>') + '</td>' +

@@ -154,7 +154,7 @@
 .nav-view-btn:hover{border-color:var(--rail-dim);color:var(--rail-text);background:rgba(255,255,255,.08)}
 .nav-view-btn:focus-visible{outline:var(--focus-outline);outline-offset:var(--focus-offset);box-shadow:var(--ring);border-color:var(--accent-3)}
 .nav-view-btn.is-on{
-  background:var(--accent);border-color:var(--accent);color:#fff;
+  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
   box-shadow:0 4px 14px rgba(0,0,0,.32);
 }
 .nav-view-btn[aria-pressed="true"]{font-weight:800}
