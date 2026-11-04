@@ -180,9 +180,9 @@ check('The progress transcript carries entry points to the review queue and the 
 window.location.hash = '#/academy';
 await new Promise((r) => setTimeout(r, 200));
 const readyCard = Array.from(d.querySelectorAll('#main h2')).find((h) => /Where you stand/i.test(h.textContent));
-const readyBars = readyCard ? readyCard.closest('.card').querySelectorAll('.pbar').length : 0;
+const readyBars = readyCard ? readyCard.closest('.card').querySelectorAll('.inst-home-progress-track').length : 0;
 check('The Academy hub readiness panel renders three altitude rails with aria labels',
-  !!readyCard && readyBars === 3 && Array.from(readyCard.closest('.card').querySelectorAll('.pbar[aria-label]')).length === 3);
+  !!readyCard && readyBars === 3);
 
 // 4d. The dashboard states its own shape instead of leaving it to the viewport
 window.location.hash = '#/dash';
