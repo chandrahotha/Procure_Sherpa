@@ -4685,7 +4685,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'babe23af8600';
+PS.BUILD = 'eebeda4b4eba';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -15351,18 +15351,23 @@ PS.route('operations', function () {
   var claimedByType = { kb: 0, sop: 0, cl: 0, tpl: 0, dec: 0, kpi: 0, calc: 0, scen: 0, gloss: 0 };
   var total = 0;
 
-  var html = '<div class="ops-gateway-hero no-print">' +
-    '<div class="flex items-center justify-between flex-wrap gap12 mb12">' +
-    '<div><span class="hub-badge operations">Practitioner Tools</span>' +
-    '<h1 style="margin:8px 0 4px;">Operations Hub</h1>' +
-    '<p class="t-dim" style="margin:0;">Every procedure, checklist, template, calculator, guide and measure in the product, arranged by the six phases of the work and reconciled with the twenty-one-stage lifecycle.</p></div>' +
-    '<div class="btn-row" style="margin:0;">' +
-    '<a class="btn btn-ops" href="#/lifecycle">See the 21-stage lifecycle</a>' +
-    '<a class="btn" href="#/academy">Study the Academy</a>' +
-    '<a class="btn btn-ghost" href="#/what">Start from a problem</a>' +
-    '</div></div></div>';
+  var html = '<div class="inst-page inst-shell">' +
+    '<div class="inst-home-card inst-home-card--primary mb24">' +
+    '<div class="inst-home-user-row" style="justify-content:space-between;align-items:flex-start;">' +
+    '<div>' +
+    '<span class="inst-home-chip inst-home-chip--role">Practitioner Tools</span>' +
+    '<h1 class="inst-home-welcome-title" style="margin-top:var(--space-2);margin-bottom:var(--space-2);">Operations Hub</h1>' +
+    '<p class="inst-home-lead" style="max-width:none">Every procedure, checklist, template, calculator, guide and measure in the product, arranged by the six phases of the work and reconciled with the twenty-one-stage lifecycle.</p>' +
+    '</div>' +
+    '<div class="inst-btn-row">' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/lifecycle">See the 21-stage lifecycle <span aria-hidden="true">&rarr;</span></a>' +
+    '<a class="inst-home-btn inst-home-btn--ghost" href="#/academy">Study the Academy</a>' +
+    '<a class="inst-home-btn inst-home-btn--ghost" href="#/what">Start from a problem</a>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
 
-  html += '<div class="ops-phase-grid no-print">';
+  html += '<div class="inst-home-grid inst-home-grid-2 mb24">';
   PS.LIFECYCLE_PHASES.forEach(function (phase) {
     var items = PS.phaseContent(phase, claimed);
     items.forEach(function (i) { claimedByType[i.type] = (claimedByType[i.type] || 0) + 1; total++; });
@@ -15372,27 +15377,31 @@ PS.route('operations', function () {
       return byType[t] + ' ' + PS.typeLabel(t).toLowerCase() + (byType[t] === 1 ? '' : 's');
     }).join(', ');
 
-    html += '<div class="ops-phase-card">' +
-      '<div class="ops-phase-kicker">Phase ' + phase.n + '</div>' +
-      '<div class="ops-phase-title">' + PS.esc(phase.title) + '</div>' +
-      '<p class="t-dim t-sm">' + PS.esc(phase.purpose) + '</p>' +
-      '<div class="ops-tool-links">' +
+    html += '<div class="inst-card inst-home-hub-card inst-home-hub-card--operations">' +
+      '<div class="inst-home-hub-head">' +
+      '<span class="inst-home-hub-badge inst-home-hub-badge--operations">Phase ' + phase.n + '</span>' +
+      '<span class="inst-home-hub-progress">' + counts + '</span>' +
+      '</div>' +
+      '<h2 class="inst-home-hub-title">' + PS.esc(phase.title) + '</h2>' +
+      '<p class="inst-home-hub-desc">' + PS.esc(phase.purpose) + '</p>' +
+      '<div class="inst-home-hub-meta">' +
       items.slice(0, 8).map(function (i) {
         var title = i.item.title || i.item.term || i.id;
-        return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
-          '<span>' + PS.esc(title) + '</span>' +
-          '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
+        return '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="' + PS.esc(i.route) + '">' +
+          '<span class="inst-home-chip inst-home-chip--role lv-' + PS.esc(i.type) + '">' + PS.esc(PS.typeLabel(i.type)) + '</span>' +
+          '<span class="inst-home-tool-link-label">' + PS.esc(title) + '</span></a>';
       }).join('') +
       '</div>' +
-      (items.length > 8 ? '<details class="ops-phase-more"><summary>Show the other ' + (items.length - 8) + ' in this phase</summary><div class="ops-tool-links">' +
+      (items.length > 8 ? '<details class="inst-acc"><summary class="inst-acc-summary">Show the other ' + (items.length - 8) + ' in this phase</summary>' +
+        '<div class="inst-acc-body">' +
         items.slice(8).map(function (i) {
           var title = i.item.title || i.item.term || i.id;
-          return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
-            '<span>' + PS.esc(title) + '</span>' +
-            '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
+          return '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="' + PS.esc(i.route) + '">' +
+            '<span class="inst-home-chip inst-home-chip--role lv-' + PS.esc(i.type) + '">' + PS.esc(PS.typeLabel(i.type)) + '</span>' +
+            '<span class="inst-home-tool-link-label">' + PS.esc(title) + '</span></a>';
         }).join('') + '</div></details>' : '') +
-      '<div class="ops-phase-meta">' + PS.esc(counts) +
-      ' &middot; lifecycle stages ' + phase.stages[0] + (phase.stages.length > 1 ? '-' + phase.stages[phase.stages.length - 1] : '') + '</div>' +
+      '<p class="inst-home-hub-progress" style="margin-top:var(--space-3)">' + PS.esc(counts) +
+      ' &middot; lifecycle stages ' + phase.stages[0] + (phase.stages.length > 1 ? '-' + phase.stages[phase.stages.length - 1] : '') + '</p>' +
       '</div>';
   });
   html += '</div>';
@@ -15411,36 +15420,38 @@ PS.route('operations', function () {
     });
   });
 
-  html += '<div class="card no-print"><div class="card-head"><h2>Reference</h2>' +
-    '<div class="spacer"></div><span class="badge">' + rest.length + ' items</span></div>' +
-    '<p class="card-sub">Glossary and worked scenarios. The scenarios are the situations the rest of this hub is for: each one is a full commercial problem with the judgement calls along the way.</p>' +
-    '<div class="ops-tool-links">' +
+  html += '<div class="inst-card mb24">' +
+    '<div class="inst-card-head"><h2>Reference</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + rest.length + ' items</span></div>' +
+    '<p class="inst-read">Glossary and worked scenarios. The scenarios are the situations the rest of this hub is for: each one is a full commercial problem with the judgement calls along the way.</p>' +
+    '<div class="inst-home-quick-actions">' +
     rest.map(function (i) {
       var title = i.item.title || i.item.term || i.id;
-      return '<a class="ops-tool-link" href="' + PS.esc(i.route) + '">' +
-        '<span>' + PS.esc(title) + '</span>' +
-        '<span class="badge">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
+      return '<a class="inst-home-quick-action" href="' + PS.esc(i.route) + '">' +
+        '<span class="inst-home-quick-action-label">' + PS.esc(title) + '</span>' +
+        '<span class="inst-home-chip inst-home-chip--role lv-' + PS.esc(i.type) + '">' + PS.esc(PS.typeLabel(i.type)) + '</span></a>';
     }).join('') +
     '</div></div>';
 
-  html += '<div class="card no-print"><div class="card-head"><h2>Everything else in the product</h2></div>' +
-    '<p class="card-sub">' + total + ' working documents are placed in the phases above, and these are the libraries they were drawn from.</p>' +
-    '<div class="btn-row">' +
-    '<a class="btn" href="#/list/sop">All SOPs</a>' +
-    '<a class="btn" href="#/list/cl">All checklists</a>' +
-    '<a class="btn" href="#/list/tpl">All templates</a>' +
-    '<a class="btn" href="#/list/calc">All calculators</a>' +
-    '<a class="btn" href="#/list/dec">All decision guides</a>' +
-    '<a class="btn" href="#/list/kpi">All KPIs</a>' +
-    '<a class="btn" href="#/list/kb">Knowledge Hub</a>' +
-    '<a class="btn" href="#/scenarios">All scenarios</a>' +
-    '<a class="btn" href="#/glossary">Glossary</a>' +
-    '</div></div>';
+  html += '<div class="inst-card mb24">' +
+    '<div class="inst-card-head"><h2>Everything else in the product</h2></div>' +
+    '<p class="inst-read">' + total + ' working documents are placed in the phases above, and these are the libraries they were drawn from.</p>' +
+    '<div class="inst-home-quick-actions">' +
+    '<a class="inst-home-quick-action" href="#/list/sop"><span class="inst-home-quick-action-label">All SOPs</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/cl"><span class="inst-home-quick-action-label">All checklists</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/tpl"><span class="inst-home-quick-action-label">All templates</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/calc"><span class="inst-home-quick-action-label">All calculators</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/dec"><span class="inst-home-quick-action-label">All decision guides</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/kpi"><span class="inst-home-quick-action-label">All KPIs</span></a>' +
+    '<a class="inst-home-quick-action" href="#/list/kb"><span class="inst-home-quick-action-label">Knowledge Hub</span></a>' +
+    '<a class="inst-home-quick-action" href="#/scenarios"><span class="inst-home-quick-action-label">All scenarios</span></a>' +
+    '<a class="inst-home-quick-action" href="#/glossary"><span class="inst-home-quick-action-label">Glossary</span></a>' +
+    '</div></div>' +
+    PS.disclaimer('policy') +
+    '</div>';
 
-  html += PS.disclaimer('policy');
   return html;
 });
-
 /* ---------- saved workspace (Section 27, 67) ---------- */
 PS.savedView = { q: '', type: '', sort: 'modified' };
 PS.savedTypes = function () {
