@@ -599,7 +599,7 @@ PS.academyRoleRecommendation = function (funcs) {
     '<div class="hub-linked-row"><span class="hub-linked-label">Modules</span>' +
     mods.map(function (name) {
       var n = PS.academyModuleNumber(name);
-      return '<a class="chip" href="#module-' + n + '">Module ' + n + '</a>';
+      return '<a class="chip" href="#module-' + n + '" data-act="scroll-to" data-target="module-' + n + '">Module ' + n + '</a>';
     }).join('') + '</div>' +
     '<div class="btn-row" style="margin-top:12px">' +
     '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(target.func.id) + '">Start with ' +

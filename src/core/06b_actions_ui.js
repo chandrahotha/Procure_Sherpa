@@ -228,3 +228,15 @@ PS.acts['saved-bulk-export'] = function () {
   PS.audit('saved-bulk-exported', ids.length + ' items');
   PS.toast('Exported ' + ids.length + ' item' + (ids.length > 1 ? 's' : '') + ' as JSON.', 'ok');
 };
+
+/* In-page smooth scroll for module index chips and similar anchors.
+   Prevents the router from trying to treat #module-1 as a route. */
+PS.acts['scroll-to'] = function (el) {
+  var targetId = el.dataset.target;
+  if (!targetId) return;
+  var target = document.getElementById(targetId);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    target.focus({ preventScroll: true });
+  }
+};
