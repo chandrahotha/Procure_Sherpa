@@ -4101,9 +4101,9 @@ html[data-theme="dark"]{
 
 /* ---------- institutional grid ---------- */
 .inst-grid{display:grid;gap:var(--space-3)}
-.inst-grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.inst-grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.inst-grid-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.inst-grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.inst-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.inst-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .inst-grid > .inst-card{margin:0}
 
 /* ---------- institutional reading ---------- */
@@ -4131,6 +4131,26 @@ html[data-theme="dark"]{
    colour, and the figures on a dashboard line up in columns. */
 .stat .s-val{font-variant-numeric:tabular-nums}
 .stat .s-lab{letter-spacing:.04em}
+
+/* A figure tile is a panel, not a badge. It carries the enterprise
+   geometry (6px), separates by border rather than shadow, and drops the
+   decorative colour bar: the value already carries the state colour, and a
+   gradient rule above every figure would make four tiles shout over the
+   panel that explains them. */
+.stat{
+  border-radius:var(--inst-r-card);
+  box-shadow:none;
+  padding:var(--space-3) var(--space-4);
+  gap:4px;
+}
+.stat::before{display:none}
+.stat:hover{
+  border-color:var(--border-2);
+  box-shadow:none;
+  transform:none;
+}
+.stat .s-val{font-size:1.6rem;font-weight:750;letter-spacing:-.02em}
+.stat .s-lab{font-size:.66rem;letter-spacing:.08em}
 
 /* ---------- institutional home: Command Center ---------- */
 .inst-home-section{display:grid;gap:var(--space-6)}
@@ -4685,7 +4705,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = '3df80d41878a';
+PS.BUILD = 'e3e3ceb8725a';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -9223,7 +9243,7 @@ PS.ui = (function () {
         '<div class="s-lab">' + label + '</div><div class="s-val">' + value + '</div></div>';
     },
     statGrid: function (stats) {
-      return '<div class="grid stat-grid">' + stats.join('') + '</div>';
+      return '<div class="inst-grid inst-grid-4">' + stats.join('') + '</div>';
     },
 
     /* A quiet aside. The tag is a parameter because the two callers that
@@ -15085,21 +15105,26 @@ PS.savingsDashBody = function (ini) {
     bySup[x.supplier] = bySup[x.supplier] || { s: 0, a: 0, n: 0 };
     bySup[x.supplier].s += x.savings; bySup[x.supplier].a += x.avoidance; bySup[x.supplier].n++;
   });
-  var html = '<div class="card"><h1>Savings dashboard</h1>' +
-    '<p class="lead">Aggregated from the savings and cost-avoidance analyses you saved in this browser. Savings and cost avoidance are reported separately because they are different things: savings reduce a cost that was already committed or budgeted, while cost avoidance prevents a cost that was never incurred.</p>' +
-    '<div class="grid grid-4">' +
-    '<div class="stat"><div class="s-lab">Initiatives</div><div class="s-val">' + ini.length + '</div></div>' +
-    '<div class="stat is-ok"><div class="s-lab">Savings</div><div class="s-val">' + PS.moneyR(sumS) + '</div></div>' +
-    '<div class="stat is-warn"><div class="s-lab">Cost avoidance</div><div class="s-val">' + PS.moneyR(sumA) + '</div></div>' +
-    '<div class="stat"><div class="s-lab">Savings as % of baseline</div><div class="s-val">' + (base ? PS.pct(sumS / base * 100) : '\u2014') + '</div></div>' +
+  var html = PS.ui.card(
+    '<h1 class="inst-title">Savings dashboard</h1>' +
+    '<p class="inst-read">Aggregated from the savings and cost-avoidance analyses you saved in this browser. Savings and cost avoidance are reported separately because they are different things: savings reduce a cost that was already committed or budgeted, while cost avoidance prevents a cost that was never incurred.</p>' +
+    '<div class="inst-grid inst-grid-4">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + ini.length + '</div><span class="inst-home-hub-stat-lab">Initiatives</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + PS.moneyR(sumS) + '</span><span class="inst-home-hub-stat-lab">Savings</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + PS.moneyR(sumA) + '</span><span class="inst-home-hub-stat-lab">Cost avoidance</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + (base ? PS.pct(sumS / base * 100) : '\u2014') + '</span><span class="inst-home-hub-stat-lab">Savings % of baseline</span></div></div>' +
     '</div>' +
-    '<p class="note">These figures come only from work you saved here. They are not enterprise KPIs, they are not audited and they exclude anything you have not analysed in Procure Sherpa.</p></div>';
+    '<p class="inst-note">These figures come only from work you saved here. They are not enterprise KPIs, they are not audited and they exclude anything you have not analysed in Procure Sherpa.</p>'
+  );
   if (!ini.length) {
-    return html + PS.empty('No savings analyses found yet. Run the Savings Analysis calculator (or Negotiation Savings), then save the result to your workspace.',
-      '<a class="btn btn-sm" href="#/calc/calc-savings-analysis">Open Savings Analysis</a>');
+    return html + PS.ui.card(
+      PS.ui.note('No savings analyses found yet. Run the Savings Analysis calculator (or Negotiation Savings), then save the result to your workspace.') +
+      PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/calc/calc-savings-analysis">Open Savings Analysis</a>')
+    );
   }
-  html += '<div class="card"><h2>Initiatives</h2><div class="table-wrap"><table>' +
-    '<thead><tr><th>Initiative</th><th>Category</th><th>Supplier</th><th>Type</th><th class="num">Baseline</th><th class="num">New cost</th><th class="num">Savings</th><th class="num">Avoidance</th><th class="num">Savings %</th><th>Source</th></tr></thead><tbody>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Initiatives</h2>' +
+    '<div class="table-wrap"><table><thead><tr><th>Initiative</th><th>Category</th><th>Supplier</th><th>Type</th><th class="num">Baseline</th><th class="num">New cost</th><th class="num">Savings</th><th class="num">Avoidance</th><th class="num">Savings %</th><th>Source</th></tr></thead><tbody>' +
     ini.map(function (x) {
       return '<tr><td>' + PS.esc(x.name) + '</td><td>' + PS.esc(x.category) + '</td><td>' + PS.esc(x.supplier) + '</td>' +
         '<td>' + PS.esc(x.kind) + '</td>' +
@@ -15109,29 +15134,34 @@ PS.savingsDashBody = function (ini) {
         '<td><a href="#/saved?q=' + encodeURIComponent(x.savedTitle) + '">' + PS.esc(x.source) + '</a></td></tr>';
     }).join('') + '</tbody><tfoot><tr><td colspan="6">Total</td><td class="num">' + PS.moneyR(sumS) + '</td>' +
     '<td class="num">' + PS.moneyR(sumA) + '</td><td class="num">' + (base ? PS.pct(sumS / base * 100) : '\u2014') + '</td><td></td></tr></tfoot></table></div></div>' +
-    '<div class="grid grid-2">' + PS.aggCard('Savings by category', byCat) + PS.aggCard('Savings by supplier', bySup) + '</div>' +
-    '<div class="card"><h2>How to report this honestly</h2>' + PS.ul([
+    '<div class="inst-grid inst-grid-2">' + PS.aggCard('Savings by category', byCat) + PS.aggCard('Savings by supplier', bySup) + '</div>' +
+    '<h2 class="inst-title">How to report this honestly</h2>' + PS.ul([
       'State the baseline definition and the period it covers - a baseline without a period is not verifiable.',
       'Keep cost avoidance separate and label it as avoidance, never as savings.',
       'Distinguish negotiated price reduction from volume or specification change, payment-term effect and total-cost effect.',
       'Record the assumptions and data sources behind each baseline.',
       'Do not claim savings you cannot evidence. Validation is what makes a savings figure survive review.'
-    ]) + '<div class="btn-row no-print"><a class="btn" href="#/sop/sop-savings-validation">Savings validation SOP</a>' +
-    '<a class="btn" href="#/cl/cl-savings-validation">Savings validation checklist</a>' +
-    '<a class="btn" href="#/tpl/tpl-savings-validation">Savings validation template</a>' +
-    '<button type="button" class="btn btn-ghost" data-act="print">Print dashboard</button></div></div>';
+    ]) + PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/sop/sop-savings-validation">Savings validation SOP</a>' +
+    '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/cl/cl-savings-validation">Savings validation checklist</a>' +
+    '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/tpl/tpl-savings-validation">Savings validation template</a>' +
+    '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="print">Print dashboard</button>', 'no-print')
+  );
   return html;
 };
+
 PS.aggCard = function (title, map) {
   var keys = Object.keys(map).sort(function (a, b) { return (map[b].s + map[b].a) - (map[a].s + map[a].a); });
   if (!keys.length) return '';
   var colLabel = title.indexOf(' by ') >= 0 ? title.split(' by ')[1] : 'Group';
-  return '<div class="card"><h2>' + PS.esc(title) + '</h2><div class="table-wrap"><table>' +
+  return PS.ui.card(
+    '<h2 class="inst-title">' + PS.esc(title) + '</h2>' +
+    '<div class="table-wrap"><table>' +
     '<thead><tr><th>' + PS.esc(colLabel) + '</th><th class="num">Initiatives</th><th class="num">Savings</th><th class="num">Avoidance</th><th class="num">Total value</th></tr></thead><tbody>' +
     keys.map(function (k) {
       return '<tr><td>' + PS.esc(k) + '</td><td class="num">' + map[k].n + '</td><td class="num">' + PS.moneyR(map[k].s) + '</td>' +
         '<td class="num">' + PS.moneyR(map[k].a) + '</td><td class="num">' + PS.moneyR(map[k].s + map[k].a) + '</td></tr>';
-    }).join('') + '</tbody></table></div></div>';
+    }).join('') + '</tbody></table></div></div>'
+  );
 };
 /* ---------- local dashboard (Section 64) ---------- */
 PS.route('dash', function () {
@@ -15158,64 +15188,71 @@ PS.route('dash', function () {
   var recentSops = PS.recent.list().filter(function (r) { return r.type === 'sop'; }).slice(0, 5);
   var kb = PS.store.bytes();
   var html = PS.reportHead('Dashboard', 'Your local work') +
-    PS.ui.card('<h1>Dashboard</h1>' +
-    '<p class="lead">A summary of the analysis you have saved in this browser. These are your own working figures - they are not enterprise KPIs, they are not benchmarks and they exclude anything you have not entered here.</p>' +
-    PS.ui.statGrid([
-      PS.ui.stat(saved.length, 'Saved analyses'),
-      PS.ui.stat(PS.moneyR(sumS), 'Savings analysed', 'ok'),
-      PS.ui.stat(PS.moneyR(sumA), 'Cost avoidance recorded', 'warn'),
-      PS.ui.stat(supAssess, 'Supplier assessments'),
-      PS.ui.stat(openCl.length, 'Open checklists'),
-      PS.ui.stat(PS.fav.list().length, 'Favorites'),
-      PS.ui.stat(PS.group(kb / 1024, 0) + ' KB', 'Workspace Footprint'),
-      PS.ui.stat(PS.auditList().length, 'Audit events kept')
-    ]) +
-    PS.ui.btnRow('<a class="btn btn-primary" href="#/saved">Open saved work</a>' +
-    '<a class="btn" href="#/dash-savings">Savings dashboard</a>' +
-    '<button type="button" class="btn" data-act="backup-export">Export backup</button>' +
-    '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>', 'no-print')) +
-    '<div class="grid panel-grid">' +
-    PS.ui.card('<h2>Saved work by type</h2>' +
-    (saved.length ? '<div class="table-wrap"><table><thead><tr><th>Type</th><th class="num">Items</th><th class="num">Most recent</th></tr></thead><tbody>' +
-      Object.keys(byType).sort().map(function (t) {
-        var latest = saved.filter(function (r) { return r.type === t; })[0];
-        return '<tr><td><a href="#/saved?type=' + encodeURIComponent(t) + '">' + PS.esc(t) + '</a></td>' +
-          '<td class="num">' + byType[t] + '</td><td class="num">' + PS.esc(latest ? PS.dateStr(latest.modified) : '') + '</td></tr>';
-      }).join('') + '</tbody></table></div>' : PS.ui.note('Nothing saved yet. Calculations, checklists, templates and decisions you save appear here.'))) +
-    PS.ui.card('<h2>Open checklists</h2>' +
-    (openCl.length ? '<ul class="res-list">' + openCl.map(function (c) {
-      return '<li><span><a class="res-title" href="#/cl/' + encodeURIComponent(c.id) + '">' + PS.esc(c.title) + '</a>' +
-        '<div class="res-desc">' + c.done + ' of ' + c.total + ' items complete</div></span></li>';
-    }).join('') + '</ul>' : PS.ui.note('No checklist is part-complete. Open a checklist from the sidebar to start one.'))) +
-    PS.ui.card('<h2>Recent activity</h2>' +
-    (audit.length ? '<ul class="res-list">' + (function () {
-      /* Three rows saying the same thing at the same second is not three
-         pieces of information, and a row reading func-mission-value is not
-         something a reader can act on. Consecutive identical events collapse
-         into one row with a count, and the detail becomes the record title. */
-      var rows = [], prev = null;
-      audit.forEach(function (a) {
-        var L = PS.auditLabel(a);
-        var key = L.event + '|' + L.detail;
-        if (prev && prev.key === key) { prev.n++; prev.timeEnd = a.t; return; }
-        prev = { key: key, n: 1, label: L.event, detail: L.detail, timeStart: a.t, timeEnd: a.t };
-        rows.push(prev);
-      });
-      return rows.map(function (r) {
-        return '<li><span><span class="res-title">' + PS.esc(r.label) +
-          (r.n > 1 ? ' <span class="badge">&times;' + r.n + '</span>' : '') + '</span>' +
-          '<div class="res-desc">' + PS.esc(r.detail) + ' &middot; ' + PS.esc(PS.dateTime(r.timeStart)) +
-          (r.n > 1 ? ' to ' + PS.esc(PS.dateTime(r.timeEnd)) : '') + '</div></span></li>';
-      }).join('');
-    })() + '</ul>' : PS.ui.note('No activity recorded yet.')) +
-    PS.ui.note('The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.')) +
-    PS.ui.card('<h2>Favourite tools and recent SOPs</h2>' +
-    (favs.length ? '<h3>Favorites</h3><div class="chips">' + favs.map(function (f) {
-      return '<a class="chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';
-    }).join('') + '</div>' : PS.ui.note('No favorites yet - use the &#9734; star in the top bar.')) +
-    (recentSops.length ? '<h3>Recently opened SOPs</h3><div class="chips">' + recentSops.map(function (f) {
-      return '<a class="chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';
-    }).join('') + '</div>' : '')) +
+    PS.ui.card(
+      '<h1 class="inst-title">Dashboard</h1>' +
+      '<p class="inst-read">A summary of the analysis you have saved in this browser. These are your own working figures - they are not enterprise KPIs, they are not benchmarks and they exclude anything you have not entered here.</p>' +
+      PS.ui.statGrid([
+        PS.ui.stat(saved.length, 'Saved analyses'),
+        PS.ui.stat(PS.moneyR(sumS), 'Savings analysed', 'ok'),
+        PS.ui.stat(PS.moneyR(sumA), 'Cost avoidance recorded', 'warn'),
+        PS.ui.stat(supAssess, 'Supplier assessments'),
+        PS.ui.stat(openCl.length, 'Open checklists'),
+        PS.ui.stat(PS.fav.list().length, 'Favorites'),
+        PS.ui.stat(PS.group(kb / 1024, 0) + ' KB', 'Workspace Footprint'),
+        PS.ui.stat(PS.auditList().length, 'Audit events kept')
+      ]) +
+      PS.ui.btnRow('<a class="inst-home-btn inst-home-btn--primary" href="#/saved">Open saved work</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/dash-savings">Savings dashboard</a>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="backup-export">Export backup</button>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="storage-info">Storage details</button>', 'no-print'),
+      { class: 'inst-dash-header' }
+    ) +
+    '<div class="inst-grid inst-grid-2">' +
+    PS.ui.card(
+      '<h2 class="inst-title">Saved work by type</h2>' +
+      (saved.length ? '<div class="table-wrap"><table><thead><tr><th>Type</th><th class="num">Items</th><th class="num">Most recent</th></tr></thead><tbody>' +
+        Object.keys(byType).sort().map(function (t) {
+          var latest = saved.filter(function (r) { return r.type === t; })[0];
+          return '<tr><td><a href="#/saved?type=' + encodeURIComponent(t) + '">' + PS.esc(t) + '</a></td>' +
+            '<td class="num">' + byType[t] + '</td><td class="num">' + PS.esc(latest ? PS.dateStr(latest.modified) : '') + '</td></tr>';
+        }).join('') + '</tbody></table></div>' : PS.ui.note('Nothing saved yet. Calculations, checklists, templates and decisions you save appear here.'))
+    ) +
+    PS.ui.card(
+      '<h2 class="inst-title">Open checklists</h2>' +
+      (openCl.length ? '<ul class="inst-res-list">' + openCl.map(function (c) {
+        return '<li><span><a class="inst-res-title" href="#/cl/' + encodeURIComponent(c.id) + '">' + PS.esc(c.title) + '</a>' +
+          '<div class="inst-res-desc">' + c.done + ' of ' + c.total + ' items complete</div></span></li>';
+      }).join('') + '</ul>' : PS.ui.note('No checklist is part-complete. Open a checklist from the sidebar to start one.'))
+    ) +
+    PS.ui.card(
+      '<h2 class="inst-title">Recent activity</h2>' +
+      (audit.length ? '<ul class="inst-res-list">' + (function () {
+        var rows = [], prev = null;
+        audit.forEach(function (a) {
+          var L = PS.auditLabel(a);
+          var key = L.event + '|' + L.detail;
+          if (prev && prev.key === key) { prev.n++; prev.timeEnd = a.t; return; }
+          prev = { key: key, n: 1, label: L.event, detail: L.detail, timeStart: a.t, timeEnd: a.t };
+          rows.push(prev);
+        });
+        return rows.map(function (r) {
+          return '<li><span><span class="inst-res-title">' + PS.esc(r.label) +
+            (r.n > 1 ? ' <span class="inst-badge">&times;' + r.n + '</span>' : '') + '</span>' +
+            '<div class="inst-res-desc">' + PS.esc(r.detail) + ' &middot; ' + PS.esc(PS.dateTime(r.timeStart)) +
+            (r.n > 1 ? ' to ' + PS.esc(PS.dateTime(r.timeEnd)) : '') + '</div></span></li>';
+        }).join('');
+      })() + '</ul>' : PS.ui.note('No activity recorded yet.')) +
+      PS.ui.note('The audit log keeps the last ' + PS.AUDIT_MAX + ' ' + (PS.i18n ? PS.i18n.t('audit.events') : 'local events') + ' and is never transmitted anywhere. <a href="#/audit">Open full log</a>.')
+    ) +
+    PS.ui.card(
+      '<h2 class="inst-title">Favourite tools and recent SOPs</h2>' +
+      (favs.length ? '<h3 class="inst-title">Favorites</h3><div class="inst-chips">' + favs.map(function (f) {
+        return '<a class="inst-chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';
+      }).join('') + '</div>' : PS.ui.note('No favorites yet - use the &#9734; star in the top bar.')) +
+      (recentSops.length ? '<h3 class="inst-title">Recently opened SOPs</h3><div class="inst-chips">' + recentSops.map(function (f) {
+        return '<a class="inst-chip" href="' + PS.routeFor(f.type, f.id) + '">' + PS.esc(f.title || f.id) + '</a>';
+      }).join('') + '</div>' : '')
+    ) +
     '</div>' +
     PS.disclaimer('finance');
   return html;
@@ -15648,7 +15685,10 @@ PS.route('audit', function () {
     '<p class="note">This log is not a compliance system of record. It cannot prove who did what on a shared device, and it does not capture work performed outside this platform.</p></div>' +
     (log.length ? '<div class="card"><div class="table-wrap"><table><thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead><tbody>' +
       log.map(function (a) {
-        return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(String(a.e).replace(/-/g, ' ')) + '</td><td>' + PS.esc(a.d) + '</td></tr>';
+        /* The detail column is read by a person, so it carries the record
+           title rather than the internal id it was stored under. */
+        var L = PS.auditLabel(a);
+        return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(L.event) + '</td><td>' + PS.esc(L.detail) + '</td></tr>';
       }).join('') + '</tbody></table></div></div>'
       : PS.empty('No events recorded yet. Use a calculator or save some work and the log will fill automatically.')) +
     /* The content check ran on every load and its only output was a
@@ -15681,25 +15721,33 @@ PS.route('settings', function () {
   PS.pageTitle = 'Settings';
   var p = PS.prefs();
   var html = PS.reportHead('Settings', 'Configuration') +
-    '<div class="card"><h1>Settings</h1>' +
-    '<p class="card-sub">Configure Procure Sherpa to match your organization. These values feed calculators, approval checks, reports and formatting. They are stored locally and never transmitted.</p>' +
-    '<p class="note">Procure Sherpa deliberately ships with no universal thresholds. Where your policy differs from the defaults, change it here. It will never assert that &ldquo;every purchase above X needs three quotes&rdquo;, because that rule is organizational rather than universal.</p>' +
+    PS.ui.card(
+      '<h1 class="inst-title">Settings</h1>' +
+      '<p class="inst-read">Configure Procure Sherpa to match your organization. These values feed calculators, approval checks, reports and formatting. They are stored locally and never transmitted.</p>' +
+      '<p class="inst-note">Procure Sherpa deliberately ships with no universal thresholds. Where your policy differs from the defaults, change it here. It will never assert that &ldquo;every purchase above X needs three quotes&rdquo;, because that rule is organizational rather than universal.</p>'
+    ) +
+    '<div class="inst-grid inst-grid-2">' +
+    PS.settingsOrgCard(p) +
+    PS.settingsFormatCard(p) +
+    PS.settingsThresholdCard(p) +
+    PS.settingsAssumptionCard(p) +
     '</div>' +
-    '<div class="grid grid-2 settings-grid">' + PS.settingsOrgCard(p) + PS.settingsFormatCard(p) +
-    PS.settingsThresholdCard(p) + PS.settingsAssumptionCard(p) + '</div>' +
-    '<div class="card"><h2>Storage usage</h2>' +
-    '<div id="storageUsageBar" style="margin-bottom:8px">' +
-    '<div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden">' +
-    '<div id="storageUsageFill" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s ease"></div>' +
-    '</div>' +
-    '<div class="note" id="storageUsageText">Calculating...</div>' +
-    '</div>' +
-    '<div class="btn-row no-print">' +
-    '<button type="button" class="btn btn-primary btn-lg" data-act="settings-save">Save settings</button>' +
-    '<button type="button" class="btn" data-act="settings-reset">Restore defaults</button>' +
-    '<button type="button" class="btn btn-ghost" data-act="storage-info">Storage details</button>' +
-    '<button type="button" class="btn btn-danger" data-act="clear-data">Clear local data</button>' +
-    '</div></div>' + PS.disclaimer('policy');
+    PS.ui.card(
+      '<h2 class="inst-title">Storage usage</h2>' +
+      '<div id="storageUsageBar" style="margin-bottom:var(--space-2)">' +
+      '<div class="inst-field" style="margin:0;background:var(--border);border-radius:var(--inst-r-progress);height:8px;overflow:hidden">' +
+      '<div id="storageUsageFill" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s ease"></div>' +
+      '</div>' +
+      '<p class="inst-note" id="storageUsageText">Calculating...</p>' +
+      '</div>' +
+      '<div class="inst-btn-row no-print">' +
+      '<button type="button" class="inst-home-btn inst-home-btn--primary inst-home-btn--lg" data-act="settings-save" data-i18n="common.save">Save settings</button>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="settings-reset" data-i18n="common.reset">Restore defaults</button>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="storage-info" data-i18n="common.details">Storage details</button>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--danger" data-act="clear-data" data-i18n="common.clear">Clear local data</button>' +
+      '</div>'
+    ) +
+    PS.disclaimer('policy');
   PS.pageInit = function () { PS.initThemeScheduleOptions(); PS.updateStorageUsage(); };
   return html;
 });
@@ -15711,81 +15759,91 @@ PS.updateStorageUsage = function () {
   var quota = 5 * 1024 * 1024;
   var pct = Math.min(100, Math.round((bytes / quota) * 100));
   fill.style.width = pct + '%';
-  if (pct > 80) fill.style.background = 'var(--danger, #dc3545)';
-  else if (pct > 60) fill.style.background = 'var(--warning, #ffc107)';
-  else fill.style.background = 'var(--accent, #0d6efd)';
+  if (pct > 80) fill.style.background = 'var(--danger)';
+  else if (pct > 60) fill.style.background = 'var(--warn)';
+  else fill.style.background = 'var(--accent)';
   var kb = (bytes / 1024).toFixed(1);
   var qmb = (quota / 1024 / 1024).toFixed(0);
   text.textContent = kb + ' KB used of ~' + qmb + ' MB typical browser quota (' + pct + '%)';
-  if (pct > 80) text.innerHTML = ' <strong style="color:var(--danger,#dc3545)">Storage nearly full. Consider exporting a backup and clearing old saved items.</strong>';
+  if (pct > 80) text.innerHTML = ' <strong style="color:var(--danger)">Storage nearly full. Consider exporting a backup and clearing old saved items.</strong>';
 };
 PS.settingsOrgCard = function (p) {
-  return '<div class="card"><h2>Organisation and currency</h2>' +
-    '<div class="field"><label for="setOrg">Organisation name (used in reports)</label><input type="text" id="setOrg" maxlength="120" value="' + PS.esc(p.orgName) + '" placeholder="Example: Northwind Manufacturing"></div>' +
-    '<div class="field"><label for="setDept">Procurement department name</label><input type="text" id="setDept" maxlength="120" value="' + PS.esc(p.deptName) + '" placeholder="Example: Group Procurement"></div>' +
-    '<div class="field"><label for="setCurrency">Default currency</label><select id="setCurrency">' +
+  return PS.ui.card(
+    '<h2 class="inst-title">Organisation and currency</h2>' +
+    '<div class="inst-field"><label for="setOrg">Organisation name (used in reports)</label><input type="text" id="setOrg" maxlength="120" value="' + PS.esc(p.orgName) + '" placeholder="Example: Northwind Manufacturing"></div>' +
+    '<div class="inst-field"><label for="setDept">Procurement department name</label><input type="text" id="setDept" maxlength="120" value="' + PS.esc(p.deptName) + '" placeholder="Example: Group Procurement"></div>' +
+    '<div class="inst-field"><label for="setCurrency">Default currency</label><select id="setCurrency">' +
     PS.CURRENCIES.map(function (c) {
       return '<option value="' + PS.esc(c.c) + '"' + (c.c === p.currency ? ' selected' : '') + '>' + PS.esc(c.c) + (c.s ? ' (' + PS.esc(c.s.trim()) + ')' : ' (no symbol)') + '</option>';
     }).join('') + '</select></div>' +
-    '<div class="field"><label for="setTax">Default tax rate (%)</label><input type="number" step="any" min="0" max="60" id="setTax" value="' + PS.esc(p.taxRate) + '">' +
-    '<span class="hint">Starting point for tax calculations. Tax treatment varies by jurisdiction and transaction type - verify before using results for accounting or compliance decisions.</span></div></div>';
+    '<div class="inst-field"><label for="setTax">Default tax rate (%)</label><input type="number" step="any" min="0" max="60" id="setTax" value="' + PS.esc(p.taxRate) + '">' +
+    '<span class="inst-note">Starting point for tax calculations. Tax treatment varies by jurisdiction and transaction type - verify before using results for accounting or compliance decisions.</span></div>'
+  );
 };
 PS.settingsFormatCard = function (p) {
-  return '<div class="card"><h2>Formatting and display</h2>' +
-    '<div class="field"><label for="setDate">Preferred date format</label><select id="setDate">' +
+  return PS.ui.card(
+    '<h2 class="inst-title">Formatting and display</h2>' +
+    '<div class="inst-field"><label for="setDate">Preferred date format</label><select id="setDate">' +
     '<option value="iso"' + (p.dateFormat === 'iso' ? ' selected' : '') + '>ISO - 2026-09-16</option>' +
     '<option value="us"' + (p.dateFormat === 'us' ? ' selected' : '') + '>US - 09/16/2026</option>' +
     '<option value="eu"' + (p.dateFormat === 'eu' ? ' selected' : '') + '>European - 16/09/2026</option>' +
     '</select></div>' +
-    '<div class="field"><label for="setDecimals">Decimal places for currency</label><input type="number" id="setDecimals" min="0" max="4" step="1" value="' + PS.esc(p.decimals) + '">' +
-    '<span class="hint">Headline results are rounded to avoid false precision, for example ' + PS.esc(PS.moneyR(18492.84)) + ' rather than ' + PS.esc(PS.money(18492.837492, 2)) + '.</span></div>' +
-    '<div class="field"><label for="setThemeSchedule">Theme schedule</label><select id="setThemeSchedule">' +
+    '<div class="inst-field"><label for="setDecimals">Decimal places for currency</label><input type="number" id="setDecimals" min="0" max="4" step="1" value="' + PS.esc(p.decimals) + '">' +
+    '<span class="inst-note">Headline results are rounded to avoid false precision, for example ' + PS.esc(PS.moneyR(18492.84)) + ' rather than ' + PS.esc(PS.money(18492.837492, 2)) + '.</span></div>' +
+    '<div class="inst-field"><label for="setThemeSchedule">Theme schedule</label><select id="setThemeSchedule">' +
     '<option value="manual"' + (p.themeSchedule === 'manual' ? ' selected' : '') + '>Manual (use toggle button)</option>' +
     '<option value="auto"' + (p.themeSchedule === 'auto' ? ' selected' : '') + '>Auto (by time of day)</option>' +
     '<option value="system"' + (p.themeSchedule === 'system' ? ' selected' : '') + '>Follow system (OS/Browser)</option>' +
     '</select>' +
-    '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:8px"></div>' +
-    '<span class="hint">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
-    '<div class="field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div>' +
-    '<div class="field"><label for="setLocale">Interface language</label><select id="setLocale">' +
+    '<div class="theme-schedule-options" id="themeScheduleOptions" style="margin-top:var(--space-2)"></div>' +
+    '<span class="inst-note">Printed output always uses a light, readable layout regardless of this setting.</span></div>' +
+    '<div class="inst-field"><label for="setFooter">Report footer</label><input type="text" id="setFooter" maxlength="300" value="' + PS.esc(p.reportFooter) + '" placeholder="Example: Internal - commercial in confidence"></div>' +
+    '<div class="inst-field"><label for="setLocale">Interface language</label><select id="setLocale">' +
     Object.keys(PS.i18n.CATALOG).map(function (code) {
       return '<option value="' + PS.esc(code) + '"' + (code === PS.i18n.current() ? ' selected' : '') + '>' + PS.esc(code.toUpperCase()) + '</option>';
     }).join('') +
     '</select>' +
-    '<span class="hint">Language applies to the app chrome (nav, search, footer). Content is currently authored in English; extra catalogs can be added to PS.i18n.CATALOG without touching feature code.</span></div></div>';
+    '<span class="inst-note">Language applies to the app chrome (nav, search, footer). Content is currently authored in English; extra catalogs can be added to PS.i18n.CATALOG without touching feature code.</span></div>'
+  );
 };
 PS.settingsThresholdCard = function (p) {
-  return '<div class="card"><h2>Approval thresholds</h2>' +
-    '<p class="card-sub">Enter your own delegated authority levels. The PO Value Check calculator uses this table to show which approval level a value falls into. Leave a limit at 0 to mean no upper bound for that level.</p>' +
-    '<div class="table-wrap"><table><thead><tr><th>Approval level</th><th class="num">Up to (value)</th><th></th></tr></thead><tbody id="thresholdRows">' +
+  return PS.ui.card(
+    '<h2 class="inst-title">Approval thresholds</h2>' +
+    '<p class="inst-read">Enter your own delegated authority levels. The PO Value Check calculator uses this table to show which approval level a value falls into. Leave a limit at 0 to mean no upper bound for that level.</p>' +
+    '<div id="thresholdRows">' +
     (p.thresholds || []).map(function (t) {
-      return '<tr><td><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></td>' +
-        '<td class="num"><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></td>' +
-        '<td><button type="button" class="btn btn-sm btn-danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></td></tr>';
-    }).join('') + '</tbody></table></div>' +
-    '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="threshold-add" data-i18n="common.add">+ ' + (PS.i18n ? PS.i18n.t('common.add') : 'Add') + ' approval level</button></div>' +
-    '<div class="field" style="margin-top:12px"><label for="setBidThreshold">Competitive bidding threshold (optional)</label>' +
+      return '<div class="inst-grid inst-grid-3" style="gap:var(--space-2);align-items:end;margin-bottom:var(--space-2)">' +
+        '<div class="inst-field" style="margin:0"><label>Approval level</label><input type="text" data-th="label" value="' + PS.esc(t.label) + '" maxlength="80" aria-label="Approval level label"></div>' +
+        '<div class="inst-field" style="margin:0"><label>Up to (value)</label><input type="number" data-th="max" value="' + PS.esc(t.max) + '" step="any" min="0" style="max-width:160px" aria-label="Approval limit value"></div>' +
+        '<div style="display:flex;align-items:end"><button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm inst-home-btn--danger" data-act="threshold-del" data-i18n="common.remove">' + (PS.i18n ? PS.i18n.t('common.remove') : 'Remove') + '</button></div>' +
+        '</div>';
+    }).join('') + '</div>' +
+    '<div class="inst-btn-row"><button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="threshold-add" data-i18n="common.add">+ ' + (PS.i18n ? PS.i18n.t('common.add') : 'Add') + ' approval level</button></div>' +
+    '<div class="inst-field" style="margin-top:var(--space-3)"><label for="setBidThreshold">Competitive bidding threshold (optional)</label>' +
     '<input type="number" step="any" min="0" id="setBidThreshold" value="' + PS.esc(p.competitiveBidThreshold) + '">' +
-    '<span class="hint">If you record your organization&rsquo;s threshold here, decision guidance and checklists can reference it. Enter 0 to leave it unset - Procure Sherpa assumes no universal figure.</span></div></div>';
+    '<span class="inst-note">If you record your organization&rsquo;s threshold here, decision guidance and checklists can reference it. Enter 0 to leave it unset - Procure Sherpa assumes no universal figure.</span></div>'
+  );
 };
 PS.settingsAssumptionCard = function (p) {
-  return '<div class="card"><h2>Default assumptions</h2>' +
-    '<div class="field"><label for="setAssumptions">Standing assumptions recorded in reports</label>' +
+  return PS.ui.card(
+    '<h2 class="inst-title">Default assumptions</h2>' +
+    '<div class="inst-field"><label for="setAssumptions">Standing assumptions recorded in reports</label>' +
     '<textarea id="setAssumptions" rows="4" maxlength="1200" placeholder="Example: default cost of capital 9% per annum; freight quoted ex-works; volumes per current forecast; no currency hedging.">' + PS.esc(p.defaultAssumptions) + '</textarea>' +
-    '<span class="hint">Free text, shown with your settings and available to quote in reports.</span></div>' +
-    '<div class="grid grid-3">' +
-    '<div class="field"><label for="setDefaultDiscount">Default discount rate (%)</label>' +
+    '<span class="inst-note">Free text, shown with your settings and available to quote in reports.</span></div>' +
+    '<div class="inst-grid inst-grid-3">' +
+    '<div class="inst-field"><label for="setDefaultDiscount">Default discount rate (%)</label>' +
     '<input type="number" step="any" min="0" max="100" id="setDefaultDiscount" value="' + PS.esc(p.defaults.discountRate) + '">' +
-    '<span class="hint">Used as the starting value in Total Cost of Ownership and Multi-Year Contract Cost.</span></div>' +
-    '<div class="field"><label for="setDefaultCostOfCapital">Default cost of capital (%)</label>' +
+    '<span class="inst-note">Used as the starting value in Total Cost of Ownership and Multi-Year Contract Cost.</span></div>' +
+    '<div class="inst-field"><label for="setDefaultCostOfCapital">Default cost of capital (%)</label>' +
     '<input type="number" step="any" min="0" max="100" id="setDefaultCostOfCapital" value="' + PS.esc(p.defaults.costOfCapital) + '">' +
-    '<span class="hint">Used as the starting value in Payment Terms and Working Capital.</span></div>' +
-    '<div class="field"><label for="setDefaultHolding">Default holding rate (% p.a.)</label>' +
+    '<span class="inst-note">Used as the starting value in Payment Terms and Working Capital.</span></div>' +
+    '<div class="inst-field"><label for="setDefaultHolding">Default holding rate (% p.a.)</label>' +
     '<input type="number" step="any" min="0" max="100" id="setDefaultHolding" value="' + PS.esc(p.defaults.holdingRate) + '">' +
-    '<span class="hint">Annual carrying cost as a percentage of unit value.</span></div>' +
+    '<span class="inst-note">Annual carrying cost as a percentage of unit value.</span></div>' +
     '</div>' +
-    '<p class="note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters. ' +
-    'Every calculator that uses them starts with your figure; the value is always editable on the calculator itself.</p></div>';
+    '<p class="inst-note">These rates are starting points for calculation, not advice. Replace them with your organization&rsquo;s finance parameters. ' +
+    'Every calculator that uses them starts with your figure; the value is always editable on the calculator itself.</p>'
+  );
 };
 
 PS.initThemeScheduleOptions = function () {
@@ -15797,11 +15855,11 @@ PS.initThemeScheduleOptions = function () {
     var val = select.value;
     var p = PS.prefs();
     if (val === 'auto') {
-      container.innerHTML = '<div class="fields-2">' +
-        '<div class="field"><label for="setThemeAutoStart">Light mode from</label><input type="time" id="setThemeAutoStart" value="' + PS.esc(p.themeAutoStart || '06:00') + '"></div>' +
-        '<div class="field"><label for="setThemeAutoEnd">Dark mode from</label><input type="time" id="setThemeAutoEnd" value="' + PS.esc(p.themeAutoEnd || '20:00') + '"></div>' +
+      container.innerHTML = '<div class="inst-grid inst-grid-2">' +
+        '<div class="inst-field"><label for="setThemeAutoStart">Light mode from</label><input type="time" id="setThemeAutoStart" value="' + PS.esc(p.themeAutoStart || '06:00') + '"></div>' +
+        '<div class="inst-field"><label for="setThemeAutoEnd">Dark mode from</label><input type="time" id="setThemeAutoEnd" value="' + PS.esc(p.themeAutoEnd || '20:00') + '"></div>' +
         '</div>' +
-        '<p class="note">Light mode will be active between the start and end times. Outside that window, dark mode applies.</p>';
+        '<p class="inst-note">Light mode will be active between the start and end times. Outside that window, dark mode applies.</p>';
     } else {
       container.innerHTML = '';
     }
@@ -15817,23 +15875,27 @@ PS.route('help', function (arg) {
   var sel = PS.clean(arg, 40);
   var chosen = topics.filter(function (t) { return t.id === sel; })[0];
   var html = PS.reportHead('Help Center', topics.length + ' topics') +
-    '<div class="card"><h1>Help Center</h1>' +
-    '<p class="card-sub">How Procure Sherpa works, how your data is handled, and platform guidelines.</p>' +
-    '<div class="chips no-print">' + topics.map(function (t) {
-      return '<a class="chip' + (t.id === sel ? ' is-on' : '') + '" href="#/help/' + encodeURIComponent(t.id) + '">' + PS.esc(t.title) + '</a>';
-    }).join('') + '</div>' +
-    '<p class="note">Shortcuts: <kbd>Ctrl</kbd>+<kbd>K</kbd> search, <kbd>/</kbd> focus search, <kbd>Esc</kbd> close the sidebar. Print any page with the printer button - navigation and controls are removed automatically.</p>' +
-    /* Quick Start was a sidebar item once. It duplicated the Command
-       Center getting-started card, so it came out of the tree rather
-       than being left as a page nothing links to. */
-    '<div class="chips no-print" style="margin-top:10px">' +
-    '<a class="chip" href="#/quickstart">Quick Start: the five-minute orientation</a>' +
-    '<a class="chip" href="#/what">Help me with a live problem</a>' +
-    '<a class="chip" href="#/maturity">Maturity Check</a>' +
-    '</div>' +
-    '</div>';
+    PS.ui.card(
+      '<h1 class="inst-title">Help Center</h1>' +
+      '<p class="inst-read">How Procure Sherpa works, how your data is handled, and platform guidelines.</p>' +
+      '<div class="inst-chips no-print">' + topics.map(function (t) {
+        return '<a class="inst-chip' + (t.id === sel ? ' is-on' : '') + '" href="#/help/' + encodeURIComponent(t.id) + '">' + PS.esc(t.title) + '</a>';
+      }).join('') + '</div>' +
+      '<p class="inst-note">Shortcuts: <kbd>Ctrl</kbd>+<kbd>K</kbd> search, <kbd>/</kbd> focus search, <kbd>Esc</kbd> close the sidebar. Print any page with the printer button - navigation and controls are removed automatically.</p>' +
+      /* Quick Start was a sidebar item once. It duplicated the Command
+         Center getting-started card, so it came out of the tree rather
+         than being left as a page nothing links to. */
+      '<div class="inst-chips no-print" style="margin-top:var(--space-2)">' +
+      '<a class="inst-chip" href="#/quickstart">Quick Start: the five-minute orientation</a>' +
+      '<a class="inst-chip" href="#/what">Help me with a live problem</a>' +
+      '<a class="inst-chip" href="#/maturity">Maturity Check</a>' +
+      '</div>'
+    );
   if (chosen) {
-    html += '<div class="card" id="helpTopic"><h2>' + PS.esc(chosen.title) + '</h2>' + PS.helpBody(chosen) + '</div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">' + PS.esc(chosen.title) + '</h2>' + PS.helpBody(chosen),
+      { id: 'helpTopic' }
+    );
   }
   topics.filter(function (t) { return !chosen || t.id !== chosen.id; }).forEach(function (t) {
     html += PS.section(t.title, PS.helpBody(t));
@@ -15848,15 +15910,15 @@ PS.route('help', function (arg) {
 PS.helpBody = function (t) {
   var out = '';
   (t.sections || []).forEach(function (s) {
-    out += (s.h ? '<h3>' + PS.esc(s.h) + '</h3>' : '');
-    (s.p || []).forEach(function (p) { out += '<p>' + p + '</p>'; });
+    out += (s.h ? '<h3 class="inst-title">' + PS.esc(s.h) + '</h3>' : '');
+    (s.p || []).forEach(function (p) { out += '<p class="inst-read">' + p + '</p>'; });
     if (s.ul) out += PS.ul(s.ul);
     if (s.table) out += PS.renderSimpleTable(s.table);
   });
   if (t.related) {
-    out += '<div class="chips">' + t.related.map(function (r) {
+    out += '<div class="inst-chips">' + t.related.map(function (r) {
       var o = PS.byId(r.t, r.id);
-      return o ? '<a class="chip" href="' + PS.routeFor(r.t, r.id) + '">' + PS.esc(PS.typeLabel(r.t) + ': ' + (o.title || o.term)) + '</a>' : '';
+      return o ? '<a class="inst-chip" href="' + PS.routeFor(r.t, r.id) + '">' + PS.esc(PS.typeLabel(r.t) + ': ' + (o.title || o.term)) + '</a>' : '';
     }).join('') + '</div>';
   }
   return out;
@@ -16356,26 +16418,6 @@ PS.renderAcademyHub = function (params) {
   var hubStats = PS.academy.getStats();
   var minsLeft = PS.academy.minutesRemaining();
   var modNames = Object.keys(modules);
-  html += PS.ui.sectionHead('End-to-End Procurement Curriculum',
-    'You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
-    '</strong> functions across ' + modNames.length + ' modules' +
-    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.');
-
-  /* What is due is progress information too, and it belongs on the same
-     screen that says how much has been read. Zero is stated rather than
-     hidden, so a reader who is caught up knows the queue is working. */
-  var hubQueue = PS.revise ? PS.revise.queue() : null;
-  if (hubQueue) {
-    var qLine;
-    if (hubQueue.due.length) {
-      qLine = '<a href="#/revise">' + hubQueue.due.length + (hubQueue.due.length === 1 ? ' lesson is' : ' lessons are') + ' due for review &rarr; open the review queue</a>';
-    } else if (hubQueue.tracked) {
-      qLine = 'Nothing is due for review today. <a href="#/revise">The review queue</a> has ' + hubQueue.soon.length + ' coming up within a fortnight.';
-    } else {
-      qLine = 'Once you study a lesson it gets a review date. <a href="#/revise">How the review queue works</a>.';
-    }
-    html += '<p class="note" style="margin-top:-6px">' + qLine + '</p>';
-  }
 
   /* ============================================================
      WHERE YOU STAND - READINESS PANEL
