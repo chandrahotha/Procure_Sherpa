@@ -674,19 +674,21 @@ PS.academyRoleRecommendation = function (funcs) {
     if (firstMod) target = { mod: firstMod.module, func: firstMod };
   }
   if (!target) return '';
-  return '<div class="card no-print academy-role-rec">' +
-    '<div class="card-head"><h2>Recommended for your role</h2><div class="spacer"></div>' +
-    '<span class="eyebrow">' + PS.esc(roleMeta.title) + '</span></div>' +
-    '<p class="card-sub">These are the modules that carry the work in your role, listed in curriculum order. The curriculum below runs Module 1 to Module ' +
+  return '<div class="inst-home-module-chips no-print">' +
+    '<div class="inst-home-module-chips-head">' +
+    '<h2>Recommended for your role</h2>' +
+    '<span class="inst-eyebrow">' + PS.esc(roleMeta.title) + '</span>' +
+    '</div>' +
+    '<p class="inst-home-lead">These are the modules that carry the work in your role, listed in curriculum order. The curriculum below runs Module 1 to Module ' +
     (allModules.length || '') + ' in sequence, whatever your role.</p>' +
-    '<div class="hub-linked-row"><span class="hub-linked-label">Modules</span>' +
+    '<div class="inst-home-module-chips-body"><span class="inst-home-chip inst-home-chip--role">Modules</span>' +
     mods.map(function (name) {
       var n = PS.academyModuleNumber(name);
-      return '<a class="chip" href="#module-' + n + '">Module ' + n + '</a>';
+      return '<a class="inst-home-quick-action" href="#module-' + n + '" data-act="scroll-to" data-target="module-' + n + '">Module ' + n + '</a>';
     }).join('') + '</div>' +
-    '<div class="btn-row" style="margin-top:12px">' +
-    '<a class="btn btn-primary" href="#/academy/' + encodeURIComponent(target.func.id) + '">Start with ' +
-    PS.esc(target.func.title) + '</a>' +
+    '<div class="inst-btn-row" style="margin-top:var(--space-3)">' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/academy/' + encodeURIComponent(target.func.id) + '">Start with ' +
+    PS.esc(target.func.title) + ' <span aria-hidden="true">&rarr;</span></a>' +
     '</div></div>';
 };
 
