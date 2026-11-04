@@ -51,16 +51,19 @@ PS.wb.relatedStrip = function (col) {
     var o = l.type === 'kb' ? PS.byId('kb', l.id) : PS.byId(l.type, l.id);
     if (!o) return '';
     var title = o.title || o.term || l.id;
-    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + title) + '</a>';
+    return '<a class="inst-chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + title) + '</a>';
   }).filter(Boolean).join('');
   if (!links) return '';
-  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">Recording something here does not replace the controlled procedure. Open the matching SOP, checklist, template and calculator to do the work properly.</p>' +
-    '<div class="chips">' + links + '</div></div>';
+  return PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">Recording something here does not replace the controlled procedure. Open the matching SOP, checklist, template and calculator to do the work properly.</p>' +
+    '<div class="inst-chips">' + links + '</div>',
+    { class: 'no-print' }
+  );
 };
 
 PS.wb.exportBtn = function (col, filename, headers) {
-  return '<button type="button" class="btn btn-sm btn-ghost" data-act="wb-export" data-col="' + PS.esc(col) + '">Export CSV</button>';
+  return '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="wb-export" data-col="' + PS.esc(col) + '">Export CSV</button>';
 };
 
 PS.acts['wb-export'] = function (el) {
@@ -85,17 +88,19 @@ PS.route('suppliers', function () {
     PS.wb.exportBtn('suppliers', 'suppliers')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Suppliers</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(totalSpend) + '</span><span class="s-lab">Recorded spend</span></div>' +
-    '<div class="stat"><span class="s-val">' + approved + '</span><span class="s-lab">Approved</span></div>' +
-    '<div class="stat"><span class="s-val">' + (byRisk.High + byRisk.Critical) + '</span><span class="s-lab">High or critical risk</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Suppliers</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(totalSpend) + '</span><span class="inst-home-hub-stat-lab">Recorded spend</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + approved + '</span><span class="inst-home-hub-stat-lab">Approved</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + (byRisk.High + byRisk.Critical) + '</span><span class="inst-home-hub-stat-lab">High or critical risk</span></div></div>' +
     '</div>';
 
   html += PS.wb.editorCard('suppliers', recs.length ? 'Add or edit a supplier' : 'Add your first supplier');
 
-  html += '<div class="card"><div class="card-head"><h2>Suppliers</h2><div class="spacer"></div>' +
-    '<span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Suppliers</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('suppliers', [
       { k: 'name', label: 'Supplier' },
       { k: 'category', label: 'Category' },
@@ -104,8 +109,8 @@ PS.route('suppliers', function () {
       { k: 'score', label: 'Score', num: true },
       { k: 'risk', label: 'Risk' },
       { k: 'status', label: 'Status' }
-    ], recs, 'No suppliers recorded yet. Add the first one above, or work through the supplier due diligence record and bring the result across.') +
-    '</div>';
+    ], recs, 'No suppliers recorded yet. Add the first one above, or work through the supplier due diligence record and bring the result across.')
+  );
 
   html += PS.wb.relatedStrip('suppliers');
   html += PS.disclaimer('data');
@@ -135,28 +140,31 @@ PS.route('contracts', function () {
     PS.wb.exportBtn('contracts', 'contracts')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Contracts</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Recorded value</span></div>' +
-    '<div class="stat"><span class="s-val">' + expiring.length + '</span><span class="s-lab">Notice due within 180 days</span></div>' +
-    '<div class="stat"><span class="s-val">' + autoRenew.length + '</span><span class="s-lab">Auto-renewing</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Contracts</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(total) + '</span><span class="inst-home-hub-stat-lab">Recorded value</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + expiring.length + '</span><span class="inst-home-hub-stat-lab">Notice due within 180 days</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + autoRenew.length + '</span><span class="inst-home-hub-stat-lab">Auto-renewing</span></div></div>' +
     '</div>';
 
   if (expiring.length) {
-    html += '<div class="card"><div class="card-head"><h2>Notice deadlines approaching</h2></div>' +
-      '<p class="card-sub">These are the dates on which you have to say something if you want to stop the renewal. A missed notice date is the most common way a good contract becomes a bad one.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Notice deadlines approaching</h2>' +
+      '<p class="inst-read">These are the dates on which you have to say something if you want to stop the renewal. A missed notice date is the most common way a good contract becomes a bad one.</p>' +
       PS.wb.tableHtml('contracts', [
         { k: 'title', label: 'Contract' },
         { k: 'supplier', label: 'Supplier' },
         { k: 'end', label: 'Expires' },
         { k: 'notice', label: 'Notice by' },
         { k: 'auto', label: 'Auto-renews' }
-      ], expiring.map(function (x) { return x.r; }), '') +
-      '</div>';
+      ], expiring.map(function (x) { return x.r; }), '')
+    );
   }
 
   html += PS.wb.editorCard('contracts', 'Add or edit a contract');
-  html += '<div class="card"><div class="card-head"><h2>Contracts</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Contracts</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('contracts', [
       { k: 'title', label: 'Contract' },
       { k: 'supplier', label: 'Supplier' },
@@ -165,8 +173,8 @@ PS.route('contracts', function () {
       { k: 'end', label: 'Expires' },
       { k: 'notice', label: 'Notice by' },
       { k: 'owner', label: 'Owner' }
-    ], recs, 'No contracts recorded yet. Add one above, then work through the contract review checklist.') +
-    '</div>';
+    ], recs, 'No contracts recorded yet. Add one above, then work through the contract review checklist.')
+  );
 
   html += PS.wb.relatedStrip('contracts');
   html += PS.disclaimer('policy');
@@ -188,15 +196,17 @@ PS.route('catalogue', function () {
     PS.wb.exportBtn('catalogue', 'catalogue')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Items</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Unit price total</span></div>' +
-    '<div class="stat"><span class="s-val">' + over + '</span><span class="s-lab">Above benchmark</span></div>' +
-    '<div class="stat"><span class="s-val">' + recs.filter(function (r) { return !r.spec; }).length + '</span><span class="s-lab">No specification recorded</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Items</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(total) + '</span><span class="inst-home-hub-stat-lab">Unit price total</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + over + '</span><span class="inst-home-hub-stat-lab">Above benchmark</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.filter(function (r) { return !r.spec; }).length + '</span><span class="inst-home-hub-stat-lab">No specification recorded</span></div></div>' +
     '</div>';
 
   html += PS.wb.editorCard('catalogue', 'Add or edit an item');
-  html += '<div class="card"><div class="card-head"><h2>Items</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Items</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('catalogue', [
       { k: 'item', label: 'Item' },
       { k: 'category', label: 'Category' },
@@ -205,8 +215,8 @@ PS.route('catalogue', function () {
       { k: 'benchmark', label: 'Benchmark', num: true, render: function (r) { return PS.moneyR(r.benchmark); } },
       { k: 'supplier', label: 'Supplier' },
       { k: 'spec', label: 'Specification' }
-    ], recs, 'No items recorded yet. Add one above.') +
-    '</div>';
+    ], recs, 'No items recorded yet. Add one above.')
+  );
 
   html += PS.wb.relatedStrip('catalogue');
   html += PS.disclaimer('data');
@@ -224,30 +234,37 @@ PS.route('approvals', function () {
     PS.wb.exportBtn('approvals', 'approvals')
   ]);
 
-  html += '<div class="card"><div class="card-head"><h2>How this works</h2></div>' +
-    '<p class="card-sub">This is your own delegation of authority and your own policy rules, recorded so that the decisions you make can be shown to be consistent. It is not a workflow engine: nothing here routes an approval, notifies anyone, or blocks a purchase. It is the reference a buyer, a budget holder and an auditor will all read, and it is only worth anything if it is written down before the argument rather than after it.</p>' +
-    '<p class="note">Set the default thresholds in <a href="#/settings">Settings</a> as well, because the PO Value Check calculator reads them from there.</p></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">How this works</h2>' +
+    '<p class="inst-read">This is your own delegation of authority and your own policy rules, recorded so that the decisions you make can be shown to be consistent. It is not a workflow engine: nothing here routes an approval, notifies anyone, or blocks a purchase. It is the reference a buyer, a budget holder and an auditor will all read, and it is only worth anything if it is written down before the argument rather than after it.</p>' +
+    '<p class="inst-note">Set the default thresholds in <a href="#/settings">Settings</a> as well, because the PO Value Check calculator reads them from there.</p>'
+  );
 
   html += PS.wb.editorCard('approvals', 'Add or edit a rule');
-  html += '<div class="card"><div class="card-head"><h2>Rules</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Rules</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('approvals', [
       { k: 'name', label: 'Rule' },
       { k: 'kind', label: 'Type' },
       { k: 'role', label: 'Role or approver' },
       { k: 'limit', label: 'Value limit', num: true, render: function (r) { return r.limit ? PS.moneyR(r.limit) : 'no limit'; } },
       { k: 'scope', label: 'Applies to' }
-    ], recs, 'No rules recorded yet. Add the first threshold above.') +
-    '</div>';
+    ], recs, 'No rules recorded yet. Add the first threshold above.')
+  );
 
   if (thresholds.length) {
-    html += '<div class="card"><div class="card-head"><h2>Approval ladder</h2><div class="spacer"></div>' +
-      '<span class="badge">lowest limit first</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Approval ladder</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">lowest limit first</span>' +
       PS.renderSimpleTable({
         headers: ['Value up to', 'Approved by', 'Applies to'],
         rows: thresholds.map(function (r) {
           return [r.limit ? PS.moneyR(r.limit) : 'No limit', r.role || 'Not stated', r.scope || 'All spend'];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   html += PS.wb.relatedStrip('approvals');

@@ -172,65 +172,82 @@ PS.route('rfx', function () {
   var crit = (ev && ev.criteria && ev.criteria.length) ? ev.criteria : PS.WB_RFX_CRITERIA;
 
   var html = PS.wb.header('RFx and evaluation', ev ? ev.title : 'No event yet', [
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-new">New event</button>',
-    (ev ? '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-export">Export evaluation</button>' : '')
+    '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="rfx-new">New event</button>',
+    (ev ? '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="rfx-export">Export evaluation</button>' : '')
   ]);
 
   if (evs.length > 1) {
-    html += '<div class="card no-print"><div class="card-head"><h2>Events</h2></div><div class="chips">' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Events</h2>' +
+      '<div class="inst-chips">' +
       evs.map(function (e) {
-        return '<button type="button" class="chip' + (ev && e.id === ev.id ? ' is-on' : '') + '" data-act="rfx-pick" data-id="' + PS.esc(e.id) + '">' + PS.esc(e.title) + '</button>';
-      }).join('') + '</div></div>';
+        return '<button type="button" class="inst-chip' + (ev && e.id === ev.id ? ' is-on' : '') + '" data-act="rfx-pick" data-id="' + PS.esc(e.id) + '">' + PS.esc(e.title) + '</button>';
+      }).join('') + '</div>',
+      { class: 'no-print' }
+    );
   }
 
   if (!ev) {
-    html += '<div class="card"><div class="card-head"><h2>Start an event</h2></div>' +
-      '<p class="card-sub">Create the event, fix the evaluation criteria and their weights, then add the bids you received. The award recommendation at the end is the record you will be asked to defend.</p>' +
-      PS.rfx.eventForm(null) + '</div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Start an event</h2>' +
+      '<p class="inst-read">Create the event, fix the evaluation criteria and their weights, then add the bids you received. The award recommendation at the end is the record you will be asked to defend.</p>' +
+      PS.rfx.eventForm(null)
+    );
     html += PS.rfx.libraryStrip();
     html += PS.disclaimer('policy');
     return html;
   }
 
   /* --- event --- */
-  html += '<div class="card"><div class="card-head"><h2>The event</h2><div class="spacer"></div>' +
-    '<span class="badge">' + PS.esc(ev.method || 'RFQ') + '</span>' +
-    (ev.deadline ? '<span class="badge">Closes ' + PS.esc(ev.deadline) + '</span>' : '') +
-    '<button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-event" data-id="' + PS.esc(ev.id) + '">Delete event</button></div>' +
-    PS.rfx.eventForm(ev) + '</div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The event</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + PS.esc(ev.method || 'RFQ') + '</span>' +
+    (ev.deadline ? '<span class="inst-badge">Closes ' + PS.esc(ev.deadline) + '</span>' : '') +
+    '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm inst-home-btn--danger" data-act="rfx-delete-event" data-id="' + PS.esc(ev.id) + '">Delete event</button>' +
+    PS.rfx.eventForm(ev)
+  );
 
   /* --- criteria and weights --- */
   var weightTotal = crit.reduce(function (a, c) { return a + (PS.num(c.weight) || 0); }, 0);
-  html += '<div class="card"><div class="card-head"><h2>Evaluation criteria and weights</h2><div class="spacer"></div>' +
-    '<span class="badge' + (weightTotal === 100 ? '' : ' badge-warn') + '">total ' + weightTotal + '%</span></div>' +
-    '<p class="card-sub">These are the criteria you told the bidders you would use. Set them before the bids come in, and do not change them afterwards: an evaluation weighted after the bids are read is not a process, it is a justification written at the end.</p>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Evaluation criteria and weights</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge' + (weightTotal === 100 ? '' : ' inst-badge--warn') + '">total ' + weightTotal + '%</span>' +
+    '<p class="inst-read">These are the criteria you told the bidders you would use. Set them before the bids come in, and do not change them afterwards: an evaluation weighted after the bids are read is not a process, it is a justification written at the end.</p>' +
     '<form id="rfxWeightForm">' +
-    '<div class="grid grid-3">' + crit.map(function (c) {
-      return '<div class="field"><label for="rw_' + c.key + '">' + PS.esc(c.label) + ' (%)</label>' +
+    '<div class="inst-grid inst-grid-3">' + crit.map(function (c) {
+      return '<div class="inst-field"><label for="rw_' + c.key + '">' + PS.esc(c.label) + ' (%)</label>' +
         '<input type="number" id="rw_' + c.key + '" data-rw="' + c.key + '" value="' + PS.esc(c.weight) + '" min="0" max="100" step="5"></div>';
     }).join('') + '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-set-weights">Save weights</button></div>' +
-    '</form></div>';
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-set-weights">Save weights</button></div>' +
+    '</form>'
+  );
 
   /* --- bids --- */
   var bids = PS.wb.list('rfxBids').filter(function (b) { return b.eventId === ev.id; });
   var ranked = PS.rfx.rank(Object.assign({}, ev, { bids: bids }));
   var spread = PS.rfx.spread(ranked);
 
-  html += '<div class="card"><div class="card-head"><h2>Bids</h2><div class="spacer"></div>' +
-    '<span class="badge">' + bids.length + ' received</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Bids</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + bids.length + ' received</span>' +
     (bids.length ? PS.rfx.bidTable(ev, crit, ranked) : '') +
-    '<h3 style="margin-top:18px">' + (bids.length ? 'Add or replace a bid' : 'Add the first bid') + '</h3>' +
-    PS.rfx.bidForm(ev, crit) + '</div>';
+    '<h3 style="margin-top:var(--space-4)">' + (bids.length ? 'Add or replace a bid' : 'Add the first bid') + '</h3>' +
+    PS.rfx.bidForm(ev, crit)
+  );
 
   /* --- result --- */
   if (ranked.length) {
     var top = ranked[0];
     var bestLanded = Math.min.apply(null, ranked.map(function (r) { return r.landed.total; }));
     var cheapest = ranked.filter(function (r) { return r.landed.total === bestLanded; })[0];
-    html += '<div class="card"><div class="card-head"><h2>Evaluation result</h2><div class="spacer"></div>' +
-      '<span class="badge">' + ranked.length + ' bids scored</span></div>' +
-      '<p class="card-sub">The recommended award is the highest weighted score. The commercial spread tells you how much the evaluation is actually choosing between, and whether the score is doing the work or the price is.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Evaluation result</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + ranked.length + ' bids scored</span>' +
+      '<p class="inst-read">The recommended award is the highest weighted score. The commercial spread tells you how much the evaluation is actually choosing between, and whether the score is doing the work or the price is.</p>' +
       PS.renderSimpleTable({
         headers: ['Rank', 'Supplier', 'Landed cost', 'Weighted score', 'Lead time', 'Verdict'],
         rows: ranked.map(function (r, i) {
@@ -245,7 +262,7 @@ PS.route('rfx', function () {
           ];
         })
       }) +
-      '<div class="alert alert-info" style="margin-top:14px"><strong>Recommended award: ' + PS.esc(top.bid.supplier) + '</strong>' +
+      '<div class="inst-note" style="margin-top:var(--space-3)"><strong>Recommended award: ' + PS.esc(top.bid.supplier) + '</strong>' +
       'Weighted score ' + top.score.toFixed(2) + ' out of 10, landed cost ' + PS.moneyR(top.landed.total) + '. ' +
       (cheapest && cheapest.bid.supplier !== top.bid.supplier
         ? 'Note that ' + PS.esc(cheapest.bid.supplier) + ' is the lowest landed cost at ' + PS.moneyR(cheapest.landed.total) + '. You are choosing to pay ' +
@@ -253,15 +270,16 @@ PS.route('rfx', function () {
         : 'This supplier is also the lowest landed cost, so the commercial and the scored positions agree.') +
       (spread > 0 ? ' The spread between the best and worst landed cost across ' + ranked.length + ' bids is ' + PS.moneyR(spread) + '.' : '') +
       '</div>' +
-      '<div class="btn-row no-print">' +
-      '<a class="btn" href="#/tpl/tpl-award-recommendation">Open the award recommendation record</a>' +
-      '<a class="btn" href="#/calc/calc-compare-quotes">Check the quotes on landed cost</a>' +
-      '<a class="btn" href="#/tpl/tpl-weighted-scoring">Open the weighted scoring model</a>' +
-      '<button type="button" class="btn btn-ghost" data-act="wb-signoff" data-col="rfx" data-id="' + PS.esc(ev.id) + '" data-note="Award recommendation">Record the sign-off</button>' +
-      '</div>';
+      '<div class="inst-btn-row no-print">' +
+      '<a class="inst-home-btn inst-home-btn--primary" href="#/tpl/tpl-award-recommendation">Open the award recommendation record</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/calc/calc-compare-quotes">Check the quotes on landed cost</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/tpl/tpl-weighted-scoring">Open the weighted scoring model</a>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="wb-signoff" data-col="rfx" data-id="' + PS.esc(ev.id) + '" data-note="Award recommendation">Record the sign-off</button>' +
+      '</div>'
+    );
     var sos = PS.wb.signoffsFor('rfx', ev.id);
     if (sos.length) {
-      html += '<h3>Sign-offs</h3>' + PS.renderSimpleTable({
+      html += '<h3 class="inst-title">Sign-offs</h3>' + PS.renderSimpleTable({
         headers: ['Approved by', 'When', 'Note'],
         rows: sos.map(function (s) { return [s.approver, PS.dateTime(s.at), s.note || '']; })
       });
@@ -281,16 +299,16 @@ PS.acts['rfx-pick'] = function (el) {
 PS.rfx.eventForm = function (ev) {
   ev = ev || {};
   return '<form id="rfxEventForm" data-id="' + PS.esc(ev.id || '') + '">' +
-    '<div class="grid grid-2">' +
-    '<div class="field"><label for="rfxTitle">Event name</label><input type="text" id="rfxTitle" data-rf="title" value="' + PS.esc(ev.title || '') + '" maxlength="140" placeholder="Packaging supply, 2026"></div>' +
-    '<div class="field"><label for="rfxMethod">Method</label><select id="rfxMethod" data-rf="method">' +
+    '<div class="inst-grid inst-grid-2">' +
+    '<div class="inst-field"><label for="rfxTitle">Event name</label><input type="text" id="rfxTitle" data-rf="title" value="' + PS.esc(ev.title || '') + '" maxlength="140" placeholder="Packaging supply, 2026"></div>' +
+    '<div class="inst-field"><label for="rfxMethod">Method</label><select id="rfxMethod" data-rf="method">' +
     ['RFQ', 'RFP', 'RFI'].map(function (m) { return '<option' + (ev.method === m ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select></div>' +
-    '<div class="field"><label for="rfxCat">Category</label><input type="text" id="rfxCat" data-rf="category" value="' + PS.esc(ev.category || '') + '" maxlength="80"></div>' +
-    '<div class="field"><label for="rfxDeadline">Submission deadline</label><input type="date" id="rfxDeadline" data-rf="deadline" value="' + PS.esc(ev.deadline || '') + '"></div>' +
-    '<div class="field"><label for="rfxBudget">Budget or ceiling</label><input type="number" id="rfxBudget" data-rf="budget" value="' + PS.esc(ev.budget === undefined || ev.budget === null ? '' : ev.budget) + '" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rfxNotes">Notes</label><input type="text" id="rfxNotes" data-rf="notes" value="' + PS.esc(ev.notes || '') + '" maxlength="240"></div>' +
+    '<div class="inst-field"><label for="rfxCat">Category</label><input type="text" id="rfxCat" data-rf="category" value="' + PS.esc(ev.category || '') + '" maxlength="80"></div>' +
+    '<div class="inst-field"><label for="rfxDeadline">Submission deadline</label><input type="date" id="rfxDeadline" data-rf="deadline" value="' + PS.esc(ev.deadline || '') + '"></div>' +
+    '<div class="inst-field"><label for="rfxBudget">Budget or ceiling</label><input type="number" id="rfxBudget" data-rf="budget" value="' + PS.esc(ev.budget === undefined || ev.budget === null ? '' : ev.budget) + '" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rfxNotes">Notes</label><input type="text" id="rfxNotes" data-rf="notes" value="' + PS.esc(ev.notes || '') + '" maxlength="240"></div>' +
     '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-event">Save event</button></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-save-event">Save event</button></div>' +
     '</form>';
 };
 
@@ -311,27 +329,27 @@ PS.rfx.bidTable = function (ev, crit, ranked) {
       '<td class="num"><strong>' + PS.moneyR(l.total) + '</strong></td>' +
       crit.map(function (c) { return '<td class="num">' + PS.esc(PS.num(b.scores && b.scores[c.key]) || 0) + '</td>'; }).join('') +
       '<td class="num"><strong>' + sc.toFixed(2) + '</strong></td>' +
-      '<td class="num"><button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-bid" data-id="' + PS.esc(b.id) + '">Remove</button></td></tr>';
+      '<td class="num"><button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm inst-home-btn--danger" data-act="rfx-delete-bid" data-id="' + PS.esc(b.id) + '">Remove</button></td></tr>';
   }).join('');
   return '<div class="table-wrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
-    '<p class="note">Score each criterion from 0 to 10. The weighted score is the sum of score times weight, divided by the total weight, so it is always out of ten and stays comparable if the weights are changed.</p>';
+    '<p class="inst-note">Score each criterion from 0 to 10. The weighted score is the sum of score times weight, divided by the total weight, so it is always out of ten and stays comparable if the weights are changed.</p>';
 };
 
 PS.rfx.bidForm = function (ev, crit) {
-  return '<form id="rfxBidForm" data-id=""><div class="grid grid-3">' +
-    '<div class="field"><label for="rbSupplier">Supplier</label><input type="text" id="rbSupplier" data-rb="supplier" maxlength="120"></div>' +
-    '<div class="field"><label for="rbQty">Quantity</label><input type="number" id="rbQty" data-rb="qty" step="any" min="0"></div>' +
-    '<div class="field"><label for="rbPrice">Unit price</label><input type="number" id="rbPrice" data-rb="price" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rbFreight">Freight (total)</label><input type="number" id="rbFreight" data-rb="freight" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rbDuty">Duty %</label><input type="number" id="rbDuty" data-rb="dutyPct" step="0.1" min="0" max="100"></div>' +
-    '<div class="field"><label for="rbLead">Lead time (days)</label><input type="number" id="rbLead" data-rb="lead" step="1" min="0"></div>' +
+  return '<form id="rfxBidForm" data-id=""><div class="inst-grid inst-grid-3">' +
+    '<div class="inst-field"><label for="rbSupplier">Supplier</label><input type="text" id="rbSupplier" data-rb="supplier" maxlength="120"></div>' +
+    '<div class="inst-field"><label for="rbQty">Quantity</label><input type="number" id="rbQty" data-rb="qty" step="any" min="0"></div>' +
+    '<div class="inst-field"><label for="rbPrice">Unit price</label><input type="number" id="rbPrice" data-rb="price" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rbFreight">Freight (total)</label><input type="number" id="rbFreight" data-rb="freight" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rbDuty">Duty %</label><input type="number" id="rbDuty" data-rb="dutyPct" step="0.1" min="0" max="100"></div>' +
+    '<div class="inst-field"><label for="rbLead">Lead time (days)</label><input type="number" id="rbLead" data-rb="lead" step="1" min="0"></div>' +
     crit.map(function (c) {
-      return '<div class="field"><label for="rs_' + c.key + '">' + PS.esc(c.label) + ' (0-10)</label>' +
+      return '<div class="inst-field"><label for="rs_' + c.key + '">' + PS.esc(c.label) + ' (0-10)</label>' +
         '<input type="number" id="rs_' + c.key + '" data-rs="' + c.key + '" step="0.5" min="0" max="10"></div>';
     }).join('') +
-    '<div class="field"><label for="rbNotes">Notes</label><input type="text" id="rbNotes" data-rb="notes" maxlength="240"></div>' +
+    '<div class="inst-field"><label for="rbNotes">Notes</label><input type="text" id="rbNotes" data-rb="notes" maxlength="240"></div>' +
     '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-bid">Add bid</button></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-save-bid">Add bid</button></div>' +
     '</form>';
 };
 
@@ -347,9 +365,12 @@ PS.rfx.libraryStrip = function () {
   ].map(function (l) {
     var o = PS.byId(l.type, l.id);
     if (!o) return '';
-    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + (o.title || o.term)) + '</a>';
+    return '<a class="inst-chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + (o.title || o.term)) + '</a>';
   }).filter(Boolean).join('');
-  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">Run the event properly with the controlled documents: the solicitation pack, the evaluation sheets, the scoring model and the award recommendation.</p>' +
-    '<div class="chips">' + links + '</div></div>';
+  return PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">Run the event properly with the controlled documents: the solicitation pack, the evaluation sheets, the scoring model and the award recommendation.</p>' +
+    '<div class="inst-chips">' + links + '</div>',
+    { class: 'no-print' }
+  );
 };

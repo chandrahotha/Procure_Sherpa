@@ -81,27 +81,32 @@ PS.route('receipts', function () {
     PS.wb.exportBtn('receipts', 'receipts')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Workpapers</span></div>' +
-    '<div class="stat"><span class="s-val">' + matched + '</span><span class="s-lab">Matched</span></div>' +
-    '<div class="stat"><span class="s-val">' + exceptions + '</span><span class="s-lab">With exceptions</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Total exposure</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Workpapers</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + matched + '</span><span class="inst-home-hub-stat-lab">Matched</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + exceptions + '</span><span class="inst-home-hub-stat-lab">With exceptions</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(exposure) + '</span><span class="inst-home-hub-stat-lab">Total exposure</span></div></div>' +
     '</div>';
 
   if (dupes.length) {
-    html += '<div class="card"><div class="card-head"><h2>Possible duplicate invoices</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + dupes.length + '</span></div>' +
-      '<p class="card-sub">The same supplier, invoice reference and amount appear more than once. That is the shape of a double payment, and it is worth a phone call before it is a credit note.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Possible duplicate invoices</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + dupes.length + '</span>' +
+      '<p class="inst-read">The same supplier, invoice reference and amount appear more than once. That is the shape of a double payment, and it is worth a phone call before it is a credit note.</p>' +
       PS.renderSimpleTable({
         headers: ['Supplier', 'Invoice', 'Amount', 'Also recorded as'],
         rows: dupes.map(function (d) {
           return [d.rec.supplier, d.rec.invoiceRef, PS.moneyR((PS.num(d.rec.invUnitPrice) || 0) * (PS.num(d.rec.invQty) || 0)), d.first.id];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   html += PS.wb.editorCard('receipts', 'Add or edit a match workpaper');
-  html += '<div class="card"><div class="card-head"><h2>Workpapers</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Workpapers</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('receipts', [
       { k: 'ref', label: 'PO reference' },
       { k: 'supplier', label: 'Supplier' },
@@ -111,30 +116,36 @@ PS.route('receipts', function () {
       { k: 'receivedQty', label: 'Received', num: true },
       { k: 'invQty', label: 'Invoiced', num: true },
       { k: 'status', label: 'Result', render: function (r) { return PS.rcpt.match(r).status; } }
-    ], recs, 'No match workpapers yet. Add one above: the order, the receipt and the invoice are three numbers, and the variance between them is the finding.') +
-    '</div>';
+    ], recs, 'No match workpapers yet. Add one above: the order, the receipt and the invoice are three numbers, and the variance between them is the finding.')
+  );
 
   var withIssues = recs.filter(function (r) { return PS.rcpt.match(r).issues.length; });
   if (withIssues.length) {
-    html += '<div class="card"><div class="card-head"><h2>Exceptions</h2><div class="spacer"></div>' +
-      '<span class="badge">' + withIssues.length + ' open</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Exceptions</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + withIssues.length + ' open</span>' +
       PS.renderSimpleTable({
         headers: ['PO', 'Supplier', 'Price variance', 'Quantity variance', 'Uncontracted', 'Total'],
         rows: withIssues.map(function (r) {
           var m = PS.rcpt.match(r);
           return [r.ref, r.supplier, PS.moneyR(m.priceVariance), PS.moneyR(m.qtyVariance), PS.moneyR(m.uncontracted), PS.moneyR(m.total)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">This workpaper finds the variance. It does not release a payment and it does not record that one was made. The controlled process is separate.</p>' +
-    '<div class="chips">' +
-    '<a class="chip" href="#/sop/sop-procurement-audit">SOP: Procurement Audit</a>' +
-    '<a class="chip" href="#/cl/cl-procurement-file-completeness">Checklist: File completeness</a>' +
-    '<a class="chip" href="#/tpl/tpl-exception-request">Template: Exception request</a>' +
-    '<a class="chip" href="#/kpi/kpi-contract-compliance">KPI: Contract compliance</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">This workpaper finds the variance. It does not release a payment and it does not record that one was made. The controlled process is separate.</p>' +
+    '<div class="inst-chips">' +
+    '<a class="inst-chip" href="#/sop/sop-procurement-audit">SOP: Procurement Audit</a>' +
+    '<a class="inst-chip" href="#/cl/cl-procurement-file-completeness">Checklist: File completeness</a>' +
+    '<a class="inst-chip" href="#/tpl/tpl-exception-request">Template: Exception request</a>' +
+    '<a class="inst-chip" href="#/kpi/kpi-contract-compliance">KPI: Contract compliance</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('finance');
   return html;
 });
@@ -154,18 +165,19 @@ PS.route('budget', function () {
 
   var html = PS.wb.header('Budget and spend', lines.length + ' budget lines', [
     PS.wb.exportBtn('budget', 'budget'),
-    '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a>'
+    '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/spend-model">Edit the spend model</a>'
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(budgetTotal) + '</span><span class="s-lab">Budget</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(committedTotal) + '</span><span class="s-lab">Committed</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(actualTotal) + '</span><span class="s-lab">Spent</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(available) + '</span><span class="s-lab">Available</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(budgetTotal) + '</span><span class="inst-home-hub-stat-lab">Budget</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(committedTotal) + '</span><span class="inst-home-hub-stat-lab">Committed</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(actualTotal) + '</span><span class="inst-home-hub-stat-lab">Spent</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + PS.moneyR(available) + '</span><span class="inst-home-hub-stat-lab">Available</span></div></div>' +
     '</div>';
 
-  html += '<div class="card"><div class="card-head"><h2>Budget position</h2></div>' +
-    '<p class="card-sub">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Budget position</h2>' +
+    '<p class="inst-read">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
     (lines.length ? PS.wb.tableHtml('budget', [
       { label: 'Line', k: 'line' },
       { label: 'Category', k: 'category' },
@@ -175,33 +187,40 @@ PS.route('budget', function () {
       { label: 'Spent', num: true, render: function (l) { return PS.moneyR(PS.num(l.actual) || 0); } },
       { label: 'Available', num: true, render: function (l) { return PS.moneyR((PS.num(l.budget) || 0) - (PS.num(l.committed) || 0) - (PS.num(l.actual) || 0)); } },
       { label: 'Used', num: true, render: function (l) { var b = PS.num(l.budget) || 0; return b > 0 ? Math.round(((PS.num(l.committed) || 0) + (PS.num(l.actual) || 0)) / b * 100) + '%' : ''; } }
-    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
-    '</div>';
+    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.'))
+  );
 
   html += PS.wb.editorCard('budget', 'Add or edit a budget line');
 
   if (spend && spend.categories && spend.categories.length) {
     var suppliers = PS.spendModel.suppliers(spend);
-    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2><div class="spacer"></div>' +
-      '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a></div>' +
-      '<p class="card-sub">From the spend model: ' + spend.categories.length + ' categories across ' + suppliers.length + ' suppliers, totalling ' + PS.moneyR(PS.spendModel.total(spend)) + '.</p>' +
-      PS.spendModel.chartsHtml(spend) +
-      '</div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Where the spend sits</h2>' +
+      '<div class="spacer"></div>' +
+      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/spend-model">Edit the spend model</a>' +
+      '<p class="inst-read">From the spend model: ' + spend.categories.length + ' categories across ' + suppliers.length + ' suppliers, totalling ' + PS.moneyR(PS.spendModel.total(spend)) + '.</p>' +
+      PS.spendModel.chartsHtml(spend)
+    );
   } else {
-    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2></div>' +
-      '<p class="card-sub">There is no spend model yet. The spend model is the category and supplier hierarchy that the Pareto and Kraljic views are drawn from, and it is the input to any budget position.</p>' +
-      '<a class="btn btn-primary" href="#/spend-model">Build the spend model</a></div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Where the spend sits</h2>' +
+      '<p class="inst-read">There is no spend model yet. The spend model is the category and supplier hierarchy that the Pareto and Kraljic views are drawn from, and it is the input to any budget position.</p>' +
+      '<a class="inst-home-btn inst-home-btn--primary" href="#/spend-model">Build the spend model</a>'
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<div class="chips">' +
-    '<a class="chip" href="#/calc/calc-budget-vs-actual">Calculator: Budget vs actual</a>' +
-    '<a class="chip" href="#/calc/calc-savings-analysis">Calculator: Savings analysis</a>' +
-    '<a class="chip" href="#/sop/sop-savings-calculation">SOP: Savings calculation</a>' +
-    '<a class="chip" href="#/cl/cl-savings-validation">Checklist: Savings validation</a>' +
-    '<a class="chip" href="#/dash-savings">Savings dashboard</a>' +
-    '<a class="chip" href="#/kpi/kpi-sum">KPI: Spend under management</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<div class="inst-chips">' +
+    '<a class="inst-chip" href="#/calc/calc-budget-vs-actual">Calculator: Budget vs actual</a>' +
+    '<a class="inst-chip" href="#/calc/calc-savings-analysis">Calculator: Savings analysis</a>' +
+    '<a class="inst-chip" href="#/sop/sop-savings-calculation">SOP: Savings calculation</a>' +
+    '<a class="inst-chip" href="#/cl/cl-savings-validation">Checklist: Savings validation</a>' +
+    '<a class="inst-chip" href="#/dash-savings">Savings dashboard</a>' +
+    '<a class="inst-chip" href="#/kpi/kpi-sum">KPI: Spend under management</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('finance');
   return html;
 });
@@ -244,35 +263,38 @@ PS.route('analytics', function () {
 
   var html = PS.wb.header('Analytics', 'Everything you have recorded, in one place');
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(spendTotal) + '</span><span class="s-lab">Spend modelled</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(contractValue) + '</span><span class="s-lab">Contract value recorded</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(savingsTotal) + '</span><span class="s-lab">Savings recorded</span></div>' +
-    '<div class="stat"><span class="s-val">' + (budgetTotal > 0 ? Math.round(spent / budgetTotal * 100) + '%' : '—') + '</span><span class="s-lab">Budget used</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Match exposure</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(spendTotal) + '</span><span class="inst-home-hub-stat-lab">Spend modelled</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(contractValue) + '</span><span class="inst-home-hub-stat-lab">Contract value recorded</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + PS.moneyR(savingsTotal) + '</span><span class="inst-home-hub-stat-lab">Savings recorded</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + (budgetTotal > 0 ? Math.round(spent / budgetTotal * 100) + '%' : '\u2014') + '</span><span class="inst-home-hub-stat-lab">Budget used</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + PS.moneyR(exposure) + '</span><span class="inst-home-hub-stat-lab">Match exposure</span></div></div>' +
     '</div>';
 
   /* spend by category */
   var cats = Object.keys(catTotals).sort(function (a, b) { return catTotals[b] - catTotals[a]; });
   if (cats.length) {
-    html += '<div class="card"><div class="card-head"><h2>Spend by category</h2><div class="spacer"></div>' +
-      '<span class="badge">' + cats.length + ' categories</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Spend by category</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + cats.length + ' categories</span>' +
       PS.renderSimpleTable({
         headers: ['Category', 'Spend', 'Share'],
         rows: cats.map(function (c) {
           return [c, PS.moneyR(catTotals[c]), spendTotal > 0 ? Math.round(catTotals[c] / spendTotal * 100) + '%' : ''];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   /* portfolio position */
-  html += '<div class="grid grid-2 mb16">' +
-    '<div class="card"><div class="card-head"><h2>Supplier risk</h2></div>' +
+  html += '<div class="inst-grid inst-grid-2 mb16">' +
+    '<div class="inst-card"><div class="inst-card-head"><h2 class="inst-title">Supplier risk</h2></div>' +
     (suppliers.length ? PS.renderSimpleTable({
       headers: ['Tier', 'Suppliers'],
       rows: Object.keys(risk).map(function (k) { return [k, risk[k]]; })
     }) : PS.empty('No suppliers recorded yet.')) + '</div>' +
-    '<div class="card"><div class="card-head"><h2>Open positions</h2></div>' +
+    '<div class="inst-card"><div class="inst-card-head"><h2 class="inst-title">Open positions</h2></div>' +
     PS.renderSimpleTable({
       headers: ['Area', 'Open'],
       rows: [
@@ -286,47 +308,58 @@ PS.route('analytics', function () {
 
   /* exceptions and expiries */
   if (expiring.length) {
-    html += '<div class="card"><div class="card-head"><h2>Contracts expiring</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + expiring.length + '</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Contracts expiring</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + expiring.length + '</span>' +
       PS.renderSimpleTable({
         headers: ['Contract', 'Supplier', 'Expires', 'Value'],
         rows: expiring.map(function (c) { return [c.title, c.supplier, c.end, PS.moneyR(c.value)]; })
-      }) + '</div>';
+      })
+    );
   }
   if (openExceptions.length) {
-    html += '<div class="card"><div class="card-head"><h2>Match exceptions</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + openExceptions.length + '</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Match exceptions</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + openExceptions.length + '</span>' +
       PS.renderSimpleTable({
         headers: ['PO', 'Supplier', 'Exception', 'Amount'],
         rows: openExceptions.map(function (r) {
           var m = PS.rcpt.match(r);
           return [r.ref, r.supplier, m.status, PS.moneyR(m.total)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   /* pipeline */
   if (events.length) {
-    html += '<div class="card"><div class="card-head"><h2>Sourcing pipeline</h2></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Sourcing pipeline</h2>' +
       PS.renderSimpleTable({
         headers: ['Event', 'Method', 'Closes', 'Bids', 'Budget'],
         rows: events.map(function (e) {
           var n = bids.filter(function (b) { return b.eventId === e.id; }).length;
           return [e.title, e.method || '', e.deadline || '', n, PS.moneyR(e.budget)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>Where this comes from</h2></div>' +
-    '<p class="card-sub">Every number on this page is computed from records you entered in the workbenches, or from the spend model and the saved work in this browser. Nothing is fetched and nothing is sent.</p>' +
-    '<div class="btn-row">' +
-    '<a class="btn" href="#/suppliers">Supplier register</a>' +
-    '<a class="btn" href="#/contracts">Contract register</a>' +
-    '<a class="btn" href="#/rfx">RFx and evaluation</a>' +
-    '<a class="btn" href="#/receipts">Receipts and invoicing</a>' +
-    '<a class="btn" href="#/budget">Budget and spend</a>' +
-    '<a class="btn" href="#/spend-model">Spend data model</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">Where this comes from</h2>' +
+    '<p class="inst-read">Every number on this page is computed from records you entered in the workbenches, or from the spend model and the saved work in this browser. Nothing is fetched and nothing is sent.</p>' +
+    '<div class="inst-btn-row">' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/suppliers">Supplier register</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/contracts">Contract register</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/rfx">RFx and evaluation</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/receipts">Receipts and invoicing</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/budget">Budget and spend</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/spend-model">Spend data model</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('data');
   return html;
 });

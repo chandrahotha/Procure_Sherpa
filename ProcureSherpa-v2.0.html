@@ -4705,7 +4705,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'e3e3ceb8725a';
+PS.BUILD = '635519b3c24a';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;
@@ -20595,16 +20595,19 @@ PS.wb.relatedStrip = function (col) {
     var o = l.type === 'kb' ? PS.byId('kb', l.id) : PS.byId(l.type, l.id);
     if (!o) return '';
     var title = o.title || o.term || l.id;
-    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + title) + '</a>';
+    return '<a class="inst-chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + title) + '</a>';
   }).filter(Boolean).join('');
   if (!links) return '';
-  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">Recording something here does not replace the controlled procedure. Open the matching SOP, checklist, template and calculator to do the work properly.</p>' +
-    '<div class="chips">' + links + '</div></div>';
+  return PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">Recording something here does not replace the controlled procedure. Open the matching SOP, checklist, template and calculator to do the work properly.</p>' +
+    '<div class="inst-chips">' + links + '</div>',
+    { class: 'no-print' }
+  );
 };
 
 PS.wb.exportBtn = function (col, filename, headers) {
-  return '<button type="button" class="btn btn-sm btn-ghost" data-act="wb-export" data-col="' + PS.esc(col) + '">Export CSV</button>';
+  return '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="wb-export" data-col="' + PS.esc(col) + '">Export CSV</button>';
 };
 
 PS.acts['wb-export'] = function (el) {
@@ -20629,17 +20632,19 @@ PS.route('suppliers', function () {
     PS.wb.exportBtn('suppliers', 'suppliers')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Suppliers</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(totalSpend) + '</span><span class="s-lab">Recorded spend</span></div>' +
-    '<div class="stat"><span class="s-val">' + approved + '</span><span class="s-lab">Approved</span></div>' +
-    '<div class="stat"><span class="s-val">' + (byRisk.High + byRisk.Critical) + '</span><span class="s-lab">High or critical risk</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Suppliers</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(totalSpend) + '</span><span class="inst-home-hub-stat-lab">Recorded spend</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + approved + '</span><span class="inst-home-hub-stat-lab">Approved</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + (byRisk.High + byRisk.Critical) + '</span><span class="inst-home-hub-stat-lab">High or critical risk</span></div></div>' +
     '</div>';
 
   html += PS.wb.editorCard('suppliers', recs.length ? 'Add or edit a supplier' : 'Add your first supplier');
 
-  html += '<div class="card"><div class="card-head"><h2>Suppliers</h2><div class="spacer"></div>' +
-    '<span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Suppliers</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('suppliers', [
       { k: 'name', label: 'Supplier' },
       { k: 'category', label: 'Category' },
@@ -20648,8 +20653,8 @@ PS.route('suppliers', function () {
       { k: 'score', label: 'Score', num: true },
       { k: 'risk', label: 'Risk' },
       { k: 'status', label: 'Status' }
-    ], recs, 'No suppliers recorded yet. Add the first one above, or work through the supplier due diligence record and bring the result across.') +
-    '</div>';
+    ], recs, 'No suppliers recorded yet. Add the first one above, or work through the supplier due diligence record and bring the result across.')
+  );
 
   html += PS.wb.relatedStrip('suppliers');
   html += PS.disclaimer('data');
@@ -20679,28 +20684,31 @@ PS.route('contracts', function () {
     PS.wb.exportBtn('contracts', 'contracts')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Contracts</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Recorded value</span></div>' +
-    '<div class="stat"><span class="s-val">' + expiring.length + '</span><span class="s-lab">Notice due within 180 days</span></div>' +
-    '<div class="stat"><span class="s-val">' + autoRenew.length + '</span><span class="s-lab">Auto-renewing</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Contracts</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(total) + '</span><span class="inst-home-hub-stat-lab">Recorded value</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + expiring.length + '</span><span class="inst-home-hub-stat-lab">Notice due within 180 days</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + autoRenew.length + '</span><span class="inst-home-hub-stat-lab">Auto-renewing</span></div></div>' +
     '</div>';
 
   if (expiring.length) {
-    html += '<div class="card"><div class="card-head"><h2>Notice deadlines approaching</h2></div>' +
-      '<p class="card-sub">These are the dates on which you have to say something if you want to stop the renewal. A missed notice date is the most common way a good contract becomes a bad one.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Notice deadlines approaching</h2>' +
+      '<p class="inst-read">These are the dates on which you have to say something if you want to stop the renewal. A missed notice date is the most common way a good contract becomes a bad one.</p>' +
       PS.wb.tableHtml('contracts', [
         { k: 'title', label: 'Contract' },
         { k: 'supplier', label: 'Supplier' },
         { k: 'end', label: 'Expires' },
         { k: 'notice', label: 'Notice by' },
         { k: 'auto', label: 'Auto-renews' }
-      ], expiring.map(function (x) { return x.r; }), '') +
-      '</div>';
+      ], expiring.map(function (x) { return x.r; }), '')
+    );
   }
 
   html += PS.wb.editorCard('contracts', 'Add or edit a contract');
-  html += '<div class="card"><div class="card-head"><h2>Contracts</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Contracts</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('contracts', [
       { k: 'title', label: 'Contract' },
       { k: 'supplier', label: 'Supplier' },
@@ -20709,8 +20717,8 @@ PS.route('contracts', function () {
       { k: 'end', label: 'Expires' },
       { k: 'notice', label: 'Notice by' },
       { k: 'owner', label: 'Owner' }
-    ], recs, 'No contracts recorded yet. Add one above, then work through the contract review checklist.') +
-    '</div>';
+    ], recs, 'No contracts recorded yet. Add one above, then work through the contract review checklist.')
+  );
 
   html += PS.wb.relatedStrip('contracts');
   html += PS.disclaimer('policy');
@@ -20732,15 +20740,17 @@ PS.route('catalogue', function () {
     PS.wb.exportBtn('catalogue', 'catalogue')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Items</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(total) + '</span><span class="s-lab">Unit price total</span></div>' +
-    '<div class="stat"><span class="s-val">' + over + '</span><span class="s-lab">Above benchmark</span></div>' +
-    '<div class="stat"><span class="s-val">' + recs.filter(function (r) { return !r.spec; }).length + '</span><span class="s-lab">No specification recorded</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Items</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(total) + '</span><span class="inst-home-hub-stat-lab">Unit price total</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + over + '</span><span class="inst-home-hub-stat-lab">Above benchmark</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.filter(function (r) { return !r.spec; }).length + '</span><span class="inst-home-hub-stat-lab">No specification recorded</span></div></div>' +
     '</div>';
 
   html += PS.wb.editorCard('catalogue', 'Add or edit an item');
-  html += '<div class="card"><div class="card-head"><h2>Items</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Items</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('catalogue', [
       { k: 'item', label: 'Item' },
       { k: 'category', label: 'Category' },
@@ -20749,8 +20759,8 @@ PS.route('catalogue', function () {
       { k: 'benchmark', label: 'Benchmark', num: true, render: function (r) { return PS.moneyR(r.benchmark); } },
       { k: 'supplier', label: 'Supplier' },
       { k: 'spec', label: 'Specification' }
-    ], recs, 'No items recorded yet. Add one above.') +
-    '</div>';
+    ], recs, 'No items recorded yet. Add one above.')
+  );
 
   html += PS.wb.relatedStrip('catalogue');
   html += PS.disclaimer('data');
@@ -20768,37 +20778,43 @@ PS.route('approvals', function () {
     PS.wb.exportBtn('approvals', 'approvals')
   ]);
 
-  html += '<div class="card"><div class="card-head"><h2>How this works</h2></div>' +
-    '<p class="card-sub">This is your own delegation of authority and your own policy rules, recorded so that the decisions you make can be shown to be consistent. It is not a workflow engine: nothing here routes an approval, notifies anyone, or blocks a purchase. It is the reference a buyer, a budget holder and an auditor will all read, and it is only worth anything if it is written down before the argument rather than after it.</p>' +
-    '<p class="note">Set the default thresholds in <a href="#/settings">Settings</a> as well, because the PO Value Check calculator reads them from there.</p></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">How this works</h2>' +
+    '<p class="inst-read">This is your own delegation of authority and your own policy rules, recorded so that the decisions you make can be shown to be consistent. It is not a workflow engine: nothing here routes an approval, notifies anyone, or blocks a purchase. It is the reference a buyer, a budget holder and an auditor will all read, and it is only worth anything if it is written down before the argument rather than after it.</p>' +
+    '<p class="inst-note">Set the default thresholds in <a href="#/settings">Settings</a> as well, because the PO Value Check calculator reads them from there.</p>'
+  );
 
   html += PS.wb.editorCard('approvals', 'Add or edit a rule');
-  html += '<div class="card"><div class="card-head"><h2>Rules</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Rules</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('approvals', [
       { k: 'name', label: 'Rule' },
       { k: 'kind', label: 'Type' },
       { k: 'role', label: 'Role or approver' },
       { k: 'limit', label: 'Value limit', num: true, render: function (r) { return r.limit ? PS.moneyR(r.limit) : 'no limit'; } },
       { k: 'scope', label: 'Applies to' }
-    ], recs, 'No rules recorded yet. Add the first threshold above.') +
-    '</div>';
+    ], recs, 'No rules recorded yet. Add the first threshold above.')
+  );
 
   if (thresholds.length) {
-    html += '<div class="card"><div class="card-head"><h2>Approval ladder</h2><div class="spacer"></div>' +
-      '<span class="badge">lowest limit first</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Approval ladder</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">lowest limit first</span>' +
       PS.renderSimpleTable({
         headers: ['Value up to', 'Approved by', 'Applies to'],
         rows: thresholds.map(function (r) {
           return [r.limit ? PS.moneyR(r.limit) : 'No limit', r.role || 'Not stated', r.scope || 'All spend'];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   html += PS.wb.relatedStrip('approvals');
   html += PS.disclaimer('policy');
   return html;
 });
-
 /* ==========================================================
    Workbench: RFx and Evaluation
 
@@ -20973,65 +20989,82 @@ PS.route('rfx', function () {
   var crit = (ev && ev.criteria && ev.criteria.length) ? ev.criteria : PS.WB_RFX_CRITERIA;
 
   var html = PS.wb.header('RFx and evaluation', ev ? ev.title : 'No event yet', [
-    '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-new">New event</button>',
-    (ev ? '<button type="button" class="btn btn-sm btn-ghost" data-act="rfx-export">Export evaluation</button>' : '')
+    '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="rfx-new">New event</button>',
+    (ev ? '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="rfx-export">Export evaluation</button>' : '')
   ]);
 
   if (evs.length > 1) {
-    html += '<div class="card no-print"><div class="card-head"><h2>Events</h2></div><div class="chips">' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Events</h2>' +
+      '<div class="inst-chips">' +
       evs.map(function (e) {
-        return '<button type="button" class="chip' + (ev && e.id === ev.id ? ' is-on' : '') + '" data-act="rfx-pick" data-id="' + PS.esc(e.id) + '">' + PS.esc(e.title) + '</button>';
-      }).join('') + '</div></div>';
+        return '<button type="button" class="inst-chip' + (ev && e.id === ev.id ? ' is-on' : '') + '" data-act="rfx-pick" data-id="' + PS.esc(e.id) + '">' + PS.esc(e.title) + '</button>';
+      }).join('') + '</div>',
+      { class: 'no-print' }
+    );
   }
 
   if (!ev) {
-    html += '<div class="card"><div class="card-head"><h2>Start an event</h2></div>' +
-      '<p class="card-sub">Create the event, fix the evaluation criteria and their weights, then add the bids you received. The award recommendation at the end is the record you will be asked to defend.</p>' +
-      PS.rfx.eventForm(null) + '</div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Start an event</h2>' +
+      '<p class="inst-read">Create the event, fix the evaluation criteria and their weights, then add the bids you received. The award recommendation at the end is the record you will be asked to defend.</p>' +
+      PS.rfx.eventForm(null)
+    );
     html += PS.rfx.libraryStrip();
     html += PS.disclaimer('policy');
     return html;
   }
 
   /* --- event --- */
-  html += '<div class="card"><div class="card-head"><h2>The event</h2><div class="spacer"></div>' +
-    '<span class="badge">' + PS.esc(ev.method || 'RFQ') + '</span>' +
-    (ev.deadline ? '<span class="badge">Closes ' + PS.esc(ev.deadline) + '</span>' : '') +
-    '<button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-event" data-id="' + PS.esc(ev.id) + '">Delete event</button></div>' +
-    PS.rfx.eventForm(ev) + '</div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The event</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + PS.esc(ev.method || 'RFQ') + '</span>' +
+    (ev.deadline ? '<span class="inst-badge">Closes ' + PS.esc(ev.deadline) + '</span>' : '') +
+    '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm inst-home-btn--danger" data-act="rfx-delete-event" data-id="' + PS.esc(ev.id) + '">Delete event</button>' +
+    PS.rfx.eventForm(ev)
+  );
 
   /* --- criteria and weights --- */
   var weightTotal = crit.reduce(function (a, c) { return a + (PS.num(c.weight) || 0); }, 0);
-  html += '<div class="card"><div class="card-head"><h2>Evaluation criteria and weights</h2><div class="spacer"></div>' +
-    '<span class="badge' + (weightTotal === 100 ? '' : ' badge-warn') + '">total ' + weightTotal + '%</span></div>' +
-    '<p class="card-sub">These are the criteria you told the bidders you would use. Set them before the bids come in, and do not change them afterwards: an evaluation weighted after the bids are read is not a process, it is a justification written at the end.</p>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Evaluation criteria and weights</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge' + (weightTotal === 100 ? '' : ' inst-badge--warn') + '">total ' + weightTotal + '%</span>' +
+    '<p class="inst-read">These are the criteria you told the bidders you would use. Set them before the bids come in, and do not change them afterwards: an evaluation weighted after the bids are read is not a process, it is a justification written at the end.</p>' +
     '<form id="rfxWeightForm">' +
-    '<div class="grid grid-3">' + crit.map(function (c) {
-      return '<div class="field"><label for="rw_' + c.key + '">' + PS.esc(c.label) + ' (%)</label>' +
+    '<div class="inst-grid inst-grid-3">' + crit.map(function (c) {
+      return '<div class="inst-field"><label for="rw_' + c.key + '">' + PS.esc(c.label) + ' (%)</label>' +
         '<input type="number" id="rw_' + c.key + '" data-rw="' + c.key + '" value="' + PS.esc(c.weight) + '" min="0" max="100" step="5"></div>';
     }).join('') + '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-set-weights">Save weights</button></div>' +
-    '</form></div>';
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-set-weights">Save weights</button></div>' +
+    '</form>'
+  );
 
   /* --- bids --- */
   var bids = PS.wb.list('rfxBids').filter(function (b) { return b.eventId === ev.id; });
   var ranked = PS.rfx.rank(Object.assign({}, ev, { bids: bids }));
   var spread = PS.rfx.spread(ranked);
 
-  html += '<div class="card"><div class="card-head"><h2>Bids</h2><div class="spacer"></div>' +
-    '<span class="badge">' + bids.length + ' received</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Bids</h2>' +
+    '<div class="spacer"></div>' +
+    '<span class="inst-badge">' + bids.length + ' received</span>' +
     (bids.length ? PS.rfx.bidTable(ev, crit, ranked) : '') +
-    '<h3 style="margin-top:18px">' + (bids.length ? 'Add or replace a bid' : 'Add the first bid') + '</h3>' +
-    PS.rfx.bidForm(ev, crit) + '</div>';
+    '<h3 style="margin-top:var(--space-4)">' + (bids.length ? 'Add or replace a bid' : 'Add the first bid') + '</h3>' +
+    PS.rfx.bidForm(ev, crit)
+  );
 
   /* --- result --- */
   if (ranked.length) {
     var top = ranked[0];
     var bestLanded = Math.min.apply(null, ranked.map(function (r) { return r.landed.total; }));
     var cheapest = ranked.filter(function (r) { return r.landed.total === bestLanded; })[0];
-    html += '<div class="card"><div class="card-head"><h2>Evaluation result</h2><div class="spacer"></div>' +
-      '<span class="badge">' + ranked.length + ' bids scored</span></div>' +
-      '<p class="card-sub">The recommended award is the highest weighted score. The commercial spread tells you how much the evaluation is actually choosing between, and whether the score is doing the work or the price is.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Evaluation result</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + ranked.length + ' bids scored</span>' +
+      '<p class="inst-read">The recommended award is the highest weighted score. The commercial spread tells you how much the evaluation is actually choosing between, and whether the score is doing the work or the price is.</p>' +
       PS.renderSimpleTable({
         headers: ['Rank', 'Supplier', 'Landed cost', 'Weighted score', 'Lead time', 'Verdict'],
         rows: ranked.map(function (r, i) {
@@ -21046,7 +21079,7 @@ PS.route('rfx', function () {
           ];
         })
       }) +
-      '<div class="alert alert-info" style="margin-top:14px"><strong>Recommended award: ' + PS.esc(top.bid.supplier) + '</strong>' +
+      '<div class="inst-note" style="margin-top:var(--space-3)"><strong>Recommended award: ' + PS.esc(top.bid.supplier) + '</strong>' +
       'Weighted score ' + top.score.toFixed(2) + ' out of 10, landed cost ' + PS.moneyR(top.landed.total) + '. ' +
       (cheapest && cheapest.bid.supplier !== top.bid.supplier
         ? 'Note that ' + PS.esc(cheapest.bid.supplier) + ' is the lowest landed cost at ' + PS.moneyR(cheapest.landed.total) + '. You are choosing to pay ' +
@@ -21054,15 +21087,16 @@ PS.route('rfx', function () {
         : 'This supplier is also the lowest landed cost, so the commercial and the scored positions agree.') +
       (spread > 0 ? ' The spread between the best and worst landed cost across ' + ranked.length + ' bids is ' + PS.moneyR(spread) + '.' : '') +
       '</div>' +
-      '<div class="btn-row no-print">' +
-      '<a class="btn" href="#/tpl/tpl-award-recommendation">Open the award recommendation record</a>' +
-      '<a class="btn" href="#/calc/calc-compare-quotes">Check the quotes on landed cost</a>' +
-      '<a class="btn" href="#/tpl/tpl-weighted-scoring">Open the weighted scoring model</a>' +
-      '<button type="button" class="btn btn-ghost" data-act="wb-signoff" data-col="rfx" data-id="' + PS.esc(ev.id) + '" data-note="Award recommendation">Record the sign-off</button>' +
-      '</div>';
+      '<div class="inst-btn-row no-print">' +
+      '<a class="inst-home-btn inst-home-btn--primary" href="#/tpl/tpl-award-recommendation">Open the award recommendation record</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/calc/calc-compare-quotes">Check the quotes on landed cost</a>' +
+      '<a class="inst-home-btn inst-home-btn--ghost" href="#/tpl/tpl-weighted-scoring">Open the weighted scoring model</a>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost" data-act="wb-signoff" data-col="rfx" data-id="' + PS.esc(ev.id) + '" data-note="Award recommendation">Record the sign-off</button>' +
+      '</div>'
+    );
     var sos = PS.wb.signoffsFor('rfx', ev.id);
     if (sos.length) {
-      html += '<h3>Sign-offs</h3>' + PS.renderSimpleTable({
+      html += '<h3 class="inst-title">Sign-offs</h3>' + PS.renderSimpleTable({
         headers: ['Approved by', 'When', 'Note'],
         rows: sos.map(function (s) { return [s.approver, PS.dateTime(s.at), s.note || '']; })
       });
@@ -21082,16 +21116,16 @@ PS.acts['rfx-pick'] = function (el) {
 PS.rfx.eventForm = function (ev) {
   ev = ev || {};
   return '<form id="rfxEventForm" data-id="' + PS.esc(ev.id || '') + '">' +
-    '<div class="grid grid-2">' +
-    '<div class="field"><label for="rfxTitle">Event name</label><input type="text" id="rfxTitle" data-rf="title" value="' + PS.esc(ev.title || '') + '" maxlength="140" placeholder="Packaging supply, 2026"></div>' +
-    '<div class="field"><label for="rfxMethod">Method</label><select id="rfxMethod" data-rf="method">' +
+    '<div class="inst-grid inst-grid-2">' +
+    '<div class="inst-field"><label for="rfxTitle">Event name</label><input type="text" id="rfxTitle" data-rf="title" value="' + PS.esc(ev.title || '') + '" maxlength="140" placeholder="Packaging supply, 2026"></div>' +
+    '<div class="inst-field"><label for="rfxMethod">Method</label><select id="rfxMethod" data-rf="method">' +
     ['RFQ', 'RFP', 'RFI'].map(function (m) { return '<option' + (ev.method === m ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select></div>' +
-    '<div class="field"><label for="rfxCat">Category</label><input type="text" id="rfxCat" data-rf="category" value="' + PS.esc(ev.category || '') + '" maxlength="80"></div>' +
-    '<div class="field"><label for="rfxDeadline">Submission deadline</label><input type="date" id="rfxDeadline" data-rf="deadline" value="' + PS.esc(ev.deadline || '') + '"></div>' +
-    '<div class="field"><label for="rfxBudget">Budget or ceiling</label><input type="number" id="rfxBudget" data-rf="budget" value="' + PS.esc(ev.budget === undefined || ev.budget === null ? '' : ev.budget) + '" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rfxNotes">Notes</label><input type="text" id="rfxNotes" data-rf="notes" value="' + PS.esc(ev.notes || '') + '" maxlength="240"></div>' +
+    '<div class="inst-field"><label for="rfxCat">Category</label><input type="text" id="rfxCat" data-rf="category" value="' + PS.esc(ev.category || '') + '" maxlength="80"></div>' +
+    '<div class="inst-field"><label for="rfxDeadline">Submission deadline</label><input type="date" id="rfxDeadline" data-rf="deadline" value="' + PS.esc(ev.deadline || '') + '"></div>' +
+    '<div class="inst-field"><label for="rfxBudget">Budget or ceiling</label><input type="number" id="rfxBudget" data-rf="budget" value="' + PS.esc(ev.budget === undefined || ev.budget === null ? '' : ev.budget) + '" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rfxNotes">Notes</label><input type="text" id="rfxNotes" data-rf="notes" value="' + PS.esc(ev.notes || '') + '" maxlength="240"></div>' +
     '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-event">Save event</button></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-save-event">Save event</button></div>' +
     '</form>';
 };
 
@@ -21112,27 +21146,27 @@ PS.rfx.bidTable = function (ev, crit, ranked) {
       '<td class="num"><strong>' + PS.moneyR(l.total) + '</strong></td>' +
       crit.map(function (c) { return '<td class="num">' + PS.esc(PS.num(b.scores && b.scores[c.key]) || 0) + '</td>'; }).join('') +
       '<td class="num"><strong>' + sc.toFixed(2) + '</strong></td>' +
-      '<td class="num"><button type="button" class="btn btn-sm btn-danger" data-act="rfx-delete-bid" data-id="' + PS.esc(b.id) + '">Remove</button></td></tr>';
+      '<td class="num"><button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm inst-home-btn--danger" data-act="rfx-delete-bid" data-id="' + PS.esc(b.id) + '">Remove</button></td></tr>';
   }).join('');
   return '<div class="table-wrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
-    '<p class="note">Score each criterion from 0 to 10. The weighted score is the sum of score times weight, divided by the total weight, so it is always out of ten and stays comparable if the weights are changed.</p>';
+    '<p class="inst-note">Score each criterion from 0 to 10. The weighted score is the sum of score times weight, divided by the total weight, so it is always out of ten and stays comparable if the weights are changed.</p>';
 };
 
 PS.rfx.bidForm = function (ev, crit) {
-  return '<form id="rfxBidForm" data-id=""><div class="grid grid-3">' +
-    '<div class="field"><label for="rbSupplier">Supplier</label><input type="text" id="rbSupplier" data-rb="supplier" maxlength="120"></div>' +
-    '<div class="field"><label for="rbQty">Quantity</label><input type="number" id="rbQty" data-rb="qty" step="any" min="0"></div>' +
-    '<div class="field"><label for="rbPrice">Unit price</label><input type="number" id="rbPrice" data-rb="price" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rbFreight">Freight (total)</label><input type="number" id="rbFreight" data-rb="freight" step="0.01" min="0"></div>' +
-    '<div class="field"><label for="rbDuty">Duty %</label><input type="number" id="rbDuty" data-rb="dutyPct" step="0.1" min="0" max="100"></div>' +
-    '<div class="field"><label for="rbLead">Lead time (days)</label><input type="number" id="rbLead" data-rb="lead" step="1" min="0"></div>' +
+  return '<form id="rfxBidForm" data-id=""><div class="inst-grid inst-grid-3">' +
+    '<div class="inst-field"><label for="rbSupplier">Supplier</label><input type="text" id="rbSupplier" data-rb="supplier" maxlength="120"></div>' +
+    '<div class="inst-field"><label for="rbQty">Quantity</label><input type="number" id="rbQty" data-rb="qty" step="any" min="0"></div>' +
+    '<div class="inst-field"><label for="rbPrice">Unit price</label><input type="number" id="rbPrice" data-rb="price" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rbFreight">Freight (total)</label><input type="number" id="rbFreight" data-rb="freight" step="0.01" min="0"></div>' +
+    '<div class="inst-field"><label for="rbDuty">Duty %</label><input type="number" id="rbDuty" data-rb="dutyPct" step="0.1" min="0" max="100"></div>' +
+    '<div class="inst-field"><label for="rbLead">Lead time (days)</label><input type="number" id="rbLead" data-rb="lead" step="1" min="0"></div>' +
     crit.map(function (c) {
-      return '<div class="field"><label for="rs_' + c.key + '">' + PS.esc(c.label) + ' (0-10)</label>' +
+      return '<div class="inst-field"><label for="rs_' + c.key + '">' + PS.esc(c.label) + ' (0-10)</label>' +
         '<input type="number" id="rs_' + c.key + '" data-rs="' + c.key + '" step="0.5" min="0" max="10"></div>';
     }).join('') +
-    '<div class="field"><label for="rbNotes">Notes</label><input type="text" id="rbNotes" data-rb="notes" maxlength="240"></div>' +
+    '<div class="inst-field"><label for="rbNotes">Notes</label><input type="text" id="rbNotes" data-rb="notes" maxlength="240"></div>' +
     '</div>' +
-    '<div class="btn-row no-print"><button type="button" class="btn btn-primary" data-act="rfx-save-bid">Add bid</button></div>' +
+    '<div class="inst-btn-row no-print"><button type="button" class="inst-home-btn inst-home-btn--primary" data-act="rfx-save-bid">Add bid</button></div>' +
     '</form>';
 };
 
@@ -21148,13 +21182,15 @@ PS.rfx.libraryStrip = function () {
   ].map(function (l) {
     var o = PS.byId(l.type, l.id);
     if (!o) return '';
-    return '<a class="chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + (o.title || o.term)) + '</a>';
+    return '<a class="inst-chip" href="' + PS.routeFor(l.type, l.id) + '">' + PS.esc(PS.typeLabel(l.type) + ': ' + (o.title || o.term)) + '</a>';
   }).filter(Boolean).join('');
-  return '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">Run the event properly with the controlled documents: the solicitation pack, the evaluation sheets, the scoring model and the award recommendation.</p>' +
-    '<div class="chips">' + links + '</div></div>';
+  return PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">Run the event properly with the controlled documents: the solicitation pack, the evaluation sheets, the scoring model and the award recommendation.</p>' +
+    '<div class="inst-chips">' + links + '</div>',
+    { class: 'no-print' }
+  );
 };
-
 /* ==========================================================
    Workbench: receipts and invoicing, budget and spend, analytics
 
@@ -21238,27 +21274,32 @@ PS.route('receipts', function () {
     PS.wb.exportBtn('receipts', 'receipts')
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + recs.length + '</span><span class="s-lab">Workpapers</span></div>' +
-    '<div class="stat"><span class="s-val">' + matched + '</span><span class="s-lab">Matched</span></div>' +
-    '<div class="stat"><span class="s-val">' + exceptions + '</span><span class="s-lab">With exceptions</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Total exposure</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + recs.length + '</span><span class="inst-home-hub-stat-lab">Workpapers</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + matched + '</span><span class="inst-home-hub-stat-lab">Matched</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + exceptions + '</span><span class="inst-home-hub-stat-lab">With exceptions</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(exposure) + '</span><span class="inst-home-hub-stat-lab">Total exposure</span></div></div>' +
     '</div>';
 
   if (dupes.length) {
-    html += '<div class="card"><div class="card-head"><h2>Possible duplicate invoices</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + dupes.length + '</span></div>' +
-      '<p class="card-sub">The same supplier, invoice reference and amount appear more than once. That is the shape of a double payment, and it is worth a phone call before it is a credit note.</p>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Possible duplicate invoices</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + dupes.length + '</span>' +
+      '<p class="inst-read">The same supplier, invoice reference and amount appear more than once. That is the shape of a double payment, and it is worth a phone call before it is a credit note.</p>' +
       PS.renderSimpleTable({
         headers: ['Supplier', 'Invoice', 'Amount', 'Also recorded as'],
         rows: dupes.map(function (d) {
           return [d.rec.supplier, d.rec.invoiceRef, PS.moneyR((PS.num(d.rec.invUnitPrice) || 0) * (PS.num(d.rec.invQty) || 0)), d.first.id];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   html += PS.wb.editorCard('receipts', 'Add or edit a match workpaper');
-  html += '<div class="card"><div class="card-head"><h2>Workpapers</h2><div class="spacer"></div><span class="badge">' + recs.length + ' records</span></div>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Workpapers</h2>' +
+    '<div class="spacer"></div><span class="inst-badge">' + recs.length + ' records</span>' +
     PS.wb.tableHtml('receipts', [
       { k: 'ref', label: 'PO reference' },
       { k: 'supplier', label: 'Supplier' },
@@ -21268,30 +21309,36 @@ PS.route('receipts', function () {
       { k: 'receivedQty', label: 'Received', num: true },
       { k: 'invQty', label: 'Invoiced', num: true },
       { k: 'status', label: 'Result', render: function (r) { return PS.rcpt.match(r).status; } }
-    ], recs, 'No match workpapers yet. Add one above: the order, the receipt and the invoice are three numbers, and the variance between them is the finding.') +
-    '</div>';
+    ], recs, 'No match workpapers yet. Add one above: the order, the receipt and the invoice are three numbers, and the variance between them is the finding.')
+  );
 
   var withIssues = recs.filter(function (r) { return PS.rcpt.match(r).issues.length; });
   if (withIssues.length) {
-    html += '<div class="card"><div class="card-head"><h2>Exceptions</h2><div class="spacer"></div>' +
-      '<span class="badge">' + withIssues.length + ' open</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Exceptions</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + withIssues.length + ' open</span>' +
       PS.renderSimpleTable({
         headers: ['PO', 'Supplier', 'Price variance', 'Quantity variance', 'Uncontracted', 'Total'],
         rows: withIssues.map(function (r) {
           var m = PS.rcpt.match(r);
           return [r.ref, r.supplier, PS.moneyR(m.priceVariance), PS.moneyR(m.qtyVariance), PS.moneyR(m.uncontracted), PS.moneyR(m.total)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<p class="card-sub">This workpaper finds the variance. It does not release a payment and it does not record that one was made. The controlled process is separate.</p>' +
-    '<div class="chips">' +
-    '<a class="chip" href="#/sop/sop-procurement-audit">SOP: Procurement Audit</a>' +
-    '<a class="chip" href="#/cl/cl-procurement-file-completeness">Checklist: File completeness</a>' +
-    '<a class="chip" href="#/tpl/tpl-exception-request">Template: Exception request</a>' +
-    '<a class="chip" href="#/kpi/kpi-contract-compliance">KPI: Contract compliance</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<p class="inst-read">This workpaper finds the variance. It does not release a payment and it does not record that one was made. The controlled process is separate.</p>' +
+    '<div class="inst-chips">' +
+    '<a class="inst-chip" href="#/sop/sop-procurement-audit">SOP: Procurement Audit</a>' +
+    '<a class="inst-chip" href="#/cl/cl-procurement-file-completeness">Checklist: File completeness</a>' +
+    '<a class="inst-chip" href="#/tpl/tpl-exception-request">Template: Exception request</a>' +
+    '<a class="inst-chip" href="#/kpi/kpi-contract-compliance">KPI: Contract compliance</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('finance');
   return html;
 });
@@ -21311,18 +21358,19 @@ PS.route('budget', function () {
 
   var html = PS.wb.header('Budget and spend', lines.length + ' budget lines', [
     PS.wb.exportBtn('budget', 'budget'),
-    '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a>'
+    '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/spend-model">Edit the spend model</a>'
   ]);
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(budgetTotal) + '</span><span class="s-lab">Budget</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(committedTotal) + '</span><span class="s-lab">Committed</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(actualTotal) + '</span><span class="s-lab">Spent</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(available) + '</span><span class="s-lab">Available</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(budgetTotal) + '</span><span class="inst-home-hub-stat-lab">Budget</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(committedTotal) + '</span><span class="inst-home-hub-stat-lab">Committed</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(actualTotal) + '</span><span class="inst-home-hub-stat-lab">Spent</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + PS.moneyR(available) + '</span><span class="inst-home-hub-stat-lab">Available</span></div></div>' +
     '</div>';
 
-  html += '<div class="card"><div class="card-head"><h2>Budget position</h2></div>' +
-    '<p class="card-sub">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title">Budget position</h2>' +
+    '<p class="inst-read">Committed is money you have signed for and not yet paid for. Spent is money invoiced and paid. The difference between the two is the number that surprises people at quarter end, because commitments are rarely visible in the same place as spend.</p>' +
     (lines.length ? PS.wb.tableHtml('budget', [
       { label: 'Line', k: 'line' },
       { label: 'Category', k: 'category' },
@@ -21332,33 +21380,40 @@ PS.route('budget', function () {
       { label: 'Spent', num: true, render: function (l) { return PS.moneyR(PS.num(l.actual) || 0); } },
       { label: 'Available', num: true, render: function (l) { return PS.moneyR((PS.num(l.budget) || 0) - (PS.num(l.committed) || 0) - (PS.num(l.actual) || 0)); } },
       { label: 'Used', num: true, render: function (l) { var b = PS.num(l.budget) || 0; return b > 0 ? Math.round(((PS.num(l.committed) || 0) + (PS.num(l.actual) || 0)) / b * 100) + '%' : ''; } }
-    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.')) +
-    '</div>';
+    ], lines, 'No budget lines yet.') : PS.empty('No budget lines yet. Add one above, or work from the spend model below.'))
+  );
 
   html += PS.wb.editorCard('budget', 'Add or edit a budget line');
 
   if (spend && spend.categories && spend.categories.length) {
     var suppliers = PS.spendModel.suppliers(spend);
-    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2><div class="spacer"></div>' +
-      '<a class="btn btn-sm btn-ghost" href="#/spend-model">Edit the spend model</a></div>' +
-      '<p class="card-sub">From the spend model: ' + spend.categories.length + ' categories across ' + suppliers.length + ' suppliers, totalling ' + PS.moneyR(PS.spendModel.total(spend)) + '.</p>' +
-      PS.spendModel.chartsHtml(spend) +
-      '</div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Where the spend sits</h2>' +
+      '<div class="spacer"></div>' +
+      '<a class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" href="#/spend-model">Edit the spend model</a>' +
+      '<p class="inst-read">From the spend model: ' + spend.categories.length + ' categories across ' + suppliers.length + ' suppliers, totalling ' + PS.moneyR(PS.spendModel.total(spend)) + '.</p>' +
+      PS.spendModel.chartsHtml(spend)
+    );
   } else {
-    html += '<div class="card"><div class="card-head"><h2>Where the spend sits</h2></div>' +
-      '<p class="card-sub">There is no spend model yet. The spend model is the category and supplier hierarchy that the Pareto and Kraljic views are drawn from, and it is the input to any budget position.</p>' +
-      '<a class="btn btn-primary" href="#/spend-model">Build the spend model</a></div>';
+    html += PS.ui.card(
+      '<h2 class="inst-title">Where the spend sits</h2>' +
+      '<p class="inst-read">There is no spend model yet. The spend model is the category and supplier hierarchy that the Pareto and Kraljic views are drawn from, and it is the input to any budget position.</p>' +
+      '<a class="inst-home-btn inst-home-btn--primary" href="#/spend-model">Build the spend model</a>'
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>The procedure that goes with this</h2></div>' +
-    '<div class="chips">' +
-    '<a class="chip" href="#/calc/calc-budget-vs-actual">Calculator: Budget vs actual</a>' +
-    '<a class="chip" href="#/calc/calc-savings-analysis">Calculator: Savings analysis</a>' +
-    '<a class="chip" href="#/sop/sop-savings-calculation">SOP: Savings calculation</a>' +
-    '<a class="chip" href="#/cl/cl-savings-validation">Checklist: Savings validation</a>' +
-    '<a class="chip" href="#/dash-savings">Savings dashboard</a>' +
-    '<a class="chip" href="#/kpi/kpi-sum">KPI: Spend under management</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">The procedure that goes with this</h2>' +
+    '<div class="inst-chips">' +
+    '<a class="inst-chip" href="#/calc/calc-budget-vs-actual">Calculator: Budget vs actual</a>' +
+    '<a class="inst-chip" href="#/calc/calc-savings-analysis">Calculator: Savings analysis</a>' +
+    '<a class="inst-chip" href="#/sop/sop-savings-calculation">SOP: Savings calculation</a>' +
+    '<a class="inst-chip" href="#/cl/cl-savings-validation">Checklist: Savings validation</a>' +
+    '<a class="inst-chip" href="#/dash-savings">Savings dashboard</a>' +
+    '<a class="inst-chip" href="#/kpi/kpi-sum">KPI: Spend under management</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('finance');
   return html;
 });
@@ -21401,35 +21456,38 @@ PS.route('analytics', function () {
 
   var html = PS.wb.header('Analytics', 'Everything you have recorded, in one place');
 
-  html += '<div class="grid grid-4 mb16">' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(spendTotal) + '</span><span class="s-lab">Spend modelled</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(contractValue) + '</span><span class="s-lab">Contract value recorded</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(savingsTotal) + '</span><span class="s-lab">Savings recorded</span></div>' +
-    '<div class="stat"><span class="s-val">' + (budgetTotal > 0 ? Math.round(spent / budgetTotal * 100) + '%' : '—') + '</span><span class="s-lab">Budget used</span></div>' +
-    '<div class="stat"><span class="s-val">' + PS.moneyR(exposure) + '</span><span class="s-lab">Match exposure</span></div>' +
+  html += '<div class="inst-grid inst-grid-4 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(spendTotal) + '</span><span class="inst-home-hub-stat-lab">Spend modelled</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.moneyR(contractValue) + '</span><span class="inst-home-hub-stat-lab">Contract value recorded</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--ok"><span class="inst-home-hub-stat-val">' + PS.moneyR(savingsTotal) + '</span><span class="inst-home-hub-stat-lab">Savings recorded</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + (budgetTotal > 0 ? Math.round(spent / budgetTotal * 100) + '%' : '\u2014') + '</span><span class="inst-home-hub-stat-lab">Budget used</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat inst-home-hub-stat--warn"><span class="inst-home-hub-stat-val">' + PS.moneyR(exposure) + '</span><span class="inst-home-hub-stat-lab">Match exposure</span></div></div>' +
     '</div>';
 
   /* spend by category */
   var cats = Object.keys(catTotals).sort(function (a, b) { return catTotals[b] - catTotals[a]; });
   if (cats.length) {
-    html += '<div class="card"><div class="card-head"><h2>Spend by category</h2><div class="spacer"></div>' +
-      '<span class="badge">' + cats.length + ' categories</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Spend by category</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge">' + cats.length + ' categories</span>' +
       PS.renderSimpleTable({
         headers: ['Category', 'Spend', 'Share'],
         rows: cats.map(function (c) {
           return [c, PS.moneyR(catTotals[c]), spendTotal > 0 ? Math.round(catTotals[c] / spendTotal * 100) + '%' : ''];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   /* portfolio position */
-  html += '<div class="grid grid-2 mb16">' +
-    '<div class="card"><div class="card-head"><h2>Supplier risk</h2></div>' +
+  html += '<div class="inst-grid inst-grid-2 mb16">' +
+    '<div class="inst-card"><div class="inst-card-head"><h2 class="inst-title">Supplier risk</h2></div>' +
     (suppliers.length ? PS.renderSimpleTable({
       headers: ['Tier', 'Suppliers'],
       rows: Object.keys(risk).map(function (k) { return [k, risk[k]]; })
     }) : PS.empty('No suppliers recorded yet.')) + '</div>' +
-    '<div class="card"><div class="card-head"><h2>Open positions</h2></div>' +
+    '<div class="inst-card"><div class="inst-card-head"><h2 class="inst-title">Open positions</h2></div>' +
     PS.renderSimpleTable({
       headers: ['Area', 'Open'],
       rows: [
@@ -21443,51 +21501,61 @@ PS.route('analytics', function () {
 
   /* exceptions and expiries */
   if (expiring.length) {
-    html += '<div class="card"><div class="card-head"><h2>Contracts expiring</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + expiring.length + '</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Contracts expiring</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + expiring.length + '</span>' +
       PS.renderSimpleTable({
         headers: ['Contract', 'Supplier', 'Expires', 'Value'],
         rows: expiring.map(function (c) { return [c.title, c.supplier, c.end, PS.moneyR(c.value)]; })
-      }) + '</div>';
+      })
+    );
   }
   if (openExceptions.length) {
-    html += '<div class="card"><div class="card-head"><h2>Match exceptions</h2><div class="spacer"></div>' +
-      '<span class="badge badge-warn">' + openExceptions.length + '</span></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Match exceptions</h2>' +
+      '<div class="spacer"></div>' +
+      '<span class="inst-badge inst-badge--warn">' + openExceptions.length + '</span>' +
       PS.renderSimpleTable({
         headers: ['PO', 'Supplier', 'Exception', 'Amount'],
         rows: openExceptions.map(function (r) {
           var m = PS.rcpt.match(r);
           return [r.ref, r.supplier, m.status, PS.moneyR(m.total)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
   /* pipeline */
   if (events.length) {
-    html += '<div class="card"><div class="card-head"><h2>Sourcing pipeline</h2></div>' +
+    html += PS.ui.card(
+      '<h2 class="inst-title">Sourcing pipeline</h2>' +
       PS.renderSimpleTable({
         headers: ['Event', 'Method', 'Closes', 'Bids', 'Budget'],
         rows: events.map(function (e) {
           var n = bids.filter(function (b) { return b.eventId === e.id; }).length;
           return [e.title, e.method || '', e.deadline || '', n, PS.moneyR(e.budget)];
         })
-      }) + '</div>';
+      })
+    );
   }
 
-  html += '<div class="card no-print"><div class="card-head"><h2>Where this comes from</h2></div>' +
-    '<p class="card-sub">Every number on this page is computed from records you entered in the workbenches, or from the spend model and the saved work in this browser. Nothing is fetched and nothing is sent.</p>' +
-    '<div class="btn-row">' +
-    '<a class="btn" href="#/suppliers">Supplier register</a>' +
-    '<a class="btn" href="#/contracts">Contract register</a>' +
-    '<a class="btn" href="#/rfx">RFx and evaluation</a>' +
-    '<a class="btn" href="#/receipts">Receipts and invoicing</a>' +
-    '<a class="btn" href="#/budget">Budget and spend</a>' +
-    '<a class="btn" href="#/spend-model">Spend data model</a>' +
-    '</div></div>';
+  html += PS.ui.card(
+    '<h2 class="inst-title">Where this comes from</h2>' +
+    '<p class="inst-read">Every number on this page is computed from records you entered in the workbenches, or from the spend model and the saved work in this browser. Nothing is fetched and nothing is sent.</p>' +
+    '<div class="inst-btn-row">' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/suppliers">Supplier register</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/contracts">Contract register</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/rfx">RFx and evaluation</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/receipts">Receipts and invoicing</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/budget">Budget and spend</a>' +
+    '<a class="inst-home-btn inst-home-btn--primary" href="#/spend-model">Spend data model</a>' +
+    '</div>',
+    { class: 'no-print' }
+  );
   html += PS.disclaimer('data');
   return html;
 });
-
 /* ==========================================================
    Section M: content registries and data normalisation
    (Section 54: internal content structure)
