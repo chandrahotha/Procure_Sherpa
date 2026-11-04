@@ -1,0 +1,562 @@
+
+> procure-sherpa@3.0.0 test
+> node tools/preflight.mjs && node build.mjs && node tools/check_workflows.mjs && node tools/test_unit.mjs && node tools/test_calcs.mjs && node tools/test_calc_values.mjs && node tools/smoke.mjs && node tools/test_layout.mjs && node tools/test_integrity.mjs
+
+--- preflight ---
+  ok  node 22.23.4 (declared minimum major: 22)
+  ok  eslint 9.39.5 and 3 declared dev packages resolved
+  ok  minimatch 11.0.3 (pinned by overrides: ^11.0.1)
+  ok  pre-push hook wired and executable
+PREFLIGHT: PASS
+assembled 227 fragments -> ProcureSherpa-v2.0.html (build 71088b9c7fba)
+OK   JS syntax compiles (3961885 chars)
+OK   document skeleton present (4049.4 KB)
+INFO content registrations: {"PS_KB":1,"PS_SOPS":1,"PS_CL":1,"PS_TPL":1,"PS_DEC":1,"PS_KPI":1,"PS_GLOSS":1,"PS_SCEN":1,"PS_CALC":19,"PS_HELP":11}
+INFO routes defined: academy, academy-progress, analytics, approvals, assessment, audit, backup, budget, calc, career-paths, catalogue, certificate, cl, community, contracts, copilot, daily-tip, dash, dash-savings, dec, docpack, exam, exams, fav, glossary, help, home, k, kpi, labs, learning-paths, lifecycle, list, maturity, next-up, notfound, operations, portfolio, quickstart, receipts, recent, reflection, revise, rfx, saved, scen, scenarios, search, settings, sop, spend-model, suppliers, tpl, what, whats-new
+INFO action handlers: 151
+
+VALIDATION PASSED
+WARN: compressed bundle 1112 KB is past the 979 KB soft threshold (85% of the 1152 KB ceiling). Still passing, but worth planning ahead for what happens when this hits the hard limit.
+perf budget: 1112 KB compressed (ceiling 1152 KB, 3 s at 3 Mbps 4G); 4050 KB uncompressed - ok
+--- workflow file gate ---
+workflows: 2
+
+  PASS  deploy.yml (Deploy) has no forbidden contexts in its conditions
+  PASS  qa.yml (QA) has no forbidden contexts in its conditions
+  PASS  every workflow_run trigger names a workflow that exists (QA)
+
+WORKFLOW GATE: PASS
+TAP version 13
+# Subtest: the artifact defines every function under test
+ok 1 - the artifact defines every function under test
+  ---
+  duration_ms: 1.286849
+  type: 'test'
+  ...
+# Subtest: esc: escapes HTML entities
+ok 2 - esc: escapes HTML entities
+  ---
+  duration_ms: 0.151983
+  type: 'test'
+  ...
+# Subtest: escAttr cannot escape differently from esc
+ok 3 - escAttr cannot escape differently from esc
+  ---
+  duration_ms: 0.149942
+  type: 'test'
+  ...
+# Subtest: clean: strips control characters and trims
+ok 4 - clean: strips control characters and trims
+  ---
+  duration_ms: 0.1167
+  type: 'test'
+  ...
+# Subtest: clean: respects max length
+ok 5 - clean: respects max length
+  ---
+  duration_ms: 0.098087
+  type: 'test'
+  ...
+# Subtest: num: parses the formats a procurement user actually types
+ok 6 - num: parses the formats a procurement user actually types
+  ---
+  duration_ms: 0.112771
+  type: 'test'
+  ...
+# Subtest: num: returns NaN rather than a plausible 0 for input it cannot trust
+ok 7 - num: returns NaN rather than a plausible 0 for input it cannot trust
+  ---
+  duration_ms: 0.144903
+  type: 'test'
+  ...
+# Subtest: clamp: constrains values
+ok 8 - clamp: constrains values
+  ---
+  duration_ms: 0.106886
+  type: 'test'
+  ...
+# Subtest: round: rounds to the requested decimals
+ok 9 - round: rounds to the requested decimals
+  ---
+  duration_ms: 0.301172
+  type: 'test'
+  ...
+# Subtest: round: refuses to invent a number out of a non-finite one
+ok 10 - round: refuses to invent a number out of a non-finite one
+  ---
+  duration_ms: 0.302138
+  type: 'test'
+  ...
+# Subtest: group: formats with thousands separators
+ok 11 - group: formats with thousands separators
+  ---
+  duration_ms: 0.27638
+  type: 'test'
+  ...
+# Subtest: group: shows an em dash, not a fake zero, for a value that does not exist
+ok 12 - group: shows an em dash, not a fake zero, for a value that does not exist
+  ---
+  duration_ms: 0.078361
+  type: 'test'
+  ...
+# Subtest: group: respects decimal places
+ok 13 - group: respects decimal places
+  ---
+  duration_ms: 0.07842
+  type: 'test'
+  ...
+# Subtest: csvCell: prevents spreadsheet formula injection
+ok 14 - csvCell: prevents spreadsheet formula injection
+  ---
+  duration_ms: 0.156884
+  type: 'test'
+  ...
+# Subtest: csvCell: escapes quotes and commas so a cell cannot split into two
+ok 15 - csvCell: escapes quotes and commas so a cell cannot split into two
+  ---
+  duration_ms: 0.070281
+  type: 'test'
+  ...
+# Subtest: toCSV: builds valid CSV with CRLF line endings
+ok 16 - toCSV: builds valid CSV with CRLF line endings
+  ---
+  duration_ms: 0.101321
+  type: 'test'
+  ...
+# Subtest: toCSV: keeps an injected cell neutralised once it reaches a row
+ok 17 - toCSV: keeps an injected cell neutralised once it reaches a row
+  ---
+  duration_ms: 0.104525
+  type: 'test'
+  ...
+# Subtest: safeJSON: parses a valid object
+ok 18 - safeJSON: parses a valid object
+  ---
+  duration_ms: 0.161711
+  type: 'test'
+  ...
+# Subtest: safeJSON: rejects anything it should not write to storage, without throwing
+ok 19 - safeJSON: rejects anything it should not write to storage, without throwing
+  ---
+  duration_ms: 0.162043
+  type: 'test'
+  ...
+# Subtest: safeJSON: every rejection carries a sentence the user can act on
+ok 20 - safeJSON: every rejection carries a sentence the user can act on
+  ---
+  duration_ms: 0.172426
+  type: 'test'
+  ...
+# Subtest: safeJSON: enforces the size limit
+ok 21 - safeJSON: enforces the size limit
+  ---
+  duration_ms: 0.25025
+  type: 'test'
+  ...
+# Subtest: levenshtein: computes edit distance
+ok 22 - levenshtein: computes edit distance
+  ---
+  duration_ms: 0.238132
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17.394615
+testing 19 calculators
+
+== calc-compare-quotes :: Compare Quotes
+== calc-landed-cost :: Landed Cost
+== calc-should-cost :: Should Cost
+== calc-tco :: TCO - Total Cost of Ownership
+== calc-negotiation-savings :: Negotiation Savings
+== calc-price-increase :: Price Increase
+== calc-price-escalation :: Price Escalation
+== calc-payment-terms :: Payment Terms
+== calc-po-value-check :: PO Value Check
+== calc-moq :: MOQ / Order Quantity
+== calc-make-vs-buy :: Make vs Buy
+== calc-supplier-scorecard :: Supplier Scorecard
+== calc-supplier-concentration :: Supplier Concentration
+== calc-budget-vs-actual :: Budget vs Actual
+== calc-savings-analysis :: Savings Analysis
+== calc-multi-year-contract-cost :: Multi-Year Contract Cost
+== calc-gst-tax :: GST / Tax
+== calc-fx-currency :: Currency / FX
+== calc-kpi-calculator :: KPI Quick Calculator
+
+--- summary ---
+calculators tested: 19
+assertions passed: 1021
+assertions failed: 0
+runtime errors: 0
+--- calculator expected-value fixtures ---
+--- summary ---
+assertions passed: 51
+assertions failed: 0
+runtime errors: 0
+--- route smoke (page contract: LIBRARY >= 600 chars, WORKSPACE >= 250 chars with a way forward, STATE exempt) ---
+ok   #/home                                           3282 chars LIBRARY      29/2/1 
+ok   #/academy                                       30888 chars LIBRARY    105/31/1 
+ok   #/academy-progress                              16684 chars LIBRARY      93/2/1 
+ok   #/certificate                                     414 chars WORKSPACE     3/0/1 
+ok   #/quickstart                                     2270 chars LIBRARY      8/14/1 
+ok   #/exam?bank=cert-full&n=3                        1021 chars WORKSPACE     0/7/1 
+ok   #/what                                            986 chars LIBRARY      0/15/1 
+ok   #/search                                         1051 chars LIBRARY      0/17/1 
+ok   #/glossary                                      14054 chars LIBRARY     235/0/1 
+ok   #/scenarios                                      1133 chars LIBRARY       6/0/1 
+ok   #/operations                                     9371 chars LIBRARY     248/0/1 
+ok   #/list/calc                                      3315 chars LIBRARY     29/11/1 
+ok   #/list/sop                                       6112 chars LIBRARY     34/14/1 
+ok   #/list/cl                                        4923 chars LIBRARY     36/10/1 
+ok   #/list/tpl                                       1992 chars LIBRARY      41/9/1 
+ok   #/list/kpi                                       1189 chars LIBRARY     28/11/1 
+ok   #/list/kb                                        9798 chars LIBRARY    155/23/1 
+ok   #/list/dec                                       1448 chars LIBRARY      24/8/1 
+ok   #/k                                              9798 chars LIBRARY    155/23/1 
+ok   #/sop                                            6112 chars LIBRARY     34/14/1 
+ok   #/cl                                             4923 chars LIBRARY     36/10/1 
+ok   #/tpl                                            1992 chars LIBRARY      41/9/1 
+ok   #/dec                                            1448 chars LIBRARY      24/8/1 
+ok   #/kpi                                            1189 chars LIBRARY     28/11/1 
+ok   #/scen                                           1133 chars LIBRARY       6/0/1 
+ok   #/calc                                           3315 chars LIBRARY     29/11/1 
+ok   #/lifecycle                                      6151 chars LIBRARY      62/0/1 
+ok   #/maturity                                       4482 chars LIBRARY       0/3/1 
+ok   #/help                                          13179 chars LIBRARY      18/0/1 
+ok   #/dash                                           1146 chars WORKSPACE     3/2/1 
+ok   #/dash-savings                                    893 chars WORKSPACE     1/0/1 
+ok   #/saved                                           583 chars WORKSPACE     0/5/1 
+ok   #/fav                                             333 chars WORKSPACE     6/0/1 
+ok   #/recent                                          301 chars WORKSPACE     5/0/1 
+ok   #/backup                                         1853 chars WORKSPACE     0/4/1 
+ok   #/settings                                       2979 chars WORKSPACE     0/9/1 
+ok   #/audit                                          1148 chars WORKSPACE     0/3/1 
+ok   #/copilot                                         875 chars WORKSPACE     0/6/1 
+ok   #/exams                                          5656 chars WORKSPACE    32/1/1 
+ok   #/spend-model                                     921 chars WORKSPACE     0/5/1 
+ok   #/docpack                                       10637 chars WORKSPACE    0/86/1 
+ok   #/assessment                                      302 chars WORKSPACE     0/1/1 
+ok   #/learning-paths                                28908 chars LIBRARY     116/0/1 
+ok   #/labs                                           1015 chars WORKSPACE     0/4/1 
+ok   #/portfolio                                      2464 chars WORKSPACE     0/1/1 
+ok   #/daily-tip                                       318 chars WORKSPACE     1/2/1 
+ok   #/career-paths                                   1215 chars LIBRARY       3/0/1 
+ok   #/community                                       677 chars WORKSPACE     6/1/1 
+ok   #/next-up                                         807 chars WORKSPACE     7/0/1 
+ok   #/revise                                          751 chars WORKSPACE     2/0/1 
+ok   #/reflection                                      880 chars WORKSPACE     2/0/1 
+ok   #/whats-new                                     44012 chars LIBRARY       0/0/1 
+ok   #/rfx                                            1329 chars WORKSPACE    14/2/1 
+ok   #/suppliers                                      1352 chars WORKSPACE     8/2/1 
+ok   #/contracts                                      1369 chars WORKSPACE     8/2/1 
+ok   #/catalogue                                      1285 chars WORKSPACE     7/2/1 
+ok   #/receipts                                       1097 chars WORKSPACE     5/2/1 
+ok   #/budget                                         1355 chars WORKSPACE     9/2/1 
+ok   #/approvals                                      1641 chars WORKSPACE     8/2/1 
+ok   #/analytics                                       958 chars WORKSPACE     7/0/1 
+ok   #/notfound                                        120 chars STATE         1/0/1 
+ok   #/k/c-procurement                                2499 chars LIBRARY      19/1/1 
+ok   #/sop/sop-procurement-lifecycle                 10581 chars LIBRARY      46/2/1 
+ok   #/cl/cl-procurement-intake                       2716 chars LIBRARY      2/20/1 
+ok   #/tpl/tpl-rfq                                    1504 chars LIBRARY      13/5/1 
+ok   #/calc/calc-tco                                  2805 chars LIBRARY     40/17/1 
+ok   #/calc/calc-compare-quotes                       2794 chars LIBRARY     40/16/1 
+ok   #/calc/calc-payment-terms                        2065 chars LIBRARY     24/15/1 
+ok   #/dec/rfq-or-rfp                                 2284 chars LIBRARY      23/3/1 
+ok   #/kpi/kpi-savings                                2346 chars LIBRARY      30/0/1 
+ok   #/scen/scn-new-purchase                          1856 chars LIBRARY      20/9/1 
+ok   #/academy/func-mission-value                     6474 chars LIBRARY      22/6/1 
+ok   #/academy/func-supplier-risk                     7037 chars LIBRARY      27/6/1 
+ok   #/sop/sop-procurement-intake                     8553 chars LIBRARY      49/2/1 
+ok   #/sop/sop-rfq                                    9650 chars LIBRARY      53/2/1 
+ok   #/sop/sop-rfp                                    9767 chars LIBRARY      45/2/1 
+ok   #/sop/sop-supplier-evaluation                    9743 chars LIBRARY      47/2/1 
+ok   #/sop/sop-contract-review                        9211 chars LIBRARY      39/2/1 
+ok   #/sop/sop-negotiation-preparation                8818 chars LIBRARY      47/2/1 
+ok   #/sop/sop-savings-calculation                    9093 chars LIBRARY      43/2/1 
+ok   #/sop/sop-supplier-price-increase-review         9012 chars LIBRARY      23/2/1 
+ok   #/sop/sop-contract-renewal                       9376 chars LIBRARY      39/2/1 
+ok   #/sop/sop-supplier-performance-management        9871 chars LIBRARY      41/2/1 
+ok   #/sop/sop-procurement-audit                      9062 chars LIBRARY      35/2/1 
+ok   #/sop/sop-emergency-procurement                  8942 chars LIBRARY      23/2/1 
+ok   #/search?q=TCO                                  16316 chars LIBRARY     62/17/1 
+ok   #/what?q=supplier%20increased%20price%20by%2012%20percent   8545 chars LIBRARY     36/15/1 
+ok   #/help/getting-started                          13179 chars LIBRARY      18/0/1 
+--- coverage ---
+ok   all 54 registered routes are visited
+--- summary ---
+routes: 88 failing: 0
+total runtime errors captured: 0
+
+SMOKE TESTS PASSED
+--- layout & dynamic UI structure verification ---
+ok   Document skeleton has #app container
+ok   Document has #sidebar and #main content containers
+ok   Document has #toastContainer with aria-live="polite"
+ok   Document has #modalRoot dialog mount point
+ok   Sidebar has brand mark and title
+ok   Sidebar has search filter input
+ok   The learn view shows five nav sections
+ok   The learn view sections are Start, Learn, Library, Look It Up and My Work
+ok   The learn view shows 26 navigation items
+ok   The learn view hides the working sections
+ok   The learn view keeps the shared library
+ok   The work view shows six nav sections
+ok   The work view sections are Start, Workbench, Toolkit, Library, Look It Up and My Work
+ok   The work view shows 30 navigation items
+ok   The work view hides the learning section
+ok   The work view keeps the shared library
+ok   The sidebar carries a Learn / Work switch
+ok   The switch marks the current view with aria-pressed
+ok   The switch is labelled
+ok   Every nav section has items
+ok   The system links live in a labelled footer strip
+ok   Calculator renders two-pane .calc-layout container
+ok   Calculator has live results container (#calcResult)
+ok   Calculator results container has aria-live="polite"
+ok   Calculator has mobile sheet trigger button
+ok   What-should-I-do page has live results container with aria-live
+ok   Maturity check page has live results container with aria-live
+ok   Lesson tab rail carries the reading progress bar
+ok   Reading progress responds to scroll with a finite transform
+ok   the exam route renders a session with a question rail
+ok   exam focus mode hides the shell chrome rather than dimming it
+ok   the exam header carries the clock, a pop-out and a way out
+ok   The featured thinking point quotes the Academy curriculum and links to its lesson
+ok   The review queue renders a heading and a way forward on an empty record
+ok   The Academy hub carries an entry point to the review queue
+ok   The reflection page renders a heading and a way forward on an empty record
+ok   The progress transcript carries entry points to the review queue and the reflection
+ok   The Academy hub readiness panel renders three altitude rails with aria labels
+ok   the dashboard stats use a definite four-column grid, not auto-fit
+ok   the dashboard panels use a definite two-column grid
+ok   the route is published so layout can be scoped per page
+ok   repeated identical events collapse into one row with a count
+ok   the feed shows the lesson title rather than an internal id
+ok   CSS defines :root color variables (--bg, --panel, --text, --accent)
+ok   CSS defines [data-theme="dark"] dark mode tokens
+--- summary ---
+checks passed: 45 / 45
+LAYOUT AUDIT: PASS
+
+G1  content registries
+  ok   [G1] knowledge concepts: 133 (section 10-17, §81 Knowledge)
+  ok   [G1] SOP documents: 21 (section 19, §81 SOP)
+  ok   [G1] checklists: 27 (section 22, §81 Checklists)
+  ok   [G1] templates: 33 (section 23, §81 Templates)
+  ok   [G1] decision guides: 17 (section 21, §81 Decisions)
+  ok   [G1] calculators: 19 (section 6, §81 Calculators)
+  ok   [G1] KPIs: 18 (section 30, §81 KPIs)
+  ok   [G1] glossary terms: 45 (section 31)
+  ok   [G1] scenarios: 6 (section 51, §81 Scenarios)
+  ok   [G1] maturity areas: 9 (section 63)
+  ok   [G1] lifecycle stages: 21 (section 12)
+  ok   [G1] academy functions: 90 (section 77)
+  ok   [G1] academy modules: 31 (distinct modules across the functions)
+  ok   [G1] academy-taught step sequences: 573 (G12: PS.ACADEMY_FUNCTIONS[].sopSteps)
+  ok   [G1] academy quiz questions: 429 (G12: PS.ACADEMY_FUNCTIONS[].quizzes)
+  ok   [G1] academy functions at the core level: 10 (the level filter on the Academy hub (#/academy?tier=core))
+  ok   [G1] academy functions at the practitioner level: 50 (the level filter on the Academy hub (#/academy?tier=practitioner))
+  ok   [G1] academy functions at the executive level: 30 (the level filter on the Academy hub (#/academy?tier=executive))
+  ok   [G1] SOP library procedure steps: 167 (G21: the steps written into the SOP documents themselves)
+  ok   [G1] academy functions linked to a workbench: 87 (G18: the library has to reach the tool where the work is practised)
+  ok   [G1] workbench collections: 8 (section 27, the eight record collections)
+  ok   [G1] every academy function resolves through PS.byId("academy", id)
+
+G22  documented search answer
+  ok   [G22] search finds the documented example (supplier increased price by 12% -> Supplier Price Increase)
+
+G23  curriculum levels
+  ok   [G23] every one of the 90 functions carries one of the three named levels
+  ok   [G23] the level split is pinned: 10 core, 50 practitioner, 30 executive
+  ok   [G23] the hub labels all 90 cards and offers a filter per level (All levels 90, Foundation 10, Practitioner 50, Executive 30, Any status 90, Not started 90, Quiz taken 0, Mastered 0)
+  ok   [G23] #/academy?tier=core renders exactly the 10 Foundation functions
+  ok   [G23] #/academy?tier=practitioner renders exactly the 50 Practitioner functions
+  ok   [G23] #/academy?tier=executive renders exactly the 30 Executive functions
+  ok   [G23] the function page states its level (🎓 Level: Executive)
+  ok   [G23] every learning path states its level (Foundation, Practitioner, Executive)
+
+G2/G3/G7  route rendering
+  ok   [G2/G3] 72 routes rendered with no sentinel text and no unresolvable internal link
+  ok   [G7] every visited route meets the page contract in tools/page_contract.mjs (72 routes)
+
+G4  action handlers
+  ok   [G4] 89 distinct data-act values, across the shell and every rendered route, all have handlers
+
+G5  knowledge graph
+  ok   [G5] every content item has at least one inbound link
+
+G6  cross-tool handoff
+  ok   [G6] all 30 handoff edges carry at least one field
+  ok   [G6] the 8 handoff legs the requirements name between calculators are all declared
+
+G8  academy to library links
+  ok   [G8] every academy function links to at least one SOP
+  ok   [G8] every academy function links to at least one calculator
+
+G9  assessment result
+  ok   [G9] assessment score reads back correctly (80%)
+
+G10  runtime errors
+  ok   [G10] no uncaught runtime errors during the sweep
+
+G11  route reachability
+  ok   [G11] every registered route is reachable from somewhere
+
+G12  academy curriculum
+  ok   [G12] 429 academy quiz questions, each with exactly one correct option, a rationale on every option and a principle
+  ok   [G12] 573 academy-taught step sequences, each with an owner, control, record and pitfall
+
+G21  SOP procedure depth
+  ok   [G21] 21 SOP documents hold 167 procedure steps, each titled, at 80+ characters, with an owner, an output and a control
+
+G12  workbenches
+  ok   [G12] 8 workbenches render with a form, no leaks and no empty pages
+  ok   [G12] workbench records persist through the store
+
+G13  curriculum sequence
+  ok   [G13] nothing in the profile can reorder the curriculum
+  ok   [G13] all 5 roles see the curriculum in module order, 1 to 31
+  ok   [G13] the role recommends modules in order (4, 6, 10, 16, 17, 20, 29)
+  ok   [G13] the panel displays every module the picker recommended (7)
+  ok   [G13] every one of the 31 curriculum modules is tagged for role matching
+  ok   [G13] the role tag map names no phantom module
+  ok   [G13] every module is recommended by at least one of the 5 roles
+  ok   [G13] resume points at the first unfinished function (func-rfq-issuance)
+  ok   [G13] every learning path is in module order
+  ok   [G13] the all-modules table is in module order (90 rows)
+  ok   [G13] the track changes where the product starts you
+
+G14  category map
+  ok   [G14] every knowledge domain holds more than one concept (21 domains)
+
+G15  worked examples
+  ok   [G15] every Academy function shows a worked example in the explanation (90 functions)
+  ok   [G15] every calculator carries example data (19 tools)
+  ok   [G15] every calculator example covers every field
+  ok   [G15] random values respect every field rule
+
+G16  navigation scoping
+  ok   [G16] the learn view shows 5 sections and 26 items (Start, Learn, Library, Look It Up, My Work)
+  ok   [G16] the learn view shows the learning navigation and hides the working one
+  ok   [G16] the work view shows the working navigation and hides the learning one
+  ok   [G16] the shared library is reachable from both views
+  ok   [G16] the work view shows 6 sections and 30 items (Start, Workbench, Toolkit, Library, Look It Up, My Work)
+  ok   [G16] the system pages sit in the 4-link footer strip, outside the collapsible tree
+  ok   [G16] the learn view names its sections Start, Learn, Library, Look It Up and My Work
+  ok   [G16] the work view names its sections Start, Workbench, Toolkit, Library, Look It Up and My Work
+  ok   [G16] a page outside the current view still shows its section
+  ok   [G16] a working page in the learn view still shows its section
+  ok   [G16] a first load of a workbench page brings its section into the menu
+  ok   [G16] the switch writes profile.track
+  ok   [G16] switching view from a hidden section lands on the new view
+  ok   [G16] switching view on a shared page leaves the reader where they were
+
+G17  text integrity
+  ok   [G17] no mangled characters in the navigation
+  ok   [G17] the document contains no replacement characters
+
+G18  learning to practice
+  ok   [G18] every workbench link points at a real function
+  ok   [G18] every workbench link resolves to a real route
+  ok   [G18] all 8 workbenches are reachable from the Academy (87 of 90 functions)
+
+G19  menu and page agree
+  ok   [G19] every page is in the menu while you are on it, in both views
+
+G20  build stamp
+  ok   [G20] the readable artifact carries a build stamp (71088b9c7fba)
+  ok   [G20] the minified deploy build carries the same stamp (71088b9c7fba)
+  ok   [G20] the stamp is the hash of the sources
+
+G24  tracks, badges and curriculum coverage
+  ok   [G24] the number of learning paths matches the pin (25)
+  ok   [G24] all 90 Academy functions belong to a learning path
+  ok   [G24] no function is claimed by two paths
+  ok   [G24] every path entry (90) resolves to a real Academy function
+  ok   [G24] all 25 tracks are tagged with one of the three levels
+  ok   [G24] the learning-paths page states the real count (25 tracks)
+  ok   [G24] the all-modules table lists all 90 function/track pairs
+  ok   [G24] every badge trigger names a real Academy function (36 badges)
+  ok   [G24] every badge declares how it is earned
+  ok   [G24] every Academy function contributes to at least one badge (90 functions, 36 badges)
+  ok   [G24] badge ids are unique
+  ok   [G24] completing 4 functions awards foundation_grounding
+  ok   [G24] undoing a trigger withdraws foundation_grounding - badges are derived, not accumulated
+  ok   [G24] the orienting pages state real counts, not typed numbers (#/home, #/academy, #/learning-paths, #/academy-progress)
+
+G25  credential honesty and the content report
+  ok   [G25] no credential-bearing page asserts accreditation, recognition or certification (7 pages read)
+  ok   [G25] every page that reports a result states that it is not a credential (#/certificate, #/exams, #/academy-progress)
+  ok   [G25] lesson pages state that the material is written for this product and the examples are constructed
+  ok   [G25] the lesson worked example is labelled as constructed on the card itself
+  ok   [G25] calculator and scenario pages label their example data as illustrative
+  ok   [G25] no invented case study is presented as a real-world report
+  ok   [G25] the audit page shows the content report and agrees with PS.contentQA() (0 problems)
+
+G26  exam attempt integrity
+  ok   [G26] the exams page calls itself practice, not certification ("Procure Sherpa : Practice exams")
+  ok   [G26] a blank exam cannot be submitted or recorded - the session stays open on the first unanswered question
+  ok   [G26] selecting an option records the answer for that question (5 of 5)
+  ok   [G26] the graded attempt records answered 5/5 at 20%
+  ok   [G26] result tiles are the reader's own numbers only (Your score (pass mark 70%) | Correct answers | Answered)
+
+G27  progress rails tell the truth
+  ok   [G27] every module on the hub carries a progress rail (31)
+  ok   [G27] every rail count and bar width matches the completion record exactly
+  ok   [G27] the hub summary states the real position (5 of 90 mastered)
+  ok   [G27] the hub tells the learner what is still to read (about 30.6 hours)
+  ok   [G27] the lesson page states its place in the sequence (Lesson 9 of 90 · 1 of 3 in this module mastered)
+  ok   [G27] the hub status filters agree with the completion record and partition it (85 unread + 5 mastered = 90)
+  ok   [G27] the level and status filters compose (0 of 30 executive lessons mastered)
+  ok   [G27] the module index strip lists 31 modules and each count matches the lessons under it
+  ok   [G27] an empty filter result states why and links back to the whole curriculum
+  ok   [G27] a fresh record schedules nothing: no lesson is invented as due
+  ok   [G27] a lesson studied two days ago without a quiz is scheduled ahead, not overdue (due tomorrow)
+  ok   [G27] a lesson passed thirty days ago is due now, measured from the real quiz date in the record
+  ok   [G27] each marked review moves the lesson up the ladder (7 -> 21 -> 60 days)
+  ok   [G27] undated completions are scheduled from today and counted as having no recorded date (2)
+  ok   [G27] the review queue page states the same counts the scheduler computes and explains the ladder
+  ok   [G27] the readiness panel splits mastery by altitude and the tier totals sum to the completion record (2 of 90)
+  ok   [G27] the readiness panel quotes the same due count the queue computes and names a next lesson (1 due)
+  ok   [G27] the hub readiness panel states the queue figure and the reflection figure as the records hold them
+  ok   [G27] a fresh record reads zero and says so: nothing due, no reflection yet, a named first lesson
+  ok   [G27] with answers on record the panel carries the reflection’s wrong-answer count verbatim (1)
+
+G28  glossary links render
+  ok   [G28] all 45 glossary terms carry relations for the "Where to use it" column
+  ok   [G28] every glossary relation resolves to a registered concept, SOP, calculator or template
+  ok   [G28] the glossary table renders 45 rows, every one with links in the "Where to use it" column
+
+G29  the theme owns every colour
+  ok   [G29] no inline colour in generated markup escapes the theme tokens
+  ok   [G29] charts resolve their palette from the theme at render time (PS.chart.tokens)
+  ok   [G29] the navigation rail is built from 6 theme tokens, in both themes
+  ok   [G29] lesson prose is wrapped and set in the reading face (--font-read) by the shipped CSS
+
+G30  the lesson page works as a lesson
+  ok   [G30] every lesson tab ends with the remaining steps and a working completion control
+  ok   [G30] the next-lesson card names the lesson that actually follows it
+  ok   [G30] the Learn tab section jumps all resolve to a card on the page (5)
+  ok   [G30] 78 in-page jumps all route through scroll-to and resolve to a target on their own page
+  ok   [G30] the library result count follows the filter (133 entries shown, then the filtered position)
+
+G31  the reflection report reads the answer record
+  ok   [G31] with no quiz answers the reflection claims no weakness and points to the Academy
+  ok   [G31] clean, coached and wrong are separated exactly as the answer record supports (1 / 1 / 1 of 3 answered)
+  ok   [G31] unanswered questions are counted as open, not as weaknesses, and untouched lessons are not listed (1 open)
+  ok   [G31] the weak-principle ranking is derived from the record (wrong counts twice, coaching once) and lists the missed principle
+  ok   [G31] the reflection page states the same wrong count the record supports and explains the derivation
+
+--- summary ---
+gates exercised: 31 (G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15, G16, G17, G18, G19, G20, G21, G22, G23, G24, G25, G26, G27, G28, G29, G30, G31)
+assertions:   149 run, 0 failed
+
+INTEGRITY GATE: PASS
