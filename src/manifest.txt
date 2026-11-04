@@ -30,7 +30,8 @@ src/core/03l_reflection.js
 src/core/04a_router.js
 src/core/04b1_navdata.js
 src/core/04b2_navbuild.js
-src/core/04c_render.js
+src/ui/01_render_helpers.js
+src/ui/02_components.js
 src/core/04d_listpage.js
 src/core/05a_calcform.js
 src/core/05b_calcvalidate.js

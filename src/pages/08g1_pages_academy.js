@@ -158,17 +158,18 @@ PS.renderAcademyHub = function (params) {
       s[1] + ' <strong>' + n + '</strong></a>';
   });
   var activeTier = PS.academy.TIERS.filter(function (t) { return t.id === tier; })[0];
-  html += '<div class="card mb16"><div class="card-head"><h2>Choose your level</h2>' +
-    '<span class="badge">' + (activeTier ? PS.esc(activeTier.name) + ' track' : 'Full curriculum') + '</span></div>' +
+  html += PS.ui.card(
+    PS.ui.cardHead('Choose your level', '<span class="badge">' + (activeTier ? PS.esc(activeTier.name) + ' track' : 'Full curriculum') + '</span>') +
     '<div class="filters">' + lvlChips + '</div>' +
     '<div class="filters">' + statusChips + '</div>' +
     (activeTier
-      ? '<p class="note">' + PS.esc(activeTier.desc) + ' <a href="' + filterHref('', status) + '">Show all ' + funcs.length + ' functions</a>.</p>'
-      : '<p class="note">The curriculum is written at three altitudes: <strong>Foundation</strong> for the fundamentals, <strong>Practitioner</strong> for the person running a category or an event, and <strong>Executive</strong> for the owner of the portfolio. Filter to the one that matches the decisions you make.</p>') +
-    '</div>';
+      ? PS.ui.note(PS.esc(activeTier.desc) + ' <a href="' + filterHref('', status) + '">Show all ' + funcs.length + ' functions</a>.')
+      : PS.ui.note('The curriculum is written at three altitudes: <strong>Foundation</strong> for the fundamentals, <strong>Practitioner</strong> for the person running a category or an event, and <strong>Executive</strong> for the owner of the portfolio. Filter to the one that matches the decisions you make.')),
+    { class: 'mb16' });
 
-  html += '<div class="card mb16"><div class="card-head"><h2>Achievement Badges</h2><div class="spacer"></div>' +
-    '<span class="badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span></div>' +
+  html += PS.ui.card(
+    PS.ui.cardHead('Achievement Badges', '<div class="spacer"></div>' +
+      '<span class="badge">' + stats.badgesEarned + ' of ' + stats.badgesTotal + ' Unlocked</span>') +
     '<div class="badge-grid">' +
     PS.academy.BADGES.map(function (b) {
       var un = !!(data.badges && data.badges[b.id]);
@@ -179,7 +180,7 @@ PS.renderAcademyHub = function (params) {
         (un ? '<div class="state-ok" style="margin-top:6px;font-size:0.7rem">✓ Unlocked</div>' : '<div style="margin-top:6px;font-size:0.7rem;color:var(--mute)">Locked</div>') +
         '</div>';
     }).join('') +
-    '</div></div>';
+    '</div>', { class: 'mb16' });
 
   // Curriculum modules
   /* Where the reader actually is in the curriculum, stated above the list
@@ -187,10 +188,10 @@ PS.renderAcademyHub = function (params) {
   var hubStats = PS.academy.getStats();
   var minsLeft = PS.academy.minutesRemaining();
   var modNames = Object.keys(modules);
-  html += '<div class="section-head"><h2>End-to-End Procurement Curriculum</h2>' +
-    '<p class="section-sub">You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
+  html += PS.ui.sectionHead('End-to-End Procurement Curriculum',
+    'You have mastered <strong>' + hubStats.completedCount + ' of ' + hubStats.totalCount +
     '</strong> functions across ' + modNames.length + ' modules' +
-    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.</p></div>';
+    (minsLeft ? ' \u00B7 ' + PS.academy.hoursPhrase(minsLeft) : ' \u00B7 the whole curriculum is complete') + '.');
 
   /* What is due is progress information too, and it belongs on the same
      screen that says how much has been read. Zero is stated rather than
@@ -236,12 +237,14 @@ PS.renderAcademyHub = function (params) {
     } else {
       weakCell = 'no wrong answers on record - <a href="#/reflection">every question you have answered is settled or was corrected with the tip</a>';
     }
-    html += '<div class="card mb16"><div class="card-head"><h2>Where you stand</h2><div class="spacer"></div>' +
-      '<a class="badge" href="#/academy-progress">Full transcript</a></div>' +
+    html += PS.ui.card(
+      PS.ui.cardHead('Where you stand', '<div class="spacer"></div>' +
+        '<a class="badge" href="#/academy-progress">Full transcript</a>') +
       '<div class="grid grid-3">' + tierCells + '</div>' +
-      '<p class="note">' + nextCell + ' &middot; ' +
+      PS.ui.note(nextCell + ' &middot; ' +
       (ready.due ? '<a href="#/revise">' + ready.due + (ready.due === 1 ? ' lesson is due' : ' lessons are due') + ' for review</a>' : '<a href="#/revise">nothing is due for review today</a>') +
-      ' &middot; ' + weakCell + '.</p></div>';
+      ' &middot; ' + weakCell + '.'),
+      { class: 'mb16' });
   }
 
   /* A jump strip, because seventeen modules of three lessons is a page more
@@ -261,8 +264,8 @@ PS.renderAcademyHub = function (params) {
     }).join('') + '</nav>';
   }
   if (!shown.length) {
-    html += '<div class="empty">No lesson matches this combination of level and status. ' +
-      '<a href="' + filterHref('', '') + '">Show the whole curriculum</a>.</div>';
+    html += PS.empty('No lesson matches this combination of level and status.',
+      '<a href="' + filterHref('', '') + '">Show the whole curriculum</a>.');
     return html;
   }
 
