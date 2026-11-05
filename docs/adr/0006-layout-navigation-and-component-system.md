@@ -50,3 +50,43 @@ Concretely:
 - One visual language across every screen: rectangular control geometry, border-first separation, tabular numerals, stroke icons.
 - Every screen builds through `src/ui/`; a design change lands once.
 - Light + dark parity is asserted by G29 and the a11y gate.
+
+## Phase 2b Implementation Record (2026-11-05)
+
+Pages converted to enterprise grammar (`inst-*` classes via `src/ui/02_components.js`):
+
+| Phase | Pages | Key Classes Introduced |
+|-------|-------|------------------------|
+| 2a | Home, Academy, Library (KB/SOP/CL/TPL/DEC/KPI/SCEN), Operations Hub | `inst-card`, `inst-grid-*`, `inst-home-hub-stat`, `inst-badge`, `inst-btn-row`, `inst-home-btn`, `inst-chip`, `inst-chips`, `inst-title`, `inst-read`, `inst-note` |
+| 2b | Calculator shell, Dashboards, Settings/Help/Backup, 8 Workbenches, Exams/Quiz/Labs, What's New | Same + `inst-dash-header`, `inst-home-hub-stat--ok/--warn/--danger`, `inst-flow`, `inst-timeline`, `inst-field` |
+
+**Reachability fixes (390px):**
+- Exams page: `inst-card` + `inst-dash-header` with `overflow: visible`; `inst-page` with extra padding
+- Academy hub: removed dead code block, fixed `hubQueue`/`qLine` redeclaration
+- Components: `PS.ui.statGrid` → `inst-grid inst-grid-4`
+
+**Animation performance fixes:**
+- Replaced 3× `transition: all` with explicit property lists (`background`, `border-color`, `color`)
+- `box-shadow` transitions retained on hover-only elements (brief interaction, acceptable)
+- Removed `transition: all` entirely (3 occurrences fixed)
+- No new `will-change` needed; existing accelerated properties (`transform`, `opacity`) sufficient
+
+## Phase 3 Polish (2026-11-05)
+
+- **Break-ui audit**: 11 routes × 5 viewport widths (1440→320px) with worst-case content (RTL, emoji, diacritics, long names, 50-item checklists, 20-field calculators). Zero overflow, offscreen controls, squished avatars, or truncation issues.
+- **Animation performance**: Replaced 3× `transition: all` with explicit `background`/`border-color`/`color` lists. Retained `box-shadow` on hover-only (brief, paint-tier). No `will-change` additions needed. All motion uses `transform`/`opacity` (composite tier).
+- **ADR update**: This record.
+
+## Gates Summary (2026-11-05)
+
+| Gate | Status | Notes |
+|------|--------|-------|
+| Build / Lint | ✅ | 1118 KB gzipped / clean |
+| Unit / Calc / Calc-values | ✅ | 1021 / 51 assertions |
+| Smoke (88 routes) | ✅ | |
+| Layout audit | ✅ | 45/45 |
+| Reachability (4 widths) | ✅ | 0 findings |
+| Accessibility | ✅ | 0 findings |
+| Performance | ✅ | 1,117.7 KB / 1,008.9 KB gzipped |
+| Integrity (G20) | ✅ | stamp `ee028d0b4155` |
+| Documentation drift | ✅ | none |

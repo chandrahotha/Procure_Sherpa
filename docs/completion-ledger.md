@@ -1155,6 +1155,20 @@ Four of the gate's early failures were the gate's own bugs, and each is worth re
 
 **Chain-tail gap closed.** `npm run qa` uses `&&`, so it never reaches `i18n` or `verify:min` past the performance stop. Both were run individually against the same artifact: `npm run audit:i18n` exit 0 and `npm run verify:min` exit 0, so the gate set is now accounted for end to end and no check is left claimed-but-unrun. The only failing gate in the whole suite remains `perf` at 985.1 KB served against the derived 979 KB ceiling - the owner decision in #21.
 
+### Phase 3 — Polish & Adversarial Audit (2026-11-05)
+
+**Break-ui audit** (tools/break_ui_test.mjs): Injected worst-case content (RTL Arabic/Chinese/Japanese/Korean, emoji, diacritics, 50-item checklists, 20-field calculators, long email in title, single-char title) and rendered 11 routes at 5 viewport widths (1440→320px). Zero overflow, offscreen controls, squished avatars, ellipsis-without-wrap, or truncated text without tooltip. The enterprise `inst-*` grid/geometry holds at all widths.
+
+**Animation performance audit** (animation-performance skill): 
+- Replaced 3× `transition: all` (01h_academy.css:519, 01j_global_extras.css:90, 148) with explicit `background`/`border-color`/`color` lists.
+- Retained `box-shadow` on hover-only elements (brief, paint-tier, acceptable).
+- No `will-change` additions; existing composite-tier `transform`/`opacity` sufficient.
+- No `requestAnimationFrame` state updates found; two panel-open patterns use rAF only to add CSS class (correct pattern).
+
+**Documentation sync**: Updated ADR 0006 with Phase 2b/3 record; README/IMPROVEMENT_ROADMAP/completion-ledger synced to 1,117.7 KB / 1,008.9 KB gzipped.
+
+**Full gate chain (2026-11-05)**: 31/31 PASS | Layout 45/45 | Reachability 0/4 widths | a11y 0/67 | Perf 1,117.7 KB download / 1,008.9 KB deploy | Integrity 149/149 | Drift none.
+
 ### Cycle 9 addendum 1 - the Academy transformation: one token system, one accent, and the colour that was failing contrast
 
 The revamp began with a design-system fragment, and the first version of it was wrong in a way only the rest of the application could show. `src/base/01n_design_system.css` re-declared the global tokens - `--space-1..6`, `--focus-outline`, `--dur`, `--text`, `--dim`, `--mute`, `--panel-2`, `--sunken`, `--border`, `--ok`, `--warn`, `--danger`, `--info` - with its own values. Because the fragment is loaded after the head file, those declarations won, so the whole application's spacing scale silently changed from 4/8/12/16/20/24/32/40 to 6/12/18/24/32/40 and the focus ring changed colour, on every screen, for a design system that was supposed to be additive. The fragment now **extends** the head file's token set instead of forking it: the only new names are `--ink`, the three `--tier-*` altitudes, `--surface`, the `--scale-*` type scale and the `--leading-*` steps. Everything else - radii, shadows, spacing, state colours - is read from the one source of truth, and the Academy rules that used the invented names now use the real ones.
