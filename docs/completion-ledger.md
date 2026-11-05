@@ -1160,7 +1160,8 @@ Four of the gate's early failures were the gate's own bugs, and each is worth re
 **Break-ui audit** (tools/break_ui_test.mjs): Injected worst-case content (RTL Arabic/Chinese/Japanese/Korean, emoji, diacritics, 50-item checklists, 20-field calculators, long email in title, single-char title) and rendered 11 routes at 5 viewport widths (1440→320px). Zero overflow, offscreen controls, squished avatars, ellipsis-without-wrap, or truncated text without tooltip. The enterprise `inst-*` grid/geometry holds at all widths.
 
 **Animation performance audit** (animation-performance skill): 
-- Replaced 3× `transition: all` (01h_academy.css:519, 01j_global_extras.css:90, 148) with explicit `background`/`border-color`/`color` lists.
+- Replaced all 12× `transition: all` (01h_academy.css, 01j_global_extras.css, 01n_design_system.css) with explicit `background`/`border-color`/`color` lists.
+- Deduplicated three repeated lifecycle-flow blocks in 01n_design_system.css.
 - Retained `box-shadow` on hover-only elements (brief, paint-tier, acceptable).
 - No `will-change` additions; existing composite-tier `transform`/`opacity` sufficient.
 - No `requestAnimationFrame` state updates found; two panel-open patterns use rAF only to add CSS class (correct pattern).

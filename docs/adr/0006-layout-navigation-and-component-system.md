@@ -66,15 +66,15 @@ Pages converted to enterprise grammar (`inst-*` classes via `src/ui/02_component
 - Components: `PS.ui.statGrid` → `inst-grid inst-grid-4`
 
 **Animation performance fixes:**
-- Replaced 3× `transition: all` with explicit property lists (`background`, `border-color`, `color`)
+- Replaced all 12× `transition: all` with explicit property lists (`background`, `border-color`, `color`)
 - `box-shadow` transitions retained on hover-only elements (brief interaction, acceptable)
-- Removed `transition: all` entirely (3 occurrences fixed)
+- Deduplicated three repeated lifecycle-flow blocks in `01n_design_system.css`
 - No new `will-change` needed; existing accelerated properties (`transform`, `opacity`) sufficient
 
 ## Phase 3 Polish (2026-11-05)
 
 - **Break-ui audit**: 11 routes × 5 viewport widths (1440→320px) with worst-case content (RTL, emoji, diacritics, long names, 50-item checklists, 20-field calculators). Zero overflow, offscreen controls, squished avatars, or truncation issues.
-- **Animation performance**: Replaced 3× `transition: all` with explicit `background`/`border-color`/`color` lists. Retained `box-shadow` on hover-only (brief, paint-tier). No `will-change` additions needed. All motion uses `transform`/`opacity` (composite tier).
+- **Animation performance**: Replaced all 12× `transition: all` with explicit `background`/`border-color`/`color` lists. Retained `box-shadow` on hover-only (brief, paint-tier). Deduplicated repeated lifecycle-flow blocks. No `will-change` additions needed. All motion uses `transform`/`opacity` (composite tier).
 - **ADR update**: This record.
 
 ## Gates Summary (2026-11-05)
