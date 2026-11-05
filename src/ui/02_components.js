@@ -44,7 +44,7 @@ PS.ui = (function () {
         '<div class="s-lab">' + label + '</div><div class="s-val">' + value + '</div></div>';
     },
     statGrid: function (stats) {
-      return '<div class="grid stat-grid">' + stats.join('') + '</div>';
+      return '<div class="inst-grid inst-grid-4">' + stats.join('') + '</div>';
     },
 
     /* A quiet aside. The tag is a parameter because the two callers that

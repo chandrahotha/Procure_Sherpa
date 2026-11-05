@@ -53,7 +53,10 @@ PS.route('audit', function () {
     '<p class="note">This log is not a compliance system of record. It cannot prove who did what on a shared device, and it does not capture work performed outside this platform.</p></div>' +
     (log.length ? '<div class="card"><div class="table-wrap"><table><thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead><tbody>' +
       log.map(function (a) {
-        return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(String(a.e).replace(/-/g, ' ')) + '</td><td>' + PS.esc(a.d) + '</td></tr>';
+        /* The detail column is read by a person, so it carries the record
+           title rather than the internal id it was stored under. */
+        var L = PS.auditLabel(a);
+        return '<tr><td class="nowrap">' + PS.esc(PS.dateTime(a.t)) + '</td><td>' + PS.esc(L.event) + '</td><td>' + PS.esc(L.detail) + '</td></tr>';
       }).join('') + '</tbody></table></div></div>'
       : PS.empty('No events recorded yet. Use a calculator or save some work and the log will fill automatically.')) +
     /* The content check ran on every load and its only output was a
