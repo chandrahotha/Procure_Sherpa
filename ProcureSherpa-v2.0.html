@@ -1678,7 +1678,7 @@ html[data-theme="dark"] .quiz-type-tag.calc { background: var(--warn-soft); colo
   border-radius: var(--r-sm);
   background: var(--panel);
   cursor: pointer;
-  transition: all 0.13s ease;
+  transition: background var(--dur), border-color var(--dur), color var(--dur);
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--text);
@@ -3650,7 +3650,7 @@ html[data-theme="dark"] .toast { background:#f2f5fb;color:#0f172a; }
 
 /* ---------- Quick actions bar ---------- */
 .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: all .12s; }
+.quick-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; color: var(--dim); text-decoration: none; transition: background var(--dur), border-color var(--dur), color var(--dur); }
 .quick-action-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); text-decoration: none; }
 .quick-action-btn .qa-icon { font-size: 1rem; }
 
@@ -3708,7 +3708,7 @@ html[data-theme="dark"] .calc-loading::after { background: rgba(9,14,26,.7); }
 .cmd-suggestion-chip {
   background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius: var(--r-pill); padding: 4px 10px; font-size: .7rem; font-weight: 600; cursor: pointer;
-  transition: all .12s;
+  transition: background var(--dur), border-color var(--dur), color var(--dur);
 }
 .cmd-suggestion-chip:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
@@ -4714,7 +4714,7 @@ PS.SCHEMA = 2;
    tools/build_stamp.mjs. The placeholder is what makes the build
    reproducible: the same sources always produce the same stamp, so
    the committed artifact always matches a rebuild. */
-PS.BUILD = 'ee028d0b4155';
+PS.BUILD = '99b6044412bf';
 PS.NS = 'ps_';
 PS.MAX_SAVED = 250;
 PS.MAX_QUOTE_SAVED = 50;

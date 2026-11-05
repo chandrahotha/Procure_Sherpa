@@ -516,7 +516,7 @@ html[data-theme="dark"] .quiz-type-tag.calc { background: var(--warn-soft); colo
   border-radius: var(--r-sm);
   background: var(--panel);
   cursor: pointer;
-  transition: all 0.13s ease;
+  transition: background var(--dur), border-color var(--dur), color var(--dur);
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--text);
