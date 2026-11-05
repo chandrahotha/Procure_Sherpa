@@ -52,15 +52,15 @@ PS.academyQuiz.renderSection = function (func) {
 
   var res = PS.academy.getQuizResult(func.id);
   var html = '<div class="quiz-section">' +
-    '<div class="card-head">' +
+    '<div class="inst-card-head">' +
     '<div>' +
-    '<span class="badge" style="margin-bottom:6px;display:inline-block;">Escalating Competency Curve</span>' +
-    '<h2 style="margin:0;">Interactive Knowledge Checks &amp; Scenarios</h2>' +
+    '<span class="inst-badge" style="margin-bottom:var(--space-2);display:inline-block;">Escalating Competency Curve</span>' +
+    '<h2 class="inst-title" style="margin:0;">Interactive Knowledge Checks & Scenarios</h2>' +
     '</div>' +
     '<div class="spacer"></div>' +
-    (res ? '<span class="badge badge-primary">Last Score: ' + res.pct + '% (' + res.score + '/' + res.total + ')</span>' : '') +
+    (res ? '<span class="inst-badge inst-badge--ok">Last Score: ' + res.pct + '% (' + res.score + '/' + res.total + ')</span>' : '') +
     '</div>' +
-    '<p class="card-sub">Test your practical judgement on realistic procurement dilemmas. The curriculum becomes progressively more complex at every stage. For complicated scenarios, making 1 mistake unlocks an expert tactical tip to guide your second decision attempt.</p>';
+    '<p class="inst-read">Test your practical judgement on realistic procurement dilemmas. The curriculum becomes progressively more complex at every stage. For complicated scenarios, making 1 mistake unlocks an expert tactical tip to guide your second decision attempt.</p>';
 
   quizzes.forEach(function (q, idx) {
     html += PS.academyQuiz.renderCard(func, q, idx, res);
@@ -99,7 +99,7 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
     '<span class="quiz-type-tag ' + PS.esc(q.type || 'mcq') + '">' + PS.esc(typeLabels[q.type] || 'Challenge') + '</span>' +
     '<span class="quiz-diff-tag ' + PS.esc(diff.cls) + '">' + PS.esc(diff.label) + '</span>' +
     '</div>' +
-    '<span class="muted" style="font-size:0.78rem">Question ' + (idx + 1) + ' of ' + (func.quizzes.length || 3) + '</span>' +
+    '<span class="inst-note" style="font-size:0.78rem">Question ' + (idx + 1) + ' of ' + (func.quizzes.length || 3) + '</span>' +
     '</div>';
 
   if (q.context) {
@@ -150,11 +150,11 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
 
   if (!isSubmitted) {
     var btnLabel = (isComplicated && mistakeCount === 1) ?
-      'Apply Strategic Tip &amp; Submit Corrected Decision (Attempt 2 of 2) &rarr;' :
-      'Submit &amp; Evaluate Decision';
+      'Apply Strategic Tip & Submit Corrected Decision (Attempt 2 of 2) &rarr;' :
+      'Submit & Evaluate Decision';
 
-    html += '<div class="btn-row">' +
-      '<button type="button" class="btn btn-primary btn-sm" data-act="academy-quiz-submit" data-func="' + PS.esc(funcId) + '" data-qidx="' + idx + '">' + btnLabel + '</button>' +
+    html += '<div class="inst-btn-row">' +
+      '<button type="button" class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" data-act="academy-quiz-submit" data-func="' + PS.esc(funcId) + '" data-qidx="' + idx + '">' + btnLabel + '</button>' +
       '</div>';
   } else {
     html += '<div class="quiz-feedback ' + (isCorrect ? 'is-correct' : 'is-incorrect') + '">' +
@@ -182,7 +182,7 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
     }
 
     if (q.calcWork) {
-      html += '<div class="alert alert-info" style="margin-top:10px"><strong>Step-by-step Calculation:</strong><br>' + PS.esc(q.calcWork) + '</div>';
+      html += '<div class="inst-note" style="margin-top:var(--space-2)"><strong>Step-by-step Calculation:</strong><br>' + PS.esc(q.calcWork) + '</div>';
     }
 
     if (q.principle) {
@@ -191,8 +191,8 @@ PS.academyQuiz.renderCard = function (func, q, idx, res) {
         '</div>';
     }
 
-    html += '<div class="btn-row" style="margin-top:14px">' +
-      '<button type="button" class="btn btn-sm btn-ghost" data-act="academy-quiz-retry" data-func="' + PS.esc(funcId) + '" data-qidx="' + idx + '">Reset &amp; Re-Test Decision</button>' +
+    html += '<div class="inst-btn-row" style="margin-top:var(--space-3)">' +
+      '<button type="button" class="inst-home-btn inst-home-btn--ghost inst-home-btn--sm" data-act="academy-quiz-retry" data-func="' + PS.esc(funcId) + '" data-qidx="' + idx + '">Reset & Re-Test Decision</button>' +
       '</div></div>';
   }
 
@@ -228,7 +228,7 @@ PS.acts['academy-quiz-submit'] = function (el) {
   // Check if first mistake on a complicated scenario
   if (!isOptionCorrect && isComplicated && mistakeCount === 0) {
     PS.academy.recordMistake(funcId, qIdx, chosenIdx);
-    PS.toast('⚠️ 1 Mistake Detected. Review the tactical coaching tip below and select your corrected decision.', 'warn');
+    PS.toast('\u26a0\ufe0f 1 Mistake Detected. Review the tactical coaching tip below and select your corrected decision.', 'warn');
     PS.renderRoute();
     return;
   }
@@ -241,9 +241,9 @@ PS.acts['academy-quiz-submit'] = function (el) {
   if (isOptionCorrect && mistakeCount === 1) {
     res.recovered = res.recovered || {};
     res.recovered[qIdx] = true;
-    PS.toast('✓ Great recovery! You applied the coaching tip and corrected the commercial risk.', 'ok');
+    PS.toast('\u2713 Great recovery! You applied the coaching tip and corrected the commercial risk.', 'ok');
   } else if (isOptionCorrect) {
-    PS.toast('✓ Flawless decision! Direct hit on first attempt.', 'ok');
+    PS.toast('\u2713 Flawless decision! Direct hit on first attempt.', 'ok');
   } else {
     PS.toast('Critical risk identified. Review the full audit rationale.', 'err');
   }
@@ -266,7 +266,7 @@ PS.acts['academy-quiz-submit'] = function (el) {
   if (newBadges && newBadges.length) {
     newBadges.forEach(function (bId) {
       var badge = PS.academy.BADGES.filter(function (b) { return b.id === bId; })[0];
-      if (badge) PS.toast('🏆 Badge Unlocked: ' + badge.name + '!', 'ok');
+      if (badge) PS.toast('\u2713 Badge Unlocked: ' + badge.name + '!', 'ok');
     });
   }
 

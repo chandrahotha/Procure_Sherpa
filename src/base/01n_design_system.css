@@ -64,6 +64,7 @@ html[data-theme="dark"]{
   border-radius:var(--inst-r-card);
   padding:var(--space-4);
   transition:border-color var(--dur),transform var(--dur);
+  overflow:visible;
 }
 .inst-card:hover{
   border-color:var(--border-2);
@@ -160,9 +161,14 @@ html[data-theme="dark"]{
 
 /* ---------- institutional grid ---------- */
 .inst-grid{display:grid;gap:var(--space-3)}
-.inst-grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.inst-grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.inst-grid-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.inst-grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.inst-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.inst-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* Responsive: wraps to 1 column when items would be < 280px */
+.inst-grid-auto{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+@media (max-width: 560px) {
+  .inst-grid-auto{grid-template-columns:1fr}
+}
 .inst-grid > .inst-card{margin:0}
 
 /* ---------- institutional reading ---------- */
@@ -190,6 +196,29 @@ html[data-theme="dark"]{
    colour, and the figures on a dashboard line up in columns. */
 .stat .s-val{font-variant-numeric:tabular-nums}
 .stat .s-lab{letter-spacing:.04em}
+
+/* A figure tile is a panel, not a badge. It carries the enterprise
+   geometry (6px), separates by border rather than shadow, and drops the
+   decorative colour bar: the value already carries the state colour, and a
+   gradient rule above every figure would make four tiles shout over the
+   panel that explains them. */
+.stat{
+  border-radius:var(--inst-r-card);
+  box-shadow:none;
+  padding:var(--space-3) var(--space-4);
+  gap:4px;
+}
+.stat::before{display:none}
+.stat:hover{
+  border-color:var(--border-2);
+  box-shadow:none;
+  transform:none;
+}
+.stat .s-val{font-size:1.6rem;font-weight:750;letter-spacing:-.02em}
+.stat .s-lab{font-size:.66rem;letter-spacing:.08em}
+
+/* Header card used on exam/pages - override card's overflow:hidden */
+.inst-dash-header{overflow:visible}
 
 /* ---------- institutional home: Command Center ---------- */
 .inst-home-section{display:grid;gap:var(--space-6)}

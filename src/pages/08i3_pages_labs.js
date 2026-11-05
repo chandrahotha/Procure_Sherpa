@@ -60,49 +60,50 @@ PS.route('labs', function () {
   var allProgress = PS.store.get('practice_labs', {});
   var completedCount = Object.keys(allProgress).length;
 
-  var html = '<div class="card">' +
-    '<div class="card-head"><h1>Practice labs</h1></div>' +
-    '<p class="lead">Short exercises with feedback on your decisions. Reading builds knowledge; these build judgment.</p>' +
-    '<div class="grid grid-3 mb16">' +
-    '<div class="stat"><span class="s-val">' + PS.practiceLabs.LABS.length + '</span><span class="s-lab">Labs</span></div>' +
-    '<div class="stat"><span class="s-val">' + completedCount + '</span><span class="s-lab">Completed</span></div>' +
-    '<div class="stat"><span class="s-val">' + (PS.practiceLabs.LABS.length - completedCount) + '</span><span class="s-lab">Remaining</span></div>' +
-    '</div>' +
-    '</div>';
+  var html = PS.ui.card(
+    '<h1 class="inst-title">Practice labs</h1>' +
+    '<p class="inst-read">Short exercises with feedback on your decisions. Reading builds knowledge; these build judgment.</p>' +
+    '<div class="inst-grid inst-grid-3 mb16">' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + PS.practiceLabs.LABS.length + '</span><span class="inst-home-hub-stat-lab">Labs</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + completedCount + '</span><span class="inst-home-hub-stat-lab">Completed</span></div></div>' +
+    '<div class="inst-card"><div class="inst-home-hub-stat"><span class="inst-home-hub-stat-val">' + (PS.practiceLabs.LABS.length - completedCount) + '</span><span class="inst-home-hub-stat-lab">Remaining</span></div></div>' +
+    '</div>'
+  );
 
-  html += '<div class="grid grid-2 mb16">';
+  html += '<div class="inst-grid inst-grid-2 mb16">';
 
   PS.practiceLabs.LABS.forEach(function (lab) {
     var progress = PS.practiceLabs.getUserProgress(lab.id);
     var isComplete = progress && progress.completed;
 
-    html += '<div class="card" style="border-left:4px solid var(--calc)">' +
+    var diffClass = lab.difficulty === 'Beginner' ? 'inst-home-hub-stat--ok' :
+      lab.difficulty === 'Intermediate' ? 'inst-home-hub-stat--warn' : 'inst-home-hub-stat--danger';
+
+    html += PS.ui.card(
       '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-      '<div><span class="badge">' + PS.esc(lab.category) + '</span> ' +
-      '<span class="badge" style="background:' + (lab.difficulty === 'Beginner' ? 'var(--ok-soft);color:var(--ok)' : lab.difficulty === 'Intermediate' ? 'var(--warn-soft);color:var(--warn)' : 'var(--danger-soft);color:var(--danger)') + '">' + PS.esc(lab.difficulty) + '</span>' +
-      '<h2 style="margin:8px 0 4px;font-size:1.05em">' + PS.esc(lab.title) + '</h2></div>' +
-      (isComplete ? '<span class="level-pill" style="background:var(--ok-soft);color:var(--ok)">Done</span>' : '') +
+      '<div><span class="inst-badge inst-badge--track">' + PS.esc(lab.category) + '</span> ' +
+      '<span class="inst-badge inst-badge--role ' + diffClass + '">' + PS.esc(lab.difficulty) + '</span>' +
+      '<h2 class="inst-title" style="margin:var(--space-2) 0 var(--space-1);font-size:1.05rem">' + PS.esc(lab.title) + '</h2></div>' +
+      (isComplete ? '<span class="inst-badge inst-badge--ok">Done</span>' : '') +
       '</div>' +
-      '<p class="note" style="margin:8px 0">' + PS.esc(lab.desc) + '</p>' +
-      '<div class="note" style="margin-bottom:8px"><strong>Time:</strong> ' + PS.esc(lab.duration) + ' &middot; <strong>Skills:</strong> ' + PS.esc(lab.skills.join(', ')) + '</div>' +
-      '<button type="button" class="btn btn-sm btn-primary" data-act="lab-start" data-lab="' + PS.esc(lab.id) + '">' +
+      '<p class="inst-note" style="margin:var(--space-2) 0">' + PS.esc(lab.desc) + '</p>' +
+      '<div class="inst-note" style="margin-bottom:var(--space-2)"><strong>Time:</strong> ' + PS.esc(lab.duration) + ' &middot; <strong>Skills:</strong> ' + PS.esc(lab.skills.join(', ')) + '</div>' +
+      '<button type="button" class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" data-act="lab-start" data-lab="' + PS.esc(lab.id) + '">' +
       (isComplete ? 'Review' : (progress ? 'Continue' : 'Start')) +
-      '</button>' +
-      '</div>';
+      '</button>'
+    );
   });
 
   html += '</div>';
 
-  html += '<div class="card">' +
-    '<h2 id="labTitleAnchor">Exercise area</h2>' +
+  html += PS.ui.card(
+    '<h2 class="inst-title" id="labTitleAnchor">Exercise area</h2>' +
     '<div id="labContainer">' +
-    '<div class="empty">Pick a lab above. Each one gives feedback on your decisions as you go.</div>' +
-    '</div>' +
-    '</div>';
+    '<div class="inst-note" style="text-align:center;padding:var(--space-6)">Pick a lab above. Each one gives feedback on your decisions as you go.</div>' +
+    '</div>'
+  );
 
-  PS.pageInit = function () {
-    PS.bindLabEvents();
-  };
+  PS.pageInit = function () { PS.bindLabEvents(); };
 
   return html;
 });
@@ -137,10 +138,10 @@ PS.renderSupplierEvalLab = function () {
     { id: 'C', name: 'Premium Manufacturing Co', quality: 95, delivery: 85, price: 35, risk: 60, sustainability: 45 }
   ];
 
-  var html = '<h3>The call to make</h3>' +
-    '<p>You are sourcing a critical component for your flagship product. Three suppliers have responded. ' +
+  var html = '<h3 class="inst-title">The call to make</h3>' +
+    '<p class="inst-read">You are sourcing a critical component for your flagship product. Three suppliers have responded. ' +
     'Your priorities, in order: quality, delivery reliability, price, risk, sustainability.</p>' +
-    '<div class="table-wrap"><table style="margin-top:12px"><thead><tr><th>Supplier</th><th>Quality</th><th>Delivery</th><th>Price</th><th>Risk</th><th>Sustainability</th><th>Weighted</th></tr></thead><tbody>';
+    '<div class="table-wrap"><table style="margin-top:var(--space-3)"><thead><tr><th>Supplier</th><th>Quality</th><th>Delivery</th><th>Price</th><th>Risk</th><th>Sustainability</th><th>Weighted</th></tr></thead><tbody>';
 
   suppliers.forEach(function (s) {
     var total = Math.round(s.quality * 0.3 + s.delivery * 0.25 + (100 - s.price) * 0.2 + s.risk * 0.15 + s.sustainability * 0.1);
@@ -151,8 +152,8 @@ PS.renderSupplierEvalLab = function () {
   });
 
   html += '</tbody></table></div>' +
-    '<p class="note">Select a row to make your call. The weighted column is a hint, not the answer.</p>' +
-    '<div id="supplierFeedback" style="margin-top:16px"></div>';
+    '<p class="inst-note">Select a row to make your call. The weighted column is a hint, not the answer.</p>' +
+    '<div id="supplierFeedback" style="margin-top:var(--space-4)"></div>';
 
   PS.$('#labContainer').innerHTML = html;
 
@@ -167,11 +168,11 @@ PS.renderSupplierEvalLab = function () {
 
 PS.selectSupplier = function (supplierId) {
   var feedback = {
-    'A': '<div class="alert alert-info"><strong>Defensible.</strong> TechParts Global scores best on quality, your top priority, but carries delivery risk. ' +
+    'A': '<div class="inst-note" style="background:var(--info-soft);border-left:4px solid var(--info);padding:var(--space-3);border-radius:var(--inst-r-menu)"><strong>Defensible.</strong> TechParts Global scores best on quality, your top priority, but carries delivery risk. ' +
       'In practice you would negotiate delivery penalties or line up a second source before award.</div>',
-    'B': '<div class="alert alert-warn"><strong>Reasonable.</strong> Local Components balances delivery and risk well, though quality sits below your stated priority. ' +
+    'B': '<div class="inst-note" style="background:var(--warn-soft);border-left:4px solid var(--warn);padding:var(--space-3);border-radius:var(--inst-r-menu)"><strong>Reasonable.</strong> Local Components balances delivery and risk well, though quality sits below your stated priority. ' +
       'If you go this way, an incoming inspection or quality improvement plan belongs in the contract.</div>',
-    'C': '<div class="alert alert-danger"><strong>Hard to defend.</strong> Premium Manufacturing has the best quality and the worst price, and the sustainability score is weak. ' +
+    'C': '<div class="inst-note" style="background:var(--danger-soft);border-left:4px solid var(--danger);padding:var(--space-3);border-radius:var(--inst-r-menu)"><strong>Hard to defend.</strong> Premium Manufacturing has the best quality and the worst price, and the sustainability score is weak. ' +
       'For a critical component the total cost over its life, not the sticker price, is what matters.</div>'
   };
 
@@ -181,8 +182,8 @@ PS.selectSupplier = function (supplierId) {
 };
 
 PS.renderNegotiationLab = function () {
-  var html = '<h3>The scenario</h3>' +
-    '<p>A 12-month IT services contract. The supplier opened at $500,000. Your target is $450,000; your walk-away point is $475,000.</p>' +
+  var html = '<h3 class="inst-title">The scenario</h3>' +
+    '<p class="inst-read">A 12-month IT services contract. The supplier opened at $500,000. Your target is $450,000; your walk-away point is $475,000.</p>' +
     '<div id="negotiationSteps"></div>';
 
   PS.$('#labContainer').innerHTML = html;
@@ -221,23 +222,23 @@ PS.renderNegotiationStep = function (step) {
   ];
 
   if (step >= steps.length) {
-    PS.$('#negotiationSteps').innerHTML = '<div class="alert alert-ok"><strong>Done.</strong> The pattern across all three steps: know your walk-away point, anchor deliberately, trade concessions rather than giving them, and write the agreement down.</div>';
+    PS.$('#negotiationSteps').innerHTML = '<div class="inst-note" style="background:var(--ok-soft);border-left:4px solid var(--ok);padding:var(--space-3);border-radius:var(--inst-r-menu)"><strong>Done.</strong> The pattern across all three steps: know your walk-away point, anchor deliberately, trade concessions rather than giving them, and write the agreement down.</div>';
     PS.practiceLabs.storeProgress('negotiation-sim', { completed: true, date: new Date().toISOString() });
     return;
   }
 
   var s = steps[step];
-  var html = '<div style="margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:10px">' +
-    '<p><strong>Step ' + (step + 1) + ' of ' + steps.length + ':</strong> ' + PS.esc(s.question) + '</p>' +
-    '<div style="margin-top:12px">';
+  var html = '<div style="margin-top:var(--space-4);padding:var(--space-4);border:1px solid var(--border);border-radius:var(--inst-r-card)">' +
+    '<p class="inst-read"><strong>Step ' + (step + 1) + ' of ' + steps.length + ':</strong> ' + PS.esc(s.question) + '</p>' +
+    '<div style="margin-top:var(--space-3)">';
 
   s.options.forEach(function (opt, i) {
-    html += '<label class="opt-card">' +
-      '<input type="radio" name="nego-step' + step + '" value="' + i + '">' +
+    html += '<label class="opt-card" style="display:block;margin-bottom:var(--space-2);padding:var(--space-3);border:1px solid var(--border);border-radius:var(--inst-r-menu);cursor:pointer">' +
+      '<input type="radio" name="nego-step' + step + '" value="' + i + '" style="margin-right:var(--space-2)">' +
       PS.esc(opt.text) + '</label>';
   });
 
-  html += '</div><button type="button" class="btn btn-primary" data-act="nego-next" data-step="' + step + '" style="margin-top:12px">Submit</button></div>';
+  html += '</div><button type="button" class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" data-act="nego-next" data-step="' + step + '" style="margin-top:var(--space-3)">Submit</button></div>';
 
   PS.$('#negotiationSteps').innerHTML = html;
 
@@ -246,7 +247,7 @@ PS.renderNegotiationStep = function (step) {
     var selected = document.querySelector('input[name="nego-step' + currentStep + '"]:checked');
     if (!selected) { PS.toast('Choose an answer first.', 'warning'); return; }
     var opt = steps[currentStep].options[parseInt(selected.value, 10)];
-    PS.$('#negotiationSteps').innerHTML += '<div class="alert alert-info" style="margin-top:8px"><strong>Why:</strong> ' + PS.esc(opt.feedback) + '</div>';
+    PS.$('#negotiationSteps').innerHTML += '<div class="inst-note" style="margin-top:var(--space-2)"><strong>Why:</strong> ' + PS.esc(opt.feedback) + '</div>';
     setTimeout(function () { PS.renderNegotiationStep(currentStep + 1); }, 1500);
   };
 };
@@ -260,18 +261,19 @@ PS.renderContractReviewLab = function () {
     { text: 'Price Escalation: Annual increase based on CPI + 3%', risk: 'Medium', issue: 'CPI plus a flat 3% will outrun most markets. Consider a fixed percentage or a cap over the contract term.' }
   ];
 
-  var html = '<h3>Red-line these clauses</h3>' +
-    '<p>Flag the ones you would push back on, then submit to see how your read compares with the notes.</p>' +
+  var html = '<h3 class="inst-title">Red-line these clauses</h3>' +
+    '<p class="inst-read">Flag the ones you would push back on, then submit to see how your read compares with the notes.</p>' +
     '<div id="contractClauses">';
 
   clauses.forEach(function (c, i) {
-    html += '<div style="margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:10px">' +
-      '<p><strong>Clause ' + (i + 1) + ':</strong> ' + PS.esc(c.text) + '</p>' +
-      '<label class="opt-card" style="margin-top:8px"><input type="checkbox" data-clause="' + i + '"> Flag as risky</label>' +
+    var riskClass = c.risk === 'High' ? 'inst-badge--danger' : c.risk === 'Medium' ? 'inst-badge--warn' : 'inst-badge--ok';
+    html += '<div style="margin-top:var(--space-3);padding:var(--space-3);border:1px solid var(--border);border-radius:var(--inst-r-card)">' +
+      '<p><strong>Clause ' + (i + 1) + ':</strong> ' + PS.esc(c.text) + ' <span class="inst-badge ' + riskClass + '">' + PS.esc(c.risk) + '</span></p>' +
+      '<label class="opt-card" style="display:block;margin-top:var(--space-2);cursor:pointer"><input type="checkbox" data-clause="' + i + '"> Flag as risky</label>' +
       '</div>';
   });
 
-  html += '</div><button type="button" class="btn btn-primary" data-act="contract-submit" style="margin-top:12px">Submit review</button>' +
+  html += '</div><button type="button" class="inst-home-btn inst-home-btn--primary inst-home-btn--sm" data-act="contract-submit" style="margin-top:var(--space-3)">Submit review</button>' +
     '<div id="contractFeedback"></div>';
 
   PS.$('#labContainer').innerHTML = html;
@@ -282,12 +284,12 @@ PS.renderContractReviewLab = function () {
       flagged.push(parseInt(cb.dataset.clause, 10));
     });
 
-    var out = '<div style="margin-top:16px"><h3>How your read compares</h3>';
+    var out = '<div style="margin-top:var(--space-4)"><h3 class="inst-title">How your read compares</h3>';
     clauses.forEach(function (c, i) {
       var isFlagged = flagged.indexOf(i) >= 0;
-      out += '<div style="margin-top:8px;padding:10px;border-radius:10px;background:' + (isFlagged ? 'var(--ok-soft)' : 'var(--danger-soft)') + '">' +
+      out += '<div style="margin-top:var(--space-2);padding:var(--space-3);border-radius:var(--inst-r-menu);background:' + (isFlagged ? 'var(--ok-soft)' : 'var(--danger-soft)') + '">' +
         '<strong>Clause ' + (i + 1) + ':</strong> ' + (isFlagged ? 'flagged' : 'not flagged') +
-        '<br><span class="note"><strong>Risk:</strong> ' + PS.esc(c.risk) + '. ' + PS.esc(c.issue) + '</span></div>';
+        '<br><span class="inst-note"><strong>Risk:</strong> ' + PS.esc(c.risk) + '. ' + PS.esc(c.issue) + '</span></div>';
     });
     out += '</div>';
 
@@ -306,9 +308,9 @@ PS.renderSpendAnalysisLab = function () {
     { category: 'Facilities', spend: 190000, suppliers: 6 }
   ];
 
-  var html = '<h3>Find the opportunities</h3>' +
-    '<p>Six categories. Where is the fragmentation, and what would consolidating it buy you?</p>' +
-    '<div class="table-wrap"><table style="margin-top:12px"><thead><tr><th>Category</th><th>Spend</th><th>Suppliers</th><th>Spend per supplier</th><th>Opportunity</th></tr></thead><tbody>';
+  var html = '<h3 class="inst-title">Find the opportunities</h3>' +
+    '<p class="inst-read">Six categories. Where is the fragmentation, and what would consolidating it buy you?</p>' +
+    '<div class="table-wrap"><table style="margin-top:var(--space-3)"><thead><tr><th>Category</th><th>Spend</th><th>Suppliers</th><th>Spend per supplier</th><th>Opportunity</th></tr></thead><tbody>';
 
   data.forEach(function (d) {
     var sps = d.spend / d.suppliers;
@@ -321,9 +323,8 @@ PS.renderSpendAnalysisLab = function () {
   });
 
   html += '</tbody></table></div>' +
-    '<div class="hub-note" style="margin-top:14px"><strong>What stands out:</strong> Office Supplies and Marketing carry many suppliers per dollar of spend. ' +
-    'Cutting the supplier count roughly in half in those categories is where a consolidation round would start, and 15-20% savings from volume is a realistic first estimate.</div>' +
-    '</div>';
+    '<div class="inst-note" style="margin-top:var(--space-3)"><strong>What stands out:</strong> Office Supplies and Marketing carry many suppliers per dollar of spend. ' +
+    'Cutting the supplier count roughly in half in those categories is where a consolidation round would start, and 15-20% savings from volume is a realistic first estimate.</div>';
 
   PS.$('#labContainer').innerHTML = html;
   PS.practiceLabs.storeProgress('spend-analysis', { completed: true, date: new Date().toISOString() });
