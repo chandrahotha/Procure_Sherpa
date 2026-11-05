@@ -58,7 +58,7 @@ PS.whatsNew.CHANGES = [
       'New Module 18: Disruption, Emergency Buying and Allocation - the pre-agreed fast route with a clock instead of a market check, how allocation actually works and what moves your position in it, and the three closures that decide whether anything changes afterwards. The curriculum is 54 functions across 18 modules, 321 step sequences and 249 quiz questions',
       'Two controlled procedures the required library named and the product did not have: the Supplier Onboarding SOP (ten steps, from tier assignment to the readiness gate) and the Savings Validation SOP (nine steps, from an agreed baseline to the annual re-baseline). The SOP library is now 18 documents holding 143 procedure steps',
       'New Module 17: Global Sourcing Operations - Supplier Development where substitution is impossible, conformity verification and the audit that finds a process gap rather than a missing signature, and the portfolio decision of which lines are worth a second source, a shorter supply line or a buffer. The curriculum is 51 functions across 17 modules, 300 step sequences and 234 quiz questions',
-     'Role recommendations now show six modules instead of four. The hub was displaying four while the gate measured coverage at five, so a module reachable only as the fifth pick was counted as recommended and never shown to anyone - the test was proving something the interface did not do',
+      'Role recommendations now show six modules instead of four. The hub was displaying four while the gate measured coverage at five, so a module reachable only as the fifth pick was counted as recommended and never shown to anyone - the test was proving something the interface did not do',
       'New Module 16: Contract Risk, Claims and Disputes - the obligation register that turns a signed agreement into owned dated duties, the change mechanism that stops a negotiated discount being given back through variations, and the commercial judgement of whether a claim is worth pursuing. The curriculum is now 43 functions across 16 modules, 244 step sequences and 194 quiz questions, with a matching learning track and a badge',
       'A new design system: a warm-neutral canvas, one jade accent in place of the old indigo, and a dark navigation rail that stays put in both themes so the menu reads as furniture rather than as another panel. Every colour now comes from a token, in both light and dark',
       'The lesson finally looks like a lesson. Body text is set in a serif reading face at 16-17px with a capped measure, section headings are typographic rather than UI labels, and the five lesson tabs stick under the top bar so you always know where you are in a long mission',
@@ -206,27 +206,29 @@ PS.route('whats-new', function () {
   PS.pageTitle = "What's new";
   PS.whatsNew.markSeen();
 
-  var html = '<div class="card">' +
-    '<div class="card-head"><h1>What\'s new</h1>' +
-    '<div class="spacer"></div><span class="badge">v' + PS.esc(PS.VERSION) + '</span></div>' +
-    '<p class="lead">Every release, newest first. Yours is marked.</p>' +
-    '</div>';
+  var html = PS.ui.card(
+    '<h1 class="inst-title">What\'s new</h1>' +
+    '<div class="spacer"></div><span class="inst-badge inst-badge--track">v' + PS.esc(PS.VERSION) + '</span>' +
+    '<p class="inst-read">Every release, newest first. Yours is marked.</p>'
+  );
 
   PS.whatsNew.CHANGES.forEach(function (c) {
-    var tagColor = c.tag === 'Major' ? 'var(--scen-soft);color:var(--scen)'
-      : (c.tag === 'Feature' ? 'var(--accent-soft);color:var(--accent)'
-        : (c.tag === 'Improvement' ? 'var(--ok-soft);color:var(--ok)' : 'var(--sunken);color:var(--mute)'));
+    var tagClass = c.tag === 'Major' ? 'inst-badge--track' :
+      (c.tag === 'Feature' ? 'inst-badge--role' :
+        (c.tag === 'Improvement' ? 'inst-badge--ok' : 'inst-badge--state'));
     var isCurrent = c.version === PS.VERSION;
-    html += '<div class="card" style="' + (isCurrent ? 'border-left:4px solid var(--accent)' : '') + '">' +
-      '<div class="card-head"><div><h2 style="margin-bottom:2px">v' + PS.esc(c.version) + ': ' + PS.esc(c.title) + '</h2>' +
-      '<div style="display:flex;gap:8px;align-items:center">' +
-      '<span class="badge" style="background:' + tagColor + '">' + PS.esc(c.tag) + '</span>' +
-      '<span class="note">' + PS.esc(c.date) + '</span>' +
-      (isCurrent ? '<span class="badge" style="background:var(--accent-soft);color:var(--accent)">Your version</span>' : '') +
+    html += PS.ui.card(
+      '<div class="inst-card-head"><div><h2 class="inst-title" style="margin-bottom:var(--space-1)">v' + PS.esc(c.version) + ': ' + PS.esc(c.title) + '</h2>' +
+      '<div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap">' +
+      '<span class="inst-badge ' + tagClass + '">' + PS.esc(c.tag) + '</span>' +
+      '<span class="inst-note">' + PS.esc(c.date) + '</span>' +
+      (isCurrent ? '<span class="inst-badge inst-badge--role">Your version</span>' : '') +
       '</div></div></div>' +
-      '<ul style="margin-top:10px;padding-left:20px">' +
-      c.items.map(function (item) { return '<li style="margin-bottom:6px">' + PS.esc(item) + '</li>'; }).join('') +
-      '</ul></div>';
+      '<ul style="margin-top:var(--space-3);padding-left:var(--space-6)">' +
+      c.items.map(function (item) { return '<li style="margin-bottom:var(--space-2)">' + PS.esc(item) + '</li>'; }).join('') +
+      '</ul>',
+      { style: (isCurrent ? 'border-left:4px solid var(--accent)' : '') }
+    );
   });
 
   return html;
